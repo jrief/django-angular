@@ -12,9 +12,9 @@ class AngularFormMixin(object):
     Angular controller can access the error strings using the same key values as
     for its models.
     """
-    input_directives = ['ng-change', 'ng-class', 'ng-style']
+    #input_directives = ['ng-change', 'ng-class', 'ng-style']
 
-    def __init__(self, data=None, ng_scope_varname=None, prefix=None, **kwargs):
+    def __init__(self, data=None, scope_prefix=None, prefix=None, **kwargs):
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
             if not isinstance(self.Meta.ng_models, list):
                 raise TypeError('Meta.ng_model is not of type list')
@@ -22,10 +22,12 @@ class AngularFormMixin(object):
         else:
             ng_models = None
         directives = {}
-        for key in self.input_directives:
-            fmtstr = kwargs.pop(key.replace('-', '_'), None)
-            if fmtstr:
-                directives[key] = fmtstr
+        for key in kwargs.keys():
+            if key.startswith('ng_'):
+                fmtstr = kwargs.pop(key)
+                directives[key.replace('_', '-')] = fmtstr
+        if ng_models is None and 'ng-model' not in directives:
+            directives['ng-model'] = '%(model)s'
         if data and prefix:
             self.prefix = prefix
             data = dict((self.add_prefix(name), value) for name, value in data.get(prefix).items())
@@ -35,9 +37,9 @@ class AngularFormMixin(object):
             ng = {
                 'name': name,
                 'identifier': identifier,
-                'model': ng_scope_varname and ('%s.%s' % (ng_scope_varname, identifier)) or identifier
+                'model': scope_prefix and ('%s.%s' % (scope_prefix, identifier)) or identifier
             }
-            if ng_models is None or name in ng_models:
+            if ng_models and name in ng_models:
                 field.widget.attrs['ng-model'] = ng['model']
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng

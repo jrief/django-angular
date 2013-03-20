@@ -31,13 +31,13 @@ class SubForm2(AngularFormMixin, forms.ModelForm):
 class DummyForm(AngularFormMixin, forms.Form):
     email = forms.EmailField('E-Mail')
     onoff = forms.BooleanField(initial=False, required=True)
-    ng_scope_varname = 'dataroot'
+    scope_varname = 'dataroot'
 
     def __init__(self, data=None, **kwargs):
         kwargs.update({
             'auto_id': False,
             'ng_class': 'fieldClass(\'%(identifier)s\')',
-            'ng_scope_varname': self.ng_scope_varname,
+            'scope_varname': self.scope_varname,
         })
         super(DummyForm, self).__init__(data, **kwargs)
         self.sub1 = SubForm1(data, prefix='sub1', **kwargs)
@@ -103,7 +103,7 @@ class AngularFormMixinTest(unittest.TestCase):
                 if identifier == 'sub2.radio_choices':
                     self.assertFalse(input_field.attrib.get('ng-model'))
                 else:
-                    model = '%s.%s' % (self.unbound_form.ng_scope_varname, identifier)
+                    model = '%s.%s' % (self.unbound_form.scope_varname, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement) and input_field.type == 'radio':
                     if input_field.tail.strip() == SubModel.CHOICES[1][1]:
