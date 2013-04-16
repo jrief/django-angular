@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import types
 import json
 from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers.json import DjangoJSONEncoder
@@ -36,7 +35,7 @@ class JSONResponseMixin(object):
         try:
             in_data = json.loads(request.raw_post_data)
             action = getattr(self, in_data.pop('action', kwargs.get('action')), None)
-            if not (isinstance(action, types.MethodType) and hasattr(action, 'is_allowed_action')):
+            if not (callable(action) and hasattr(action, 'is_allowed_action')):
                 raise ValueError('action="%s" is undefined or not callable' % action)
             out_data = json.dumps(action(in_data), cls=DjangoJSONEncoder)
             return HttpResponse(out_data, self.response_headers)
