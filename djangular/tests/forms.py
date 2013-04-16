@@ -3,7 +3,7 @@ import copy
 from django.db import models
 from django import forms
 from django.utils import unittest
-from djangular.forms.mixins import AngularFormMixin
+from djangular.forms.angular_model import NgModelFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -15,20 +15,20 @@ class SubModel(models.Model):
     first_name = models.CharField(max_length=40, blank=True)
 
 
-class SubForm1(AngularFormMixin, forms.ModelForm):
+class SubForm1(NgModelFormMixin, forms.ModelForm):
     class Meta:
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
 
 
-class SubForm2(AngularFormMixin, forms.ModelForm):
+class SubForm2(NgModelFormMixin, forms.ModelForm):
     class Meta:
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
         ng_models = ['select_choices', 'first_name']
 
 
-class DummyForm(AngularFormMixin, forms.Form):
+class DummyForm(NgModelFormMixin, forms.Form):
     email = forms.EmailField('E-Mail')
     onoff = forms.BooleanField(initial=False, required=True)
     scope_varname = 'dataroot'
@@ -61,7 +61,7 @@ class DummyForm(AngularFormMixin, forms.Form):
         return super(DummyForm, self).is_valid() and sub1_valid and sub2_valid
 
 
-class AngularFormMixinTest(unittest.TestCase):
+class NgModelFormMixinTest(unittest.TestCase):
     valid_data = {
         'email': 'john@example.com',
         'onoff': True,
