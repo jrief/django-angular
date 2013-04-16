@@ -2,7 +2,7 @@
 from django.forms.util import ErrorDict
 
 
-class AngularFormMixin(object):
+class NgModelFormMixin(object):
     """
     Add AngularFormMixin to every class derived from forms.ModelForm, if you want
     to manage that form through an Angular controller.
@@ -12,7 +12,6 @@ class AngularFormMixin(object):
     Angular controller can access the error strings using the same key values as
     for its models.
     """
-    #input_directives = ['ng-change', 'ng-class', 'ng-style']
 
     def __init__(self, data=None, scope_prefix=None, prefix=None, **kwargs):
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
@@ -31,7 +30,7 @@ class AngularFormMixin(object):
         if data and prefix:
             self.prefix = prefix
             data = dict((self.add_prefix(name), value) for name, value in data.get(prefix).items())
-        super(AngularFormMixin, self).__init__(data, prefix=prefix, **kwargs)
+        super(NgModelFormMixin, self).__init__(data, prefix=prefix, **kwargs)
         for name, field in self.fields.items():
             identifier = self.add_prefix(name)
             ng = {
@@ -48,7 +47,7 @@ class AngularFormMixin(object):
         """
         Rewrite the error dictionary, so that its keys correspond to the model fields.
         """
-        super(AngularFormMixin, self).full_clean()
+        super(NgModelFormMixin, self).full_clean()
         if self._errors and self.prefix:
             self._errors = ErrorDict((self.add_prefix(name), value) for name, value in self._errors.items())
 
