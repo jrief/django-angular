@@ -4,8 +4,8 @@ from django.forms.util import ErrorDict
 
 class NgModelFormMixin(object):
     """
-    Add AngularFormMixin to every class derived from forms.ModelForm, if you want
-    to manage that form through an Angular controller.
+    Add this NgModelFormMixin to every class derived from forms.ModelForm, if
+    you want to manage that form through an Angular controller.
     It adds attributes ng-model, and optionally ng-change, ng-class and ng-style
     to each of your input fields.
     If form validation fails, the ErrorDict is rewritten in a way, so that the
