@@ -32,7 +32,7 @@ class AutoLabelFormMixin(object):
         "Returns this form rendered as HTML <li>s with input fields using auto-labels."
         return self._html_output(
             normal_row=u'<li%(html_class_attr)s>%(field)s</li>',
-            error_row=u'<li>%s</li>',
+            error_row=u'%s',
             row_ender='</li>',
             help_text_html=u'<span class="helptext">%s</span>',
             errors_on_separate_row=False)
