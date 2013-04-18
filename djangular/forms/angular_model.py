@@ -63,6 +63,20 @@ class NgModelFormMixin(object):
                 data[name] = field.initial
         return data
 
+    def get_initial_as_json(self):
+        """
+        Return as string containing the initial data of this form, serialized to
+        be used directly in ng-init
+        """
+        if self.scope_prefix:
+            json_data = json.dumps(self.get_initial_data(), cls=DjangoJSONEncoder)
+            return '%s=%s' % (self.scope_prefix, json_data)
+        data = self.get_initial_data()
+        json_list = []
+        for key, val in data.items():
+            json_list.append('%s=%s' % (key, json.dumps(val, cls=DjangoJSONEncoder)))
+        return ';'.join(json_list)
+
     def add_prefix(self, field_name):
         """
         Rewrite the model keys to use dots instead of dashes, since thats the syntax
