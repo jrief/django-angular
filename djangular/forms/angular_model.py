@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
+import json
 from django.forms.util import ErrorDict
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 class NgModelFormMixin(object):
     """
-    Add this NgModelFormMixin to every class derived from forms.ModelForm, if
+    Add this NgModelFormMixin to every class derived from forms.Form, if
     you want to manage that form through an Angular controller.
     It adds attributes ng-model, and optionally ng-change, ng-class and ng-style
     to each of your input fields.
@@ -13,7 +15,8 @@ class NgModelFormMixin(object):
     for its models.
     """
 
-    def __init__(self, data=None, scope_prefix=None, prefix=None, **kwargs):
+    def __init__(self, *args, **kwargs):
+        self.scope_prefix = kwargs.pop('scope_prefix', None)
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
             if not isinstance(self.Meta.ng_models, list):
                 raise TypeError('Meta.ng_model is not of type list')
@@ -27,16 +30,16 @@ class NgModelFormMixin(object):
                 directives[key.replace('_', '-')] = fmtstr
         if ng_models is None and 'ng-model' not in directives:
             directives['ng-model'] = '%(model)s'
-        if data and prefix:
-            self.prefix = prefix
-            data = dict((self.add_prefix(name), value) for name, value in data.get(prefix).items())
-        super(NgModelFormMixin, self).__init__(data, prefix=prefix, **kwargs)
+        if kwargs.get('data') and kwargs.get('prefix'):
+            self.prefix = kwargs['prefix']
+            kwargs['data'] = dict((self.add_prefix(name), value) for name, value in kwargs['data'].get(self.prefix).items())
+        super(NgModelFormMixin, self).__init__(*args, **kwargs)
         for name, field in self.fields.items():
             identifier = self.add_prefix(name)
             ng = {
                 'name': name,
                 'identifier': identifier,
-                'model': scope_prefix and ('%s.%s' % (scope_prefix, identifier)) or identifier
+                'model': self.scope_prefix and ('%s.%s' % (self.scope_prefix, identifier)) or identifier
             }
             if ng_models and name in ng_models:
                 field.widget.attrs['ng-model'] = ng['model']
@@ -60,7 +63,7 @@ class NgModelFormMixin(object):
         data = {}
         for name, field in self.fields.items():
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
-                data[name] = field.initial
+                data[name] = self.initial and self.initial.get(name) or field.initial
         return data
 
     def get_initial_as_json(self):
