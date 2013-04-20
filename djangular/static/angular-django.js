@@ -15,50 +15,57 @@
 angular.module('ngDjango', []).directive('autoLabel', function() {
 	return {
 		restrict: 'A',
-		scope: 'isolate',
-		link: function(scope, elem, attrs) {
-			var $element = angular.element(elem);
-			var watchers = null;
+		require: 'ngModel',
+		link: function(scope, elem, attrs, ctrl) {
 			var orig_type = attrs.type;
 
-			scope.$evalAsync(function() {
-				if ($element.val() === '') {
-					removeWatchers();
-					$element.addClass('empty');
-					$element.val(attrs.autoLabel);
-					if (orig_type === 'password') {
-						$element.attr('type', 'text');
-					}
+			// load initial value from element
+			if (!elem.val()) {
+				elem.addClass('empty');
+				elem.val(attrs.autoLabel);
+				if (orig_type === 'password') {
+					elem.attr('type', 'text');
 				}
-			});
+				ctrl.$setViewValue('');
+			} else {
+				ctrl.$setViewValue(elem.val());
+			}
 
+			// on focus, replace auto-label with empty field
 			elem.bind('focus', function() {
-				if (!$element.hasClass('empty'))
-					return;
-				removeWatchers();
-				$element.val('');
-				$element.removeClass('empty error');
-				$element.attr('type', orig_type);
-			});
-
-			elem.bind('focusout', function() {
-				if ($element.val() === '') {
-					$element.addClass('empty');
-					$element.val(attrs.autoLabel);
-					if (orig_type === 'password') {
-						$element.attr('type', 'text');
-					}
-					// restore watchers
-					if (watchers) {
-						scope.$$watchers = watchers;
-						watchers = null;
-					}
+				if (elem.hasClass('empty')) {
+					elem.val('');
+					elem.removeClass('empty error');
+					elem.attr('type', orig_type);
 				}
 			});
 
-			function removeWatchers() {
-				watchers = scope.$$watchers;
-				scope.$$watchers = [];
+			// view -> model
+			elem.bind('blur', function() {
+				console.log('view -> model: '+elem.val());
+				var orig_val = elem.val();
+				autoAddLabel(orig_val);
+				scope.$apply(function() {
+					ctrl.$setViewValue(orig_val);
+				});
+			});
+
+			// model -> view
+			ctrl.$render = function() {
+				console.log('model -> view: '+ctrl.$viewValue);
+				autoAddLabel(ctrl.$viewValue);
+			};
+
+			function autoAddLabel(val) {
+				if (!val) {
+					elem.addClass('empty');
+					elem.val(attrs.autoLabel);
+					if (orig_type === 'password') {
+						elem.attr('type', 'text');
+					}
+				} else {
+					elem.val(val);
+				}
 			}
 
 		}
