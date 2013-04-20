@@ -42,7 +42,6 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 
 			// view -> model
 			elem.bind('blur', function() {
-				console.log('view -> model: '+elem.val());
 				var orig_val = elem.val();
 				autoAddLabel(orig_val);
 				scope.$apply(function() {
@@ -52,7 +51,6 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 
 			// model -> view
 			ctrl.$render = function() {
-				console.log('model -> view: '+ctrl.$viewValue);
 				autoAddLabel(ctrl.$viewValue);
 			};
 
