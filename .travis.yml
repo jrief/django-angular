@@ -4,3 +4,4 @@ python:
 install:
   - "pip install . --use-mirrors"
 script: "tests/manage.py test djangular"
+
