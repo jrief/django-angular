@@ -2,6 +2,5 @@ language: python
 python:
   - "2.7"
 install:
-  - "pip install . --use-mirrors"
+  - "pip install -r requirements.txt --use-mirrors"
 script: "tests/manage.py test djangular"
-
