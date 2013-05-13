@@ -15,6 +15,8 @@ SITE_ID = 1
 
 ROOT_URLCONF = 'testapp.urls'
 
+SECRET_KEY = 'SSponU8sDrOMjaSCjmQ0D04PlrLugv3vJDjzEipb'
+
 STATIC_URL = '/static/'
 
 INSTALLED_APPS = (
