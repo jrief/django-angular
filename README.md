@@ -2,6 +2,8 @@
 
 Utilities to let Django play nice together with AngularJS.
 
+[![Build Status](https://travis-ci.org/jrief/django-angular.png)](https://travis-ci.org/jrief/django-angular)
+
 ## Quick start
 ### Download and configure
 
@@ -28,7 +30,9 @@ INSTALLED_APPS = (
 
 
 ## Release History
-0.1.0 - initial revision
+ - 0.1.2 - better packaging support
+ - 0.1.1 - fixed initial data in NgModelFormMixin
+ - 0.1.0 - initial revision
 
 ## License
 Copyright (c) 2013 Jacob Rief  
