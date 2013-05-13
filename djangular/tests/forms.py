@@ -2,7 +2,7 @@
 import copy
 from django.db import models
 from django import forms
-from django.utils import unittest
+from django.test import LiveServerTestCase
 from djangular.forms.angular_model import NgModelFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
@@ -31,17 +31,17 @@ class SubForm2(NgModelFormMixin, forms.ModelForm):
 class DummyForm(NgModelFormMixin, forms.Form):
     email = forms.EmailField('E-Mail')
     onoff = forms.BooleanField(initial=False, required=True)
-    scope_varname = 'dataroot'
+    scope_prefix = 'dataroot'
 
-    def __init__(self, data=None, **kwargs):
+    def __init__(self, *args, **kwargs):
         kwargs.update({
             'auto_id': False,
             'ng_class': 'fieldClass(\'%(identifier)s\')',
-            'scope_varname': self.scope_varname,
+            'scope_prefix': self.scope_prefix,
         })
-        super(DummyForm, self).__init__(data, **kwargs)
-        self.sub1 = SubForm1(data, prefix='sub1', **kwargs)
-        self.sub2 = SubForm2(data, prefix='sub2', **kwargs)
+        super(DummyForm, self).__init__(*args, **kwargs)
+        self.sub1 = SubForm1(prefix='sub1', **kwargs)
+        self.sub2 = SubForm2(prefix='sub2', **kwargs)
 
     def get_initial_data(self):
         data = super(DummyForm, self).get_initial_data()
@@ -52,16 +52,14 @@ class DummyForm(NgModelFormMixin, forms.Form):
         return data
 
     def is_valid(self):
-        sub1_valid = self.sub1.is_valid()
-        if not sub1_valid:
+        if not self.sub1.is_valid():
             self.errors.update(self.sub1.errors)
-        sub2_valid = self.sub2.is_valid()
-        if not sub2_valid:
+        if not self.sub2.is_valid():
             self.errors.update(self.sub2.errors)
-        return super(DummyForm, self).is_valid() and sub1_valid and sub2_valid
+        return super(DummyForm, self).is_valid() and self.sub1.is_valid() and self.sub2.is_valid()
 
 
-class NgModelFormMixinTest(unittest.TestCase):
+class NgModelFormMixinTest(LiveServerTestCase):
     valid_data = {
         'email': 'john@example.com',
         'onoff': True,
@@ -95,7 +93,7 @@ class NgModelFormMixinTest(unittest.TestCase):
     def check_form_fields(self, form):
         for name in form.fields.keys():
             identifier = '%s.%s' % (form.prefix, name) if form.prefix else name
-            input_fields = filter(lambda e: e.name == identifier, self.elements)
+            input_fields = [e for e in self.elements if e.name == identifier]
             self.assertTrue(input_fields)
             for input_field in input_fields:
                 self.assertIsInstance(input_field, (html.InputElement, html.SelectElement))
@@ -103,7 +101,7 @@ class NgModelFormMixinTest(unittest.TestCase):
                 if identifier == 'sub2.radio_choices':
                     self.assertFalse(input_field.attrib.get('ng-model'))
                 else:
-                    model = '%s.%s' % (self.unbound_form.scope_varname, identifier)
+                    model = '%s.%s' % (self.unbound_form.scope_prefix, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement) and input_field.type == 'radio':
                     if input_field.tail.strip() == SubModel.CHOICES[1][1]:
@@ -115,25 +113,24 @@ class NgModelFormMixinTest(unittest.TestCase):
                     self.assertEqual(input_field.value, SubModel.CHOICES[0][0])
 
     def test_valid_form(self):
-        bound_form = DummyForm(self.valid_data)
+        bound_form = DummyForm(data=self.valid_data)
         self.assertTrue(bound_form.is_bound)
         self.assertTrue(bound_form.is_valid())
-        print bound_form.errors
 
     def test_invalid_form(self):
         in_data = copy.deepcopy(self.valid_data)
         in_data['email'] = 'no.email.address'
-        bound_form = DummyForm(in_data)
+        bound_form = DummyForm(data=in_data)
         self.assertTrue(bound_form.is_bound)
         self.assertFalse(bound_form.is_valid())
-        self.assertTrue(bound_form.errors.pop('email'))
+        self.assertTrue(bound_form.errors.pop('email', None))
         self.assertFalse(bound_form.errors)
 
     def test_invalid_subform(self):
         in_data = copy.deepcopy(self.valid_data)
         in_data['sub1']['select_choices'] = 'X'
         in_data['sub1']['radio_choices'] = 'Y'
-        bound_form = DummyForm(in_data)
+        bound_form = DummyForm(data=in_data)
         self.assertTrue(bound_form.is_bound)
         self.assertFalse(bound_form.is_valid())
         self.assertTrue(bound_form.errors.pop('sub1.select_choices'))
