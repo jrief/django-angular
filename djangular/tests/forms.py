@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 import copy
+import subprocess
 from django.db import models
 from django import forms
-from django.test import LiveServerTestCase
+from django.test import TestCase
+from django.http import HttpResponse
 from djangular.forms.angular_model import NgModelFormMixin
+from djangular.forms.auto_label import AutoLabelFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -59,7 +62,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
         return super(DummyForm, self).is_valid() and self.sub1.is_valid() and self.sub2.is_valid()
 
 
-class NgModelFormMixinTest(LiveServerTestCase):
+class NgModelFormMixinTest(TestCase):
     valid_data = {
         'email': 'john@example.com',
         'onoff': True,
@@ -149,3 +152,25 @@ class NgModelFormMixinTest(LiveServerTestCase):
         valid_keys = self.valid_data['sub1'].keys()
         valid_keys.sort()
         self.assertEqual(initial_keys, valid_keys)
+
+
+class EmailOnlyForm(AutoLabelFormMixin, forms.Form):
+    email = forms.EmailField(label='E-Mail')
+    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+
+
+def render_autolabel_form(request):
+    unbound_form = EmailOnlyForm()
+    htmlsource = unbound_form.as_ul_with_autolabel()
+    #self.dom = PyQuery(htmlsource)
+    #self.elements = self.dom('input') + self.dom('select')
+    return HttpResponse(htmlsource)
+
+
+class AutoLabelFormMixinTest(TestCase):
+    def test_ng_directive(self):
+        """
+        This test simply invokes a karma test runner, to verify the server code.
+        """
+        exit_status = subprocess.call(['karma', 'start', 'client/karma.conf.js', '--single-run=true'])
+        self.assertEqual(exit_status, 0, "karma returned an exit status for a failed test")

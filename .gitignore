@@ -6,3 +6,4 @@
 build
 dist
 htmlcov
+/node_modules/
