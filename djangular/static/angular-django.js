@@ -16,7 +16,7 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 	return {
 		restrict: 'A',
 		require: 'ngModel',
-		link: function(scope, elem, attrs, ctrl) {
+		link: function(scope, elem, attrs, ngModel) {
 			var orig_type = attrs.type;
 
 			// load initial value from element
@@ -26,9 +26,9 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 				if (orig_type === 'password') {
 					elem.attr('type', 'text');
 				}
-				ctrl.$setViewValue('');
+				ngModel.$setViewValue('');
 			} else {
-				ctrl.$setViewValue(elem.val());
+				ngModel.$setViewValue(elem.val());
 			}
 
 			// on focus, replace auto-label with empty field
@@ -45,13 +45,18 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 				var orig_val = elem.val();
 				autoAddLabel(orig_val);
 				scope.$apply(function() {
-					ctrl.$setViewValue(orig_val);
+					ngModel.$setViewValue(orig_val);
 				});
 			});
 
+			elem.bind('change', function() {
+				dump('change');
+				dump(scope);
+			});
+
 			// model -> view
-			ctrl.$render = function() {
-				autoAddLabel(ctrl.$viewValue);
+			ngModel.$render = function() {
+				autoAddLabel(ngModel.$viewValue);
 			};
 
 			function autoAddLabel(val) {
@@ -62,6 +67,7 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 						elem.attr('type', 'text');
 					}
 				} else {
+					elem.removeClass('empty');
 					elem.val(val);
 				}
 			}
