@@ -65,11 +65,25 @@ describe('test module django-angular', function() {
 			});
 		});
 
-		it('should display the input value when the model data changes', function() {
-			expect(email_field.val()).toBe('E-Mail');
-			scope.form.email = 'john@doe.com';
-			scope.$digest();
-			expect(email_field.val()).toBe('john@doe.com');
+		describe('when the value is set through the model controller', function() {
+			beforeEach(function() {
+				expect(email_field.val()).toBe('E-Mail');
+				scope.form.email = 'john@doe.com';
+				scope.$digest();
+			});
+
+			it('should display the value in the input field', function() {
+				expect(email_field.val()).toBe('john@doe.com');
+				expect(email_field.hasClass('empty')).toBe(false);
+			});
+
+			it('should replace an empty value in the input field by auto-label', function() {
+				scope.form.email = '';
+				scope.$digest();
+				expect(email_field.val()).toBe('E-Mail');
+				expect(email_field.hasClass('empty')).toBe(true);
+			});
+
 		});
 
 	});
