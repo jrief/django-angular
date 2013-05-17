@@ -49,11 +49,6 @@ angular.module('ngDjango', []).directive('autoLabel', function() {
 				});
 			});
 
-			elem.bind('change', function() {
-				dump('change');
-				dump(scope);
-			});
-
 			// model -> view
 			ngModel.$render = function() {
 				autoAddLabel(ngModel.$viewValue);
