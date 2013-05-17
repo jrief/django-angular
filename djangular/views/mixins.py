@@ -20,10 +20,6 @@ class JSONResponseMixin(object):
     A mixin that dispatches POST requests containing the keyword 'action' onto
     the method with that name. It renders the returned context as JSON response.
     """
-    response_headers = {
-        'content_type': 'application/json',
-        'mimetype': 'text/javascript'  # TODO: remove this
-    }
 
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
@@ -38,6 +34,6 @@ class JSONResponseMixin(object):
             if not (callable(action) and hasattr(action, 'is_allowed_action')):
                 raise ValueError('action="%s" is undefined or not callable' % action)
             out_data = json.dumps(action(in_data), cls=DjangoJSONEncoder)
-            return HttpResponse(out_data, self.response_headers)
+            return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
         except ValueError as e:
             return HttpResponseBadRequest('POST data is not valid JSON: ', e)
