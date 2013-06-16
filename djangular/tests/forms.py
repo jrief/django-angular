@@ -165,12 +165,3 @@ def render_autolabel_form(request):
     #self.dom = PyQuery(htmlsource)
     #self.elements = self.dom('input') + self.dom('select')
     return HttpResponse(htmlsource)
-
-
-class AutoLabelFormMixinTest(TestCase):
-    def test_ng_directive(self):
-        """
-        This test simply invokes a karma test runner, to verify the server code.
-        """
-        exit_status = subprocess.call(['karma', 'start', 'client/karma.conf.js', '--single-run=true'])
-        self.assertEqual(exit_status, 0, "karma returned an exit status for a failed test")

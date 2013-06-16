@@ -15,4 +15,6 @@ before_script:
   - sh -e /etc/init.d/xvfb start
   - npm install -g grunt-cli
 
-script: cd tests && ./manage.py test djangular
+script:
+ - grunt travis-ci
+ - cd tests && ./manage.py test djangular

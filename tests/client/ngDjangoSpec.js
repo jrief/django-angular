@@ -5,7 +5,7 @@ describe('test module django-angular', function() {
 		module('ngDjango');
 	});
 
-	describe('for input field of type text using directive auto-label', function() {
+	describe('for an empty input field of type text using directive auto-label', function() {
 		var email_field, scope;
 
 		beforeEach(inject(function($rootScope, $compile) {

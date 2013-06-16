@@ -1,23 +1,23 @@
 {
   "name": "angular-retina",
-  "description": "Replace AngularJS directive 'ng-src' by a version which supports Retina displays",
+  "description": "Add Angular directives to Django",
   "version": "0.1.2",
-  "homepage": "https://github.com/jrief/angular-retina",
+  "homepage": "https://github.com/jrief/django-angular",
   "author": {
     "name": "Jacob Rief",
     "email": "jacob.rief@gmail.com"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jrief/angular-retina.git"
+    "url": "git://github.com/jrief/django-angular.git"
   },
   "bugs": {
-    "url": "https://github.com/jrief/angular-retina/issues"
+    "url": "https://github.com/jrief/django-angular/issues"
   },
   "licenses": [
     {
       "type": "MIT",
-      "url": "https://github.com/jrief/angular-retina/blob/master/LICENSE-MIT"
+      "url": "https://github.com/jrief/django-angular/blob/master/LICENSE-MIT"
     }
   ],
   "engines": {
