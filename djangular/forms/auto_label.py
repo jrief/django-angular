@@ -4,14 +4,16 @@ from django import forms
 
 class AutoLabelFormMixin(object):
     """
-    Forms with auto-label's are useful, if the fields label shall be
-    displayed inside the field, on fields which are empty. Can can considerably
-    reduce the amount of space needed to display an input field.
-    When such an input field gains focus, the label is removed and the field
-    behaves as usual.
-    An empty input field has the additional class 'empty', so that it is
-    possible to distinguish between an auto-labeled and normal input field using
-    style sheets.
+    Forms with auto-label's are useful, if you want to display the field's label
+    inside the input element rather than prefixing the element - this can can
+    considerably reduce the amount of space needed to display a form.
+
+    When such an input field is empty, the label is displayed using the special
+    class 'empty'. Now, when such an input field gains focus, the label is removed
+    and the field behaves as usual. When the user removes input focus from the
+    field, the entered text remains. When the user removes input focus from an
+    empty field, the auto-label is re-added using class 'empty'.
+
     In HTML, this mixin requires to load the Angular module ngDjango:
     <script src="{{STATIC_URL}}angular-django.js"></script>
     ...

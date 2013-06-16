@@ -154,14 +154,24 @@ class NgModelFormMixinTest(TestCase):
         self.assertEqual(initial_keys, valid_keys)
 
 
-class EmailOnlyForm(AutoLabelFormMixin, forms.Form):
-    email = forms.EmailField(label='E-Mail')
-    password = forms.CharField(label='Password', widget=forms.PasswordInput)
+class AutoLabelFormMixinTest(TestCase):
+    class EmailOnlyForm(AutoLabelFormMixin, forms.Form):
+        email = forms.EmailField(label='E-Mail')
+        password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
+    def setUp(self):
+        self.email_form = self.EmailOnlyForm()
+        htmlsource = self.email_form.as_ul_with_autolabel()
+        self.dom = PyQuery(htmlsource)
 
-def render_autolabel_form(request):
-    unbound_form = EmailOnlyForm()
-    htmlsource = unbound_form.as_ul_with_autolabel()
-    #self.dom = PyQuery(htmlsource)
-    #self.elements = self.dom('input') + self.dom('select')
-    return HttpResponse(htmlsource)
+    def test_email_field(self):
+        email_field = self.dom('input[name=email]')
+        self.assertEqual(len(email_field), 1)
+        email_field_attrib = dict(email_field[0].attrib.items())
+        self.assertDictContainsSubset({'auto-label': 'E-Mail'}, email_field_attrib)
+
+    def test_password_field(self):
+        password_field = self.dom('input[name=password]')
+        self.assertEqual(len(password_field), 1)
+        email_field_attrib = dict(password_field[0].attrib.items())
+        self.assertDictContainsSubset({'auto-label': 'Password'}, email_field_attrib)
