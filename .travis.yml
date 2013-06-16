@@ -10,7 +10,8 @@ install:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - npm install -g grunt grunt-cli grunt-contrib-jshint karma
+  - npm install -g grunt-cli
+  - npm install grunt grunt-contrib-jshint karma
 
 script:
  - cd tests && ./manage.py test djangular
