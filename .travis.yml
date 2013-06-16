@@ -14,5 +14,4 @@ before_script:
 
 script:
  - cd tests && ./manage.py test djangular
-  - grunt travis-ci
-
+ - grunt travis-ci
