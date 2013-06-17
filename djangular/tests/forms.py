@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import copy
-import subprocess
 from django.db import models
 from django import forms
 from django.test import TestCase
-from django.http import HttpResponse
 from djangular.forms.angular_model import NgModelFormMixin
 from djangular.forms.auto_label import AutoLabelFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
 
+CHOICES = (('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C'))
+
+
 class SubModel(models.Model):
-    CHOICES = (('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C'))
     select_choices = models.CharField(max_length=1, choices=CHOICES, default=CHOICES[0][0])
     radio_choices = models.CharField(max_length=1, choices=CHOICES, default=CHOICES[1][0])
     first_name = models.CharField(max_length=40, blank=True)
@@ -29,6 +29,12 @@ class SubForm2(NgModelFormMixin, forms.ModelForm):
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
         ng_models = ['select_choices', 'first_name']
+
+
+class InvalidForm(NgModelFormMixin, forms.ModelForm):
+    class Meta:
+        model = SubModel
+        ng_models = {}
 
 
 class DummyForm(NgModelFormMixin, forms.Form):
@@ -107,13 +113,13 @@ class NgModelFormMixinTest(TestCase):
                     model = '%s.%s' % (self.unbound_form.scope_prefix, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement) and input_field.type == 'radio':
-                    if input_field.tail.strip() == SubModel.CHOICES[1][1]:
+                    if input_field.tail.strip() == CHOICES[1][1]:
                         self.assertTrue(input_field.checked)
                     else:
                         self.assertFalse(input_field.checked)
                 elif isinstance(input_field, html.SelectElement):
-                    self.assertListEqual(input_field.value_options, [c[0] for c in SubModel.CHOICES])
-                    self.assertEqual(input_field.value, SubModel.CHOICES[0][0])
+                    self.assertListEqual(input_field.value_options, [c[0] for c in CHOICES])
+                    self.assertEqual(input_field.value, CHOICES[0][0])
 
     def test_valid_form(self):
         bound_form = DummyForm(data=self.valid_data)
@@ -154,14 +160,21 @@ class NgModelFormMixinTest(TestCase):
         self.assertEqual(initial_keys, valid_keys)
 
 
+class InvalidNgModelFormMixinTest(TestCase):
+    def test_invalid_form(self):
+        # create a form with an invalid Meta class
+        self.assertRaises(TypeError, InvalidForm)
+
+
 class AutoLabelFormMixinTest(TestCase):
     class EmailOnlyForm(AutoLabelFormMixin, forms.Form):
         email = forms.EmailField(label='E-Mail')
         password = forms.CharField(label='Password', widget=forms.PasswordInput)
+        radio = forms.Select(choices=CHOICES)
 
     def setUp(self):
         self.email_form = self.EmailOnlyForm()
-        htmlsource = self.email_form.as_ul_with_autolabel()
+        htmlsource = unicode(self.email_form)
         self.dom = PyQuery(htmlsource)
 
     def test_email_field(self):
