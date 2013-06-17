@@ -30,10 +30,11 @@ class JSONResponseMixin(object):
             return HttpResponseBadRequest('Expected an XMLHttpRequest')
         try:
             in_data = json.loads(request.raw_post_data)
-            action = getattr(self, in_data.pop('action', kwargs.get('action')), None)
+            action = in_data.pop('action', kwargs.get('action'))
+            action = action and getattr(self, action, None)
             if not (callable(action) and hasattr(action, 'is_allowed_action')):
                 raise ValueError('action="%s" is undefined or not callable' % action)
             out_data = json.dumps(action(in_data), cls=DjangoJSONEncoder)
             return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
         except ValueError as e:
-            return HttpResponseBadRequest('POST data is not valid JSON: ', e)
+            return HttpResponseBadRequest('POST data is not valid JSON: %s' % e.message)
