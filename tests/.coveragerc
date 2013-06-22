@@ -1,0 +1,6 @@
+[run]
+branch = True
+source =
+    djangular
+[report]
+precision = 2
