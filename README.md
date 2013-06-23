@@ -28,8 +28,10 @@ INSTALLED_APPS = (
 
 #### Extract all URL's belonging to a certain app or namespace
 
+Read the documentation: https://django-angular.readthedocs.org/
 
 ## Release History
+ - 0.1.3 - added first documents
  - 0.1.2 - better packaging support
  - 0.1.1 - fixed initial data in NgModelFormMixin
  - 0.1.0 - initial revision
