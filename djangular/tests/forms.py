@@ -43,11 +43,8 @@ class DummyForm(NgModelFormMixin, forms.Form):
     scope_prefix = 'dataroot'
 
     def __init__(self, *args, **kwargs):
-        kwargs.update({
-            'auto_id': False,
-            'ng_class': 'fieldClass(\'%(identifier)s\')',
-            'scope_prefix': self.scope_prefix,
-        })
+        kwargs.update(auto_id=False, ng_class='fieldClass(\'%(identifier)s\')',
+                      scope_prefix=self.scope_prefix)
         super(DummyForm, self).__init__(*args, **kwargs)
         self.sub1 = SubForm1(prefix='sub1', **kwargs)
         self.sub2 = SubForm2(prefix='sub2', **kwargs)
