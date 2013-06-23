@@ -4,6 +4,7 @@
 *~
 .tmp*
 build
+docs/_build
 dist
 htmlcov
 /node_modules/
