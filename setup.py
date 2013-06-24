@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
-import djangular
 
 DESCRIPTION = 'Mixins classes and helper functions which help to integrate AngularJS with Django.'
 
 try:
-    LONG_DESCRIPTION = open('README.md').read()
+    LONG_DESCRIPTION = open('README.rst').read()
 except:
     pass
 
@@ -20,7 +19,7 @@ CLASSIFIERS = [
 
 setup(
     name='django-angular',
-    version=djangular.__version__,
+    version='0.1.3',
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
@@ -30,6 +29,7 @@ setup(
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
     install_requires=['Django>=1.4'],
-    packages=find_packages(exclude=["tests", "example"]),
+    packages=find_packages(exclude=["tests", "docs"]),
     include_package_data=True,
+    zip_safe=False
 )

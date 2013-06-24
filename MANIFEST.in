@@ -1,5 +1,3 @@
-include LICENSE-MIT README.md setup.py
-recursive-include docs *.rst
-recursive-include docs/_static *
+include LICENSE-MIT README.rst setup.py
 recursive-include djangular *.py
 recursive-include djangular/static *
