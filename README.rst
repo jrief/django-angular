@@ -17,6 +17,8 @@ Build status
 .. |travisci| image:: https://travis-ci.org/jrief/django-angular.png
 .. _travisci https://travis-ci.org/jrief/django-angular
 
+|travisci|
+
 Release History
 ---------------
  - 0.1.3 - added first documents
