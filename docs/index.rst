@@ -10,6 +10,8 @@ Contents:
 
 .. toctree::
 
+  installation
+  integration
   angular-model-form
 
 

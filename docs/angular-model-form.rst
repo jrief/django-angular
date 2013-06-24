@@ -1,3 +1,5 @@
+.. _integrate_django_form:
+
 ===============================================
 Integrate a Django form with an AngularJS model
 ===============================================
