@@ -21,14 +21,20 @@ Dependencies
 Configuration
 -------------
 
-Add ``"djangular"`` to your project's ``INSTALLED_APPS`` setting::
+Add ``"djangular"`` to your project's ``INSTALLED_APPS`` setting, and make sure that static files
+are found in external Django apps::
 
-    INSTALLED_APPS = (
-        ...
-        'djangular',
-        ...
-    )
-
+  INSTALLED_APPS = (
+      ...
+      'djangular',
+      ...
+  )
+  
+  STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    ...
+  )
 
 .. note:: **django-angular** does not define any database models. It can therefore easily be
           installed without any database synchronization.

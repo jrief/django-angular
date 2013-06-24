@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import copy
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
