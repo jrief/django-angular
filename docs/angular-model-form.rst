@@ -14,7 +14,7 @@ where *model_name* corresponds to the named field from the declared form class.
 Sample code
 -----------
 
-Assume to have a simple Django form class with a single input field. Now augment its functionality
+Assume to have a simple Django form class with a single input field. Augment its functionality
 by mixing in the **djangular** class ``NgModelFormMixin``::
 
   from django import forms
@@ -87,7 +87,7 @@ additional decoding step.
 
 .. note:: In real code you should not hard code the URL into an AngularJS controller as shown in
        this example. Instead inject an object containing the URL into your controller as explained
-       in `manage Django URL's for AngularJS`_.
+       in :ref:`manage Django URL's for AngularJS <manage-urls>`
 
 Add these methods to your contact form view::
 

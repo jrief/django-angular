@@ -48,7 +48,7 @@ AngularJS controller, calling the views method ``process_something`` is as simpl
 
 .. note:: In real code you should not hard code the URL into an AngularJS controller as shown in
        this example. Instead inject an object containing the URL into your controller as explained
-       in `manage Django URL's for AngularJS`_.
+       in :ref:`manage Django URL's for AngularJS <manage-urls>`.
 
 The special keyword ``action``, as declared in the post data to be sent, contains the method name
 of the view to be called. In ``MyJSONView.process_something()`` this ``action`` tuple then is
