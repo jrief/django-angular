@@ -7,17 +7,28 @@ Utilities to let Django play nice together with AngularJS
 
 You can find detailed documentation on `ReadTheDocs <http://django-angular.readthedocs.org/>`_
 
+Features
+--------
  * Seamless integration of Django forms with AngularJS controller
- * Let an AngularJS controller call methods in a Django view, like RPC
+ * Let an AngularJS controller call methods in a Django view, kind of Javascript RPC's
+ * Add labels to form fields when they are empty
  * Manage Django URL's for static controller files
-and more ...
+and more to come ...
 
 Build status
 ============
-.. |travisci| image:: https://travis-ci.org/jrief/django-angular.png
-.. _travisci https://travis-ci.org/jrief/django-angular
+.. image:: https://travis-ci.org/jrief/django-angular.png
+.. :target: https://travis-ci.org/jrief/django-angular
 
-|travisci|
+Installation
+============
+From pypi::
+
+  pip install django-angular
+
+From github::
+
+  https://github.com/jrief/django-angular
 
 Release History
 ---------------

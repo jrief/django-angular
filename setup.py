@@ -1,11 +1,10 @@
+import os
 from setuptools import setup, find_packages
 
-DESCRIPTION = 'Mixins classes and helper functions which help to integrate AngularJS with Django.'
+DESCRIPTION = 'Reusable mixins classes and utility functions which help to integrate AngularJS with Django.'
 
-try:
-    LONG_DESCRIPTION = open('README.rst').read()
-except:
-    pass
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 CLASSIFIERS = [
     'Environment :: Web Environment',
@@ -23,7 +22,7 @@ setup(
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
-    long_description=LONG_DESCRIPTION,
+    long_description=read('README.rst'),
     url='https://github.com/jrief/django-angular',
     license='MIT',
     platforms=['OS Independent'],
