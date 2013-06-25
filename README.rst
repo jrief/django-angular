@@ -18,7 +18,7 @@ and more to come ...
 Build status
 ============
 .. image:: https://travis-ci.org/jrief/django-angular.png
-.. :target: https://travis-ci.org/jrief/django-angular
+   :target: https://travis-ci.org/jrief/django-angular
 
 Installation
 ============
