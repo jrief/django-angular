@@ -1,4 +1,3 @@
-==============
 django-angular
 ==============
 
@@ -16,12 +15,12 @@ Features
 and more to come ...
 
 Build status
-============
+------------
 .. image:: https://travis-ci.org/jrief/django-angular.png
    :target: https://travis-ci.org/jrief/django-angular
 
 Installation
-============
+------------
 From pypi::
 
   pip install django-angular
@@ -30,15 +29,16 @@ From github::
 
   https://github.com/jrief/django-angular
 
-Release History
----------------
- - 0.1.3 - added first documents
- - 0.1.2 - better packaging support
- - 0.1.1 - fixed initial data in NgModelFormMixin
- - 0.1.0 - initial revision
-
-
 License
 -------
 Copyright (c) 2013 Jacob Rief  
 Licensed under the MIT license.
+
+Release History
+---------------
+ * 0.1.4 - optimized CI process
+ * 0.1.3 - added first documents
+ * 0.1.2 - better packaging support
+ * 0.1.1 - fixed initial data in NgModelFormMixin
+ * 0.1.0 - initial revision
+
