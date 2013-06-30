@@ -5,7 +5,6 @@ Integrating AngularJS with Django
 
 XMLHttpRequest
 --------------
-
 As a convention in web applications, Ajax requests shall send the HTTP-Header::
 
   X-Requested-With: XMLHttpRequest
@@ -28,7 +27,6 @@ would return ``False``, even for perfectly valid Ajax requests. Thus, if you use
 
 Template tags
 -------------
-
 Django and AngularJS share the same token for variable substitution in templates, ie.
 ``{{ variable_name }}``. This should not be a big problem, since you are strongly discouraged to mix
 Django template code with AngularJS template code. However this recommendation often is not 
@@ -56,6 +54,35 @@ have to remember this alternative tag syntax for all of your AngularJS templates
 it difficult to integrate third party AngularJS directives, which are shipped with their own
 templates.
 
+Partials
+........
+In AngularJS, when used together with external templates, static HTML code often is loaded by a
+routeProvider_. These so named partials can be placed in their own sub-directory below
+``STATIC_ROOT``.
+
+If for some reason you need mixed template code, ie. one which first is expanded by Django and later
+is parsed by AngularJS, then add to your ``urls.py``::
+
+  partial_patterns = patterns('',
+      url(r'^partial-template1.html$', PartialView.as_view(template_name='partial-template1.html'), name='partial_template1'),
+      ... more partials ...,
+  )
+  
+  urlpatterns = patterns('',
+      ...
+      url(r'^partials/', include(partial_patterns, namespace='partials')),
+      ...
+  )
+
+By using the utility function::
+
+  from djangular.core.urlsresolvers import urls_by_namespace
+  
+  my_partials = urls_by_namespace('partials')
+
+the caller obtains a list of all partials defined for the given namespace. This list can be used
+when creating a Javascript array of URL's to be injected into controllers.
+
 Dynamically generated Javascript code
 .....................................
 
@@ -76,5 +103,6 @@ code shall go into separate static files!**
        without the need of a running Django server.
 
 .. _verbatim: https://docs.djangoproject.com/en/1.5/ref/templates/builtins/#verbatim
+.. _routeProvider: _http://docs.angularjs.org/api/ng.$routeProvider
 .. _translation: https://docs.djangoproject.com/en/1.5/topics/i18n/translation/
 .. _Jasmine: http://pivotal.github.io/jasmine/
