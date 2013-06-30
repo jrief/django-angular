@@ -1,12 +1,7 @@
+import os
 from setuptools import setup, find_packages
-import djangular
 
-DESCRIPTION = 'Mixins classes and helper functions which help to integrate AngularJS with Django.'
-
-try:
-    LONG_DESCRIPTION = open('README.md').read()
-except:
-    pass
+DESCRIPTION = 'Reusable mixins classes and utility functions which help to integrate AngularJS with Django.'
 
 CLASSIFIERS = [
     'Environment :: Web Environment',
@@ -16,20 +11,25 @@ CLASSIFIERS = [
     'Operating System :: OS Independent',
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
+    'Development Status :: 4 - Beta',
 ]
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
     name='django-angular',
-    version=djangular.__version__,
+    version='0.1.4',
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
-    long_description=LONG_DESCRIPTION,
+    long_description=read('README.rst'),
     url='https://github.com/jrief/django-angular',
     license='MIT',
+    keywords = ['django', 'angularjs'],
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
     install_requires=['Django>=1.4'],
-    packages=find_packages(exclude=["tests", "example"]),
+    packages=find_packages(exclude=["tests", "docs"]),
     include_package_data=True,
 )
