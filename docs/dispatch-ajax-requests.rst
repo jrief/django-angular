@@ -26,8 +26,8 @@ This can simply be achieved by adding a **djangular** mixin class to that view::
 
 .. _dispatch-ajax-request-example:
 
-Lets assume that the URL used for posting this request is attached to this view. Now in your
-AngularJS controller, calling the views method ``process_something`` is as simple as:
+Let's assume that the URL used for posting this request is attached to this view. Now in your
+AngularJS controller, calling the view's method ``process_something`` is as simple as:
 
 .. code-block:: javascript
 
@@ -47,15 +47,15 @@ AngularJS controller, calling the views method ``process_something`` is as simpl
   }
 
 .. note:: In real code you should not hard code the URL into an AngularJS controller as shown in
-       this example. Instead inject an object containing the URL into your controller as explained
+       this example. Instead, inject an object containing the URL into your controller as explained
        in :ref:`manage Django URL's for AngularJS <manage-urls>`.
 
 The special keyword ``action``, as declared in the post data to be sent, contains the method name
-of the view to be called. In ``MyJSONView.process_something()`` this ``action`` tuple then is
+of the view to be called. In ``MyJSONView.process_something()`` this ``action`` tuple is then
 already stripped off from the passed ``in_data`` and the method receives a Python dictionary
 containing an exact copy of the Javascript object ``$scope.my_prefix``.
 
-.. warning:: To eschew to possibility for an attacker to call any method of your view by setting the
+.. warning:: To eschew the possibility for an attacker to call any method of your view by setting the
        keyword ``action`` to an arbitrary method name, the author of the view must explicitly give
        permission to call this method. This is done by adding the decorator ``@allowed_action`` in
        front of the methods to be exposed. Otherwise the remote caller receives an

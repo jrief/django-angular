@@ -4,7 +4,7 @@
 Manage Django URL's for AngularJS
 =================================
 
-You may have noticed, that AngularJS controllers sometimes need an URL pointing to a Django view of
+You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
 your application. Don't fall into the temptation to hard code such an URL into your Javascript
 controller code. Nor fall into the temptation to dynamically create Javascript by using a template
 engine. There is a clean and simple solution to this problem.
@@ -39,7 +39,7 @@ The controller examples from :ref:`JSONResponseMixin <dispatch-ajax-request-exam
       }
   }
 
-List all URL's which belong to a namespace
+List all URLs which belong to a namespace
 ------------------------------------------
 
 To avoid the repetitive work of adding all the URL's to this constant, a utility function is
