@@ -8,10 +8,10 @@ You can find detailed documentation on `ReadTheDocs <http://django-angular.readt
 
 Features
 --------
- * Seamless integration of Django forms with AngularJS controller
- * Let an AngularJS controller call methods in a Django view, kind of Javascript RPC's
+ * Seamless integration of Django forms with AngularJS controllers
+ * Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs
  * Add labels to form fields when they are empty
- * Manage Django URL's for static controller files
+ * Manage Django URLs for static controller files
 and more to come ...
 
 Build status
