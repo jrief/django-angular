@@ -23,53 +23,53 @@ by mixing in the **djangular** class ``NgModelFormMixin``::
   class ContactForm(NgModelFormMixin, forms.Form):
       subject = forms.CharField()
 
-Now, each rendered form field gets an additional attribute ``ng-model`` containing the fields name.
+Now, each rendered form field gets an additional attribute ``ng-model`` containing the field's name.
 For instance, the input field named **subject** would be rendered as:
 
 .. code-block:: html
 
   <input id="id_subject" type="text" name="subject" ng-model="subject" />
 
-This means, that to a surrounding Angular controller, the fields value immediately is added to its
+This means, that to a surrounding Angular controller, the field's value is immediately added to its
 ``$scope``.
 
 Full working example
 ====================
 
-Here it is explained how to submit form data using an AngularJS controller. The Django view handling
+This demonstrates how to submit form data using an AngularJS controller. The Django view handling
 this unbound contact form class may look like::
 
   from django.views.generic import TemplateView
 
   class ContactFormView(TemplateView):
-    template = 'contact.html'
+      template = 'contact.html'
   
-    def get_context_data(self, **kwargs):
-        context = super(ContactFormView, self).get_context_data(**kwargs)
-        conext.update(contact_form=ContactForm())
-        return context
+      def get_context_data(self, **kwargs):
+          context = super(ContactFormView, self).get_context_data(**kwargs)
+          conext.update(contact_form=ContactForm())
+          return context
 
-with a template named ``contact.html``
+with a template named ``contact.html``:
 
 .. code-block:: html
 
   <form ng-controller="MyFormCtrl">
-    {{contact_form}}
-    <button ng-click="submit()">Submit</button>
+      {{contact_form}}
+      <button ng-click="submit()">Submit</button>
   </form>
 
 .. _angular-model-form-example:
 
-and using some Javascript code to define the AngularJS controller
+and using some Javascript code to define the AngularJS controller:
 
 .. code-block:: javascript
 
   function MyFormCtrl($scope, $http) {
       $scope.submit = function() {
           $http.post('/url/of/your/contact_form_view', {
-            subject: $scope.subject
+              subject: $scope.subject
           }).success(function(out_data) {
-            // do something
+              // do something
           });
       }
   }
@@ -96,18 +96,18 @@ Add these methods to your contact form view::
   from django.http import HttpResponseBadRequest
   
   class ContactFormView(TemplateView):
-    # use ‘get_context_data()’ from above
-  
-    @csrf_exempt
-    def dispatch(self, *args, **kwargs):
-        return super(ContactFormView, self).dispatch(*args, **kwargs)
-  
-    def post(self, request, *args, **kwargs):
-        if not request.is_ajax():
-            return HttpResponseBadRequest('Expected an XMLHttpRequest')
-        in_data = json.loads(request.raw_post_data)
-        bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
-        # now validate ‘bound_contact_form’ and use it as in normal Django
+      # use ‘get_context_data()’ from above
+      
+      @csrf_exempt
+      def dispatch(self, *args, **kwargs):
+          return super(ContactFormView, self).dispatch(*args, **kwargs)
+        
+      def post(self, request, *args, **kwargs):
+          if not request.is_ajax():
+              return HttpResponseBadRequest('Expected an XMLHttpRequest')
+          in_data = json.loads(request.raw_post_data)
+          bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
+          # now validate ‘bound_contact_form’ and use it as in normal Django
 
 The problem with this implementation is, that one must remember to access each form field three
 times. Once in the declaration of the form, once in the Ajax handler of your AngularJS controller,

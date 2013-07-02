@@ -31,9 +31,9 @@ are found in external Django apps::
   )
   
   STATICFILES_FINDERS = (
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    ...
+      'django.contrib.staticfiles.finders.FileSystemFinder',
+      'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+      ...
   )
 
 .. note:: **django-angular** does not define any database models. It can therefore easily be
