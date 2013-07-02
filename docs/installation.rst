@@ -10,7 +10,7 @@ The easiest way to get ``django-angular`` is simply to install it with `pip`_::
 
     $ pip install django-angular
 
-Please also check the latest sourcecode from `github`_.
+Please also check the latest source code from `github`_.
 
 Dependencies
 ------------
