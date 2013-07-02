@@ -115,7 +115,7 @@ and once in the post handler of the view. This make maintenance hard and is a vi
 principle. Therefore it makes sense to add a prefix the model names. One possibility would be to add
 the argument ``scope_prefix`` on each forms instantiation, ie.::
 
-  contanct_form = ContactForm(scope_prefix='my_prefix')
+  contact_form = ContactForm(scope_prefix='my_prefix')
 
 this however has to be done across all instantiations of your form class. The better way is to hard
 code this prefix into the constructor of the form class::
