@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 from django.forms.util import ErrorDict
-from django.core.serializers.json import DjangoJSONEncoder
-
+from django.forms import widgets
 
 class NgModelFormMixin(object):
     """
@@ -45,6 +44,8 @@ class NgModelFormMixin(object):
                 field.widget.attrs['ng-model'] = ng['model']
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
+            if isinstance(field.widget, widgets.Select):
+                field.widget.attrs['ng-options'] = 'o.key as o.value for o in _' + self.scope_prefix + '.' + ng['identifier']
 
     def full_clean(self):
         """
@@ -64,6 +65,13 @@ class NgModelFormMixin(object):
         for name, field in self.fields.items():
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
                 data[name] = self.initial and self.initial.get(name) or field.initial
+        return data
+
+    def get_form_data(self):
+        data = {}
+        for name, field in self.fields.items():
+            if hasattr(field, 'widget') and 'ng-options' in field.widget.attrs:
+                data[name] = [{'key': int(k), 'value': unicode(v)} for k,v in field.choices if k]
         return data
 
     def add_prefix(self, field_name):
