@@ -67,7 +67,14 @@ class NgModelFormMixin(object):
                 data[name] = self.initial and self.initial.get(name) or field.initial
         return data
 
-    def get_form_data(self):
+    def get_supporting_data(self):
+        """
+        Return a dictionary specifying the supporting data necessary to display this form.
+        Currently this includes only choices for choice fields that has the ng-options directive set by __init__.
+        This function should be exposed via get with this functions return value json encoded in the body.
+        That json data should then be assigned to $scope._<scope_prefix>, which will cause the ng-options directive
+        to be populated with the values.
+        """
         data = {}
         for name, field in self.fields.items():
             if hasattr(field, 'widget') and 'ng-options' in field.widget.attrs:
