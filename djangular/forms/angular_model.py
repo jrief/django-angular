@@ -45,7 +45,8 @@ class NgModelFormMixin(object):
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
             if isinstance(field.widget, widgets.Select):
-                field.widget.attrs['ng-options'] = 'o.key as o.value for o in _' + self.scope_prefix + '.' + ng['identifier']
+                field.widget.attrs['ng-options'] = 'o.key as o.value for o in _{0}.{1}'.format(
+                    self.scope_prefix, identifier)
 
     def full_clean(self):
         """
