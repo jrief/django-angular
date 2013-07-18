@@ -29,7 +29,7 @@ class JSONResponseMixin(object):
         if not request.is_ajax():
             return HttpResponseBadRequest('Expected an XMLHttpRequest')
         try:
-            in_data = json.loads(request.raw_post_data)
+            in_data = json.loads(request.body)
             action = in_data.pop('action', kwargs.get('action'))
             action = action and getattr(self, action, None)
             if not (callable(action) and hasattr(action, 'is_allowed_action')):
