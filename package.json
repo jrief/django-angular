@@ -28,7 +28,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "karma": ">= 0.8.5",
+    "karma": "0.8.5",
     "grunt": ">= 0.4.0",
     "grunt-contrib-concat": "latest",
     "grunt-contrib-jshint": "latest",
