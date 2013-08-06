@@ -56,7 +56,6 @@ module.exports = function(grunt) {
 		karma: {
 			test: {
 				options: {
-					reporters: ['dots'],
 					browsers: ['ChromeCanary'],
 					singleRun: true
 				}

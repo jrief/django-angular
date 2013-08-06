@@ -1,7 +1,7 @@
 {
-  "name": "angular-retina",
+  "name": "django-angular",
   "description": "Add Angular directives to Django",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "homepage": "https://github.com/jrief/django-angular",
   "author": {
     "name": "Jacob Rief",
@@ -24,7 +24,7 @@
     "node": ">= 0.6.0"
   },
   "scripts": {
-    "test": "karma start test/karma.conf.js --single-run --browsers PhantomJS"
+    "test": "karma start tests/client/karma.conf.js --single-run --browsers PhantomJS"
   },
   "dependencies": {},
   "devDependencies": {
