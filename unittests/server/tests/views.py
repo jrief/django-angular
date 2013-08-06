@@ -10,18 +10,14 @@ from djangular.views.mixins import JSONResponseMixin, allowed_action
 
 class JSONResponseView(JSONResponseMixin, View):
     @allowed_action
-    def action_zero(self):
-        return { 'success': True }
-
-    @allowed_action
     def action_one(self, in_data):
         return { 'success': True }
 
-    def action_two(self, in_data):
+    def action_two(self):
         """
         decorator @allowed_action is missing
         """
-        return { 'success': False }
+        return { 'success': True }
 
 
 class DummyView(View):
@@ -89,7 +85,7 @@ class JSONResponseMixinTest(TestCase):
 
     def test_ajax_get_action(self):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        response = JSONResponseView().get(request, action='action_zero')
+        response = JSONResponseView().get(request, action='action_two')
         self.assertIsInstance(response, HttpResponse)
         out_data = simplejson.loads(response.content)
         self.assertTrue(out_data['success'])

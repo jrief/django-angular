@@ -5,7 +5,7 @@ Dispatching Ajax requests from an AngularJS controller
 ======================================================
 
 Wouldn't it be nice to call a Django view method, directly from your AngularJS controller, similar
-to `Remote procedure calls`_?
+to `Remote Procedure Calls`_?
 
 This can simply be achieved by adding a **djangular** mixin class to that view::
 
@@ -61,6 +61,31 @@ containing an exact copy of the Javascript object ``$scope.my_prefix``.
        front of the methods to be exposed. Otherwise the remote caller receives an
        HttpResponseBadRequest_ error.
 
-.. _Remote procedure calls: http://en.wikipedia.org/wiki/Remote_procedure_calls
+
+Dispatching Ajax requests using method GET
+==========================================
+
+Sometimes you only have to fetch some data from the server. If you prefer to fetch this data using
+the GET method, you have no way to pass in the ``action`` keyword with the remote method you want
+to execute. But **django-angular** lets you hard-code that action inside your URL dispatcher::
+
+  urlpatterns = patterns('',
+      ...
+      url(r'^fetch-some-data.json$', MyResponseView.as_view(), {'action': 'get_data'}),
+      ...
+  )
+
+By calling the URL ``fetch-some-data.json``, the responding view dispatches incoming requests
+directly onto the method ``get_data``. This works with GET requests as well as with POST requests::
+
+  class MyResponseView(JSONResponseMixin, View):
+        def fetch_data(self):
+            return { 'foo': 'bar' }
+
+.. note:: Here for GET requests, the method ``fetch_data`` does not require the decorator
+       ``@allowed_action``, since this method invocation has been determined by programmer, rather
+       than the client. Therefore there is no security issue here.
+
+.. _Remote Procedure Calls: http://en.wikipedia.org/wiki/Remote_procedure_calls
 .. _HttpResponseBadRequest: https://docs.djangoproject.com/en/1.5/ref/request-response/#httpresponse-subclasses
 .. _manage Django URL's for AngularJS: manage-urls
