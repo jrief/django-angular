@@ -29,24 +29,29 @@ class JSONResponseMixin(object):
         action = kwargs.get('action')
         action = action and getattr(self, action, None)
         if not callable(action):
-            return super(JSONResponseMixin, self).get(request, *args, **kwargs)
-        if not hasattr(action, 'is_allowed_action'):
-            raise ValueError('method "%s" is not decorated with @allowed_action' % action)
+            return self._dispatch_super(request, *args, **kwargs)
         out_data = json.dumps(action(), cls=DjangoJSONEncoder)
         return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
 
     def post(self, request, *args, **kwargs):
-        if not request.is_ajax():
-            return super(JSONResponseMixin, self).post(request, *args, **kwargs)
         try:
-            in_data = json.loads(request.raw_post_data)
+            if not request.is_ajax():
+                return self._dispatch_super(request, *args, **kwargs)
+            in_data = json.loads(request.body)
             action = in_data.pop('action', kwargs.get('action'))
-            action = action and getattr(self, action, None)
-            if not callable(action):
-                return super(JSONResponseMixin, self).post(request, *args, **kwargs)
-            if not hasattr(action, 'is_allowed_action'):
-                raise ValueError('method "%s" is not decorated with @allowed_action' % action)
-            out_data = json.dumps(action(in_data), cls=DjangoJSONEncoder)
+            handler = action and getattr(self, action, None)
+            if not callable(handler):
+                return self._dispatch_super(request, *args, **kwargs)
+            if not hasattr(handler, 'is_allowed_action'):
+                raise ValueError('Method "%s" is not decorated with @allowed_action' % action)
+            out_data = json.dumps(handler(in_data), cls=DjangoJSONEncoder)
             return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
-        except ValueError as e:
-            return HttpResponseBadRequest('POST data is not valid JSON: %s' % e.message)
+        except ValueError as err:
+            return HttpResponseBadRequest(err)
+
+    def _dispatch_super(self, request, *args, **kwargs):
+        base = super(JSONResponseMixin, self)
+        handler = getattr(base, request.method.lower(), None)
+        if callable(handler):
+            return handler(request, *args, **kwargs)
+        raise ValueError('This view can not handle method %s' % request.method)

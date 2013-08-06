@@ -105,7 +105,7 @@ Add these methods to your contact form view::
       def post(self, request, *args, **kwargs):
           if not request.is_ajax():
               return HttpResponseBadRequest('Expected an XMLHttpRequest')
-          in_data = json.loads(request.raw_post_data)
+          in_data = json.loads(request.body)
           bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
           # now validate ‘bound_contact_form’ and use it as in normal Django
 
