@@ -36,6 +36,11 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+ * 0.2.0
+   - added handler to mixin class for ajax get requests.
+   - moved unit tests into testing directory.
+   - changed request.raw_post_data -> request.body.
+   - added possibility to pass get and post requests through to inherited view class.
  * 0.1.4 - optimized CI process
  * 0.1.3 - added first documents
  * 0.1.2 - better packaging support
