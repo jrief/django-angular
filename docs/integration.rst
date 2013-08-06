@@ -31,12 +31,12 @@ Django and AngularJS share the same token for variable substitution in templates
 ``{{ variable_name }}``. This should not be a big problem, since you are discouraged to mix
 Django template code with AngularJS template code. However, this recommendation often is not 
 practical in all situations, and there might be a need to mix both template languages, one which is
-expanded by Django on the server and one which is expanded by AngularJS in the browser.
+expanded by Django on the server, and one which is expanded by AngularJS in the browser.
 
 The cleanest solution to circumvent this, is by using the verbatim_ tag, which became available in
 Django 1.5.
 
-A less cleaner, solution is to change the syntax of the AngularJS template tags. Just
+A less clean solution, is to change the syntax of the AngularJS template tags. Just
 add the following statement during module instantiation:
 
 .. code-block:: javascript
@@ -49,7 +49,7 @@ add the following statement during module instantiation:
 Now, you can easily distinguish a server side variable substitution ``{{ varname }}`` from a client
 side variable substitution ``{$ varname $}``.
 
-This approach is even less verbose than using the *verbatim* tag. The problem however is, that you
+This approach is even less verbose than using the *verbatim* tag. The problem, however, is that you
 have to remember this alternative tag syntax for all of your AngularJS templates. This also makes
 it difficult to integrate third party AngularJS directives, which are shipped with their own
 templates.
@@ -60,8 +60,8 @@ In AngularJS, when used together with external templates, static HTML code often
 $routeProvider_. These so named partials can be placed in their own sub-directory below
 ``STATIC_ROOT``.
 
-If for some reason you need mixed template code, ie. one which first is parsed by Django and later
-is parsed by the browser, then add to your ``urls.py``::
+If for some reason you need mixed template code, ie. one which first is expanded by Django and later
+is parsed by AngularJS, then add to your ``urls.py``::
 
   partial_patterns = patterns('',
       url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
@@ -90,7 +90,7 @@ multilingual application, where text shall be translated, using the superb Djang
 engine.
 
 Also, sometimes your application must pass configuration settings, which are created by Django
-during runtime, such as reversing a URL. These are the use cases, when to mix Django template with
+during runtime, such as reversing a URL. These are the use cases when to mix Django template with
 AngularJS template code. Remember, when adding dynamically generated Javascript code, to keep these
 sections small and mainly for the purpose of configuring your AngularJS module. **All other Javascript
 code shall go into separate static files!**

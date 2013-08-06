@@ -3,7 +3,7 @@
 Welcome to django-angular's documentation!
 ==========================================
 
-Django-AngularJS is a collection of utilities, which aim to ease the integration of Django_ with
+Django-Angular is a collection of utilities, which aim to ease the integration of Django_ with
 AngularJS_ by providing reusable components.
 
 Contents:

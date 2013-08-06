@@ -49,8 +49,8 @@ class::
 you may of course add other mixins to this form class, such as
 :ref:`NgModelFormMixin <angular-model-form>`.
 
-.. note:: Remember to adopt your styles for these auto-labeled forms. To an empty input field, the
-       class ``empty`` is added. So, when defining you styles, use a light grey or similar as
+.. note:: Remember to adapt your styles for these auto-labeled forms. To an empty input field, the
+       class ``empty`` is added. So, when defining you styles, use a light grey, or similar, as
        text-color, to distinguish optically between labels and real input.
 
 .. _compilation: http://docs.angularjs.org/api/ng.$compile
