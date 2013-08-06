@@ -37,13 +37,15 @@ class JSONResponseMixin(object):
 
     def post(self, request, *args, **kwargs):
         if not request.is_ajax():
-            return HttpResponseBadRequest('Expected an XMLHttpRequest')
+            return super(JSONResponseMixin, self).post(request, *args, **kwargs)
         try:
             in_data = json.loads(request.raw_post_data)
             action = in_data.pop('action', kwargs.get('action'))
             action = action and getattr(self, action, None)
-            if not (callable(action) and hasattr(action, 'is_allowed_action')):
-                raise ValueError('action="%s" is undefined or not callable' % action)
+            if not callable(action):
+                return super(JSONResponseMixin, self).post(request, *args, **kwargs)
+            if not hasattr(action, 'is_allowed_action'):
+                raise ValueError('method "%s" is not decorated with @allowed_action' % action)
             out_data = json.dumps(action(in_data), cls=DjangoJSONEncoder)
             return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
         except ValueError as e:
