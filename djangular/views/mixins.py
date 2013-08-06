@@ -25,6 +25,16 @@ class JSONResponseMixin(object):
     def dispatch(self, *args, **kwargs):
         return super(JSONResponseMixin, self).dispatch(*args, **kwargs)
 
+    def get(self, request, *args, **kwargs):
+        action = kwargs.get('action')
+        action = action and getattr(self, action, None)
+        if not callable(action):
+            return super(JSONResponseMixin, self).get(request, *args, **kwargs)
+        if not hasattr(action, 'is_allowed_action'):
+            raise ValueError('method "%s" is not decorated with @allowed_action' % action)
+        out_data = json.dumps(action(), cls=DjangoJSONEncoder)
+        return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
+
     def post(self, request, *args, **kwargs):
         if not request.is_ajax():
             return HttpResponseBadRequest('Expected an XMLHttpRequest')
