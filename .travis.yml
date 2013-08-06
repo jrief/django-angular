@@ -15,5 +15,5 @@ before_script:
   - wget -P tests/lib/angular/ http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.js
 
 script:
- - cd tests && ./manage.py test server
+ - pushd . && cd tests && ./manage.py test server && popd
  - grunt travis-ci
