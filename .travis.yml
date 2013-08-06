@@ -12,8 +12,8 @@ before_script:
   - sh -e /etc/init.d/xvfb start
   - npm install -g grunt-cli
   - npm install grunt grunt-contrib-jshint grunt-contrib-concat grunt-contrib-uglify karma
-  - wget -P tests/lib/angular/ http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.js
+  - wget -P unittests/lib/angular/ http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.js
 
 script:
- - cd tests && ./manage.py test djangular
+ - cd unittests && ./manage.py test server
  - grunt travis-ci
