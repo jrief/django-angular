@@ -19,7 +19,7 @@ def read(fname):
 
 setup(
     name='django-angular',
-    version='0.1.4',
+    version='0.2.0',
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
@@ -30,6 +30,6 @@ setup(
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
     install_requires=['Django>=1.4'],
-    packages=find_packages(exclude=["tests", "docs"]),
+    packages=find_packages(exclude=['unittests', 'docs']),
     include_package_data=True,
 )
