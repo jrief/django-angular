@@ -10,10 +10,10 @@ basePath = '../..';
 files = [
 	JASMINE,
 	JASMINE_ADAPTER,
-	'unittests/lib/angular/angular.js',
-	'unittests/lib/angular/angular-mocks.js',
+	'tests/lib/angular/angular.js',
+	'tests/lib/angular/angular-mocks.js',
 	'djangular/static/angular-django.js',
-	'unittests/client/ngDjangoSpec.js'
+	'tests/client/ngDjangoSpec.js'
 ];
 
 // list of files to exclude

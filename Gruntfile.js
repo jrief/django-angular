@@ -69,7 +69,7 @@ module.exports = function(grunt) {
 			},
 			options: {
 				reporters: ['dots'],
-				configFile: 'unittests/client/karma.conf.js'
+				configFile: 'tests/client/karma.conf.js'
 			}
 		}
 	});
