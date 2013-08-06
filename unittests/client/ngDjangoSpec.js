@@ -1,5 +1,6 @@
 'use strict';
 
+
 describe('test module django-angular', function() {
 	beforeEach(function() {
 		module('ngDjango');
