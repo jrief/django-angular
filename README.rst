@@ -8,10 +8,10 @@ You can find detailed documentation on `ReadTheDocs <http://django-angular.readt
 
 Features
 --------
- * Seamless integration of Django forms with AngularJS controllers
- * Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs
- * Add labels to form fields when they are empty
- * Manage Django URLs for static controller files
+* Seamless integration of Django forms with AngularJS controllers
+* Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs
+* Add labels to form fields when they are empty
+* Manage Django URLs for static controller files
 and more to come ...
 
 Build status
@@ -36,14 +36,14 @@ Licensed under the MIT license.
 
 Release History
 ---------------
- * 0.2.0
-   - added handler to mixin class for ajax get requests.
-   - moved unit tests into testing directory.
-   - changed request.raw_post_data -> request.body.
-   - added possibility to pass get and post requests through to inherited view class.
- * 0.1.4 - optimized CI process
- * 0.1.3 - added first documents
- * 0.1.2 - better packaging support
- * 0.1.1 - fixed initial data in NgModelFormMixin
- * 0.1.0 - initial revision
+* 0.2.0
+ * added handler to mixin class for ajax get requests.
+ * moved unit tests into testing directory.
+ * changed request.raw_post_data -> request.body.
+ * added possibility to pass get and post requests through to inherited view class.
+* 0.1.4 - optimized CI process
+* 0.1.3 - added first documents
+* 0.1.2 - better packaging support
+* 0.1.1 - fixed initial data in NgModelFormMixin
+* 0.1.0 - initial revision
 
