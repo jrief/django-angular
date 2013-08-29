@@ -46,7 +46,7 @@ this unbound contact form class may look like::
   
       def get_context_data(self, **kwargs):
           context = super(ContactFormView, self).get_context_data(**kwargs)
-          conext.update(contact_form=ContactForm())
+          context.update(contact_form=ContactForm())
           return context
 
 with a template named ``contact.html``:
