@@ -19,7 +19,7 @@ def read(fname):
 
 setup(
     name='django-angular',
-    version='0.2.0',
+    version='0.2.1',
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,

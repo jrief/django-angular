@@ -36,6 +36,8 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.2.1
+ * Set Cache-Control: no-cache for Ajax GET requests.
 * 0.2.0
  * added handler to mixin class for ajax get requests.
  * moved unit tests into testing directory.
