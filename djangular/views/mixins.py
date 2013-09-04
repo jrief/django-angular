@@ -31,7 +31,10 @@ class JSONResponseMixin(object):
         if not callable(action):
             return self._dispatch_super(request, *args, **kwargs)
         out_data = json.dumps(action(), cls=DjangoJSONEncoder)
-        return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
+        response = HttpResponse(out_data)
+        response['Content-Type'] = 'application/json;charset=UTF-8'
+        response['Cache-Control'] = 'no-cache'
+        return response
 
     def post(self, request, *args, **kwargs):
         try:
