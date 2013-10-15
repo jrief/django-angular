@@ -15,7 +15,7 @@ Contents:
   angular-model-form
   dispatch-ajax-requests
   manage-urls
-  auto-label
+  form-mixins
 
 Indices and tables
 ==================

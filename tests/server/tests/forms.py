@@ -4,7 +4,7 @@ from django.db import models
 from django import forms
 from django.test import TestCase
 from djangular.forms.angular_model import NgModelFormMixin
-from djangular.forms.auto_label import AutoLabelFormMixin
+from djangular.forms.mixins import AddPlaceholderFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -163,8 +163,8 @@ class InvalidNgModelFormMixinTest(TestCase):
         self.assertRaises(TypeError, InvalidForm)
 
 
-class AutoLabelFormMixinTest(TestCase):
-    class EmailOnlyForm(AutoLabelFormMixin, forms.Form):
+class AddPlaceholderFormMixinTest(TestCase):
+    class EmailOnlyForm(AddPlaceholderFormMixin, forms.Form):
         email = forms.EmailField(label='E-Mail')
         password = forms.CharField(label='Password', widget=forms.PasswordInput)
         radio = forms.Select(choices=CHOICES)
@@ -178,10 +178,10 @@ class AutoLabelFormMixinTest(TestCase):
         email_field = self.dom('input[name=email]')
         self.assertEqual(len(email_field), 1)
         email_field_attrib = dict(email_field[0].attrib.items())
-        self.assertDictContainsSubset({'auto-label': 'E-Mail'}, email_field_attrib)
+        self.assertDictContainsSubset({'placeholder': 'E-Mail'}, email_field_attrib)
 
     def test_password_field(self):
         password_field = self.dom('input[name=password]')
         self.assertEqual(len(password_field), 1)
         email_field_attrib = dict(password_field[0].attrib.items())
-        self.assertDictContainsSubset({'auto-label': 'Password'}, email_field_attrib)
+        self.assertDictContainsSubset({'placeholder': 'Password'}, email_field_attrib)

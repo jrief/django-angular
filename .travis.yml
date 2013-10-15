@@ -10,10 +10,6 @@ install:
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
-  - npm install -g grunt-cli
-  - npm install
-  - wget -P tests/lib/angular/ http://ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.js
 
 script:
  - cd tests && ./manage.py test server
- - grunt travis-ci

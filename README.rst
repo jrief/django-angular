@@ -36,6 +36,9 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.2.2
+ * Removed now useless directive 'auto-label'. For backwards compatibility
+   see https://github.com/jrief/angular-shims-placeholder.
 * 0.2.1
  * Set Cache-Control: no-cache for Ajax GET requests.
 * 0.2.0

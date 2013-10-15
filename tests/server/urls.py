@@ -10,6 +10,6 @@ class MyView(View):
 
 
 urlpatterns = patterns('',
-    url(r'^autolabelform/$', 'djangular.tests.forms.render_autolabel_form', name='autolabel'),
+    url(r'^placeholderform/$', 'djangular.tests.forms.placeholder_form', name='placeholder'),
     url(r'^404.html', MyView.as_view()),
 )
