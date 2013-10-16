@@ -2,4 +2,3 @@ include LICENSE.txt
 include README.rst
 include setup.py
 recursive-include djangular *.py
-recursive-include djangular/static *

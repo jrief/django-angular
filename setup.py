@@ -1,5 +1,6 @@
 import os
 from setuptools import setup, find_packages
+from djangular import __version__
 
 DESCRIPTION = 'Reusable mixins classes and utility functions which help to integrate AngularJS with Django.'
 
@@ -19,7 +20,7 @@ def read(fname):
 
 setup(
     name='django-angular',
-    version='0.2.1',
+    version=__version__,
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
