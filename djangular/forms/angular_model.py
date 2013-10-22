@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import json
 from django.forms.util import ErrorDict
-from django.core.serializers.json import DjangoJSONEncoder
 
 
 class NgModelFormMixin(object):
@@ -30,11 +28,10 @@ class NgModelFormMixin(object):
                 directives[key.replace('_', '-')] = fmtstr
         if ng_models is None and 'ng-model' not in directives:
             directives['ng-model'] = '%(model)s'
-        if kwargs.get('data') and kwargs.get('prefix'):
-            self.prefix = kwargs['prefix']
+        self.prefix = kwargs.get('prefix')
+        if self.prefix and kwargs.get('data'):
             kwargs['data'] = dict((self.add_prefix(name), value) for name, value in kwargs['data'].get(self.prefix).items())
-        super(NgModelFormMixin, self).__init__(*args, **kwargs)
-        for name, field in self.fields.items():
+        for name, field in self.base_fields.items():
             identifier = self.add_prefix(name)
             ng = {
                 'name': name,
@@ -45,6 +42,7 @@ class NgModelFormMixin(object):
                 field.widget.attrs['ng-model'] = ng['model']
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
+        super(NgModelFormMixin, self).__init__(*args, **kwargs)
 
     def full_clean(self):
         """
