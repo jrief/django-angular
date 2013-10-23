@@ -13,6 +13,7 @@ Contents:
   installation
   integration
   angular-model-form
+  angular-form-validation
   dispatch-ajax-requests
   manage-urls
   form-mixins
