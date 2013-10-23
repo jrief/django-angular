@@ -3,7 +3,7 @@ from django import forms
 from django.utils.html import format_html, format_html_join
 from django.utils.encoding import force_text
 from django.utils.safestring import SafeData
-import djangular
+from djangular.forms.angular_base import NgFormBaseMixin
 
 
 class SafeTuple(tuple, SafeData):
@@ -45,7 +45,7 @@ class TupleErrorList(forms.util.ErrorList):
             yield isinstance(e, SafeTuple) and force_text(e[1]) or e
 
 
-class NgFormValidationMixin(object):
+class NgFormValidationMixin(NgFormBaseMixin):
     """
     Add this NgFormValidationMixin to every class derived from forms.Form, which shall be
     auto validated using the Angular's validation mechanism.

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from django.forms.util import ErrorDict
+from djangular.forms.angular_base import NgFormBaseMixin
 
 
-class NgModelFormMixin(object):
+class NgModelFormMixin(NgFormBaseMixin):
     """
     Add this NgModelFormMixin to every class derived from forms.Form, if
     you want to manage that form through an Angular controller.
@@ -63,10 +64,3 @@ class NgModelFormMixin(object):
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
                 data[name] = self.initial and self.initial.get(name) or field.initial
         return data
-
-    def add_prefix(self, field_name):
-        """
-        Rewrite the model keys to use dots instead of dashes, since thats the syntax
-        used in Angular models.
-        """
-        return self.prefix and ('%s.%s' % (self.prefix, field_name)) or field_name
