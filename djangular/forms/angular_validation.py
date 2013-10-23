@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import itertools
 from django import forms
 from django.utils.html import format_html, format_html_join
 from django.utils.encoding import force_text
@@ -35,14 +36,26 @@ class TupleErrorList(forms.util.ErrorList):
     def as_ul(self):
         field_name = len(self) and isinstance(self[0], SafeTuple) and self[0][0] or ''
         lis = format_html_join('', '<li ng-show="{0}.$error.{1}">{2}</li>', (e for e in list.__iter__(self)))
-        #return format_html('<ul class="{0}" ng-show="{1}.$dirty && {1}.$invalid">{2}</ul>',
-        #                   self.form_error_class, field_name, lis)
-        return format_html('<ul class="{0}">{2}</ul>',
+        return format_html('<ul class="{0}" ng-hide="{1}.$pristine">{2}</ul>',
                            self.form_error_class, field_name, lis)
 
     def __iter__(self):
         for e in list.__iter__(self):
             yield isinstance(e, SafeTuple) and force_text(e[1]) or e
+
+
+def error_property(key, msg, field):
+    """
+    Map the key, given by Django, for an invalid property to the corresponding AngularJS invalid
+    property object member, as used in <field-name>.$error.<property>
+    """
+    if key == 'min_value':
+        return [('min', msg % {'limit_value': field.min_value})]
+    if key == 'max_value':
+        return [('max', msg % {'limit_value': field.max_value})]
+    if key == 'invalid':
+        return [('minlength', msg), ('maxlength', msg)]
+    return [(key, msg)]
 
 
 class NgFormValidationMixin(NgFormBaseMixin):
@@ -59,24 +72,27 @@ class NgFormValidationMixin(NgFormBaseMixin):
             self._errors = forms.util.ErrorDict()
         for name, field in self.fields.items():
             if isinstance(field.widget, forms.widgets.TextInput):
-                #if isinstance(self, djangular.forms.NgModelFormMixin):
-                errors = [(key, msg) for key, msg in field.error_messages.items()]
+                errors = list(itertools.chain(*[error_property(key, msg, field)
+                              for key, msg in field.default_error_messages.items()]))
                 identifier = self.add_prefix(name)
                 field_name = '{0}.{1}'.format(self.form_name, identifier)
                 self._errors[name] = KeyErrorList(field_name, errors)
-                field.widget.attrs.setdefault('ng-required', str(field.required).lower())
+                field.widget.attrs.setdefault('ng-model', identifier)
+                field.widget.attrs['ng-required'] = str(field.required).lower()
                 if hasattr(field, 'min_length'):
-                    field.widget.attrs.setdefault('ng-minlength', field.min_length)
+                    field.widget.attrs['ng-minlength'] = field.min_length
                 if hasattr(field, 'max_length'):
-                    field.widget.attrs.setdefault('ng-maxlength', field.max_length)
+                    field.widget.attrs['ng-maxlength'] = field.max_length
                 if hasattr(field, 'min_value'):
-                    field.widget.attrs.setdefault('min', field.min_value)
+                    field.widget.attrs['min'] = field.min_value
                 if hasattr(field, 'max_value'):
-                    field.widget.attrs.setdefault('max', field.max_value)
+                    field.widget.attrs['max'] = field.max_value
                 if hasattr(field, 'regex'):
                     # Probably Python Regex can't be translated 1:1 into JS regex.
                     # Any hints on how to convert these?
-                    field.widget.attrs.setdefault('ng-pattern', '/{0}/'.format(field.regex.pattern))
+                    field.widget.attrs['ng-pattern'] = '/{0}/'.format(field.regex.pattern)
+                if isinstance(field, forms.DecimalField):
+                    field.widget.input_type = 'number'
 
     def name(self):
         return self.form_name
