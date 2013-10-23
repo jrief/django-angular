@@ -7,7 +7,7 @@ from server.forms import AdultSubscriptionForm
 class NgFormValidationMixinTest(TestCase):
     def setUp(self):
         post_data = { 'first_name': 'Jo', 'middle_name': '', 'last_name': 'doe' }
-        subscription_form = AdultSubscriptionForm(scope_prefix='subscribe_data')
+        subscription_form = AdultSubscriptionForm()
         print subscription_form
         self.dom = PyQuery(str(subscription_form))
 

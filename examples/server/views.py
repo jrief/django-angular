@@ -8,6 +8,6 @@ class NgFormValidationView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(NgFormValidationView, self).get_context_data(**kwargs)
-        form = AdultSubscriptionForm(scope_prefix='subscribe_data')
+        form = AdultSubscriptionForm()
         context.update(form=form)
         return context
