@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block container %}
+	<h1>Subscribe adults</h1>
+	<div ng-controller="AdultSubscriptionController">
+		<form name="{{ form.name }}" method="post" novalidate>
+			{{ form }}
+			<div>
+				<button type="submit" class="btn">Submit</button>
+			</div>
+		</form>
+		<pre>{% verbatim %}
+		subscribe_data = {{ subscribe_data | json }}
+		{% endverbatim %}</pre>
+	</div>
+{% endblock container %}
