@@ -2,15 +2,17 @@
 
 {% block container %}
 	<h1>Subscribe adults</h1>
-	<div ng-controller="AdultSubscriptionController">
-		<form name="{{ form.name }}" method="post" novalidate>
-			{{ form }}
-			<div>
-				<button type="submit" class="btn">Submit</button>
-			</div>
-		</form>
-		<pre>{% verbatim %}
-		subscribe_data = {{ subscribe_data | json }}
-		{% endverbatim %}</pre>
+	<div class="row">
+		<div class="span6" ng-controller="AdultSubscriptionController">
+			<form name="{{ form.name }}" method="post" novalidate>
+				{{ form }}
+				<div>
+					<button type="submit" class="btn">Subscribe</button>
+				</div>
+			</form>
+			{% verbatim %}
+			<pre style="margin-top: 100px;">form = {{ form | json }}</pre>
+			{% endverbatim %}
+		</div>
 	</div>
 {% endblock container %}
