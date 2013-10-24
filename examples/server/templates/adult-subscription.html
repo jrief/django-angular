@@ -5,10 +5,10 @@
 	<div class="row">
 		<div class="span6">
 			{% block validation_form %}
-			<form name="{{ form.name }}" method="post" novalidate>
+			<form name="{{ form.name }}" novalidate>
 				{{ form }}
 				<div>
-					<button type="submit" class="btn">Subscribe</button>
+					<button type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid">Subscribe</button>
 				</div>
 			</form>
 			{% endblock validation_form %}
