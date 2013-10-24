@@ -4,14 +4,17 @@ django-angular
 Utilities to let Django play nice together with AngularJS
 ---------------------------------------------------------
 
+**NEW in 0.3.0**: Use the Django form declaration and do client side form validation using AngularJS
+
 You can find detailed documentation on `ReadTheDocs <http://django-angular.readthedocs.org/>`_
 
 Features
 --------
-* Seamless integration of Django forms with AngularJS controllers
-* Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs
-* Add labels to form fields when they are empty
-* Manage Django URLs for static controller files
+* Seamless integration of Django forms with AngularJS controllers.
+* Client side form validation for Django forms using AngularJS.
+* Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs.
+* Add labels to form fields when they are empty.
+* Manage Django URLs for static controller files.
 and more to come ...
 
 Build status
@@ -36,6 +39,7 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.3.0 - Client side form validation for Django forms using AngularJS
 * 0.2.2
  * Removed now useless directive 'auto-label'. For backwards compatibility
    see https://github.com/jrief/angular-shims-placeholder.
