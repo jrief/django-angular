@@ -3,16 +3,15 @@
 {% block container %}
 	<h1>Subscribe adults</h1>
 	<div class="row">
-		<div class="span6" ng-controller="AdultSubscriptionController">
+		<div class="span6">
+			{% block validation_form %}
 			<form name="{{ form.name }}" method="post" novalidate>
 				{{ form }}
 				<div>
 					<button type="submit" class="btn">Subscribe</button>
 				</div>
 			</form>
-			{% verbatim %}
-			<pre style="margin-top: 100px;">form = {{ form | json }}</pre>
-			{% endverbatim %}
+			{% endblock validation_form %}
 		</div>
 	</div>
 {% endblock container %}

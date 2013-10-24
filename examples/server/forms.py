@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from djangular.forms import NgFormValidationMixin
+from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 
 
 class AdultSubscriptionForm(NgFormValidationMixin, forms.Form):
@@ -8,3 +8,7 @@ class AdultSubscriptionForm(NgFormValidationMixin, forms.Form):
     middle_name = forms.CharField(label='Middle name', required=False)
     last_name = forms.RegexField(r'^[A-Z][a-z]+', label='Last name')
     age = forms.DecimalField(min_value=18, max_value=99)
+
+
+class AdultSubscriptionFormWithNgModel(NgModelFormMixin, AdultSubscriptionForm):
+    pass

@@ -29,6 +29,12 @@
 		<div class="navbar-inner">
 			<div class="container">
 				<a class="brand" href="#">Test Djangular</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav">
+						<li><a href="{% url 'djng_form_validation' %}">Simple Form</a></li>
+						<li><a href="{% url 'djng_model_form_validation' %}">Model Form</a></li>
+					</ul>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -42,7 +48,6 @@
 		{% endblock container %}
 	</div>
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
-	<script src="{{ STATIC_URL }}js/ui-bootstrap-tpls-0.6.0.min.js"></script>
-	<script src="{{ STATIC_URL }}js/djangular-demo.js"></script>
+	<script>angular.module('djangular-demo', []);</script>
 </body>
 </html>
