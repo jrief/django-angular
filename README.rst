@@ -13,7 +13,6 @@ Features
 * Seamless integration of Django forms with AngularJS controllers.
 * Client side form validation for Django forms using AngularJS.
 * Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs.
-* Add labels to form fields when they are empty.
 * Manage Django URLs for static controller files.
 and more to come ...
 
