@@ -41,7 +41,7 @@ The controller examples from :ref:`JSONResponseMixin <dispatch-ajax-request-exam
   
 Likewise, the ``urls.that_view_url`` can be used in an html partial that you may want in an 
 ``href`` in place of the Django ``url`` template tag, provided that ``$scope.urls = urls``
-in the controller.
+is set in the controller.
 
 .. code-block:: javascript
 
