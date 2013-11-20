@@ -112,13 +112,13 @@ Add these methods to your contact form view::
 The problem with this implementation, is that one must remember to access each form field three
 times. Once in the declaration of the form, once in the Ajax handler of your AngularJS controller,
 and once in the post handler of the view. This make maintenance hard and is a violation of the DRY
-principle. Therefore it makes sense to add a prefix to the model names. One possibility would be to add
-the argument ``scope_prefix`` on each form's instantiation, ie.::
+principle. Therefore it makes sense to add a prefix to the model names. One possibility would be to
+add the argument ``scope_prefix`` on each form's instantiation, ie.::
 
   contact_form = ContactForm(scope_prefix='my_prefix')
 
-This, however, has to be done across all instantiations of your form class. The better way is to hard
-code this prefix into the constructor of the form class::
+This, however, has to be done across all instantiations of your form class. The better way is to
+hard code this prefix into the constructor of the form class::
 
   class ContactForm(NgModelFormMixin, forms.Form):
       # declare form fields
@@ -128,7 +128,8 @@ code this prefix into the constructor of the form class::
           super(ContactForm, self).__init__(*args, **kwargs)
 
 Now, in your AngularJS controller, the scope for this form starts with an object named ``my_prefix``
-containing an entry for each form field. This means that an input field, for instance, is rendered as:
+containing an entry for each form field. This means that an input field, for instance, is rendered
+as:
 
 .. code-block:: html
 
