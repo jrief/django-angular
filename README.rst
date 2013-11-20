@@ -4,7 +4,7 @@ django-angular
 Utilities to let Django play nice together with AngularJS
 ---------------------------------------------------------
 
-**NEW in 0.3.0**: Use the Django form declaration and do client side form validation using AngularJS
+**NEW in 0.4.0**: Using CSRF protection for Ajax requests
 
 You can find detailed documentation on `ReadTheDocs <http://django-angular.readthedocs.org/>`_
 
@@ -38,6 +38,7 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.4.0 - Removed @csrf_exempt on dispatch method for Ajax requests.
 * 0.3.0 - Client side form validation for Django forms using AngularJS
 * 0.2.2
  * Removed now useless directive 'auto-label'. For backwards compatibility
