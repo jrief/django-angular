@@ -30,6 +30,18 @@ offers a templatetag to hard code that value into a template::
 
 The latter is my preferred method.
 
+Optionally, if the above methods do not work, add the following method to the view handling the
+Ajax request::
+
+	from django.views.decorators.csrf import csrf_exempt
+	
+	@csrf_exempt
+	def dispatch(self, *args, **kwargs):
+	    return super(MyView, self).dispatch(*args, **kwargs)
+
+This disables Cross Site Request Forgery protection for Ajax request. Use it at your own risk!
+
+
 .. _Cross Site Request Forgeries: http://www.squarefree.com/securitytips/web-developers.html#CSRF
 .. _csrf_token: https://docs.djangoproject.com/en/1.6/ref/templates/builtins/#csrf-token
 .. _HTTP_ONLY: http://www.codinghorror.com/blog/2008/08/protecting-your-cookies-httponly.html
