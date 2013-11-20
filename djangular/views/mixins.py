@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import json
-from django.views.decorators.csrf import csrf_exempt
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseBadRequest
 
@@ -21,7 +20,6 @@ class JSONResponseMixin(object):
     the method with that name. It renders the returned context as JSON response.
     """
 
-    @csrf_exempt
     def dispatch(self, *args, **kwargs):
         return super(JSONResponseMixin, self).dispatch(*args, **kwargs)
 
