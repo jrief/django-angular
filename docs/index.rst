@@ -15,6 +15,7 @@ Contents:
   angular-model-form
   angular-form-validation
   dispatch-ajax-requests
+  csrf-protection
   manage-urls
   form-mixins
 

@@ -54,24 +54,26 @@ While it is possible to use ``NgFormValidationMixin`` on itself, it is perfectly
 
 On class declaration inherit first from ``NgModelFormMixin`` and afterward from
 ``NgFormValidationMixin``. Example::
-  from django import forms
-  from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 
-  class MyValidatedForm(NgModelFormMixin, NgFormValidationMixin, forms.Form):
-      pass
+	from django import forms
+	from djangular.forms import NgFormValidationMixin, NgModelFormMixin
+	
+	class MyValidatedForm(NgModelFormMixin, NgFormValidationMixin, forms.Form):
+	    pass
 
 Don't do this::
 
-  class MyValidatedForm(NgFormValidationMixin, NgModelFormMixin, forms.Form):
-      pass
+	class MyValidatedForm(NgFormValidationMixin, NgModelFormMixin, forms.Form):
+	    pass
 
 Another precaution to take, is to use different names for the forms name and the ``scope_prefix``.
 So, this is legal::
-  form = MyValidatedForm(name='my_form', scope_prefix='my_model')
+
+	form = MyValidatedForm(name='my_form', scope_prefix='my_model')
 
 but this is not::
 
-  form = MyValidatedForm(name='my_form', scope_prefix='my_form')
+	form = MyValidatedForm(name='my_form', scope_prefix='my_form')
 
 AngularJS names each input field to validate, by concatenating its forms name with its fields name.
 This object member then contains an error object, named ``formname.fieldname.$error`` filled by the
