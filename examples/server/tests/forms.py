@@ -184,4 +184,3 @@ class AddPlaceholderFormMixinTest(TestCase):
         self.assertEqual(len(password_field), 1)
         email_field_attrib = dict(password_field[0].attrib.items())
         self.assertDictContainsSubset({'placeholder': 'Password'}, email_field_attrib)
-
