@@ -7,10 +7,12 @@ Cross Site Request Forgery protection
 Ajax requests submitted using method POST are put to a similar risk for
 `Cross Site Request Forgeries`_ as HTTP forms. This type of attack occurs when a malicious Web site
 is able to invoke an Ajax request onto your Web site. In Django, one should always add the template
-tag csrf_token_ to print a hidden input containing the token. But when it comes to making an Ajax
-request, it normally is not possible to pass that token using a Javascript object.
+tag csrf_token_ to render a hidden input containing the token, inside each form submitted by method
+POST.
 
-To effectively solve that problem in a DRY manner, there are two similar possibilities.
+When it comes to making an Ajax request, it normally is not possible to pass that token using a
+Javascript object, because scripts usually are static and no secret can be added dynamically. To
+effectively solve that problem in a DRY manner, there are two similar possibilities.
 
 When initialising the Angular application, add to following snippet to the ``run`` method::
 

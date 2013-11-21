@@ -109,6 +109,10 @@ Add these methods to your contact form view::
           bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
           # now validate ‘bound_contact_form’ and use it as in normal Django
 
+.. warning:: In real code you should **not** use the ``@csrf_exempt`` decorator, as shown here for
+      simplicity. Please read on how to
+      :ref:`protect your views from Cross Site Request Forgeries<csrf-protection>`.
+
 The problem with this implementation, is that one must remember to access each form field three
 times. Once in the declaration of the form, once in the Ajax handler of your AngularJS controller,
 and once in the post handler of the view. This make maintenance hard and is a violation of the DRY
@@ -161,4 +165,3 @@ parsing of all bound form fields, even from the nested forms.
           use a dot ‘``.``’, since this is the natural separator between Javascript objects.
 
 .. _promise: https://en.wikipedia.org/wiki/Promise_(programming)
-.. _manage Django URL's for AngularJS: manage-urls
