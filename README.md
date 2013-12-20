@@ -22,13 +22,13 @@ Build status
 
 Installation
 ------------
-The latest stable release from PyPI::
+The latest stable release from PyPI:
 
-  pip install django-angular
+```pip install django-angular```
 
-or the current development release from github::
+or the current development release from github:
 
-  $ pip install -e git+https://github.com/jrief/django-angular.git#egg=django-angular
+```$ pip install -e git+https://github.com/jrief/django-angular.git#egg=django-angular```
 
 License
 -------
