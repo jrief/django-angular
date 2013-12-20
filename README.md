@@ -6,7 +6,7 @@ Utilities to let Django play nice together with AngularJS
 
 **NEW in 0.4.0**: Using CSRF protection for Ajax requests
 
-You can find detailed documentation on `ReadTheDocs <http://django-angular.readthedocs.org/>`_
+You can find detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/)
 
 Features
 --------
@@ -18,18 +18,17 @@ and more to come ...
 
 Build status
 ------------
-.. image:: https://travis-ci.org/jrief/django-angular.png
-   :target: https://travis-ci.org/jrief/django-angular
+[![Build Status](https://travis-ci.org/jrief/django-angular.png?branch=master)](https://travis-ci.org/jrief/django-angular)
 
 Installation
 ------------
-From pypi::
+The latest stable release from PyPI::
 
   pip install django-angular
 
-From github::
+or the current development release from github::
 
-  https://github.com/jrief/django-angular
+  $ pip install -e git+https://github.com/jrief/django-angular.git#egg=django-angular
 
 License
 -------
@@ -42,7 +41,7 @@ Release History
 * 0.3.0 - Client side form validation for Django forms using AngularJS
 * 0.2.2
  * Removed now useless directive 'auto-label'. For backwards compatibility
-   see https://github.com/jrief/angular-shims-placeholder.
+   see https://github.com/jrief/angular-shims-placeholder
 * 0.2.1
  * Set Cache-Control: no-cache for Ajax GET requests.
 * 0.2.0
@@ -56,3 +55,4 @@ Release History
 * 0.1.1 - fixed initial data in NgModelFormMixin
 * 0.1.0 - initial revision
 
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/jrief/django-angular/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
