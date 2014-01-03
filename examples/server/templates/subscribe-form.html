@@ -1,17 +1,24 @@
 {% extends "base.html" %}
 
 {% block container %}
-	<h1>Subscribe adults</h1>
+	<h1>Subscribe Me</h1>
 	<div class="row">
 		<div class="span6">
-			{% block validation_form %}
+			{% block subscribe_me_form %}
 			<form name="{{ form.name }}" novalidate>
 				{{ form }}
 				<div>
 					<button type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid">Subscribe</button>
 				</div>
 			</form>
-			{% endblock validation_form %}
+			{% endblock subscribe_me_form %}
 		</div>
 	</div>
 {% endblock container %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	angular.module('djangular-demo', []);
+	</script>
+{% endblock scripts %}

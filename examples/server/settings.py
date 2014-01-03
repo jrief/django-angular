@@ -13,7 +13,9 @@ SITE_ID = 1
 
 ROOT_URLCONF = 'server.urls'
 
-SECRET_KEY = 'SSponU8sDrOMjaSCjmQ0D04PlrLugv3vJDjzEipb'
+SECRET_KEY = 'secret'
+
+USE_L10N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
@@ -26,7 +28,7 @@ MEDIA_URL = ''
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/home/static/'
+STATIC_ROOT = '/examples/static/'
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"

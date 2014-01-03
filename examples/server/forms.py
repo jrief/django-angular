@@ -3,12 +3,15 @@ from django import forms
 from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 
 
-class AdultSubscriptionForm(NgFormValidationMixin, forms.Form):
+class SubscriptionForm(NgFormValidationMixin, forms.Form):
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
-    middle_name = forms.CharField(label='Middle name', required=False)
-    last_name = forms.RegexField(r'^[A-Z][a-z]+', label='Last name')
-    age = forms.DecimalField(min_value=18, max_value=99)
+    last_name = forms.RegexField(r'^[A-Z][a-z]+', label='Last name', error_messages={'invalid': 'Valid names start in upper case'})
+    email = forms.EmailField(label='E-Mail')
+    phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number', error_messages={'invalid': 'Enter a valid phone number'})
+    birth_date = forms.DateField(label='Date of birth')
+    weight = forms.IntegerField(min_value=42, max_value=95, label='Weight in kg', error_messages={'min_value': 'You are too lightweight'})
+    height = forms.FloatField(min_value=1.48, max_value=1.95, label='Height in meters', error_messages={'max_value': 'You are too tall'})
 
 
-class AdultSubscriptionFormWithNgModel(NgModelFormMixin, AdultSubscriptionForm):
+class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
     pass

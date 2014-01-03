@@ -1,8 +1,8 @@
-{% extends "adult-subscription.html" %}
+{% extends "subscribe-form.html" %}
 
-{% block validation_form %}
+{% block subscribe_me_form %}
 	{{ block.super }}
 	{% verbatim %}
 		<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
 	{% endverbatim %}
-{% endblock validation_form %}
+{% endblock subscribe_me_form %}
