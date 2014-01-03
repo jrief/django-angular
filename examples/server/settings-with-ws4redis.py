@@ -1,0 +1,65 @@
+# Django settings for unit test project.
+
+DEBUG = True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'test.sqlite',
+    },
+}
+
+SITE_ID = 1
+
+ROOT_URLCONF = 'server.urls'
+
+SECRET_KEY = 'secret'
+
+USE_L10N = True
+
+# Absolute path to the directory that holds media.
+# Example: "/home/media/media.lawrence.com/"
+MEDIA_ROOT = ''
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash if there is a path component (optional in other cases).
+# Examples: "http://media.lawrence.com", "http://example.com/media/"
+MEDIA_URL = ''
+
+# Absolute path to the directory that holds static files.
+# Example: "/home/media/media.lawrence.com/static/"
+STATIC_ROOT = '/examples/static/'
+
+# URL that handles the static files served from STATIC_ROOT.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = '/static/'
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+)
+
+INSTALLED_APPS = (
+    'django.contrib.contenttypes',
+    'django.contrib.staticfiles',
+    'djangular',
+    'ws4redis',
+    'server',
+)
+
+# This setting is required to override the Django's main loop, when running in
+# development mode, such as ./manage runserver
+WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+
+# URL that distinguishes websocket connections from normal requests
+WEBSOCKET_URL = '/ws/'
+
+# Set the number of seconds each message shall persited
+WS4REDIS_EXPIRE = 3600

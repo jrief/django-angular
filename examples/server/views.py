@@ -16,3 +16,7 @@ class NgFormValidationView(TemplateView):
 class NgFormValidationViewWithNgModel(NgFormValidationView):
     template_name = 'subscribe-form-with-model.html'
     form = SubscriptionFormWithNgModel(scope_prefix='subscribe_data')
+
+
+class Ng3WayDataBindingView(NgFormValidationViewWithNgModel):
+    template_name = 'three-way-data-binding.html'

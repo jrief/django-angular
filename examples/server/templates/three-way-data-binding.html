@@ -1,0 +1,16 @@
+{% extends "subscribe-form-with-model.html" %}
+
+{% block subscribe_me_form %}
+	<form name="{{ form.name }}" novalidate ng-controller="MyFormController">
+		{{ form }}
+		{% verbatim %}
+		<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
+		{% endverbatim %}
+	</form>
+{% endblock subscribe_me_form %}
+
+{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.js"></script>
+	<script src="{{ STATIC_URL }}js/djng-websocket.js"></script>
+	<script src="{{ STATIC_URL }}demo.js"></script>
+{% endblock scripts %}
