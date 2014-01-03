@@ -47,7 +47,8 @@
 		</p>
 		{% endblock container %}
 	</div>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.1.5/angular.min.js"></script>
-	<script>angular.module('djangular-demo', []);</script>
+	{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.js" type="text/javascript"></script>
+	{% endblock scripts %}
 </body>
 </html>
