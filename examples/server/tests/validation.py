@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
-from server.forms import AdultSubscriptionForm, AdultSubscriptionFormWithNgModel
+from server.forms import SubscriptionForm, SubscriptionFormWithNgModel
 
 
 class NgFormValidationMixinTest(TestCase):
     def setUp(self):
-        subscription_form = AdultSubscriptionForm()
+        subscription_form = SubscriptionForm()
         self.dom = PyQuery(str(subscription_form))
 
     def test_ng_length(self):
@@ -21,24 +21,24 @@ class NgFormValidationMixinTest(TestCase):
         attrib = dict(lis[0].attrib.items())
         self.assertDictContainsSubset({'ng-show': 'form.first_name.$error.required'}, attrib)
 
-    def test_required(self):
-        middle_name = self.dom('input[name=middle_name]')
-        self.assertEqual(len(middle_name), 1)
-        attrib = dict(middle_name[0].attrib.items())
+    def test_type(self):
+        email_field = self.dom('input[name=email]')
+        self.assertEqual(len(email_field), 1)
+        attrib = dict(email_field[0].attrib.items())
         self.assertNotIn('required', attrib)
-        self.assertDictContainsSubset({'ng-model': 'middle_name'}, attrib)
-        self.assertDictContainsSubset({'ng-required': 'false'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'email'}, attrib)
+        self.assertDictContainsSubset({'type': 'email'}, attrib)
 
     def test_regex(self):
         last_name = self.dom('input[name=last_name]')
         self.assertEqual(len(last_name), 1)
         attrib = dict(last_name[0].attrib.items())
-        self.assertDictContainsSubset({'ng-pattern': '/^[A-Z][a-z]+/'}, attrib)
+        self.assertDictContainsSubset({'ng-pattern': '/^[A-Z][a-z -]+/'}, attrib)
 
 
 class NgFormValidationWithModelMixinTest(TestCase):
     def setUp(self):
-        subscription_form = AdultSubscriptionFormWithNgModel(scope_prefix='subscribe_data')
+        subscription_form = SubscriptionFormWithNgModel(scope_prefix='subscribe_data')
         self.dom = PyQuery(str(subscription_form))
 
     def test_ng_model(self):
@@ -48,10 +48,19 @@ class NgFormValidationWithModelMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-model': 'subscribe_data.first_name'}, attrib)
 
     def test_decimal_field(self):
-        age = self.dom('input[name=age]')
-        self.assertEqual(len(age), 1)
-        attrib = dict(age[0].attrib.items())
+        weight = self.dom('input[name=weight]')
+        self.assertEqual(len(weight), 1)
+        attrib = dict(weight[0].attrib.items())
         self.assertDictContainsSubset({'type': 'number'}, attrib)
-        self.assertDictContainsSubset({'min': '18'}, attrib)
-        self.assertDictContainsSubset({'max': '99'}, attrib)
-        self.assertDictContainsSubset({'ng-model': 'subscribe_data.age'}, attrib)
+        self.assertDictContainsSubset({'min': '42'}, attrib)
+        self.assertDictContainsSubset({'max': '95'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'subscribe_data.weight'}, attrib)
+
+    def test_float_field(self):
+        height = self.dom('input[name=height]')
+        self.assertEqual(len(height), 1)
+        attrib = dict(height[0].attrib.items())
+        self.assertDictContainsSubset({'type': 'number'}, attrib)
+        self.assertDictContainsSubset({'min': '1.48'}, attrib)
+        self.assertDictContainsSubset({'max': '1.95'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'subscribe_data.height'}, attrib)
