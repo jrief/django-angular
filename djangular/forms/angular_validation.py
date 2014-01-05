@@ -72,7 +72,6 @@ class NgFormValidationMixin(NgFormBaseMixin):
                 errors = types.MethodType(ng_errors_function, field)()
             field_name = '{0}.{1}'.format(self.form_name, identifier)
             self._errors[name] = KeyErrorList(field_name, errors)
-            print 'errors', self._errors[name]
 
     def name(self):
         return self.form_name

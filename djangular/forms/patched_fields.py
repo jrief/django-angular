@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Class methods to overload classes from django.forms.fields with additional error messages for
-AngularJS form validation.
+Class methods to be added to form fields such as django.forms.fields. These methods add additional
+error messages for AngularJS form validation.
 """
 from django.utils.translation import ungettext_lazy
 
@@ -92,21 +92,18 @@ def EmailField_angular_errors(field):
 
 
 def FloatField_angular_errors(field):
-    print 'FloatField_angular_errors'
     errors = _input_required(field)
     errors += _min_max_value_errors(field)
     return errors
 
 
 def IntegerField_angular_errors(field):
-    print 'IntegerField_angular_errors'
     errors = _input_required(field)
     errors += _min_max_value_errors(field)
     return errors
 
 
 def SlugField_angular_errors(field):
-    print 'SlugField_angular_errors'
     errors = _input_required(field)
     return errors
 
@@ -120,6 +117,5 @@ def RegexField_angular_errors(field):
 
 
 def Default_angular_errors(field):
-    print 'Default_angular_errors'
     errors = _input_required(field)
     return errors
