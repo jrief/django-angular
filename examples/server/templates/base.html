@@ -1,3 +1,4 @@
+{% load active %}
 <!doctype html>
 <html lang="en" ng-app="djangular-demo">
 <head>
@@ -31,9 +32,17 @@
 				<a class="brand" href="#">Test Djangular</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav">
-						<li><a href="{% url 'djng_form_validation' %}">Simple Form</a></li>
-						<li><a href="{% url 'djng_model_form_validation' %}">Model Form</a></li>
-						<li><a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a></li>
+						<li class="{% active request 'djng_form_validation' %}">
+							<a href="{% url 'djng_form_validation' %}">Simple Form</a>
+						</li>
+						<li class="{% active request 'djng_model_form_validation' %}">
+							<a href="{% url 'djng_model_form_validation' %}">Model Form</a>
+						</li>
+						{% if with_ws4redis %}
+						<li class="{% active request 'djng_3way_databinding' %}">
+							<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>
+						</li>
+						{% endif %}
 					</ul>
 				</div>
 			</div>
