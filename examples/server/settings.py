@@ -15,6 +15,16 @@ ROOT_URLCONF = 'server.urls'
 
 SECRET_KEY = 'secret'
 
+INSTALLED_APPS = (
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin',
+    'django.contrib.staticfiles',
+    'djangular',
+    'server',
+)
+
 USE_L10N = True
 
 # Absolute path to the directory that holds media.
@@ -28,11 +38,22 @@ MEDIA_URL = ''
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = '/examples/static/'
+STATIC_ROOT = '/var/tmp/static_root/'
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
+)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -46,9 +67,47 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
-INSTALLED_APPS = (
-    'django.contrib.contenttypes',
-    'django.contrib.staticfiles',
-    'djangular',
-    'server',
-)
+TIME_ZONE = 'Europe/Berlin'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[%(asctime)s %(module)s] %(levelname)s: %(message)s'
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+
+# if package django-websocket-redis is installed, some more tests can be be added
+try:
+    import ws4redis
+
+    INSTALLED_APPS += ('ws4redis',)
+
+    # This setting is required to override the Django's main loop, when running in
+    # development mode, such as ./manage runserver
+    WSGI_APPLICATION = 'ws4redis.django_runserver.application'
+
+    # URL that distinguishes websocket connections from normal requests
+    WEBSOCKET_URL = '/ws/'
+
+    # Set the number of seconds each message shall persited
+    WS4REDIS_EXPIRE = 3600
+
+except ImportError:
+    pass
