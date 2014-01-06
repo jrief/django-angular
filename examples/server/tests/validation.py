@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import django
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
 from server.forms import SubscriptionForm, SubscriptionFormWithNgModel
@@ -17,7 +18,10 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-minlength': '3'}, attrib)
         self.assertDictContainsSubset({'ng-maxlength': '20'}, attrib)
         lis = self.dom('label[for=id_first_name]').parent().next().children('ul.djng-form-errors > li')
-        self.assertEqual(len(lis), 3)
+        if django.VERSION[1] == 5:
+            self.assertEqual(len(lis), 1)
+        else:
+            self.assertEqual(len(lis), 3)
         attrib = dict(lis[0].attrib.items())
         self.assertDictContainsSubset({'ng-show': 'form.first_name.$error.required'}, attrib)
 
@@ -27,7 +31,10 @@ class NgFormValidationMixinTest(TestCase):
         attrib = dict(email_field[0].attrib.items())
         self.assertNotIn('required', attrib)
         self.assertDictContainsSubset({'ng-model': 'email'}, attrib)
-        self.assertDictContainsSubset({'type': 'email'}, attrib)
+        if django.VERSION[1] == 5:
+            self.assertDictContainsSubset({'type': 'text'}, attrib)
+        else:
+            self.assertDictContainsSubset({'type': 'email'}, attrib)
 
     def test_regex(self):
         last_name = self.dom('input[name=last_name]')
@@ -51,7 +58,10 @@ class NgFormValidationWithModelMixinTest(TestCase):
         weight = self.dom('input[name=weight]')
         self.assertEqual(len(weight), 1)
         attrib = dict(weight[0].attrib.items())
-        self.assertDictContainsSubset({'type': 'number'}, attrib)
+        if django.VERSION[1] == 5:
+            self.assertDictContainsSubset({'type': 'text'}, attrib)
+        else:
+            self.assertDictContainsSubset({'type': 'number'}, attrib)
         self.assertDictContainsSubset({'min': '42'}, attrib)
         self.assertDictContainsSubset({'max': '95'}, attrib)
         self.assertDictContainsSubset({'ng-model': 'subscribe_data.weight'}, attrib)
@@ -60,7 +70,10 @@ class NgFormValidationWithModelMixinTest(TestCase):
         height = self.dom('input[name=height]')
         self.assertEqual(len(height), 1)
         attrib = dict(height[0].attrib.items())
-        self.assertDictContainsSubset({'type': 'number'}, attrib)
-        self.assertDictContainsSubset({'min': '1.48'}, attrib)
-        self.assertDictContainsSubset({'max': '1.95'}, attrib)
+        if django.VERSION[1] == 5:
+            self.assertDictContainsSubset({'type': 'text'}, attrib)
+        else:
+            self.assertDictContainsSubset({'type': 'number'}, attrib)
+            self.assertDictContainsSubset({'min': '1.48'}, attrib)
+            self.assertDictContainsSubset({'max': '1.95'}, attrib)
         self.assertDictContainsSubset({'ng-model': 'subscribe_data.height'}, attrib)
