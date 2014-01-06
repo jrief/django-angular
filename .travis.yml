@@ -4,8 +4,8 @@ python:
   - 2.7
 
 env:
-  - DJANGO=1.5.5
-  - DJANGO=1.6.0
+  - DJANGO=1.5.5 TEST=server
+  - DJANGO=1.6.1 TEST=server.tests
 
 install:
   - pip install -q Django==$DJANGO --use-mirrors
@@ -17,4 +17,4 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
- - cd examples && ./manage.py test server
+ - cd examples && ./manage.py test $TEST
