@@ -21,18 +21,11 @@ Dependencies
 Configuration
 -------------
 
-Add ``"djangular"`` to your project's ``INSTALLED_APPS`` setting, and make sure that static files
-are found in external Django apps::
+Add ``"djangular"`` to your project's ``INSTALLED_APPS`` settings::
 
   INSTALLED_APPS = (
       ...
       'djangular',
-      ...
-  )
-  
-  STATICFILES_FINDERS = (
-      'django.contrib.staticfiles.finders.FileSystemFinder',
-      'django.contrib.staticfiles.finders.AppDirectoriesFinder',
       ...
   )
 
