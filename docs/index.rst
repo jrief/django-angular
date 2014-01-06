@@ -18,6 +18,7 @@ Contents:
   csrf-protection
   manage-urls
   form-mixins
+  three-way-data-binding
 
 Indices and tables
 ==================
