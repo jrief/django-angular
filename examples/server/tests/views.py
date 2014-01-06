@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+import json
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
-from django.utils import simplejson
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.views.generic import View
 from djangular.views.mixins import JSONResponseMixin, allowed_action
@@ -45,7 +45,7 @@ class JSONResponseMixinTest(TestCase):
     def test_action_undefined(self):
         data = {'foo': 'bar'}
         request = self.factory.post('/dummy.json',
-            data=simplejson.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
@@ -55,7 +55,7 @@ class JSONResponseMixinTest(TestCase):
     def test_action_not_callable(self):
         data = {'foo': 'bar', 'action': 'blah'}
         request = self.factory.post('/dummy.json',
-            data=simplejson.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
@@ -65,18 +65,18 @@ class JSONResponseMixinTest(TestCase):
     def test_action_is_callable(self):
         data = {'foo': 'bar', 'action': 'action_one'}
         request = self.factory.post('/dummy.json',
-            data=simplejson.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
         self.assertIsInstance(response, HttpResponse)
-        out_data = simplejson.loads(response.content)
+        out_data = json.loads(response.content)
         self.assertTrue(out_data['success'])
 
     def test_action_is_forbidden(self):
         data = {'foo': 'bar', 'action': 'action_two'}
         request = self.factory.post('/dummy.json',
-            data=simplejson.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
@@ -87,7 +87,7 @@ class JSONResponseMixinTest(TestCase):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request, action='action_two')
         self.assertIsInstance(response, HttpResponse)
-        out_data = simplejson.loads(response.content)
+        out_data = json.loads(response.content)
         self.assertTrue(out_data['success'])
 
     def test_post_pass_through(self):
