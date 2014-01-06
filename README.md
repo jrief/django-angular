@@ -4,9 +4,11 @@ django-angular
 Utilities to let Django play nice together with AngularJS
 ---------------------------------------------------------
 
-**NEW in 0.4.0**: Using CSRF protection for Ajax requests
+**NEW in 0.5.0**: Three way data binding.
 
-You can find detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/)
+Project home: https://github.com/jrief/django-angular
+
+Detailed documentation: [ReadTheDocs](http://django-angular.readthedocs.org/)
 
 Features
 --------
@@ -14,7 +16,7 @@ Features
 * Client side form validation for Django forms using AngularJS.
 * Let an AngularJS controller call methods in a Django view - kind of Javascript RPCs.
 * Manage Django URLs for static controller files.
-and more to come ...
+* Three way data binding to connect AngularJS models with a server side message queue.
 
 Build status
 ------------
@@ -37,6 +39,7 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.5.0 - Added three way data binding.
 * 0.4.0 - Removed @csrf_exempt on dispatch method for Ajax requests.
 * 0.3.0 - Client side form validation for Django forms using AngularJS
 * 0.2.2

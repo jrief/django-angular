@@ -34,7 +34,7 @@ Run the demo server::
   ./manage runserver
 
 now point a browser onto http://localhost:8000/threeway_databinding/ and fill the input fields.
-Point a second browser onto the same URL. The fields content should be the same in both browsers.
+Point a second browser onto the same URL. The fields content should be the same in all browsers.
 Change some data, the fields content should update concurrently in all attached browsers.
 
 Add three-way data-binding to an AngularJS application
@@ -67,8 +67,8 @@ the array items; for object maps, this implies watching the properties). If a ch
 it is propagated up to the server. Changes made to the corresponding object on the server side,
 are immediately send back to the client.
 
-.. note: This feature is still experimental, but due to its big potential, it will be regarded as
-         one of the key features for future versions of **djangular**.
+.. note:: This feature is new and experimental, but due to its big potential, it is be regarded
+          as one of the key features for future versions of **djangular**.
 
 .. _two-way data-binding: http://docs.angularjs.org/guide/databinding
 .. _django-websocket-redis: https://github.com/jrief/django-websocket-redis
