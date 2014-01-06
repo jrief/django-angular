@@ -7,10 +7,8 @@ angular.module('djangular-demo', ['ng.django.websocket'])
 	djangoWebsocketProvider.prefix('/ws');
 })
 .controller('MyFormController', function($scope, djangoWebsocket) {
-	console.log(djangoWebsocket); console.log($scope); console.log($scope.subscribe_form);
-	djangoWebsocket.connect($scope, ['subscribe-broadcast']).then(function() {
-		$scope.$watchCollection('subscribe_data', djangoWebsocket.watcher);
-	});
+	console.log(djangoWebsocket); console.log($scope); console.log($scope.subscribe_data);
+	djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'subscribe_data');
 });
 
 })(window.angular);
