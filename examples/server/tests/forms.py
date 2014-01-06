@@ -37,7 +37,7 @@ class InvalidForm(NgModelFormMixin, forms.ModelForm):
 
 
 class DummyForm(NgModelFormMixin, forms.Form):
-    email = forms.EmailField('E-Mail')
+    email = forms.EmailField(label='E-Mail')
     onoff = forms.BooleanField(initial=False, required=True)
     scope_prefix = 'dataroot'
 
@@ -85,7 +85,6 @@ class NgModelFormMixinTest(TestCase):
         htmlsource = self.unbound_form.as_p() + self.unbound_form.sub1.as_p() + self.unbound_form.sub2.as_p()
         self.dom = PyQuery(htmlsource)
         self.elements = self.dom('input') + self.dom('select')
-        #print htmlsource
 
     def test_unbound_form(self):
         """Check if Angular attributes are added to the unbound form"""
