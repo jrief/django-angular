@@ -16,7 +16,8 @@ CLASSIFIERS = [
 ]
 
 def read(fname):
-    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+    readme_file = os.path.join(os.path.dirname(__file__), fname)
+    return os.popen('pandoc -t rst {0}'.format(readme_file)).read()
 
 setup(
     name='django-angular',
