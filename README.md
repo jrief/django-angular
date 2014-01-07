@@ -8,7 +8,7 @@ Utilities to let Django play nice together with AngularJS
 
 Project home: https://github.com/jrief/django-angular
 
-Detailed documentation: [ReadTheDocs](http://django-angular.readthedocs.org/)
+Detailed documentation on [![ReadTheDocs](https://github.com/jrief/django-angular/docs/_static/badge-rtd.png)](http://django-angular.readthedocs.org/)
 
 Features
 --------
