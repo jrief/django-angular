@@ -58,6 +58,8 @@ provider **djangoWebsocket** into this controller::
 
 	app.controller('MyController', function($scope, djangoWebsocket) {
 	    djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'my_collection');
+	
+	    // use $scope.my_collection as root object for the data which shall be three-way bound
 	});
 
 This creates a websocket attached to the server sides message queue via the module **ws4redis**.
@@ -67,8 +69,8 @@ the array items; for object maps, this implies watching the properties). If a ch
 it is propagated up to the server. Changes made to the corresponding object on the server side,
 are immediately send back to the client.
 
-.. note:: This feature is new and experimental, but due to its big potential, it is be regarded
-          as one of the key features for future versions of **djangular**.
+.. note:: This feature is new and experimental, but due to its big potential, it will be regarded
+          as one of the key features in future versions of **django-angular**.
 
 .. _two-way data-binding: http://docs.angularjs.org/guide/databinding
 .. _django-websocket-redis: https://github.com/jrief/django-websocket-redis

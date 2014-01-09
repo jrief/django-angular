@@ -5,7 +5,7 @@ Integrate a Django form with an AngularJS model
 ===============================================
 
 When you derive from Django's ``forms.Form`` class in an AngularJS environment, it can be useful to
-augment the rendered form output with the HTML tags::
+augment the rendered form output with the AngularJS HTML tag::
 
   ng-model="model_name"
 
@@ -24,7 +24,7 @@ by mixing in the **djangular** class ``NgModelFormMixin``::
       subject = forms.CharField()
 
 Now, each rendered form field gets an additional attribute ``ng-model`` containing the field's name.
-For instance, the input field named **subject** would be rendered as:
+For example, the input field named ``subject`` now will be rendered as:
 
 .. code-block:: html
 
