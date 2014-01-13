@@ -4,10 +4,10 @@
 Dispatching Ajax requests from an AngularJS controller
 ======================================================
 
-Wouldn't it be nice to call a Django view method, directly from your AngularJS controller, similar
-to `Remote Procedure Calls`_?
+Wouldn't it be nice to call a Django view method, directly from your AngularJS controller, like
+a `Remote Procedure Call`_ or say **remote method invocation**?
 
-This can simply be achieved by adding a **djangular** mixin class to that view::
+This can be achieved by adding a **djangular** mixin class to that desired view::
 
   from django.views.generic import View
   from djangular.views.mixins import JSONResponseMixin, allowed_action
@@ -17,7 +17,7 @@ This can simply be achieved by adding a **djangular** mixin class to that view::
   
       @allowed_action
       def process_something(self, in_data):
-          # process input data
+          # process in_data
           out_data = {
               'foo': 'bar',
               'success': True,
@@ -31,29 +31,31 @@ AngularJS controller, calling the view's method ``process_something`` is as simp
 
 .. code-block:: javascript
 
-  function MyFormCtrl($scope, $http) {
-      $scope.submit = function() {
-          var in_data = {action: 'process_something'};
-          angular.copy($scope.my_prefix, in_data);
-          $http.post('/url/of/my_json_view', in_data)
-              .success(function(out_data) {
-                  if (out_data.success) {
-                      // update the controllers scope
-                  } else {
-                      alert('Something went wrong');
-                  }
-              });
-      }
-  }
+	my_app.controller('MyFormCtrl', function($scope, $http) {
+	    $scope.submit = function() {
+	        // merge $scope.my_prefix into object containing the action keyword
+	        var in_data = {action: 'process_something'};
+	        angular.copy($scope.my_prefix, in_data);
+	        $http.post('/url/of/my_json_view', in_data)
+	            .success(function(out_data) {
+	                if (out_data.success) {
+	                    // update the controllers scope
+	                } else {
+	                    alert('Something went wrong!');
+	                }
+	            });
+	    }
+	});
 
-.. note:: In real code you should not hard code the URL into an AngularJS controller as shown in
-       this example. Instead, inject an object containing the URL into your controller as explained
-       in :ref:`manage Django URL's for AngularJS <manage-urls>`.
+.. note:: In real code do not hard code the URL into an AngularJS controller as shown in this
+       example. Instead, inject an object containing the URL into the controller function as
+       explained in :ref:`manage Django URL's for AngularJS <manage-urls>`.
 
-The special keyword ``action``, as declared in the post data to be sent, contains the method name
-of the view to be called. In ``MyJSONView.process_something()`` this ``action`` tuple is then
-already stripped off from the passed ``in_data`` and the method receives a Python dictionary
-containing an exact copy of the Javascript object ``$scope.my_prefix``.
+The Javascript object ``in_data`` contains the special keyword ``action``, which contains the
+method to be called in the attached Django view. Here the view's method
+``MyJSONView.process_something(self, in_data)`` receives a Python dictionary containing an exact
+copy of the Javascript object ``$scope.my_prefix``, where the value pair with the key ``action``
+has already been popped off.
 
 .. warning:: To eschew the possibility for an attacker to call any method of your view by setting the
        keyword ``action`` to an arbitrary method name, the author of the view must explicitly give
@@ -82,10 +84,10 @@ directly onto the method ``get_data``. This works with GET requests as well as w
         def fetch_data(self):
             return { 'foo': 'bar' }
 
-.. note:: Here for GET requests, the method ``fetch_data`` does not require the decorator
+.. note:: For GET requests, the method ``fetch_data`` does not require the decorator
        ``@allowed_action``, since this method invocation has been determined by programmer, rather
-       than the client. Therefore there is no security issue here.
+       than the client. Therefore this is not a security issue.
 
-.. _Remote Procedure Calls: http://en.wikipedia.org/wiki/Remote_procedure_calls
+.. _Remote Procedure Call: http://en.wikipedia.org/wiki/Remote_procedure_calls
 .. _HttpResponseBadRequest: https://docs.djangoproject.com/en/1.5/ref/request-response/#httpresponse-subclasses
 .. _manage Django URL's for AngularJS: manage-urls

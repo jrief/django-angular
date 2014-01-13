@@ -7,22 +7,22 @@ XMLHttpRequest
 --------------
 As a convention in web applications, Ajax requests shall send the HTTP-Header::
 
-  X-Requested-With: XMLHttpRequest
+	X-Requested-With: XMLHttpRequest
 
 while invoking POST-requests. In AngularJS versions 1.0.x this was the default behavior, but in
 versions 1.1.x this support has been dropped. Strictly speaking, Django applications do not require
 this header, but if it is missing, all invocations to::
 
-  request.is_ajax()
+	request.is_ajax()
 
 would return ``False``, even for perfectly valid Ajax requests. Thus, if you use AngularJS version
 1.1.x, add the following statement during module instantiation:
 
 .. code-block:: javascript
 
-  angular.module('MyNgModule').config(function($httpProvider) {
-      $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-  });
+	var my_app = angular.module('MyApp').config(function($httpProvider) {
+	    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	});
 
 
 Template tags
@@ -41,44 +41,44 @@ add the following statement during module instantiation:
 
 .. code-block:: javascript
 
-  angular.module('MyNgModule').config(function($interpolateProvider) {
-      $interpolateProvider.startSymbol('{$');
-      $interpolateProvider.endSymbol('$}');
-  });
+	var my_app = angular.module('MyApp').config(function($interpolateProvider) {
+	    $interpolateProvider.startSymbol('{$');
+	    $interpolateProvider.endSymbol('$}');
+	});
 
 Now, you can easily distinguish a server side variable substitution ``{{ varname }}`` from a client
 side variable substitution ``{$ varname $}``.
 
 This approach is even less verbose than using the *verbatim* tag. The problem, however, is that you
-have to remember this alternative tag syntax for all of your AngularJS templates. This also makes
-it difficult to integrate third party AngularJS directives, which are shipped with their own
+have to remember to use this alternative tag syntax for *all* of your AngularJS templates. It also
+makes it difficult to integrate third party AngularJS directives, which are shipped with their own
 templates.
 
 Partials
 ........
 In AngularJS, when used together with external templates, static HTML code often is loaded by a
-$routeProvider_. These so named partials can be placed in their own sub-directory below
+`$routeProvider`_. These so named partials can be placed in their own sub-directory below
 ``STATIC_ROOT``.
 
-If for some reason you need mixed template code, ie. one which first is expanded by Django and later
+If, for some reason you need mixed template code, ie. one which first is expanded by Django and later
 is parsed by AngularJS, then add to your ``urls.py``::
 
-  partial_patterns = patterns('',
-      url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
-      ... more partials ...,
-  )
-  
-  urlpatterns = patterns('',
-      ...
-      url(r'^partials/', include(partial_patterns, namespace='partials')),
-      ...
-  )
+	partial_patterns = patterns('',
+	    url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
+	    # ... more partials ...,
+	)
+	
+	urlpatterns = patterns('',
+	    # ...
+	    url(r'^partials/', include(partial_patterns, namespace='partials')),
+	    # ...
+	)
 
 By using the utility function::
 
-  from djangular.core.urlsresolvers import urls_by_namespace
-  
-  my_partials = urls_by_namespace('partials')
+	from djangular.core.urlsresolvers import urls_by_namespace
+	
+	my_partials = urls_by_namespace('partials')
 
 the caller obtains a list of all partials defined for the given namespace. This list can be used
 when creating a Javascript array of URL's to be injected into controllers.
@@ -98,10 +98,10 @@ code shall go into separate static files!**
 .. warning:: Never use Django template code to dynamically generate AngularJS controllers or
        directives. This will make it very hard to debug and impossible to add Jasmine_ unit tests to
        your code. Always do a clear separation between the configuration of your AngularJS
-       module, which is part of your application, and the client side logic, which shall be testable
-       without the need of a running Django server.
+       module, which is part of *your* application, and the client side logic, which always shall be
+       independently testable without the need of a running Django server.
 
 .. _verbatim: https://docs.djangoproject.com/en/1.5/ref/templates/builtins/#verbatim
-.. _$routeProvider: _http://docs.angularjs.org/api/ng.$routeProvider
+.. _$routeProvider: http://docs.angularjs.org/api/ngRoute.$routeProvider
 .. _translation: https://docs.djangoproject.com/en/1.5/topics/i18n/translation/
 .. _Jasmine: http://pivotal.github.io/jasmine/

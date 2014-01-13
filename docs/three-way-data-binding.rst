@@ -8,15 +8,15 @@ whenever the view changes.
 
 With **djangular** and the additional module django-websocket-redis_, one can extend this feature
 to reflect all changes to a model, back and forward with a corresponding object stored on the
-server. This means that the server “sees” whenever the model on the client changes and can itself
-modify values at the client any time, without having the client to poll for new messages. This is
-very useful, when the server wants to inform the client about asynchronous events such as sport
-results, chat messages or multi-player game events.
+server. This means that the server “sees” whenever the model on the client changes and can by
+itself, modify values on the client side at any time, without having the client to poll for new
+messages. This is very useful, when the server wants to inform the client about asynchronous events
+such as sport results, chat messages or multi-player game events.
 
 Installation
 ------------
 If you want to use three-way data-binding with Django, the webbrowser must have support for
-websockets. Most modern browsers do so.
+websockets. Nowadays, most modern browsers do so.
 
 Install **django-websocket-redis** from PyPI::
 
@@ -33,28 +33,36 @@ Run the demo server::
   cd examples
   ./manage runserver
 
-now point a browser onto http://localhost:8000/threeway_databinding/ and fill the input fields.
+point a browser onto http://localhost:8000/threeway_databinding/ and fill the input fields.
 Point a second browser onto the same URL. The fields content should be the same in all browsers.
 Change some data, the fields content should update concurrently in all attached browsers.
 
 Add three-way data-binding to an AngularJS application
 ------------------------------------------------------
-Include the Javascript file somewhere in your app::
+Include the Javascript file somewhere in your app:
+
+.. code-block:: html
 
 	<script src="{{ STATIC_URL }}js/djng-websocket.js"></script>
 
-add an additional dependency to your application::
+add an additional dependency to your application:
 
-	var app = angular.module('my-awesome-app', [/* other dependencies */, 'ng.django.websocket']);
+.. code-block:: javascript
 
-configure the websocket module with a URL prefix of your choice::
+	var my_app = angular.module('myApp', [/* other dependencies */, 'ng.django.websocket']);
+
+configure the websocket module with a URL prefix of your choice:
+
+.. code-block:: javascript
 
 	app.config(function(djangoWebsocketProvider) {
 	    djangoWebsocketProvider.prefix('/ws');
 	});
 
 If you want to bind the data model in one of your AngularJS controllers, you must inject the
-provider **djangoWebsocket** into this controller::
+provider **djangoWebsocket** into this controller and then attach the websocket to the server.
+
+.. code-block:: javascript
 
 	app.controller('MyController', function($scope, djangoWebsocket) {
 	    djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'my_collection');

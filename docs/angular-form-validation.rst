@@ -4,18 +4,18 @@
 Validate Django forms using AngularJS
 =====================================
 
-Django's ``forms.Form`` class offers many possibilities to validate a given form. This for obvious
+Django's ``forms.Form`` class offers many possibilities to validate a given form. This, for obvious
 reasons is done on the server. However, customers may not always accept to submit a form, just to
-find out that they missed to input some correct data into a field. Therefore client side form
-validation is a good idea and very common. But since client side validation easily can by bypassed,
-the same validation has to occur a second time, when the server accepts the forms data for final
-processing.
+find out that they missed to input some correct data into a field. Therefore, adding client side
+form validation is a good idea and very common. But since client side validation easily can be
+bypassed, the same validation has to occur a second time, when the server accepts the forms data
+for final processing.
 
-This leads to code duplication is generally violates the DRY principle!
+*This leads to code duplication and generally violates the DRY principle!*
 
 A workaround to this problem is to use Django's form declaration to automatically generate client
-side validation code, suitable for AngularJS. By adding a special mixin class to your form
-declaration, this can be achieved automatically and on the fly::
+side validation code, suitable for AngularJS. By adding a special mixin class to the form class,
+this can be achieved automatically and on the fly::
 
   from django import forms
   from djangular.forms import NgFormValidationMixin
@@ -24,7 +24,7 @@ declaration, this can be achieved automatically and on the fly::
       surname = forms.CharField(label='Surname', min_length=3, max_length=20)
       age = forms.DecimalField(min_value=18, max_value=99)
 
-When you initialize this form, give it a name, otherwise the form's name defaults to "form". This is
+When initializing this form, give it a name, otherwise the form's name defaults to "form". This is
 required, since the AngularJS validation code expects a named form.
 
 In the view class, add the created form to the rendering context::
@@ -34,7 +34,9 @@ In the view class, add the created form to the rendering context::
       context.update(form=MyValidatedForm())
       return context
 
-Render this form in a template::
+Render this form in a template:
+
+.. code-block:: html
 
   <form name="{{ form.name }}" novalidate>
       {{ form }}
@@ -42,9 +44,9 @@ Render this form in a template::
   </form>
 
 Remember to add the entry ``name="{{ form.name }}"`` to the ``form`` element. Use the directive
-``novalidate`` to disable the browser’s native form validation. If you just need AngularJS built in
-form validation mechanisms without customized checks on the forms data, you are not even required
-to add an ``ng-controller`` onto a wrapping HTML element. The only measure to take, is to give each
+``novalidate`` to disable the browser’s native form validation. If you just need AngularJS's built
+in form validation mechanisms without customized checks on the forms data, there is no need to add
+an ``ng-controller`` onto a wrapping HTML element. The only measure to take, is to give each
 form on a unique name, otherwise the AngularJS form validation code might get confused.
 
 Mixing NgFormValidationMixin with NgModelFormMixin
@@ -53,7 +55,7 @@ While it is possible to use ``NgFormValidationMixin`` on itself, it is perfectly
 ``NgModelFormMixin`` with ``NgFormValidationMixin``. However, a few precautions have to be taken.
 
 On class declaration inherit first from ``NgModelFormMixin`` and afterward from
-``NgFormValidationMixin``. Example::
+``NgFormValidationMixin``. Valid example::
 
 	from django import forms
 	from djangular.forms import NgFormValidationMixin, NgModelFormMixin
@@ -61,7 +63,7 @@ On class declaration inherit first from ``NgModelFormMixin`` and afterward from
 	class MyValidatedForm(NgModelFormMixin, NgFormValidationMixin, forms.Form):
 	    pass
 
-Don't do this::
+but don't do this::
 
 	class MyValidatedForm(NgFormValidationMixin, NgModelFormMixin, forms.Form):
 	    pass
@@ -78,7 +80,7 @@ but this is not::
 AngularJS names each input field to validate, by concatenating its forms name with its fields name.
 This object member then contains an error object, named ``formname.fieldname.$error`` filled by the
 AngularJS validation mechanism. The placeholder for the error object would clash with ``ng-model``,
-if the forms name is identical to the model prefix. Therefore, just remember to use different names.
+if the forms name is identical to the model prefix. Therefore, remember to use different names.
 
 
 Customizing validation errors
@@ -103,5 +105,6 @@ To test this code, a small demo is supplied with this package. With Django >= 1.
 should run out of the box. Just change into the directory ``examples``, run ``./manage.py runserver``
 and point your browser onto http://localhost:8000/simple_form/ or http://localhost:8000/model_form/
 
-Start to fill out the fields. *First name* requires at least 3 characters, *Middle name* is
-optional, *Last name* must start with a capital letter and *age* must be between 18 and 99.
+Start to fill out the fields. *First name* requires at least 3 characters; *Last name* must start
+with a capital letter; *E-Mail* must be a valid address; *Phone number* can start with ``+`` and
+may contain only digits, spaces and dashes.

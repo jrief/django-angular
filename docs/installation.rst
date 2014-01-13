@@ -1,16 +1,18 @@
 .. _installation_and_configuration:
 
-Installation and Configuration
-==============================
+Projects home
+=============
+Check for the latest release of this project and report bugs on `Github`_.
 
-Getting the latest release
---------------------------
+Installation
+============
+Install **Django-Angular**. The latest stable release can be found on PyPI::
 
-The easiest way to get ``django-angular`` is simply to install it with `pip`_::
+  pip install django-angular
 
-    $ pip install django-angular
+or the newest development version from github::
 
-Please also check the latest source code from `github`_.
+  pip install -e git+https://github.com/jrief/django-angular#egg=django-angular
 
 Dependencies
 ------------
@@ -19,9 +21,9 @@ Dependencies
 * `AngularJS`_ >=1.0.4
 
 Configuration
--------------
+=============
 
-Add ``"djangular"`` to your project's ``INSTALLED_APPS`` settings::
+Add ``"djangular"`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file::
 
   INSTALLED_APPS = (
       ...
@@ -32,7 +34,7 @@ Add ``"djangular"`` to your project's ``INSTALLED_APPS`` settings::
 .. note:: **django-angular** does not define any database models. It can therefore easily be
           installed without any database synchronization.
 
-.. _github: https://github.com/jrief/django-angular
+.. _Github: https://github.com/jrief/django-angular
 .. _Django: http://djangoproject.com/
 .. _AngularJS: http://angularjs.org/
 .. _pip: http://pypi.python.org/pypi/pip

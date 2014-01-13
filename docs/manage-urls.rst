@@ -5,76 +5,103 @@ Manage Django URL's for AngularJS
 =================================
 
 You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
-your application. Don't fall into the temptation to hard code such an URL into your Javascript
-controller code. Nor fall into the temptation to dynamically create Javascript by using a template
-engine. There is a clean and simple solution to this problem.
+your application. Do not enter into temptation to hard code such a URL into the client side
+controller code. Nor enter into temptation to create Javascript dynamically using a template
+engine. There is a clean and simple solution to solve this problem.
 
 It is good practice to add configuration directives to applications as constants to the `AngularJS
-module definition`_. This can safely be done in your template code and belongs in there!
+module definition`_. This can safely be done in the template code rendered by Django, where it
+belongs!
+
+It is assumed that the your AngularJS application has already been initialized with something
+similar to:
 
 .. code-block:: html
 
-  <script>
-  angular.module('MyNgModule').constant('urls', {
-      this_view_url: "{% url this_view %}",
-      that_view_url: "{% url that_view %}",
-      ...
-  });
-  </script>
+	<script>
+	    var my_app = angular.module('MyApp', [/* application dependencies */]);
+	</script>
 
-This newly generated constant object is available through `dependency injection`_ to all directives
-and controllers which are part of your AngularJS module. Now the remaining task which has to be
-performed, is to inject this constant object into the controllers which require a Django URL.
-The controller examples from :ref:`JSONResponseMixin <dispatch-ajax-request-example>` and
+Now, add configuration constants to the template code rendered by Django:
+
+.. code-block:: javascript
+
+	my_app.constant('urls', {
+	    this_view_url: "{% url 'this_view' %}",
+	    that_view_url: "{% url 'that_view' %}",
+	    ...
+	});
+
+This newly generated Javascript object named ``urls`` is available through `dependency injection`_
+to all directives and controllers which are part of your AngularJS module ``my_app``.
+It separates the concern of configuring different settings, depending in which environment the
+Javascript code is executed. This becomes really beneficial when writing pure client side unit
+tests, using tools such as Jasmine_.
+
+The remaining task which has to be performed, is to inject this Javascript object into AngularJS
+controllers, which require URL's to, for instance, invoke Ajax requests on the server side.
+Now, the controller examples from :ref:`JSONResponseMixin <dispatch-ajax-request-example>` and
 :ref:`NgModelFormMixin <angular-model-form-example>` then can be rewritten as:
 
 .. code-block:: javascript
 
-  function MyFormCtrl($scope, $http, urls) {
-      $scope.submit = function() {
-          $http.post(urls.this_view_url, $scope.my_prefix)
-              .success(function(out_data) {
-                  // do something
-              });
-      }
-  }
-  
-Likewise, the ``urls.that_view_url`` can be used in an html partial that you may want in an 
-``href`` in place of the Django ``url`` template tag, provided that ``$scope.urls = urls``
-is set in the controller.
+	my_app.controller('MyFormCtrl', function($scope, $http, urls) {
+	    $scope.submit = function() {
+	        $http.post(urls.this_view_url, $scope.my_prefix)
+	            .success(function(out_data) {
+	                // do something
+	            });
+	    }
+	});
+
+The constant ``urls.that_view_url`` now can also be used in an `AngularJS html partial`_, provided
+that the controller function adds this to its scope.
 
 .. code-block:: javascript
 
-  function MyUploadCtrl($scope, $http, urls) {
-        $scope.urls = urls;
-      }
-  }
+	my_app.controller('MyUploadCtrl', function($scope, $http, urls) {
+	    $scope.urls = urls;
+	});
+
+Now, partials can be delivered by Django's static file handler, rather than having to be rendered
+by the template engine:
 
 .. code-block:: html
  
-   <a href="{$ urls.that_view_url $}" class="btn btn-primary btn-lg" role="button">Upload File</a>
-   
+   <!-- partial, delivered as static html, therefore {{ }} is expanded by AngualarJS, not by Django! -->
+   <a href="{{ urls.that_view_url }}" class="button" role="button">Upload File</a>
 
 
 List all URLs which belong to a namespace
 ------------------------------------------
+To avoid the repetitive work of adding all the URL's to this constant Javascript object, a utility
+function named ``urls_by_namespace`` is available, which returns a Python dictionary with all URL's
+belonging to a certain namespace::
 
-To avoid the repetitive work of adding all the URL's to this constant, a utility function is
-available, which returns a Python dictionary with all URL's which belong to a certain namespace.
-This function is available as::
+	import json
+	from django.views.generic import View
+	from django.utils.safestring import mark_safe
+	from djangular.core.urlresolvers import urls_by_namespace
 
-  from djangular.core.urlresolvers import urls_by_namespace
+	class MyView(View):
+	    def get_context_data(self, **kwargs)
+	        context = super(MyView, self).get_context_data(**kwargs)
+	        my_urls = json.dumps(urls_by_namespace('my_url_namespace'))
+	        context.update(my_urls=mark_safe(my_urls))
+	        return context
 
-The returned dictionary can be used directly to fill the constant with the URLs to be passed into
-your AngularJS controller:
+This dictionary then can be used to fill the constant Javascript object to be injected into
+AngularJS directives and controllers:
 
 .. code-block:: html
 
   <script>
-  angular.module('MyNgModule').constant('urls', dict_goes_here);
+  my_app.constant('urls', {{ my_urls }});
   </script>
 
-.. warning:: This function is still experimental. Use it at your own risk.
+.. warning:: This function is still experimental, so be prepared for API changes.
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
+.. _AngularJS html partial: http://docs.angularjs.org/tutorial/step_07#template
 .. _dependency injection: http://docs.angularjs.org/guide/di
+.. _Jasmine: http://pivotal.github.io/jasmine/
