@@ -13,7 +13,7 @@ It is good practice to add configuration directives to applications as constants
 module definition`_. This can safely be done in the template code rendered by Django, where it
 belongs!
 
-It is assumed that the your AngularJS application has already been initialized with something
+It is assumed that your AngularJS application has already been initialized with something
 similar to:
 
 .. code-block:: html
