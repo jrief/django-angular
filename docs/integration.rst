@@ -16,7 +16,7 @@ this header, but if it is missing, all invocations to::
 	request.is_ajax()
 
 would return ``False``, even for perfectly valid Ajax requests. Thus, if you use AngularJS version
-1.1.x, add the following statement during module instantiation:
+1.1.x or later, add the following statement during module instantiation:
 
 .. code-block:: javascript
 

@@ -4,10 +4,10 @@
 Integrate a Django form with an AngularJS model
 ===============================================
 
-When you derive from Django's ``forms.Form`` class in an AngularJS environment, it can be useful to
+When deriving from Django's ``forms.Form`` class in an AngularJS environment, it can be useful to
 augment the rendered form output with an AngularJS HTML tag, such as::
 
-  ng-model="model_name"
+	ng-model="model_name"
 
 where *model_name* corresponds to the named field from the declared form class.
 
@@ -17,19 +17,19 @@ Sample code
 Assume to have a simple Django form class with a single input field. Augment its functionality
 by mixing in the **djangular** class ``NgModelFormMixin``::
 
-  from django import forms
-  from djangular.forms.angular_model import NgModelFormMixin
-  
-  class ContactForm(NgModelFormMixin, forms.Form):
-      subject = forms.CharField()
-      # more fields ...
+	from django import forms
+	from djangular.forms.angular_model import NgModelFormMixin
+	
+	class ContactForm(NgModelFormMixin, forms.Form):
+	    subject = forms.CharField()
+	    # more fields ...
 
 Now, each rendered form field gets an additional attribute ``ng-model`` containing the field's name.
 For example, the input field named ``subject`` now will be rendered as:
 
 .. code-block:: html
 
-  <input id="id_subject" type="text" name="subject" ng-model="subject" />
+	<input id="id_subject" type="text" name="subject" ng-model="subject" />
 
 This means, that to a surrounding Angular controller, the field's value is immediately added to its
 ``$scope``.
@@ -40,24 +40,24 @@ Full working example
 This demonstrates how to submit form data using an AngularJS controller. The Django view handling
 this unbound contact form class may look like::
 
-  from django.views.generic import TemplateView
-
-  class ContactFormView(TemplateView):
-      template = 'contact.html'
-  
-      def get_context_data(self, **kwargs):
-          context = super(ContactFormView, self).get_context_data(**kwargs)
-          context.update(contact_form=ContactForm())
-          return context
+	from django.views.generic import TemplateView
+	
+	class ContactFormView(TemplateView):
+	    template = 'contact.html'
+	
+	    def get_context_data(self, **kwargs):
+	        context = super(ContactFormView, self).get_context_data(**kwargs)
+	        context.update(contact_form=ContactForm())
+	        return context
 
 with a template named ``contact.html``:
 
 .. code-block:: html
 
-  <form ng-controller="MyFormCtrl">
-      {{contact_form}}
-      <button ng-click="submit()">Submit</button>
-  </form>
+	<form ng-controller="MyFormCtrl">
+	    {{contact_form}}
+	    <button ng-click="submit()">Submit</button>
+	</form>
 
 .. _angular-model-form-example:
 
@@ -65,15 +65,15 @@ and using some Javascript code to define the AngularJS controller:
 
 .. code-block:: javascript
 
-  my_app.controller('MyFormCtrl', function($scope, $http) {
-      $scope.submit = function() {
-          $http.post('/url/of/your/contact_form_view', {
-              subject: $scope.subject
-          }).success(function(out_data) {
-              // do something
-          });
-      }
-  });
+	my_app.controller('MyFormCtrl', function($scope, $http) {
+	    $scope.submit = function() {
+	        $http.post('/url/of/your/contact_form_view', {
+	            subject: $scope.subject
+	        }).success(function(out_data) {
+	            // do something
+	        });
+	    }
+	});
 
 Note that the ``<form>`` tag does not require any ``method`` or ``action`` attribute, since the
 promise_ ``success`` in the controller's submit function will handle any further action.
@@ -87,32 +87,32 @@ However, AngularJS does not send post data using ``multipart/form-data`` or
 additional decoding step.
 
 .. note:: In real code, do not hard code the URL into an AngularJS controller as shown in this
-       example. Instead inject an object containing the URL into the form controller as explained
-       in :ref:`manage Django URL's for AngularJS <manage-urls>`
+		example. Instead inject an object containing the URL into the form controller as explained
+		in :ref:`manage Django URL's for AngularJS <manage-urls>`
 
-Add these methods to your contact form view::
+Add these methods to view class handling the contact form::
 
-  import json
-  from django.views.decorators.csrf import csrf_exempt
-  from django.http import HttpResponseBadRequest
-  
-  class ContactFormView(TemplateView):
-      # use ‘get_context_data()’ from above
-      
-      @csrf_exempt
-      def dispatch(self, *args, **kwargs):
-          return super(ContactFormView, self).dispatch(*args, **kwargs)
-        
-      def post(self, request, *args, **kwargs):
-          if not request.is_ajax():
-              return HttpResponseBadRequest('Expected an XMLHttpRequest')
-          in_data = json.loads(request.body)
-          bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
-          # now validate ‘bound_contact_form’ and use it as in normal Django
+	import json
+	from django.views.decorators.csrf import csrf_exempt
+	from django.http import HttpResponseBadRequest
+	
+	class ContactFormView(TemplateView):
+	    # use ‘get_context_data()’ from above
+	    
+	    @csrf_exempt
+	    def dispatch(self, *args, **kwargs):
+	        return super(ContactFormView, self).dispatch(*args, **kwargs)
+	    
+	    def post(self, request, *args, **kwargs):
+	        if not request.is_ajax():
+	            return HttpResponseBadRequest('Expected an XMLHttpRequest')
+	        in_data = json.loads(request.body)
+	        bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
+	        # now validate ‘bound_contact_form’ and use it as in normal Django
 
 .. warning:: In real code, **do not** use the ``@csrf_exempt`` decorator, as shown here for
-             simplicity. Please read on how
-             to :ref:`protect your views from Cross Site Request Forgeries<csrf-protection>`.
+		simplicity. Please read on how
+		to :ref:`protect your views from Cross Site Request Forgeries<csrf-protection>`.
 
 Prefixing the form fields
 -------------------------
@@ -122,17 +122,17 @@ and once in the post handler of the view. This make maintenance hard and is a vi
 principle. Therefore it makes sense to add a prefix to the model names. One possibility would be to
 add the argument ``scope_prefix`` on each form's instantiation, ie.::
 
-  contact_form = ContactForm(scope_prefix='my_prefix')
+	contact_form = ContactForm(scope_prefix='my_prefix')
 
 This, however, has to be done across all instantiations of your form class. The better way is to
 hard code this prefix into the constructor of the form class::
 
-  class ContactForm(NgModelFormMixin, forms.Form):
-      # declare form fields
-  
-      def __init__(self, *args, **kwargs):
-          kwargs.update(scope_prefix='my_prefix')
-          super(ContactForm, self).__init__(*args, **kwargs)
+	class ContactForm(NgModelFormMixin, forms.Form):
+	    # declare form fields
+	
+	    def __init__(self, *args, **kwargs):
+	        kwargs.update(scope_prefix='my_prefix')
+	        super(ContactForm, self).__init__(*args, **kwargs)
 
 Now, in the AngularJS controller, the scope for this form starts with an object named ``my_prefix``
 containing an entry for each form field. This means that an input field, the is rendered
@@ -140,14 +140,14 @@ as:
 
 .. code-block:: html
 
-  <input id="id_subject" type="text" name="subject" ng-model="my_prefix.subject" />
+	<input id="id_subject" type="text" name="subject" ng-model="my_prefix.subject" />
 
 This also simplifies the Ajax submit function, because now all input fields are available as a
 single Javascript object, which can be posted as ``$scope.my_prefix`` to your Django view:
 
 .. code-block:: javascript
 
-   $http.post('/url/of/contact_form_view', $scope.my_prefix)
+	$http.post('/url/of/contact_form_view', $scope.my_prefix)
 
 Working with nested forms
 -------------------------
@@ -161,7 +161,7 @@ The Django view responsible for handling the post request of this form, automati
 parsing of all bound form fields, even from the nested forms.
 
 .. note:: Django, internally, handles the field names of nested forms by concatenating the prefix
-          with the field name using a dash ‘``-``’. This behavior has been overridden in order to
-          use a dot ‘``.``’, since this is the natural separator between Javascript objects.
+		with the field name using a dash ‘``-``’. This behavior has been overridden in order to
+		use a dot ‘``.``’, since this is the natural separator between Javascript objects.
 
 .. _promise: https://en.wikipedia.org/wiki/Promise_(programming)
