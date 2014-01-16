@@ -1,18 +1,18 @@
 .. _installation_and_configuration:
 
-Projects home
-=============
+Project's home
+==============
 Check for the latest release of this project and report bugs on `Github`_.
 
 Installation
 ============
 Install **Django-Angular**. The latest stable release can be found on PyPI::
 
-  pip install django-angular
+	pip install django-angular
 
-or the newest development version from github::
+or the newest development version from GitHub::
 
-  pip install -e git+https://github.com/jrief/django-angular#egg=django-angular
+	pip install -e git+https://github.com/jrief/django-angular#egg=django-angular
 
 Dependencies
 ------------
@@ -23,7 +23,7 @@ Dependencies
 Configuration
 =============
 
-Add ``"djangular"`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file::
+Add ``'djangular'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file::
 
   INSTALLED_APPS = (
       ...

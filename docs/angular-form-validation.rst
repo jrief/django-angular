@@ -13,35 +13,37 @@ for final processing.
 
 *This leads to code duplication and generally violates the DRY principle!*
 
+NgFormValidationMixin
+---------------------
 A workaround to this problem is to use Django's form declaration to automatically generate client
 side validation code, suitable for AngularJS. By adding a special mixin class to the form class,
 this can be achieved automatically and on the fly::
 
-  from django import forms
-  from djangular.forms import NgFormValidationMixin
-
-  class MyValidatedForm(NgFormValidationMixin, forms.Form):
-      surname = forms.CharField(label='Surname', min_length=3, max_length=20)
-      age = forms.DecimalField(min_value=18, max_value=99)
+	from django import forms
+	from djangular.forms import NgFormValidationMixin
+	
+	class MyValidatedForm(NgFormValidationMixin, forms.Form):
+	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
+	    age = forms.DecimalField(min_value=18, max_value=99)
 
 When initializing this form, give it a name, otherwise the form's name defaults to "form". This is
 required, since the AngularJS validation code expects a named form.
 
 In the view class, add the created form to the rendering context::
 
-  def get_context_data(self, **kwargs):
-      context = super(MyRenderingView, self).get_context_data(**kwargs)
-      context.update(form=MyValidatedForm())
-      return context
+	def get_context_data(self, **kwargs):
+	    context = super(MyRenderingView, self).get_context_data(**kwargs)
+	    context.update(form=MyValidatedForm())
+	    return context
 
 Render this form in a template:
 
 .. code-block:: html
 
-  <form name="{{ form.name }}" novalidate>
-      {{ form }}
-      <input type="submit" value="Submit" />
-  </form>
+	<form name="{{ form.name }}" novalidate>
+	    {{ form }}
+	    <input type="submit" value="Submit" />
+	</form>
 
 Remember to add the entry ``name="{{ form.name }}"`` to the ``form`` element. Use the directive
 ``novalidate`` to disable the browser’s native form validation. If you just need AngularJS's built
@@ -49,12 +51,15 @@ in form validation mechanisms without customized checks on the forms data, there
 an ``ng-controller`` onto a wrapping HTML element. The only measure to take, is to give each
 form on a unique name, otherwise the AngularJS form validation code might get confused.
 
-Mixing NgFormValidationMixin with NgModelFormMixin
---------------------------------------------------
+.. note:: On Django-1.5, some field constraints, such as the attributes ``min_length`` and
+		``max_length``, are ignored when used with this Mixin. In Django-1.6 this has been fixed.
+
+Combining NgFormValidationMixin with NgModelFormMixin
+-----------------------------------------------------
 While it is possible to use ``NgFormValidationMixin`` on itself, it is perfectly legal to mix
 ``NgModelFormMixin`` with ``NgFormValidationMixin``. However, a few precautions have to be taken.
 
-On class declaration inherit first from ``NgModelFormMixin`` and afterward from
+On class declaration inherit first from ``NgModelFormMixin`` and *afterward* from
 ``NgFormValidationMixin``. Valid example::
 
 	from django import forms
@@ -82,13 +87,12 @@ This object member then contains an error object, named ``formname.fieldname.$er
 AngularJS validation mechanism. The placeholder for the error object would clash with ``ng-model``,
 if the forms name is identical to the model prefix. Therefore, remember to use different names.
 
-
 Customizing validation errors
 -----------------------------
 If a validated Django form is rendered, each input field is prefixed with an unsorted list ``<ul>``
 of errors, one list item ``<li>`` for each constraint, which might not be satisfied during
 validation. Now, if a client enters invalid data, these prepared error messages are made visible
-using ``ng-show``. The message text is exactly the same as would be shown if the server side, ie.
+using ng-show_. The message text is exactly the same as would be shown if the server side, ie.
 Django itself, complains about invalid data. These error messages can be customized during the field
 initialization.
 
@@ -108,3 +112,5 @@ and point your browser onto http://localhost:8000/simple_form/ or http://localho
 Start to fill out the fields. *First name* requires at least 3 characters; *Last name* must start
 with a capital letter; *E-Mail* must be a valid address; *Phone number* can start with ``+`` and
 may contain only digits, spaces and dashes.
+
+.. _ng-show: http://docs.angularjs.org/api/ng.directive:ngShow
