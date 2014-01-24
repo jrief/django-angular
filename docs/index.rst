@@ -12,8 +12,8 @@ Check for the latest release of this project on `Github`_.
 
 Please report bugs or ask questions using the `Issue Tracker`_.
 
-Contents:
-
+Contents
+--------
 .. toctree::
 
   installation
@@ -26,8 +26,7 @@ Contents:
   three-way-data-binding
 
 Indices and tables
-==================
-
+------------------
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
