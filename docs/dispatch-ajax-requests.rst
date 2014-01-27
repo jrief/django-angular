@@ -81,10 +81,10 @@ By calling the URL ``fetch-some-data.json``, the responding view dispatches inco
 directly onto the method ``get_data``. This works with GET requests as well as with POST requests::
 
   class MyResponseView(JSONResponseMixin, View):
-        def fetch_data(self):
+        def get_data(self):
             return { 'foo': 'bar' }
 
-.. note:: For GET requests, the method ``fetch_data`` does not require the decorator
+.. note:: For GET requests, the method ``get_data`` does not require the decorator
        ``@allowed_action``, since this method invocation has been determined by programmer, rather
        than the client. Therefore this is not a security issue.
 
