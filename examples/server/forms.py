@@ -6,7 +6,7 @@ from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 class SubscriptionForm(NgFormValidationMixin, forms.Form):
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
     last_name = forms.RegexField(r'^[A-Z][a-z -]+', label='Last name',
-        error_messages={'invalid': 'Surnames shall start in upper case'})
+        error_messages={'invalid': 'Last names shall start in upper case'})
     email = forms.EmailField(label='E-Mail')
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})

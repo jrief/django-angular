@@ -4,7 +4,7 @@
 Validate Django forms using AngularJS
 =====================================
 
-Django's ``forms.Form`` class offers many possibilities to validate a given form. This, for obvious
+Django's forms.Form_ class offers many possibilities to validate a given form. This, for obvious
 reasons is done on the server. However, customers may not always accept to submit a form, just to
 find out that they missed to input some correct data into a field. Therefore, adding client side
 form validation is a good idea and very common. But since client side validation easily can be
@@ -113,4 +113,5 @@ Start to fill out the fields. *First name* requires at least 3 characters; *Last
 with a capital letter; *E-Mail* must be a valid address; *Phone number* can start with ``+`` and
 may contain only digits, spaces and dashes.
 
+.. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
 .. _ng-show: http://docs.angularjs.org/api/ng.directive:ngShow
