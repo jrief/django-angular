@@ -13,18 +13,26 @@
 
 angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
 	var _prefix;
+    var _debug = false;
 
 	this.prefix = function(prefix) {
 		_prefix = prefix;
 		return this;
 	};
+    
+	this.debug = function(debug) {
+		_debug = debug;
+		return this;
+	};
 
 	this.$get = ['$window', '$q', '$timeout', function($window, $q, $timeout) {
-		var ws, deferred, timer = null, interval = null, scope, channels, collection;
+		var ws, deferred, timer = null, interval = null, scope, channel, collection, events;
 
 		function connect(uri) {
 			try {
-				console.log("Connecting to "+uri);
+                if (_debug){
+                    console.log("Connecting to "+uri);
+                }
 				deferred = $q.defer();
 				ws = new WebSocket(uri);
 				ws.onopen = on_open;
@@ -38,14 +46,18 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function on_open(evt) {
-			console.log('Connected');
-			interval = 3000;
+            if (_debug){
+                console.log('Connected');
+			}
+            interval = 3000;
 			deferred.resolve();
 		}
 
 		function on_close(evt) {
-			console.log("Connection closed");
-			if (!timer && interval) {
+			if (_debug){
+                console.log("Connection closed");
+			}
+            if (!timer && interval) {
 				timer = $timeout(function() {
 					connect(ws.url);
 				}, interval);
@@ -54,8 +66,10 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function on_error(evt) {
-			console.error("Websocket connection is broken!");
-			deferred.reject(new Error(evt));
+			if (_debug){
+                console.error("Websocket connection is broken!");
+			}
+            deferred.reject(new Error(evt));
 		}
 
 		function on_message(evt) {
@@ -65,8 +79,10 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 					angular.extend(scope[collection], server_data);
 				});
 			} catch(e) {
-				console.warn('Data received by server is invalid JSON: ' + evt.data);
-			}
+				if (_debug){
+                    console.warn('Data received by server is invalid JSON: ' + evt.data);
+                }
+            }
 		}
 
 		function listener(newValue, oldValue) {
@@ -76,18 +92,23 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		return {
-			connect: function(scope_, channels_, collection_) {
+			connect: function(scope_, events_, collection_, channel_) {
 				var parts = [], location = $window.location;
 				scope = scope_;
-				channels = channels_;
+				channel = channel_;
 				collection = collection_;
+                events = events_
 				parts.push(location.protocol === 'https' ? 'wss:' : 'ws:');
 				parts.push('//');
 				parts.push(location.host);
 				parts.push(_prefix);
-				parts.push(location.pathname);
-				parts.push('?');
-				parts.push(channels.join('&'));
+                if (channel) {
+                   parts.push(channel);
+				} else {
+                    parts.push(location.pathname);
+                }
+                parts.push('?');
+				parts.push(events.join('&'));
 				connect(parts.join(''));
 				scope[collection] = scope[collection] || {};
 				deferred.promise.then(function() {
