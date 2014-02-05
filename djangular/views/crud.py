@@ -13,10 +13,7 @@ class NgCRUDView(FormView):
     Basic view to support default angular $resource CRUD actions on server side
     Required attributes: model_class
 
-    Requires two entries in urlconf, a general one without object id's and an object-specific one (with id)
-    Example:
-        url(r'url$', NgCRUDView.as_view()),
-        url(r'url/(?P<pk>\d+)$', NgCRUDView.as_view()),  # parameter name must be 'pk'
+    Optional 'pk' GET parameter must be passed when object identification is required (save as update and delete)
     """
     model_class = None
     content_type = 'application/json'
@@ -30,7 +27,7 @@ class NgCRUDView(FormView):
         * $delete and $remove - ng_delete
         """
         if request.method == 'GET':
-            if 'pk' in self.kwargs:
+            if 'pk' in self.request.GET:
                 return self.ng_get(request, *args, **kwargs)
             return self.ng_query(request, *args, **kwargs)
         elif request.method == 'POST':
@@ -69,23 +66,18 @@ class NgCRUDView(FormView):
         return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder), self.content_type)
 
     def get_form_kwargs(self):
-        """
-        Modify form kwargs
-        Add instance when pk is present
-        fix data
-        """
         kwargs = super(NgCRUDView, self).get_form_kwargs()
         # Since angular sends data in JSON rather than as POST parameters, the default data (request.POST)
         # is replaced with request.body that contains JSON encoded data
         kwargs['data'] = json.loads(self.request.body)
-        if 'pk' in self.kwargs:
+        if 'pk' in self.request.GET:
             kwargs['instance'] = self.get_object()
         return kwargs
 
     def get_object(self):
-        if 'pk' in self.kwargs:
-            return self.model_class.objects.get(pk=self.kwargs['pk'])
-        raise ValueError("Attempted to get an object by 'pk', but no 'pk' is present. Missing urlconf parameter?")
+        if 'pk' in self.request.GET:
+            return self.model_class.objects.get(pk=self.request.GET['pk'])
+        raise ValueError("Attempted to get an object by 'pk', but no 'pk' is present. Missing GET parameter?")
 
     def ng_query(self, request, *args, **kwargs):
         """
