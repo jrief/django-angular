@@ -56,7 +56,8 @@ configure the websocket module with a URL prefix of your choice:
 .. code-block:: javascript
 
 	app.config(function(djangoWebsocketProvider) {
-	    djangoWebsocketProvider.prefix('/ws');
+	    djangoWebsocketProvider.prefix('/ws');  // use /ws as the websocket's prefix
+	    djangoWebsocketProvider.debug(true);  // this optionally informs about the connection status
 	});
 
 If you want to bind the data model in one of your AngularJS controllers, you must inject the

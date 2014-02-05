@@ -13,9 +13,19 @@
 
 angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
 	var _prefix;
+	var _console = { log: noop, warn: noop, error: noop };
+
+	function noop() {}
 
 	this.prefix = function(prefix) {
 		_prefix = prefix;
+		return this;
+	};
+
+	this.debug = function(debug) {
+		if (debug) {
+			_console = console;
+		}
 		return this;
 	};
 
@@ -24,7 +34,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 
 		function connect(uri) {
 			try {
-				console.log("Connecting to "+uri);
+				_console.log("Connecting to "+uri);
 				deferred = $q.defer();
 				ws = new WebSocket(uri);
 				ws.onopen = on_open;
@@ -38,13 +48,13 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function on_open(evt) {
-			console.log('Connected');
+			_console.log('Connected');
 			interval = 3000;
 			deferred.resolve();
 		}
 
 		function on_close(evt) {
-			console.log("Connection closed");
+			_console.log("Connection closed");
 			if (!timer && interval) {
 				timer = $timeout(function() {
 					connect(ws.url);
@@ -54,7 +64,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function on_error(evt) {
-			console.error("Websocket connection is broken!");
+			_console.error("Websocket connection is broken!");
 			deferred.reject(new Error(evt));
 		}
 
@@ -65,7 +75,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 					angular.extend(scope[collection], server_data);
 				});
 			} catch(e) {
-				console.warn('Data received by server is invalid JSON: ' + evt.data);
+				_console.warn('Data received by server is invalid JSON: ' + evt.data);
 			}
 		}
 
