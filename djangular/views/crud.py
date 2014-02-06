@@ -63,7 +63,9 @@ class NgCRUDView(FormView):
         return {field: getattr(obj, field) for field in self.get_model_fields()}
 
     def build_json_response(self, data):
-        return HttpResponse(json.dumps(data, cls=DjangoJSONEncoder), self.content_type)
+        response = HttpResponse(json.dumps(data, cls=DjangoJSONEncoder), self.content_type)
+        response['Cache-Control'] = 'no-cache'
+        return response
 
     def get_form_kwargs(self):
         kwargs = super(NgCRUDView, self).get_form_kwargs()
