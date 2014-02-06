@@ -64,7 +64,7 @@ Usage example
 .. code-block:: javascript
 
     myControllers.controller('myCtrl', ['$scope', 'MyModel', function ($scope, MyModel) {
-        //Query returns an array of object, MyModel.objects.all() by default
+        //Query returns an array of objects, MyModel.objects.all() by default
         $scope.models = MyModel.query();
 
         //Getting a single object
