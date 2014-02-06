@@ -5,7 +5,7 @@ Perform basic CRUD operations
 =============================
 
 When using Angular's `$resource`_ to build services, each service comes with free CRUD
-(create, read, update delete) methods:
+(create, read, update, delete) methods:
 
 .. code-block:: javascript
 
