@@ -11,9 +11,9 @@ from django.views.generic import FormView
 class NgCRUDView(FormView):
     """
     Basic view to support default angular $resource CRUD actions on server side
-    Required attributes: model_class
+    Subclass and override model_class with your model
 
-    Optional 'pk' GET parameter must be passed when object identification is required (save as update and delete)
+    Optional 'pk' GET parameter must be passed when object identification is required (save to update and delete)
     """
     model_class = None
     content_type = 'application/json'
@@ -79,13 +79,20 @@ class NgCRUDView(FormView):
             return self.model_class.objects.get(pk=self.request.GET['pk'])
         raise ValueError("Attempted to get an object by 'pk', but no 'pk' is present. Missing GET parameter?")
 
+    def get_query(self):
+        """
+        Get query to use in ng_query
+        Allows for easier overriding
+        """
+        return self.model_class.objects.all()
+
     def ng_query(self, request, *args, **kwargs):
         """
         Used when angular's query() method is called
         Build an array of all objects, return json response
         """
         objects = []
-        for obj in self.model_class.objects.all():
+        for obj in self.get_query():
             objects.append(self.build_model_dict(obj))
         return self.build_json_response(objects)
 
