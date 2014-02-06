@@ -15,14 +15,14 @@ When using Angular's `$resource`_ to build services, each service comes with fre
       'remove': {method:'DELETE'},
       'delete': {method:'DELETE'} };
 
-Of course this need support on the server side. This can easily be done with **djangular** NgCRUDView.
+Of course this need support on the server side. This can easily be done with **djangular** ``NgCRUDView``.
 
 .. note:: ``remove`` and ``delete`` do exactly the same thing. Usage of ``remove`` is encouraged, since
-          ``delete`` delete is a reserved word in IE.
+          ``delete`` is a reserved word in IE.
 
 Configuration
 -------------
-Subclass NgCRUDView and override model_class attribute::
+Subclass ``NgCRUDView`` and override model_class attribute::
 
   from djangular.views.crud import NgCRUDView
 
@@ -41,11 +41,11 @@ Set up Angular service using ``$resource``:
 
     var myCRUDServices = angular.module('myServices', ['ngResource']);
 
-    blogServices.factory('MyModel', ['$resource', function ($resource) {
+    myCRUDServices.factory('MyModel', ['$resource', function ($resource) {
         return $resource('crud/mymodel', {'pk': '@pk'}, {
         })
     }]);
-Another quick change is required to Angular app config, without this DELETE request fail ``CSRF`` test:
+Another quick change is required to Angular app config, without this ``DELETE`` requests fail ``CSRF`` test:
 
 .. code-block:: javascript
 
@@ -58,9 +58,8 @@ Another quick change is required to Angular app config, without this DELETE requ
 
 That's it. Now you can use CRUD methods.
 
-Usage
------
-Usage example:
+Usage example
+-------------
 
 .. code-block:: javascript
 
