@@ -1,0 +1,97 @@
+.. _basic-crud-operations:
+
+=============================
+Perform basic CRUD operations
+=============================
+
+When using Angular's `$resource`_ to build services, each service comes with free CRUD
+(create, read, update delete) methods:
+
+.. code-block:: javascript
+
+    { 'get':    {method:'GET'},
+      'save':   {method:'POST'},
+      'query':  {method:'GET', isArray:true},
+      'remove': {method:'DELETE'},
+      'delete': {method:'DELETE'} };
+
+Of course this need support on the server side. This can easily be done with **djangular** NgCRUDView.
+
+.. note:: ``remove`` and ``delete`` do exactly the same thing. Usage of ``remove`` is encouraged, since
+          ``delete`` delete is a reserved word in IE.
+
+Configuration
+-------------
+Subclass NgCRUDView and override model_class attribute::
+
+  from djangular.views.crud import NgCRUDView
+
+  class MyCRUDiew(NgCRUDView):
+      model_class = MyModel
+
+Add urlconf entry pointing to the view::
+
+   ...
+   url(r'crud/mymodel$', MyCRUDView.as_view(), name='my_crud_view'),
+   ...
+
+Set up Angular service using ``$resource``:
+
+.. code-block:: javascript
+
+    var myCRUDServices = angular.module('myServices', ['ngResource']);
+
+    blogServices.factory('MyModel', ['$resource', function ($resource) {
+        return $resource('crud/mymodel', {'pk': '@pk'}, {
+        })
+    }]);
+Another quick change is required to Angular app config, without this DELETE request fail ``CSRF`` test:
+
+.. code-block:: javascript
+
+    var my_app = angular.module('myApp', [/* other dependencies */, 'ngCookies']).run(function($http, $cookies) {
+	    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+	    //Add the following two lines
+	    $http.defaults.xsrfCookieName = 'csrftoken';
+        $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+	    });
+
+That's it. Now you can use CRUD methods.
+
+Usage
+-----
+Usage example:
+
+.. code-block:: javascript
+
+    myControllers.controller('myCtrl', ['$scope', 'MyModel', function ($scope, MyModel) {
+        //Query returns an array of object, MyModel.objects.all() by default
+        $scope.models = MyModel.query();
+
+        //Let's update an object
+        var model2 = $scope.models[2];
+        model2.name = 'New name';
+        model.$save();
+
+        //We can also crete new objects
+        var new_model = new Mode({name: 'New name'});
+        new_model.$save(function(){
+           $scope.models.push(new_model);
+        });
+        //In callback push our new object to the models array
+
+        //Deleting objects
+        var model_to_delete = $scope.models[1];
+        model_to_delete.$remove(function(){
+            $scope.models.splice(1, 1);
+        });
+        //After our object is successfully deleted (on server), remove it from models array
+
+    }]);
+
+.. note:: In real world applications you might want to restrict access to certain methods.
+          This can be done using decorators, such as ``@login_required``.
+          For additional functionality :ref:`JSONResponseMixin <dispatch-ajax-requests>` and NgCRUDView can be used together.
+
+.. _$resource: http://docs.angularjs.org/api/ngResource.$resource
+.. _JSONResponseMixin: dispatch-ajax-requests

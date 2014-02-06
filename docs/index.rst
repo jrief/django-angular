@@ -20,6 +20,7 @@ Contents
   integration
   angular-model-form
   angular-form-validation
+  basic-crud-operations
   dispatch-ajax-requests
   csrf-protection
   manage-urls
