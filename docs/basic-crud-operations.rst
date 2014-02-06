@@ -17,7 +17,7 @@ When using Angular's `$resource`_ to build services, each service comes with fre
 
 Of course this need support on the server side. This can easily be done with **djangular** ``NgCRUDView``.
 
-.. note:: ``remove`` and ``delete`` do exactly the same thing. Usage of ``remove`` is encouraged, since
+.. note:: ``remove()`` and ``delete()`` do exactly the same thing. Usage of ``remove()`` is encouraged, since
           ``delete`` is a reserved word in IE.
 
 Configuration
@@ -39,9 +39,9 @@ Set up Angular service using ``$resource``:
 
 .. code-block:: javascript
 
-    var myCRUDServices = angular.module('myServices', ['ngResource']);
+    var myServices = angular.module('myServices', ['ngResource']);
 
-    myCRUDServices.factory('MyModel', ['$resource', function ($resource) {
+    myServices.factory('MyModel', ['$resource', function ($resource) {
         return $resource('crud/mymodel', {'pk': '@pk'}, {
         })
     }]);
