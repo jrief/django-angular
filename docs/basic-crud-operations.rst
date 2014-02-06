@@ -67,24 +67,25 @@ Usage example
         //Query returns an array of object, MyModel.objects.all() by default
         $scope.models = MyModel.query();
 
-        //Let's update an object
-        var model2 = $scope.models[2];
-        model2.name = 'New name';
-        model.$save();
+        //Getting a single object
+        var model = MyModel.get({pk: 1});
 
-        //We can also crete new objects
-        var new_model = new Mode({name: 'New name'});
+
+        //We can crete new objects
+        var new_model = new MyModel({name: 'New name'});
         new_model.$save(function(){
            $scope.models.push(new_model);
         });
-        //In callback push our new object to the models array
+        //In callback we push our new object to the models array
+
+        //Updating objects
+        new_model.name = 'Test name';
+        new_model.$save();
 
         //Deleting objects
-        var model_to_delete = $scope.models[1];
-        model_to_delete.$remove(function(){
-            $scope.models.splice(1, 1);
-        });
-        //After our object is successfully deleted (on server), remove it from models array
+        new_model.$remove();
+        //This deletes the object on server, but it still exists in the models array
+        //To delete it in frontend we have to remove it from the models array
 
     }]);
 
