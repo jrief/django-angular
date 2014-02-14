@@ -4,7 +4,7 @@ django-angular
 Utilities to let Django play nice together with AngularJS
 ---------------------------------------------------------
 
-**NEW in 0.5.0**: Three way data binding.
+**NEW in 0.6.0**: Added basic CRUD view.
 
 Project home: https://github.com/jrief/django-angular
 
@@ -41,6 +41,7 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.6.0 - Support for basic CRUD view.
 * 0.5.0 - Added three way data binding.
 * 0.4.0 - Removed @csrf_exempt on dispatch method for Ajax requests.
 * 0.3.0 - Client side form validation for Django forms using AngularJS
