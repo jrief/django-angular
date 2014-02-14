@@ -1,5 +1,5 @@
-Many Thank to
-=============
+Many Thanks to
+==============
 * Rolo
  - for reviewing the documentation and improve English spelling.
 * Bryan Haskin
