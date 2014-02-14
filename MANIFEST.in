@@ -1,5 +1,6 @@
 include LICENSE.txt
 include README.md
+include CONTRIBUTIONS.md
 include setup.py
 recursive-include djangular *.py
 recursive-include djangular/static *
