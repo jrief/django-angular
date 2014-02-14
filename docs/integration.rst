@@ -60,8 +60,16 @@ In AngularJS, when used together with external templates, static HTML code often
 `$routeProvider`_. These so named partials can be placed in their own sub-directory below
 ``STATIC_ROOT``.
 
-If, for some reason you need mixed template code, ie. one which first is expanded by Django and later
-is parsed by AngularJS, then add to your ``urls.py``::
+If, for some reason you need mixed template code, ie. one which first is expanded by Django and
+later is parsed by AngularJS, then add a view such as::
+
+	class PartialGroupView(TemplateView):
+	    def get_context_data(self, **kwargs):
+	        context = super(PartialGroupView, self).get_context_data(**kwargs)
+	        # update the context
+	        return context
+
+Resolve this view in ``urls.py``::
 
 	partial_patterns = patterns('',
 	    url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
@@ -81,7 +89,7 @@ By using the utility function::
 	my_partials = urls_by_namespace('partials')
 
 the caller obtains a list of all partials defined for the given namespace. This list can be used
-when creating a Javascript array of URL's to be injected into controllers.
+when creating a Javascript array of URL's to be injected into controllers or directives.
 
 Dynamically generated Javascript code
 .....................................
