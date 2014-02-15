@@ -32,8 +32,8 @@ Therefore **django-angular** offers a templatetag to hard code that value into a
 	{% load djangular_tags %}
 	
 	<script>
-	var my_app = angular.module('myApp', [/* other dependencies */]).run(function($http) {
-	    $http.defaults.headers.post['X-CSRFToken'] = "{% csrf_value %}";
+	var my_app = angular.module('myApp', [/* other dependencies */]).config(function($httpProvider) {
+	    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
 	});
 	</script>
 
