@@ -26,7 +26,7 @@ Subclass ``NgCRUDView`` and override model_class attribute::
 
   from djangular.views.crud import NgCRUDView
 
-  class MyCRUDiew(NgCRUDView):
+  class MyCRUDView(NgCRUDView):
       model_class = MyModel
 
 Add urlconf entry pointing to the view::
