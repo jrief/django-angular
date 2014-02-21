@@ -6,14 +6,20 @@ from django.test.client import RequestFactory
 
 from djangular.views.crud import NgCRUDView
 from djangular.views.mixins import JSONResponseMixin
-from server.models import DummyModel
+from server.models import DummyModel, DummyModel2
 
+
+class CRUDTestViewWithFK(JSONResponseMixin, NgCRUDView):
+    """
+    Include JSONResponseMixin to make sure there aren't any problems when using both together
+    """
+    model_class = DummyModel
 
 class CRUDTestView(JSONResponseMixin, NgCRUDView):
     """
     Include JSONResponseMixin to make sure there aren't any problems when using both together
     """
-    model_class = DummyModel
+    model_class = DummyModel2
 
 
 class CRUDViewTest(TestCase):
@@ -21,12 +27,14 @@ class CRUDViewTest(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        model2 = DummyModel2(name="Model2 name")
+        model2.save()
         for name in self.names:
-            DummyModel(name=name).save()
+            DummyModel(name=name, model2=model2).save()
 
     def test_ng_query(self):
         request = self.factory.get('/crud/')
-        response = CRUDTestView.as_view()(request)
+        response = CRUDTestViewWithFK.as_view()(request)
         data = json.loads(response.content)
         for obj in data:
             db_obj = DummyModel.objects.get(pk=obj['pk'])
@@ -34,7 +42,7 @@ class CRUDViewTest(TestCase):
 
     def test_ng_get(self):
         request = self.factory.get('/crud/?pk=1')
-        response = CRUDTestView.as_view()(request)
+        response = CRUDTestViewWithFK.as_view()(request)
         data = json.loads(response.content)
         self.assertEqual(self.names[0], data['name'])
 
@@ -66,12 +74,12 @@ class CRUDViewTest(TestCase):
 
     def test_ng_delete(self):
         request = self.factory.delete('/crud/?pk=1')
-        response = CRUDTestView.as_view()(request)
+        response = CRUDTestViewWithFK.as_view()(request)
         data = json.loads(response.content)
         deleted_name = data['name']
 
         request2 = self.factory.get('/crud/')
-        response2 = CRUDTestView.as_view()(request2)
+        response2 = CRUDTestViewWithFK.as_view()(request2)
         data2 = json.loads(response2.content)
         for obj in data2:
             self.assertTrue(deleted_name != obj['name'])
