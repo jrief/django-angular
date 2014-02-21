@@ -2,6 +2,7 @@
 import json
 
 from django.core.exceptions import ValidationError
+from django.core import serializers
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import modelform_factory
 from django.http import HttpResponse
@@ -14,8 +15,11 @@ class NgCRUDView(FormView):
     Subclass and override model_class with your model
 
     Optional 'pk' GET parameter must be passed when object identification is required (save to update and delete)
+
+    If fields != None the serialized data will only contain field names from fields array
     """
     model_class = None
+    fields = None
     content_type = 'application/json'
 
     def dispatch(self, request, *args, **kwargs):
@@ -42,30 +46,30 @@ class NgCRUDView(FormView):
         """
         return modelform_factory(self.model_class)
 
-    def get_model_fields(self):
-        """
-        Returns a list of field names to include in JSON response
-        By default includes all model's fields, except ManyToMany relations
-
-        model_to_dict doesn't include fields with editable=False, such as DatetimeField(auto_now_add=True)
-        Hence manual approach is required
-        """
-        fields = [field.name for field in self.model_class._meta.fields]
-        # pk is preferable to id
-        fields.remove('id')
-        fields.append('pk')
-        return fields
-
-    def build_model_dict(self, obj):
-        """
-        Using field names from get_model_fields() builds a dictionary with fieldnames and corresponding values
-        """
-        return {field: getattr(obj, field) for field in self.get_model_fields()}
-
     def build_json_response(self, data):
-        response = HttpResponse(json.dumps(data, cls=DjangoJSONEncoder), self.content_type)
+        response = HttpResponse(self.serialize_to_json(data), self.content_type)
         response['Cache-Control'] = 'no-cache'
         return response
+
+    def serialize_to_json(self, queryset):
+        """
+        Return JSON serialized data
+        serialize() only works on iterables, so to serialize a single object we put it in a list
+        """
+        object_data = []
+        try:
+            iter(queryset)
+            raw_data = serializers.serialize('python', queryset, fields=self.fields)
+        except TypeError:  # Not iterable
+            raw_data = serializers.serialize('python', [queryset, ], fields=self.fields)
+
+        for obj in raw_data:  # Add pk to fields
+            obj['fields']['pk'] = obj['pk']
+            object_data.append(obj['fields'])
+
+        if len(raw_data) > 1:  # If a queryset has more than one object
+            return json.dumps(object_data, cls=DjangoJSONEncoder)
+        return json.dumps(object_data[0], cls=DjangoJSONEncoder)  # If there's only one object
 
     def get_form_kwargs(self):
         kwargs = super(NgCRUDView, self).get_form_kwargs()
@@ -93,17 +97,14 @@ class NgCRUDView(FormView):
         Used when angular's query() method is called
         Build an array of all objects, return json response
         """
-        objects = []
-        for obj in self.get_query():
-            objects.append(self.build_model_dict(obj))
-        return self.build_json_response(objects)
+        return self.build_json_response(self.get_query())
 
     def ng_get(self, request, *args, **kwargs):
         """
         Used when angular's get() method is called
         Returns a JSON response of a single object dictionary
         """
-        return self.build_json_response(self.build_model_dict(self.get_object()))
+        return self.build_json_response(self.get_object())
 
     def ng_save(self, request, *args, **kwargs):
         """
@@ -113,7 +114,7 @@ class NgCRUDView(FormView):
         form = self.get_form(self.get_form_class())
         if form.is_valid():
             obj = form.save()
-            return self.build_json_response(self.build_model_dict(obj))
+            return self.build_json_response(obj)
         raise ValidationError("Form not valid", form.errors)
 
     def ng_delete(self, request, *args, **kwargs):
@@ -122,4 +123,4 @@ class NgCRUDView(FormView):
         """
         obj = self.get_object()
         obj.delete()
-        return self.build_json_response(self.build_model_dict(obj))
+        return self.build_json_response(obj)
