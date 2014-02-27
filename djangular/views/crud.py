@@ -115,7 +115,7 @@ class NgCRUDView(FormView):
         if form.is_valid():
             obj = form.save()
             return self.build_json_response(obj)
-        raise ValidationError("Form not valid", form.errors)
+        raise ValidationError("Form not valid")
 
     def ng_delete(self, request, *args, **kwargs):
         """
