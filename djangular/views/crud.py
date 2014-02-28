@@ -21,6 +21,7 @@ class NgCRUDView(FormView):
     model_class = None
     fields = None
     content_type = 'application/json'
+    slug_field = 'slug'
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -31,7 +32,7 @@ class NgCRUDView(FormView):
         * $delete and $remove - ng_delete
         """
         if request.method == 'GET':
-            if 'pk' in self.request.GET:
+            if 'pk' in request.GET or self.slug_field in request.GET:
                 return self.ng_get(request, *args, **kwargs)
             return self.ng_query(request, *args, **kwargs)
         elif request.method == 'POST':
@@ -78,14 +79,16 @@ class NgCRUDView(FormView):
         # Since angular sends data in JSON rather than as POST parameters, the default data (request.POST)
         # is replaced with request.body that contains JSON encoded data
         kwargs['data'] = json.loads(self.request.body)
-        if 'pk' in self.request.GET:
+        if 'pk' in self.request.GET or self.slug_field in self.request.GET:
             kwargs['instance'] = self.get_object()
         return kwargs
 
     def get_object(self):
         if 'pk' in self.request.GET:
             return self.model_class.objects.get(pk=self.request.GET['pk'])
-        raise ValueError("Attempted to get an object by 'pk', but no 'pk' is present. Missing GET parameter?")
+        elif self.slug_field in self.request.GET:
+            return self.model_class.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
+        raise ValueError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
 
     def get_query(self):
         """
