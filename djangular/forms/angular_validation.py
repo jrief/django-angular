@@ -55,6 +55,10 @@ class NgFormValidationMixin(NgFormBaseMixin):
         self.form_error_class = kwargs.pop('form_error_class', 'djng-form-errors')
         kwargs.update(error_class=type('SafeTupleErrorList', (TupleErrorList,), { 'form_error_class': self.form_error_class }))
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
+
+        if self.is_bound:
+            return
+
         if not hasattr(self, '_errors') or self._errors is None:
             self._errors = forms.util.ErrorDict()
         patched_form_fields_module = import_module('djangular.forms.patched_fields')
