@@ -39,7 +39,7 @@ class NgCRUDView(FormView):
             return self.ng_save(request, *args, **kwargs)
         elif request.method == 'DELETE':
             return self.ng_delete(request, *args, **kwargs)
-        raise ValueError('This view can not handle method %s' % request.method)
+        return self.error_json_response('This view can not handle method {0}'.format(request.method), 405)
 
     def get_form_class(self):
         """
@@ -49,6 +49,15 @@ class NgCRUDView(FormView):
 
     def build_json_response(self, data):
         response = HttpResponse(self.serialize_to_json(data), self.content_type)
+        response['Cache-Control'] = 'no-cache'
+        return response
+
+    def error_json_response(self, message, status_code=400, detail=None):
+        response_data = {
+            "message": message,
+            "detail": detail,
+        }
+        response = HttpResponse(json.dumps(response_data, cls=DjangoJSONEncoder, separators=(',', ':')), self.content_type, status=status_code)
         response['Cache-Control'] = 'no-cache'
         return response
 
@@ -69,8 +78,8 @@ class NgCRUDView(FormView):
             object_data.append(obj['fields'])
 
         if len(raw_data) > 1:  # If a queryset has more than one object
-            return json.dumps(object_data, cls=DjangoJSONEncoder)
-        return json.dumps(object_data[0], cls=DjangoJSONEncoder)  # If there's only one object
+            return json.dumps(object_data, cls=DjangoJSONEncoder, separators=(',', ':'))
+        return json.dumps(object_data[0], cls=DjangoJSONEncoder, separators=(',', ':'))  # If there's only one object
 
     def get_form_kwargs(self):
         kwargs = super(NgCRUDView, self).get_form_kwargs()
@@ -107,23 +116,38 @@ class NgCRUDView(FormView):
         Used when angular's get() method is called
         Returns a JSON response of a single object dictionary
         """
-        return self.build_json_response(self.get_object())
+        try:
+            return self.build_json_response(self.get_object())
+        except self.model_class.DoesNotExist as e:
+            return self.error_json_response(str(e), 404)
+        except ValidationError as e:
+            return self.error_json_response(e.message)
+        except ValueError as e:
+            return self.error_json_response(str(e))
 
     def ng_save(self, request, *args, **kwargs):
         """
         Called on $save()
         Use modelform to save new object or modify an existing one
         """
-        form = self.get_form(self.get_form_class())
+        try:
+            form = self.get_form(self.get_form_class())
+        except ValidationError as e:
+            # Validation errors may already occur during instantiation.
+            return self.error_json_response(e.message)
+
         if form.is_valid():
             obj = form.save()
             return self.build_json_response(obj)
-        raise ValidationError("Form not valid", form.errors)
+        return self.error_json_response('Form not valid', detail=form.errors)
 
     def ng_delete(self, request, *args, **kwargs):
         """
         Delete object and return it's data in JSON encoding
         """
-        obj = self.get_object()
-        obj.delete()
+        try:
+            obj = self.get_object()
+            obj.delete()
+        except ValueError as e:
+            self.error_json_response(str(e))
         return self.build_json_response(obj)
