@@ -5,7 +5,7 @@ python:
 
 env:
   - DJANGO=1.5.5 TEST=server
-  - DJANGO=1.6.1 TEST=server.tests
+  - DJANGO=1.6.2 TEST=server.tests
 
 install:
   - pip install -q Django==$DJANGO --use-mirrors
