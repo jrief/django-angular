@@ -41,6 +41,7 @@ Licensed under the MIT license.
 
 Release History
 ---------------
+* 0.6.1 - Bug fix for CRUD view.
 * 0.6.0 - Support for basic CRUD view.
 * 0.5.0 - Added three way data binding.
 * 0.4.0 - Removed @csrf_exempt on dispatch method for Ajax requests.
