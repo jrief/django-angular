@@ -27,7 +27,7 @@ angular.module('djangular-demo', ['ngResource', 'ng.django.websocket'])
 .controller('MyFormController', function($scope, djangoWebsocket) {
 	djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'subscribe_data');
 })
-.controller('SimpleFormController', function($scope, $http, SimpleModel) {
+.controller('SimpleFormController', function($scope, SimpleModel) {
     $scope.subscribe_data = new SimpleModel();
     $scope.serverResponse = {};
     $scope.submit = function() {
