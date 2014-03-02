@@ -40,9 +40,9 @@ class TupleErrorList(forms.util.ErrorList):
         return format_html('<ul class="{0}" ng-hide="{1}.$pristine">{2}</ul>',
                            self.form_error_class, field_name, lis)
 
-    def as_span(self):
+    def as_p(self):
         field_name = len(self) and isinstance(self[0], SafeTuple) and self[0][0] or ''
-        lis = format_html_join('', '<p ng-show="{0}.$error.{1}">{2}</li>', (e for e in list.__iter__(self)))
+        lis = format_html_join('', '<p ng-show="{0}.$error.{1}">{2}</p>', (e for e in list.__iter__(self)))
         return format_html('<span class="{0}" ng-hide="{1}.$pristine">{2}</span>',
                            self.form_error_class, field_name, lis)
 
