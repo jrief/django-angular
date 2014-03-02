@@ -38,6 +38,9 @@
 						<li class="{% active request 'djng_model_form_validation' %}">
 							<a href="{% url 'djng_model_form_validation' %}">Model Form</a>
 						</li>
+                        <li class="{% active request 'djng_model_form_response' %}">
+                            <a href="{% url 'djng_model_form_response' %}">Server Response Form</a>
+                        </li>
 						{% if with_ws4redis %}
 						<li class="{% active request 'djng_3way_databinding' %}">
 							<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>

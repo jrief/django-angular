@@ -59,6 +59,8 @@ class NgFormValidationMixin(NgFormBaseMixin):
     def __init__(self, *args, **kwargs):
         self.form_name = kwargs.pop('form_name', 'form')
         self.form_error_class = kwargs.pop('form_error_class', 'djng-form-errors')
+        self.server_error_name = kwargs.pop('server_error_name', 'serverResponse')
+        self.server_directive = kwargs.pop('server_directive', 'server-validated');
         kwargs.update(error_class=type('SafeTupleErrorList', (TupleErrorList,), { 'form_error_class': self.form_error_class }))
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
 
@@ -80,6 +82,14 @@ class NgFormValidationMixin(NgFormBaseMixin):
             except (TypeError, AttributeError):
                 ng_errors_function = getattr(patched_form_fields_module, 'Default_angular_errors')
                 errors = types.MethodType(ng_errors_function, field)()
+
+            if self.server_directive is not None:
+                field.widget.attrs[self.server_directive] = ''
+            if self.server_error_name is not None:
+                server_error_field = '{0}.{1}'.format(self.server_error_name, identifier)
+                server_message = ' '.join(('{{', server_error_field, '}}'))
+                errors.append((self.server_error_name, server_message))
+
             field_name = '{0}.{1}'.format(self.form_name, identifier)
             self._errors[name] = KeyErrorList(field_name, errors)
 

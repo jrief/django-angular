@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 from django.conf import settings
-from server.forms import SubscriptionForm, SubscriptionFormWithNgModel
+from djangular.views.crud import NgCRUDView
+
+from server.forms import SubscriptionForm, SubscriptionFormWithNgModel, SimpleFormWithNgAndDjangoModel
+from server.models import SimpleModel
 
 
 class NgFormValidationView(TemplateView):
@@ -21,6 +25,23 @@ class NgFormValidationView(TemplateView):
 class NgFormValidationViewWithNgModel(NgFormValidationView):
     template_name = 'subscribe-form-with-model.html'
     form = SubscriptionFormWithNgModel(scope_prefix='subscribe_data')
+
+
+class NgFormValidationViewWithServerResponse(FormView):
+    template_name = 'subscribe-form-with-response.html'
+    form_class = SimpleFormWithNgAndDjangoModel
+
+    def get_form_kwargs(self):
+        kwargs = super(NgFormValidationViewWithServerResponse, self).get_form_kwargs()
+        kwargs.update({
+            'scope_prefix': 'subscribe_data',
+            'form_name': 'simple_form',
+        })
+        return kwargs
+
+
+class NgSimpleCRUDView(NgCRUDView):
+    model_class = SimpleModel
 
 
 class Ng3WayDataBindingView(NgFormValidationViewWithNgModel):
