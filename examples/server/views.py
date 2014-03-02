@@ -36,6 +36,8 @@ class NgFormValidationViewWithServerResponse(FormView):
         kwargs.update({
             'scope_prefix': 'subscribe_data',
             'form_name': 'simple_form',
+            'server_error_name': 'serverResponse',
+            'server_directive': 'server-validated',
         })
         return kwargs
 

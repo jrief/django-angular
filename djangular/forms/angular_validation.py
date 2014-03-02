@@ -59,8 +59,8 @@ class NgFormValidationMixin(NgFormBaseMixin):
     def __init__(self, *args, **kwargs):
         self.form_name = kwargs.pop('form_name', 'form')
         self.form_error_class = kwargs.pop('form_error_class', 'djng-form-errors')
-        self.server_error_name = kwargs.pop('server_error_name', 'serverResponse')
-        self.server_directive = kwargs.pop('server_directive', 'server-validated');
+        self.server_error_name = kwargs.pop('server_error_name', None)
+        self.server_directive = kwargs.pop('server_directive', None);
         kwargs.update(error_class=type('SafeTupleErrorList', (TupleErrorList,), { 'form_error_class': self.form_error_class }))
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
 
