@@ -1,4 +1,4 @@
-import six
+from django.utils import six
 
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, NoReverseMatch)
