@@ -32,9 +32,8 @@ Subclass ``NgCRUDView`` and override model_class attribute::
 Add urlconf entry pointing to the view::
 
    ...
-   url(r'crud/mymodel$', MyCRUDView.as_view(), name='my_crud_view'),
+   url(r'^crud/mymodel/?$', MyCRUDView.as_view(), name='my_crud_view'),
    ...
-
 Set up Angular service using ``$resource``:
 
 .. code-block:: javascript
@@ -42,9 +41,14 @@ Set up Angular service using ``$resource``:
     var myServices = angular.module('myServices', ['ngResource']);
 
     myServices.factory('MyModel', ['$resource', function ($resource) {
-        return $resource('/crud/mymodel', {'pk': '@pk'}, {
+        return $resource('/crud/mymodel/', {'pk': '@pk'}, {
         })
     }]);
+.. note:: Since there is a known bug with $resource not respecting trailing slash, the urls in Django urlconf used by $resource
+          must either not have trailing slash or it should be optional (preferred) - e.g. ``url/?``. Adding the trailing slash
+          to the $resource configuration regardless (``/crud/mymodel/``) ensures future compatibility in case the bug gets fixed and
+          will then follow Django's trailing slash convention.
+
 Another quick change is required to Angular app config, without this ``DELETE`` requests fail ``CSRF`` test:
 
 .. code-block:: javascript
