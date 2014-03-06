@@ -57,8 +57,10 @@ class NgCRUDView(FormView):
         serialize() only works on iterables, so to serialize a single object we put it in a list
         """
         object_data = []
+        is_queryset = False
         try:
             iter(queryset)
+            is_queryset = True
             raw_data = serializers.serialize('python', queryset, fields=self.fields)
         except TypeError:  # Not iterable
             raw_data = serializers.serialize('python', [queryset, ], fields=self.fields)
@@ -67,7 +69,7 @@ class NgCRUDView(FormView):
             obj['fields']['pk'] = obj['pk']
             object_data.append(obj['fields'])
 
-        if len(raw_data) > 1:  # If a queryset has more than one object
+        if is_queryset:
             return json.dumps(object_data, cls=DjangoJSONEncoder)
         return json.dumps(object_data[0], cls=DjangoJSONEncoder)  # If there's only one object
 
