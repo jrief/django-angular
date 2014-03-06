@@ -42,7 +42,7 @@ Set up Angular service using ``$resource``:
     var myServices = angular.module('myServices', ['ngResource']);
 
     myServices.factory('MyModel', ['$resource', function ($resource) {
-        return $resource('crud/mymodel', {'pk': '@pk'}, {
+        return $resource('/crud/mymodel', {'pk': '@pk'}, {
         })
     }]);
 Another quick change is required to Angular app config, without this ``DELETE`` requests fail ``CSRF`` test:
