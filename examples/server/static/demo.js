@@ -41,7 +41,9 @@ angular.module('djangular-demo', ['ngResource', 'ng.django.websocket'])
                 $scope.submit_result = "Submit failed - server responded: " + out_data.data.message;
                 $scope.serverResponse = {};
                 angular.forEach(out_data.data.detail, function(messages, field) {
-                    $scope.simple_form[field].$setValidity('serverResponse', false);
+                    if (field != 'non_field_errors') {
+                        $scope.simple_form[field].$setValidity('serverResponse', false);
+                    }
                     $scope.serverResponse[field] = messages.join('\n');
                 });
             }
