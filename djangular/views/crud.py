@@ -31,14 +31,22 @@ class NgCRUDView(FormView):
         * $save - ng_save
         * $delete and $remove - ng_delete
         """
-        if request.method == 'GET':
-            if 'pk' in request.GET or self.slug_field in request.GET:
-                return self.ng_get(request, *args, **kwargs)
-            return self.ng_query(request, *args, **kwargs)
-        elif request.method == 'POST':
-            return self.ng_save(request, *args, **kwargs)
-        elif request.method == 'DELETE':
-            return self.ng_delete(request, *args, **kwargs)
+        try:
+            if request.method == 'GET':
+                if 'pk' in request.GET or self.slug_field in request.GET:
+                    return self.ng_get(request, *args, **kwargs)
+                return self.ng_query(request, *args, **kwargs)
+            elif request.method == 'POST':
+                return self.ng_save(request, *args, **kwargs)
+            elif request.method == 'DELETE':
+                return self.ng_delete(request, *args, **kwargs)
+        except self.model_class.DoesNotExist as e:
+            return self.error_json_response(str(e), 404)
+        except ValueError as e:
+            return self.error_json_response(str(e))
+        except ValidationError as e:
+            return self.error_json_response(e.message)
+
         return self.error_json_response('This view can not handle method {0}'.format(request.method), 405)
 
     def get_form_class(self):
@@ -124,38 +132,30 @@ class NgCRUDView(FormView):
         Used when angular's get() method is called
         Returns a JSON response of a single object dictionary
         """
-        try:
-            return self.build_json_response(self.get_object())
-        except self.model_class.DoesNotExist as e:
-            return self.error_json_response(str(e), 404)
-        except ValidationError as e:
-            return self.error_json_response(e.message)
-        except ValueError as e:
-            return self.error_json_response(str(e))
+        return self.build_json_response(self.get_object())
 
     def ng_save(self, request, *args, **kwargs):
         """
         Called on $save()
         Use modelform to save new object or modify an existing one
         """
-        try:
-            form = self.get_form(self.get_form_class())
-        except ValidationError as e:
-            # Validation errors may already occur during instantiation.
-            return self.error_json_response(e.message)
-
+        form = self.get_form(self.get_form_class())
         if form.is_valid():
             obj = form.save()
             return self.build_json_response(obj)
-        return self.error_json_response('Form not valid', detail=form.errors)
+
+        # Do not fall back to dispatch error handling, instead provide field details.
+        error_detail = {"non_field_errors": form.non_field_errors()}
+        error_detail.update(form.errors)
+        return self.error_json_response("Form not valid", detail=error_detail)
 
     def ng_delete(self, request, *args, **kwargs):
         """
         Delete object and return it's data in JSON encoding
         """
-        try:
-            obj = self.get_object()
-            obj.delete()
-        except ValueError as e:
-            self.error_json_response(str(e))
+        if 'pk' not in request.GET:
+            raise ValueError("Object id is required to delete.")
+
+        obj = self.get_object()
+        obj.delete()
         return self.build_json_response(obj)
