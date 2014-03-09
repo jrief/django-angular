@@ -7,4 +7,6 @@ Many Thanks to
 * k-funk
  - for fixing a bug in example code.
 * Jakob Košir
- - for addded a basic CRUD view.
+ - for adding CRUD view.
+* Matthias Erll
+  - for contributing to CRUD view and server-side form validation.
