@@ -26,6 +26,11 @@ this can be achieved automatically and on the fly::
 	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
 	    age = forms.DecimalField(min_value=18, max_value=99)
 
+.. note:: In order to allow for later validation without the need of having two form class
+      definitions (one with and one without this mixin), the error code is only added to
+      `unbound forms`_. For `bound forms`_, the per-field error list contains *actual* errors that
+      occured during a validation, if the model instance is provided at initialization. 
+
 When initializing this form, give it a name, otherwise the form's name defaults to "form". This is
 required, since the AngularJS validation code expects a named form.
 
@@ -100,18 +105,109 @@ The default error list is rendered as ``<ul class="djng-form-errors">...</ul>``.
 CSS class is desired, initialize the form using the optional argument
 ``form_error_class='my-error-class'``.
 
+Server-side errors
+------------------
+Whereas most input errors can usually be handled on the client side, the server might still reject a
+request for various reasons. Quite common is the violation of a unique key constraint, either
+because the client did not check beforehand, or it occurred anyway due to a race condition.
+
+In order to display such errors on the form, the form can be instantiated with the optional keyword
+argument ``server_error_name``. This adds an additional entry with that name to the list of
+(potential) errors; furthermore it sets the variable where the message is stored.
+
+.. note:: While the validity (``true`` or ``false``) is stored in the form, the message texts are
+        kept in the model namespace.
+
+It is up to the client side to flag errors as reported by the server. Here is an example based on
+the included demo's model controller, with ``server_error_name='serverResponse'``:
+
+.. code-block:: js
+
+    ... controller definition ...
+    $scope.serverResponse = {}; // Initialize messages.
+    $scope.submit = function() {
+        $scope.subscribe_data.$save(
+            function(out_data) {
+                // Success...
+            },
+            function(out_data) {
+                // Failure.
+                $scope.submit_result = "Submit failed - server responded: " + out_data.data.message;
+                $scope.serverResponse = {}; // Initialize messages.
+                angular.forEach(out_data.data.detail, function(messages, field) {
+                    // Iterate over field errors.
+                    if (field != 'non_field_errors') {
+                        // Set error status of field.
+                        $scope.simple_form[field].$setValidity('serverResponse', false);
+                    }
+                    // Store error message of field.
+                    $scope.serverResponse[field] = messages.join('\n');
+                });
+            }
+        );
+    }
+
+
+Additionally, when directives based on the form validity are used, e.g. ``ng-disable`` to the
+submit button, client-side flags of server-reported errors have to be reset somehow. Otherwise the
+user would not be able to re-submit the form once errors are corrected. A good time to do this is
+when an errorneous field gets edited again. By passing the ``server_directive`` keyword, the mixin
+will add an additional attribute to each field.
+
+At that point it is just an attribute -- in order to add functionality to it, an
+`AngularJS directive`_ needs to be defined. Add the following JavaScript code (provided that
+``server_directive='server-validated'``):
+
+.. code-block:: js
+
+    ... module definition ...
+    .directive('serverValidated', function() {
+        return {
+            restrict: 'A',
+            require: 'ngModel',
+            link: function(scope, element, attrs, ctrl) {
+                ctrl.$viewChangeListeners.push(function() {
+                    if (ctrl.$error.serverResponse) {
+                        ctrl.$setValidity('serverResponse', true);
+                    }
+                });
+            }
+        }
+    });
+
+With aforementioned examples, the form instance would be created using::
+
+   form = MyValidatedForm(name='my_form', scope_prefix='my_model',
+                          server_error_name='serverResponse', server_directive='server-validated')
+
+
 Demo
 ----
-There are two forms using the AngularJS validation mechanisms, one with and one without using the
+There are three forms using the AngularJS validation mechanisms, one with and one without using the
 additional ``NgModelFormMixin``. The former displays the entered model data as a simple code object.
+The third form shows a full working example of a form submission with a positive or negative server
+response.
 
 To test this code, a small demo is supplied with this package. With Django >= 1.5 installed, it
-should run out of the box. Just change into the directory ``examples``, run ``./manage.py runserver``
-and point your browser onto http://localhost:8000/simple_form/ or http://localhost:8000/model_form/
+should run out of the box.
+
+#. Just change into the directory ``examples``;
+#. run ``./manage.py syncdb`` (only required for the server response example);
+#. run ``./manage.py runserver``;
+#. and point your browser onto http://localhost:8000/simple_form/, http://localhost:8000/model_form/,
+    or http://localhost:8000/response_form/.
 
 Start to fill out the fields. *First name* requires at least 3 characters; *Last name* must start
 with a capital letter; *E-Mail* must be a valid address; *Phone number* can start with ``+`` and
 may contain only digits, spaces and dashes.
 
+For testing the server response, try to subscribe in two different sessions, using an identical email
+address. The first time it will be accepted (and also if you modify and re-submit the form), but in
+a second session the server will report a duplicate email address.
+
+
 .. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
+.. _unbound forms: https://docs.djangoproject.com/en/stable/ref/forms/api/#ref-forms-api-bound-unbound
+.. _bound forms: https://docs.djangoproject.com/en/stable/ref/forms/api/#ref-forms-api-bound-unbound
 .. _ng-show: http://docs.angularjs.org/api/ng.directive:ngShow
+.. _AngularJS directive: http://docs.angularjs.org/guide/directive
