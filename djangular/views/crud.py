@@ -76,12 +76,13 @@ class NgCRUDView(FormView):
         """
         object_data = []
         is_queryset = False
+        query_fields = self.get_fields()
         try:
             iter(queryset)
             is_queryset = True
-            raw_data = serializers.serialize('python', queryset, fields=self.fields)
+            raw_data = serializers.serialize('python', queryset, fields=query_fields)
         except TypeError:  # Not iterable
-            raw_data = serializers.serialize('python', [queryset, ], fields=self.fields)
+            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields)
 
         for obj in raw_data:  # Add pk to fields
             obj['fields']['pk'] = obj['pk']
@@ -106,6 +107,13 @@ class NgCRUDView(FormView):
         elif self.slug_field in self.request.GET:
             return self.model_class.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
         raise ValueError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
+
+    def get_fields(self):
+        """
+        Get fields to return from a query.
+        Can be overridden (e.g. to use a query parameter).
+        """
+        return self.fields
 
     def get_query(self):
         """
