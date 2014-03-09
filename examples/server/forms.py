@@ -2,6 +2,8 @@
 from django import forms
 from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 
+from server.models import SimpleModel
+
 
 class SubscriptionForm(NgFormValidationMixin, forms.Form):
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
@@ -19,3 +21,9 @@ class SubscriptionForm(NgFormValidationMixin, forms.Form):
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
     pass
+
+
+class SimpleFormWithNgAndDjangoModel(NgModelFormMixin, NgFormValidationMixin, forms.ModelForm):
+    class Meta:
+        model = SimpleModel
+        exclude = ()

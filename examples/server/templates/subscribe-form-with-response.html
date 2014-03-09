@@ -1,0 +1,29 @@
+{% extends "subscribe-form.html" %}
+{% load djangular_tags %}
+
+{% block subscribe_me_form %}
+    <div ng-controller="SimpleFormController">
+	    <form name="{{ form.form_name }}" ng-submit="submit()" novalidate>
+	        {{ form }}
+	        <div>
+	            <button type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
+	        </div>
+	    </form>
+	    {% verbatim %}
+            <span ng-show="submit_result" ng-hide="!submit_result">{{ submit_result }}</span>
+	        <pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
+	    {% endverbatim %}
+	</div>
+{% endblock subscribe_me_form %}
+
+{% block scripts %}
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular-resource.js"></script>
+    <script src="{{ STATIC_URL }}js/djng-websocket.js"></script>
+    <script src="{{ STATIC_URL }}demo.js"></script>
+    <script>
+	    angular.module('djangular-demo').config(function($httpProvider) {
+	        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+	    });
+    </script>
+{% endblock scripts %}
