@@ -40,6 +40,12 @@ class TupleErrorList(forms.util.ErrorList):
         return format_html('<ul class="{0}" ng-hide="{1}.$pristine">{2}</ul>',
                            self.form_error_class, field_name, lis)
 
+    def as_p(self):
+        field_name = len(self) and isinstance(self[0], SafeTuple) and self[0][0] or ''
+        lis = format_html_join('', '<p ng-show="{0}.$error.{1}">{2}</p>', (e for e in list.__iter__(self)))
+        return format_html('<span class="{0}" ng-hide="{1}.$pristine">{2}</span>',
+                           self.form_error_class, field_name, lis)
+
     def __iter__(self):
         for e in list.__iter__(self):
             yield isinstance(e, SafeTuple) and force_text(e[1]) or e
@@ -53,8 +59,14 @@ class NgFormValidationMixin(NgFormBaseMixin):
     def __init__(self, *args, **kwargs):
         self.form_name = kwargs.pop('form_name', 'form')
         self.form_error_class = kwargs.pop('form_error_class', 'djng-form-errors')
+        self.server_error_name = kwargs.pop('server_error_name', None)
+        self.server_directive = kwargs.pop('server_directive', None)
         kwargs.update(error_class=type('SafeTupleErrorList', (TupleErrorList,), { 'form_error_class': self.form_error_class }))
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
+
+        if self.is_bound:
+            return
+
         if not hasattr(self, '_errors') or self._errors is None:
             self._errors = forms.util.ErrorDict()
         patched_form_fields_module = import_module('djangular.forms.patched_fields')
@@ -70,6 +82,14 @@ class NgFormValidationMixin(NgFormBaseMixin):
             except (TypeError, AttributeError):
                 ng_errors_function = getattr(patched_form_fields_module, 'Default_angular_errors')
                 errors = types.MethodType(ng_errors_function, field)()
+
+            if self.server_directive is not None:
+                field.widget.attrs[self.server_directive] = ''
+            if self.server_error_name is not None:
+                server_error_field = '{0}.{1}'.format(self.server_error_name, identifier)
+                server_message = ' '.join(('{{', server_error_field, '}}'))
+                errors.append((self.server_error_name, server_message))
+
             field_name = '{0}.{1}'.format(self.form_name, identifier)
             self._errors[name] = KeyErrorList(field_name, errors)
 
