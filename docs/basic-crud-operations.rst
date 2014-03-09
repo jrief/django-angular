@@ -34,6 +34,7 @@ Add urlconf entry pointing to the view::
    ...
    url(r'^crud/mymodel/?$', MyCRUDView.as_view(), name='my_crud_view'),
    ...
+
 Set up Angular service using ``$resource``:
 
 .. code-block:: javascript
@@ -61,6 +62,45 @@ Another quick change is required to Angular app config, without this ``DELETE`` 
 	    });
 
 That's it. Now you can use CRUD methods.
+
+
+Optional attributes
+-------------------
+The following options are currently available to subclasses of ``NgCRUDView``:
+
+``fields``
+^^^^^^^^^^
+
+Set this to a tuple or list of field names for only retrieving a subset of model fields during a
+`get` or `query` operation. Alternatively, if this may vary (e.g. based on query parameters or
+between `get` and `query`) override the ``get_fields()`` method instead.
+
+With ``None`` (default), all model fields are returned. The object identifier (``pk``) is always
+provided, regardless of the selection.
+
+``slug``
+^^^^^^^^
+
+Similar to Django's SingleObjectMixin, objects can be selected using an alternative key such as a
+title or a user name. Especially when using the `ngRoute module`_ of AngularJS, this makes
+construction of descriptive URLs easier. Query parameters can be extracted directly from `$route`_
+or `$routeParams`_ and passed to the query.
+
+This attribute (default is ``'slug'``) describes the field name in the model as well as the query
+parameter from the client. For example, if it is set to ``'name'``, perform a query using
+
+.. code:: js
+
+    var model = MyModel.get({name: "My name"});
+
+.. note:: Although the view will not enforce it, it is strongly recommended that you only use unique
+        fields  for this purpose. Otherwise this can lead to a ``MultipleObjectsReturned``
+        exception, which is not handled by this implementation.
+
+        Also note that you still need to pass the object identifier ``pk`` on update and delete
+        operations. Whereas for save operations, the check on ``pk`` makes the distinction between
+        an update and a create operation, this restriction on deletes is only for safety purposes. 
+
 
 Usage example
 -------------
@@ -99,3 +139,6 @@ Usage example
 
 .. _$resource: http://docs.angularjs.org/api/ngResource.$resource
 .. _JSONResponseMixin: dispatch-ajax-requests
+.. _ngRoute module: http://docs.angularjs.org/api/ngRoute
+.. _$route: http://docs.angularjs.org/api/ngRoute/service/$route
+.. _$routeParams: http://docs.angularjs.org/api/ngRoute/service/$routeParams
