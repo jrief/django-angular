@@ -37,7 +37,11 @@ class NgValidationBoundField(forms.BoundField):
         """
         Overload method which inserts AngularJS form validation elements just after the <label> tag.
         """
-        lt = super(NgValidationBoundField, self).label_tag(contents, attrs, label_suffix)
+        from django import VERSION
+        if VERSION[1] <= 5:
+            lt = super(NgValidationBoundField, self).label_tag(contents, attrs)
+        else:
+            lt = super(NgValidationBoundField, self).label_tag(contents, attrs, label_suffix)
         return lt + self.ng_validation_tags()
 
 
