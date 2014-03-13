@@ -80,7 +80,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function listener(newValue, oldValue) {
-			if (newValue !== undefined) {
+			if (newValue !== undefined && newValue != oldValue) {
 				ws.send(JSON.stringify(newValue));
 			}
 		}
@@ -101,7 +101,8 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				connect(parts.join(''));
 				scope[collection] = scope[collection] || {};
 				deferred.promise.then(function() {
-					scope.$watchCollection(collection, listener);
+					//scope.$watchCollection(collection, listener);
+					scope.$watch(collection, listener, true);  // watchCollection has bug https://github.com/angular/angular.js/issues/2621
 				});
 				return deferred.promise;
 			}
