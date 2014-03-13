@@ -40,7 +40,7 @@ class NgFormValidationMixinTest(TestCase):
         last_name = self.dom('input[name=last_name]')
         self.assertEqual(len(last_name), 1)
         attrib = dict(last_name[0].attrib.items())
-        self.assertDictContainsSubset({'ng-pattern': '/^[A-Z][a-z -]+/'}, attrib)
+        self.assertDictContainsSubset({'ng-pattern': '/^[A-Z][a-z -]?/'}, attrib)
 
 
 class NgFormValidationWithModelMixinTest(TestCase):
