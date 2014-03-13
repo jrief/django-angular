@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block container %}
+	<h1>Thank for for submission</h1>
+	<p>The entered data was valid!</p>
+{% endblock container %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	angular.module('djangular-demo', []);
+	</script>
+{% endblock scripts %}
