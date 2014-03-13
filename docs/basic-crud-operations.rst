@@ -39,7 +39,7 @@ Add urlconf entry pointing to the view:
 .. code-block:: python
 
    ...
-   url(r'crud/mymodel$', MyCRUDView.as_view(), name='my_crud_view'),
+   url(r'^crud/mymodel/?$', MyCRUDView.as_view(), name='my_crud_view'),
    ...
 
 Set up Angular service using ``$resource``:
@@ -48,10 +48,15 @@ Set up Angular service using ``$resource``:
 
 	var myServices = angular.module('myServices', ['ngResource']);
 	
-	myServices.factory('MyModel', ['$resource', function ($resource) {
-	    return $resource('crud/mymodel', {'pk': '@pk'}, {
-	    })
+	myServices.factory('MyModel', ['$resource', function($resource) {
+	    return $resource('/crud/mymodel/', {'pk': '@pk'}, {
+	    });
 	}]);
+
+.. note:: Since there is a known bug with $resource not respecting trailing slash, the urls in Django urlconf used by $resource
+          must either not have trailing slash or it should be optional (preferred) - e.g. ``url/?``. Adding the trailing slash
+          to the $resource configuration regardless (``/crud/mymodel/``) ensures future compatibility in case the bug gets fixed and
+          will then follow Django's trailing slash convention.
 
 Another quick change is required to Angular app config, without this ``DELETE`` requests fail ``CSRF`` test:
 
@@ -66,36 +71,75 @@ Another quick change is required to Angular app config, without this ``DELETE`` 
 
 That's it. Now you can use CRUD methods.
 
+
+Optional attributes
+-------------------
+The following options are currently available to subclasses of ``NgCRUDView``:
+
+``fields``
+^^^^^^^^^^
+
+Set this to a tuple or list of field names for only retrieving a subset of model fields during a
+`get` or `query` operation. Alternatively, if this may vary (e.g. based on query parameters or
+between `get` and `query`) override the ``get_fields()`` method instead.
+
+With ``None`` (default), all model fields are returned. The object identifier (``pk``) is always
+provided, regardless of the selection.
+
+``slug``
+^^^^^^^^
+
+Similar to Django's SingleObjectMixin, objects can be selected using an alternative key such as a
+title or a user name. Especially when using the `ngRoute module`_ of AngularJS, this makes
+construction of descriptive URLs easier. Query parameters can be extracted directly from `$route`_
+or `$routeParams`_ and passed to the query.
+
+This attribute (default is ``'slug'``) describes the field name in the model as well as the query
+parameter from the client. For example, if it is set to ``'name'``, perform a query using
+
+.. code:: js
+
+    var model = MyModel.get({name: "My name"});
+
+.. note:: Although the view will not enforce it, it is strongly recommended that you only use unique
+        fields  for this purpose. Otherwise this can lead to a ``MultipleObjectsReturned``
+        exception, which is not handled by this implementation.
+
+        Also note that you still need to pass the object identifier ``pk`` on update and delete
+        operations. Whereas for save operations, the check on ``pk`` makes the distinction between
+        an update and a create operation, this restriction on deletes is only for safety purposes. 
+
+
 Usage example
 -------------
 
 .. code-block:: javascript
 
-    myControllers.controller('myCtrl', ['$scope', 'MyModel', function ($scope, MyModel) {
-        // Query returns an array of objects, MyModel.objects.all() by default
-        $scope.models = MyModel.query();
-
-        // Getting a single object
-        var model = MyModel.get({pk: 1});
-
-
-        // We can crete new objects
-        var new_model = new MyModel({name: 'New name'});
-        new_model.$save(function(){
-           $scope.models.push(new_model);
-        });
-        // In callback we push our new object to the models array
-
-        // Updating objects
-        new_model.name = 'Test name';
-        new_model.$save();
-
-        // Deleting objects
-        new_model.$remove();
-        // This deletes the object on server, but it still exists in the models array
-        // To delete it in frontend we have to remove it from the models array
-
-    }]);
+	myControllers.controller('myCtrl', ['$scope', 'MyModel', function ($scope, MyModel) {
+	    // Query returns an array of objects, MyModel.objects.all() by default
+	    $scope.models = MyModel.query();
+	
+	    // Getting a single object
+	    var model = MyModel.get({pk: 1});
+	
+	
+	    // We can crete new objects
+	    var new_model = new MyModel({name: 'New name'});
+	    new_model.$save(function(){
+	       $scope.models.push(new_model);
+	    });
+	    // In callback we push our new object to the models array
+	
+	    // Updating objects
+	    new_model.name = 'Test name';
+	    new_model.$save();
+	
+	    // Deleting objects
+	    new_model.$remove();
+	    // This deletes the object on server, but it still exists in the models array
+	    // To delete it in frontend we have to remove it from the models array
+	
+	}]);
 
 .. note:: In real world applications you might want to restrict access to certain methods.
           This can be done using decorators, such as ``@login_required``.
@@ -103,3 +147,6 @@ Usage example
 
 .. _$resource: http://docs.angularjs.org/api/ngResource.$resource
 .. _JSONResponseMixin: dispatch-ajax-requests
+.. _ngRoute module: http://docs.angularjs.org/api/ngRoute
+.. _$route: http://docs.angularjs.org/api/ngRoute/service/$route
+.. _$routeParams: http://docs.angularjs.org/api/ngRoute/service/$routeParams
