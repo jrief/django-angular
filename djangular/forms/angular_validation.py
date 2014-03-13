@@ -1,48 +1,44 @@
 # -*- coding: utf-8 -*-
 import types
-from django import forms
+from django.conf import settings
+from django.forms import forms
+from django.forms import util
 from django.utils.html import format_html, format_html_join
 from django.utils.encoding import force_text
-from django.utils.safestring import SafeData
 from django.utils.importlib import import_module
 from djangular.forms.angular_base import NgFormBaseMixin
 
-
-class SafeTuple(tuple, SafeData):
-    pass
+VALIDATION_MAPPING_MODULE = import_module(getattr(settings, 'DJANGULAR_VALIDATION_MAPPING_MODULE', 'djangular.forms.patched_fields'))
 
 
-class KeyErrorList(object):
-    """
-    Container class to hold error messages for form validation. This class replaces ErrorList and
-    handles some issues which makes it really hard to use Django forms out of the predetermined
-    work flow.
-    """
-    def __init__(self, field_name, errors):
-        if not isinstance(errors, (list, tuple)):
-            raise AttributeError('KeyErrorList must be initialized with a list or tuple')
-        if not isinstance(field_name, str):
-            raise AttributeError('field_name must be of type string')
-        if errors and not isinstance(errors[0], tuple):
-            errors = [('', msg) for msg in errors]
-        self._errors = errors
-        self.field_name = field_name
-
-    def __iter__(self):
-        for e in self._errors:
-            yield SafeTuple((self.field_name, e[0], force_text(e[1])))
-
-
-class TupleErrorList(forms.util.ErrorList):
+class TupleErrorList(util.ErrorList):
     def as_ul(self):
-        field_name = len(self) and isinstance(self[0], SafeTuple) and self[0][0] or ''
-        lis = format_html_join('', '<li ng-show="{0}.$error.{1}">{2}</li>', (e for e in list.__iter__(self)))
-        return format_html('<ul class="{0}" ng-hide="{1}.$pristine">{2}</ul>',
-                           self.form_error_class, field_name, lis)
+        if not self:
+            return ''
+        return format_html('<ul class="djng-form-errors" ng-hide="{0}.$pristine">{1}</ul>',
+            self.identifier, format_html_join('', '<li ng-show="{0}.$error.{1}">{2}</li>',
+                ((self.identifier, e[0], force_text(e[1])) for e in self)))
 
-    def __iter__(self):
-        for e in list.__iter__(self):
-            yield isinstance(e, SafeTuple) and force_text(e[1]) or e
+    def as_text(self):
+        if not self:
+            return ''
+        return '\n'.join(['* {0}'.format(force_text(e[1])) for e in self])
+
+
+class NgValidationBoundField(forms.BoundField):
+    def ng_validation_tags(self):
+        """
+        Returns an unsorted list of potential errors, which may occur while validating an input
+        field, using AngularJS's form validation
+        """
+        return self.field.ng_potential_errors.as_ul()
+
+    def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        """
+        Overload method which inserts AngularJS form validation elements just after the <label> tag.
+        """
+        lt = super(NgValidationBoundField, self).label_tag(contents, attrs, label_suffix)
+        return lt + self.ng_validation_tags()
 
 
 class NgFormValidationMixin(NgFormBaseMixin):
@@ -50,28 +46,36 @@ class NgFormValidationMixin(NgFormBaseMixin):
     Add this NgFormValidationMixin to every class derived from forms.Form, which shall be
     auto validated using the Angular's validation mechanism.
     """
+    form_name = 'form'
+    ng_validation_error_class = TupleErrorList
+
     def __init__(self, *args, **kwargs):
-        self.form_name = kwargs.pop('form_name', 'form')
-        self.form_error_class = kwargs.pop('form_error_class', 'djng-form-errors')
-        kwargs.update(error_class=type('SafeTupleErrorList', (TupleErrorList,), { 'form_error_class': self.form_error_class }))
+        self.form_name = kwargs.pop('form_name', self.form_name)
+        ValidationErrorClass = kwargs.pop('ng_validation_error_class', self.ng_validation_error_class)
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
-        if not hasattr(self, '_errors') or self._errors is None:
-            self._errors = forms.util.ErrorDict()
-        patched_form_fields_module = import_module('djangular.forms.patched_fields')
         for name, field in self.fields.items():
             # add ng-model to each model field
-            identifier = self.add_prefix(name)
-            field.widget.attrs.setdefault('ng-model', identifier)
+            ng_model = self.add_prefix(name)
+            field.widget.attrs.setdefault('ng-model', ng_model)
+            ng_field_name = '{0}.{1}'.format(self.form_name, ng_model)
             # each field type may have different errors and additional AngularJS specific attributes
             ng_errors_function = '{0}_angular_errors'.format(field.__class__.__name__)
             try:
-                ng_errors_function = getattr(patched_form_fields_module, ng_errors_function)
-                errors = types.MethodType(ng_errors_function, field)()
+                ng_errors_function = getattr(VALIDATION_MAPPING_MODULE, ng_errors_function)
+                ng_potential_errors = types.MethodType(ng_errors_function, field)()
             except (TypeError, AttributeError):
-                ng_errors_function = getattr(patched_form_fields_module, 'Default_angular_errors')
-                errors = types.MethodType(ng_errors_function, field)()
-            field_name = '{0}.{1}'.format(self.form_name, identifier)
-            self._errors[name] = KeyErrorList(field_name, errors)
+                ng_errors_function = getattr(VALIDATION_MAPPING_MODULE, 'Default_angular_errors')
+                ng_potential_errors = types.MethodType(ng_errors_function, field)()
+            ng_error_class = type('ValidationErrorList', (ValidationErrorClass,), { 'identifier': ng_field_name })
+            setattr(field, 'ng_potential_errors', ng_error_class(ng_potential_errors))
+
+    def __getitem__(self, name):
+        "Returns a NgValidationBoundField with the given name."
+        try:
+            field = self.fields[name]
+        except KeyError:
+            raise KeyError('Key %r not found in Form' % name)
+        return NgValidationBoundField(self, field, name)
 
     def name(self):
         return self.form_name
