@@ -9,11 +9,14 @@
 	body {
 		padding-top: 60px;
 	}
-	ul.djng-form-errors {
+	ul.errorlist, ul.djng-form-errors {
 		margin-left: 0;
 		display: inline-block;
 		float: right;
 		width: 360px;
+	}
+	ul.errorlist li {
+		color: #e9322d;
 	}
 	ul.djng-form-errors li {
 		list-style-type: none;
@@ -58,7 +61,7 @@
 		{% endblock container %}
 	</div>
 	{% block scripts %}
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.5/angular.js" type="text/javascript"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.12/angular.js" type="text/javascript"></script>
 	{% endblock scripts %}
 </body>
 </html>

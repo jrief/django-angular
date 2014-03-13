@@ -4,6 +4,7 @@ from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 
 
 class SubscriptionForm(NgFormValidationMixin, forms.Form):
+    form_name = 'subscribe_form'
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
     last_name = forms.RegexField(r'^[A-Z][a-z -]?', label='Last name',
         error_messages={'invalid': 'Last names shall start in upper case'})
