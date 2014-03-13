@@ -168,16 +168,27 @@ alternative mapping to the module shipped with **djangular**. Refer this module 
 
 Demo
 ====
-There are two forms using the AngularJS validation mechanisms, one with and one without using the
+There are three forms using the AngularJS validation mechanisms, one with and one without using the
 additional ``NgModelFormMixin``. The former displays the entered model data as a simple code object.
+The third form shows a full working example of a form synchronized by the server to all browsers
+accessing that page.
 
 To test this code, a small demo is supplied with this package. With Django >= 1.5 installed, it
-should run out of the box. Just change into the directory ``examples``, run ``./manage.py runserver``
-and point your browser onto http://localhost:8000/simple_form/ or http://localhost:8000/model_form/
+should run out of the box.
 
-Start to fill out the fields. *First name* requires at least 3 characters; *Last name* must start
-with a capital letter; *E-Mail* must be a valid address; *Phone number* can start with ``+`` and
-may contain only digits, spaces and dashes.
+* Change into the directory ``examples``
+* run ``./manage.py runserver``
+* point your browser onto one of
+ * http://localhost:8000/simple_form/
+ * http://localhost:8000/model_form/
+ * http://localhost:8000/threeway_databinding/
+
+Start to fill out the fields. 
+
+* *First name* requires at least 3 characters.
+* *Last name* must start with a capital letter.
+* *E-Mail* must be a valid address.
+* *Phone number* can start with ``+`` and may contain only digits, spaces and dashes.
 
 .. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
 .. _form field definition: https://docs.djangoproject.com/en/dev/ref/forms/fields/#error-messages
