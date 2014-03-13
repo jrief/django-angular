@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from django.utils import six
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, NoReverseMatch)
 
@@ -16,7 +18,7 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
     if prefix is None:
         prefix = get_script_prefix()
 
-    if not namespace or not isinstance(namespace, basestring):
+    if not namespace or not isinstance(namespace, six.string_types):
         raise AttributeError('Attribute namespace must be of type string')
     path = namespace.split(':')
     path.reverse()
@@ -45,7 +47,7 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
             extra, resolver = resolver.namespace_dict[ns]
             resolved_path.append(ns)
             ns_pattern = ns_pattern + extra
-        except KeyError, key:
+        except KeyError as key:
             if resolved_path:
                 raise NoReverseMatch("%s is not a registered namespace inside '%s'" %
                     (key, ':'.join(resolved_path)))
@@ -53,4 +55,4 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
                 raise NoReverseMatch("%s is not a registered namespace" % key)
     resolver = get_ns_resolver(ns_pattern, resolver)
     return dict((name, iri_to_uri(resolver._reverse_with_prefix(name, prefix, *args, **kwargs)))
-                for name in resolver.reverse_dict.keys() if isinstance(name, basestring))
+                for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
