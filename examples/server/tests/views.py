@@ -87,17 +87,17 @@ class JSONResponseMixinTest(TestCase):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request, action='action_two')
         self.assertIsInstance(response, HttpResponse)
-        out_data = json.loads(response.content)
+        out_data = json.loads(str(response.content))
         self.assertTrue(out_data['success'])
 
     def test_post_pass_through(self):
         request = self.factory.post('/dummy.json', data={'foo': 'bar'})
         response = DummyResponseView().post(request)
         self.assertIsInstance(response, HttpResponse)
-        self.assertEqual(response.content, 'bar')
+        self.assertEqual(str(response.content), 'bar')
 
     def test_get_pass_through(self):
         request = self.factory.get('/dummy.json')
         response = DummyResponseView.as_view()(request)
         self.assertIsInstance(response, HttpResponse)
-        self.assertEqual(response.content, 'GET OK')
+        self.assertEqual(str(response.content), 'GET OK')

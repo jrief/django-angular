@@ -169,7 +169,7 @@ class AddPlaceholderFormMixinTest(TestCase):
 
     def setUp(self):
         self.email_form = self.EmailOnlyForm()
-        htmlsource = unicode(self.email_form)
+        htmlsource = str(self.email_form)
         self.dom = PyQuery(htmlsource)
 
     def test_email_field(self):

@@ -38,7 +38,7 @@ class JSONResponseMixin(object):
         try:
             if not request.is_ajax():
                 return self._dispatch_super(request, *args, **kwargs)
-            in_data = json.loads(request.body)
+            in_data = json.loads(str(request.body))
             action = in_data.pop('action', kwargs.get('action'))
             handler = action and getattr(self, action, None)
             if not callable(handler):
