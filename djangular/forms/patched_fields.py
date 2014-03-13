@@ -75,31 +75,31 @@ def DecimalField_angular_errors(field):
     field.widget.attrs['ng-minlength'] = 1
     if hasattr(field, 'max_digits') and field.max_digits > 0:
         field.widget.attrs['ng-maxlength'] = field.max_digits + 1
-    errors += _min_max_value_errors(field)
+    errors.extend(_min_max_value_errors(field))
     return errors
 
 
 def CharField_angular_errors(field):
     errors = _input_required(field)
-    errors += _min_max_length_errors(field)
+    errors.extend(_min_max_length_errors(field))
     return errors
 
 
 def EmailField_angular_errors(field):
     errors = _input_required(field)
-    errors += _invalid_value_errors(field, 'email')
+    errors.extend(_invalid_value_errors(field, 'email'))
     return errors
 
 
 def FloatField_angular_errors(field):
     errors = _input_required(field)
-    errors += _min_max_value_errors(field)
+    errors.extend(_min_max_value_errors(field))
     return errors
 
 
 def IntegerField_angular_errors(field):
     errors = _input_required(field)
-    errors += _min_max_value_errors(field)
+    errors.extend(_min_max_value_errors(field))
     return errors
 
 
@@ -112,7 +112,7 @@ def RegexField_angular_errors(field):
     # Probably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
     field.widget.attrs['ng-pattern'] = '/{0}/'.format(field.regex.pattern)
     errors = _input_required(field)
-    errors += _invalid_value_errors(field, 'pattern')
+    errors.extend(_invalid_value_errors(field, 'pattern'))
     return errors
 
 
