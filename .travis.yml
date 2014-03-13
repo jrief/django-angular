@@ -2,7 +2,6 @@ language: python
 
 python:
   - 2.7
-  - 3.3
 
 env:
   - DJANGO=1.5.5 TEST=server
@@ -12,11 +11,6 @@ install:
   - pip install -q Django==$DJANGO --use-mirrors
   - pip install pyquery --use-mirrors
   - python setup.py -q install
-
-matrix:
-  exclude:
-  - python: 3.3
-    env: DJANGO=1.5.5 TEST=server
 
 branches:
   only:
