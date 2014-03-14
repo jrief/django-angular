@@ -1,5 +1,6 @@
 .. _installation_and_configuration:
 
+============
 Installation
 ============
 Install **Django-Angular**. The latest stable release can be found on PyPI
@@ -23,13 +24,15 @@ Dependencies
 Configuration
 =============
 
-Add ``'djangular'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file::
+Add ``'djangular'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file
 
-  INSTALLED_APPS = (
-      ...
-      'djangular',
-      ...
-  )
+.. code-block:: python
+
+	INSTALLED_APPS = (
+	    ...
+	    'djangular',
+	    ...
+	)
 
 .. note:: **django-angular** does not define any database models. It can therefore easily be
           installed without any database synchronization.

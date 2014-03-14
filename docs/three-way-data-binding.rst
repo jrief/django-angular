@@ -1,7 +1,9 @@
 .. _three-way-data-binding:
 
+======================
 Three-way data-binding
 ======================
+
 One of AngularJS biggest selling propositions is its `two-way data-binding`_. Two way data-binding
 is an automatic way of updating the view whenever the model changes, as well as updating the model
 whenever the view changes.
@@ -14,7 +16,7 @@ messages. This is very useful, when the server wants to inform the client about 
 such as sport results, chat messages or multi-player game events.
 
 Installation
-------------
+============
 If you want to use three-way data-binding with Django, the webbrowser must have support for
 websockets. Nowadays, most modern browsers do so.
 
@@ -25,7 +27,7 @@ Install **django-websocket-redis** from PyPI::
 and follow the `configuration instructions`_.
 
 Demo
-----
+====
 In the examples directory there is a demo showing the capabilities. If **ws4redis** can be found in
 the Python search path, this special demo should be available together with the other two examples.
 Run the demo server::
@@ -38,7 +40,7 @@ Point a second browser onto the same URL. The fields content should be the same 
 Change some data, the fields content should update concurrently in all attached browsers.
 
 Add three-way data-binding to an AngularJS application
-------------------------------------------------------
+======================================================
 Include the Javascript file somewhere in your app:
 
 .. code-block:: html

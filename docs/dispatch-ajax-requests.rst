@@ -7,7 +7,9 @@ Dispatching Ajax requests from an AngularJS controller
 Wouldn't it be nice to call a Django view method, directly from your AngularJS controller, like
 a `Remote Procedure Call`_ or say **remote method invocation**?
 
-This can be achieved by adding a **djangular** mixin class to that desired view::
+This can be achieved by adding a **djangular** mixin class to that desired view
+
+.. code-block:: python
 
   from django.views.generic import View
   from djangular.views.mixins import JSONResponseMixin, allowed_action
@@ -69,20 +71,24 @@ Dispatching Ajax requests using method GET
 
 Sometimes you only have to fetch some data from the server. If you prefer to fetch this data using
 the GET method, you have no way to pass in the ``action`` keyword with the remote method you want
-to execute. But **django-angular** lets you hard-code that action inside your URL dispatcher::
+to execute. But **django-angular** lets you hard-code that action inside your URL dispatcher
 
-  urlpatterns = patterns('',
-      ...
-      url(r'^fetch-some-data.json$', MyResponseView.as_view(), {'action': 'get_data'}),
-      ...
-  )
+.. code-block:: python
+
+	urlpatterns = patterns('',
+	    ...
+	    url(r'^fetch-some-data.json$', MyResponseView.as_view(), {'action': 'get_data'}),
+	    ...
+	)
 
 By calling the URL ``fetch-some-data.json``, the responding view dispatches incoming requests
-directly onto the method ``get_data``. This works with GET requests as well as with POST requests::
+directly onto the method ``get_data``. This works with GET requests as well as with POST requests
 
-  class MyResponseView(JSONResponseMixin, View):
-        def get_data(self):
-            return { 'foo': 'bar' }
+.. code-block:: python
+
+	class MyResponseView(JSONResponseMixin, View):
+	    def get_data(self):
+	        return { 'foo': 'bar' }
 
 .. note:: For GET requests, the method ``get_data`` does not require the decorator
        ``@allowed_action``, since this method invocation has been determined by programmer, rather

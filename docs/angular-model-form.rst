@@ -15,7 +15,9 @@ Sample code
 -----------
 
 Assume to have a simple Django form class with a single input field. Augment its functionality
-by mixing in the **djangular** class ``NgModelFormMixin``::
+by mixing in the **djangular** class ``NgModelFormMixin``
+
+.. code-block:: python
 
 	from django import forms
 	from djangular.forms.angular_model import NgModelFormMixin
@@ -38,7 +40,9 @@ Full working example
 ====================
 
 This demonstrates how to submit form data using an AngularJS controller. The Django view handling
-this unbound contact form class may look like::
+this unbound contact form class may look like
+
+.. code-block:: python
 
 	from django.views.generic import TemplateView
 	
@@ -90,7 +94,9 @@ additional decoding step.
 		example. Instead inject an object containing the URL into the form controller as explained
 		in :ref:`manage Django URL's for AngularJS <manage-urls>`
 
-Add these methods to view class handling the contact form::
+Add these methods to view class handling the contact form
+
+.. code-block:: python
 
 	import json
 	from django.views.decorators.csrf import csrf_exempt
@@ -125,7 +131,9 @@ add the argument ``scope_prefix`` on each form's instantiation, ie.::
 	contact_form = ContactForm(scope_prefix='my_prefix')
 
 This, however, has to be done across all instantiations of your form class. The better way is to
-hard code this prefix into the constructor of the form class::
+hard code this prefix into the constructor of the form class
+
+.. code-block:: python
 
 	class ContactForm(NgModelFormMixin, forms.Form):
 	    # declare form fields

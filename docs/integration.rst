@@ -1,7 +1,8 @@
 .. _integration:
 
-Integrating AngularJS with Django
-=================================
+===============================
+Integrate AngularJS with Django
+===============================
 
 XMLHttpRequest
 --------------
@@ -61,7 +62,9 @@ In AngularJS, when used together with external templates, static HTML code often
 ``STATIC_ROOT``.
 
 If, for some reason you need mixed template code, ie. one which first is expanded by Django and
-later is parsed by AngularJS, then add a view such as::
+later is parsed by AngularJS, then add a view such as
+
+.. code-block:: python
 
 	class PartialGroupView(TemplateView):
 	    def get_context_data(self, **kwargs):
@@ -69,7 +72,9 @@ later is parsed by AngularJS, then add a view such as::
 	        # update the context
 	        return context
 
-Resolve this view in ``urls.py``::
+Resolve this view in ``urls.py``
+
+.. code-block:: python
 
 	partial_patterns = patterns('',
 	    url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
@@ -82,7 +87,9 @@ Resolve this view in ``urls.py``::
 	    # ...
 	)
 
-By using the utility function::
+By using the utility function
+
+.. code-block:: python
 
 	from djangular.core.urlsresolvers import urls_by_namespace
 	

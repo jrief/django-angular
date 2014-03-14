@@ -76,7 +76,9 @@ List all URLs which belong to a namespace
 ------------------------------------------
 To avoid the repetitive work of adding all the URL's to this constant Javascript object, a utility
 function named ``urls_by_namespace`` is available, which returns a Python dictionary with all URL's
-belonging to a certain namespace::
+belonging to a certain namespace
+
+.. code-block:: python
 
 	import json
 	from django.views.generic import View
