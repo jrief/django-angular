@@ -8,27 +8,24 @@ from server.forms import SubscriptionForm, SubscriptionFormWithNgModel
 class NgFormValidationView(TemplateView):
     template_name = 'subscribe-form.html'
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, form=None, **kwargs):
         context = super(NgFormValidationView, self).get_context_data(**kwargs)
-        context.update(with_ws4redis=hasattr(settings, 'WEBSOCKET_URL'))
+        form.fields['height'].widget.attrs['step'] = 0.05  # Ugly hack to set step size
+        context.update(form=form, with_ws4redis=hasattr(settings, 'WEBSOCKET_URL'))
         return context
 
     def get(self, request, **kwargs):
-        context = self.get_context_data(**kwargs)
         form = SubscriptionForm()
-        form.fields['height'].widget.attrs['step'] = 0.05  # Ugly hack to set step size
-        context.update(form=form)
+        context = self.get_context_data(form=form, **kwargs)
         return self.render_to_response(context)
 
     def post(self, request, **kwargs):
         post_data = request.POST.copy()
-        # post_data.update({'email': 'invalidXmail'})  # intentionally invalidate form data
+        post_data.update({'email': 'invalidXmail'})  # intentionally invalidate form data
         form = SubscriptionForm(post_data)
         if form.is_valid():
             return redirect('form_data_valid')
-        form.fields['height'].widget.attrs['step'] = 0.05  # Ugly hack to set step size
-        context = self.get_context_data(**kwargs)
-        context.update(form=form)
+        context = self.get_context_data(form=form, **kwargs)
         return self.render_to_response(context)
 
 
