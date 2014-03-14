@@ -25,6 +25,7 @@ Contents
   csrf-protection
   manage-urls
   three-way-data-binding
+  changelog
 
 Indices and tables
 ------------------

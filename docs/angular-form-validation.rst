@@ -28,8 +28,8 @@ this can be achieved automatically and on the fly
 	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
 	    age = forms.DecimalField(min_value=18, max_value=99)
 
-When initializing this form, give it a name, otherwise the form's name defaults to "form". This is
-required, since the AngularJS validation code expects a named form.
+When initializing this form, give it a name, otherwise it's name defaults to ``form``. Such a form
+name is required by the AngularJS's validation engine.
 
 .. note:: Do not use an empty ``label`` when declaring a form field, otherwise the class
           ``NgFormValidationMixin`` won't be able to render AngularJS's validation error elements.
@@ -179,9 +179,9 @@ should run out of the box.
 * Change into the directory ``examples``
 * run ``./manage.py runserver``
 * point your browser onto one of
- * http://localhost:8000/simple_form/
- * http://localhost:8000/model_form/
- * http://localhost:8000/threeway_databinding/
+  * http://localhost:8000/simple_form/
+  * http://localhost:8000/model_form/
+  * http://localhost:8000/threeway_databinding/
 
 Start to fill out the fields. 
 

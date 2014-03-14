@@ -2,19 +2,23 @@
 
 Installation
 ============
-Install **Django-Angular**. The latest stable release can be found on PyPI::
+Install **Django-Angular**. The latest stable release can be found on PyPI
+
+.. code-block:: bash
 
 	pip install django-angular
 
-or the newest development version from GitHub::
+or the newest development version from GitHub
+
+.. code-block:: bash
 
 	pip install -e git+https://github.com/jrief/django-angular#egg=django-angular
 
 Dependencies
 ------------
 
-* `Django`_ >=1.3.1
-* `AngularJS`_ >=1.0.4
+* `Django`_ >=1.5
+* `AngularJS`_ >=1.2
 
 Configuration
 =============
