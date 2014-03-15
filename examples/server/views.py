@@ -21,7 +21,6 @@ class NgFormValidationView(TemplateView):
 
     def post(self, request, **kwargs):
         post_data = request.POST.copy()
-        post_data.update({'email': 'invalidXmail'})  # intentionally invalidate form data
         form = SubscriptionForm(post_data)
         if form.is_valid():
             return redirect('form_data_valid')
