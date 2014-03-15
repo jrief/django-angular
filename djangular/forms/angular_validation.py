@@ -40,7 +40,7 @@ class TupleErrorList(list):
 
 
 class NgValidationBoundField(forms.BoundField):
-    def ng_validation_tags(self):
+    def ng_errors(self):
         """
         Returns an unsorted list of detected and potential errors, which may occur while validating
         an input field, using AngularJS's form validation.
@@ -58,7 +58,7 @@ class NgValidationBoundField(forms.BoundField):
             lt = super(NgValidationBoundField, self).label_tag(contents, attrs)
         else:
             lt = super(NgValidationBoundField, self).label_tag(contents, attrs, label_suffix)
-        return lt + self.ng_validation_tags()
+        return lt + self.ng_errors()
 
 
 class NgFormValidationMixin(NgFormBaseMixin):
