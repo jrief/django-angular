@@ -1,8 +1,6 @@
 /*
- * django-angular-websocket
+ * AngularJS modules to be used together with
  * https://github.com/jrief/django-angular
- *
- * Add three-way data-binding for AngularJS with Django using websockets.
  *
  * Copyright (c) 2014 Jacob Rief
  * Licensed under the MIT license.
@@ -11,6 +9,29 @@
 (function(angular, undefined) {
 'use strict';
 
+// Correct Angular's form.FormController behavior after rendering bound forms.
+angular.module('ng.django.forms', []).directive('form', function() {
+	return {
+		restrict: 'E',
+		scope: 'isolate',
+		priority: -1,
+		link: function(scope, element, attrs) {
+			var form = scope[attrs.name];
+			var fields = angular.element(element).find('input');
+			angular.forEach(fields, function(field) {
+				if (form[field.name] !== undefined) {
+					// restore the field's content from the rendered content of bound fields
+					form[field.name].$setViewValue(field.defaultValue);
+				}
+			});
+			// restore the form's pristine state
+			form.$setPristine();
+		}
+	};
+});
+
+
+// Add three-way data-binding for AngularJS with Django using websockets.
 angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
 	var _prefix;
 	var _console = { log: noop, warn: noop, error: noop };
