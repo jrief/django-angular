@@ -179,6 +179,7 @@ should run out of the box.
 * Change into the directory ``examples``
 * run ``./manage.py runserver``
 * point your browser onto one of
+
   * http://localhost:8000/simple_form/
   * http://localhost:8000/model_form/
   * http://localhost:8000/threeway_databinding/
