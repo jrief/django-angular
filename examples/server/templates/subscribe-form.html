@@ -11,8 +11,8 @@
 				<div>
 					<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Subscribe">
 				</div>
+				{{ form.email.ng_errors }}
 			</form>
-			{% endblock subscribe_me_form %}
 		</div>
 	</div>
 {% endblock container %}

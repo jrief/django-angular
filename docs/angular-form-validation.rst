@@ -77,10 +77,9 @@ rendered in templates using a special field tag. Say, the form contains
 	class MyValidatedForm(NgFormValidationMixin, forms.Form):
 	    email = forms.EmailField(label='Email')
 
-then access the potential validation errors in templates using
-``{{ form.email.ng_validation_tags }}``. This will render the following HTML, which only is
-visible if the user enters an invalid email address. Otherwise these entries are hidden by the
-AngularJS form validation engine.
+then access the potential validation errors in templates using ``{{ form.email.ng_errors }}``. This
+renders the form with an unsorted list of potential errors, which may occur during client side
+validation.
 
 .. code-block:: html
 
@@ -88,6 +87,22 @@ AngularJS form validation engine.
 	  <li ng-show="subscribe_form.email.$error.required" class="ng-hide">This field is required.</li>
 	  <li ng-show="subscribe_form.email.$error.email" class="">Enter a valid email address.</li>
 	</ul>
+
+The AngularJS form validation engine, normally hides these potential errors. They only become
+visible, if the user enters an invalid email address.
+
+
+Bound forms
+...........
+If the `form is bound`_ and rendered, then errors detected by the server side's validation code are
+rendered as unsorted list in addition to the list of potential errors. Both of these error lists are
+rendered using their own ``<ul>`` elements. The behavior for potential errors remains the same, but
+detected errors are hidden the moment, the user sets the form into a dirty state.
+
+.. note:: AngularJS normally hides the content of bound forms, which means that ``<input>`` fields
+          seem empty, even if their ``value`` attribute is set. In order to restore the content of
+          those input fields to their default value, initialize your AngularJS application with
+          ``angular.module('MyApp', ['ng.django.forms']);``.
 
 
 Combine NgFormValidationMixin with NgModelFormMixin
@@ -132,8 +147,8 @@ AngularJS validation mechanism. The placeholder for the error object would clash
 if the forms name is identical to the model prefix. Therefore, remember to use different names.
 
 
-Customize potential validation errors
-=====================================
+Customize detected and potential validation errors
+==================================================
 If a form with AngularJS validation is rendered, each input field is prefixed with an unsorted list
 ``<ul>`` of potential validation errors. For each possible constraint violation, a list item
 ``<li>`` containing a descriptive message is added to that list.
@@ -143,16 +158,19 @@ messages, using ng-show_. The displayed message text is exactly the same as woul
 the server side code complains about invalid data during form validation. These prepared error
 messages can be customized during `form field definition`_.
 
-The default error list is rendered as ``<ul class="djng-form-errors">...</ul>``. If an alternative
-CSS class or even an alternative way of rendering the list is desired, then add to your form class
-an alternative error rendering class.
+The default error list is rendered as ``<ul class="djng-form-errors">...</ul>``. If you desire an
+alternative CSS class or an alternative way of rendering the list of errors, then initialize the
+form instance with
 
 .. code-block:: python
 
-	class MyValidatedForm(NgFormValidationMixin, forms.Form):
-	    ng_validation_error_class = MyErrorList
+	class MyErrorList(list):
+	    # rendering methods go here
+	
+	# during form instantiation
+	my_form = MyForm(ng_validation_error_class=MyErrorList)
 
-have a look at ``TupleErrorList`` on how to implement this.
+Refer to ``TupleErrorList`` on how to implement an error list renderer.
 
 
 Adding form validation to customized fields
@@ -162,16 +180,23 @@ is shipped with a mapping module to translate Django's form validation to Angula
 is located in ``djangular.forms.patched_fields``.
 
 If you need to add or to replace any of these mappings, create a Python module which implements an
-alternative mapping to the module shipped with **djangular**. Refer this module in your
+alternative mapping to the module shipped with **djangular**. Refer to an alternative module in your
 ``settings.py`` with the configuration directive ``DJANGULAR_VALIDATION_MAPPING_MODULE``.
 
 
-Demo
-====
-There are three forms using the AngularJS validation mechanisms, one with and one without using the
-additional ``NgModelFormMixin``. The former displays the entered model data as a simple code object.
-The third form shows a full working example of a form synchronized by the server to all browsers
-accessing that page.
+Demos
+=====
+There are three forms using the AngularJS validation mechanisms.
+
+*Simple Form* shows how to implement a Django form with augmented functionality to add AngularJS's
+form validation in a DRY manner using the class ``NgFormValidationMixin``. This application does
+not require an AngularJS controller.
+
+*Model Form* show how to mix ``NgModelFormMixin`` with ``NgFormValidationMixin``. This demo shows
+how to add an AngularJS controller to a managed form.
+
+*Three-Way Data-Binding* shows a full working example of a form synchronized by the server with all
+browsers accessing the same URL.
 
 To test this code, a small demo is supplied with this package. With Django >= 1.5 installed, it
 should run out of the box.
@@ -191,6 +216,12 @@ Start to fill out the fields.
 * *E-Mail* must be a valid address.
 * *Phone number* can start with ``+`` and may contain only digits, spaces and dashes.
 
+Incorrect input is handled by AngularJS's form validation engine. For simulation purpose, a server
+side validation has been added, which disallows the use of email addresses containing
+``recipient@example.tld`` and the combination of *“John Doe”* for the first- and last name. A
+violation of the latter results in non-field errors, displayed independently of any field.
+
 .. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
 .. _form field definition: https://docs.djangoproject.com/en/dev/ref/forms/fields/#error-messages
 .. _ng-show: http://docs.angularjs.org/api/ng.directive:ngShow
+.. _form is bound: https://docs.djangoproject.com/en/dev/ref/forms/api/#django.forms.BoundField.errors

@@ -41,13 +41,13 @@ Change some data, the fields content should update concurrently in all attached 
 
 Add three-way data-binding to an AngularJS application
 ======================================================
-Include the Javascript file somewhere in your app:
+Refer to the Javascript file ``django-angular.js`` somewhere on your page:
 
 .. code-block:: html
 
-	<script src="{{ STATIC_URL }}js/djng-websocket.js"></script>
+	<script src="{{ STATIC_URL }}djangular/js/django-angular.js" type="text/javascript"></script>
 
-add an additional dependency to your application:
+add the module dependency to your application initialization:
 
 .. code-block:: javascript
 
@@ -57,9 +57,12 @@ configure the websocket module with a URL prefix of your choice:
 
 .. code-block:: javascript
 
-	app.config(function(djangoWebsocketProvider) {
-	    djangoWebsocketProvider.prefix('/ws');  // use /ws as the websocket's prefix
-	    djangoWebsocketProvider.debug(true);  // this optionally informs about the connection status
+	my_app.config(function(djangoWebsocketProvider) {
+	    // use '/ws' as the websocket's prefix
+	    djangoWebsocketProvider.prefix('/ws');
+	
+	    // optionally inform about the connection status in the browser's console
+	    djangoWebsocketProvider.debug(true);
 	});
 
 If you want to bind the data model in one of your AngularJS controllers, you must inject the

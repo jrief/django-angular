@@ -51,7 +51,7 @@ class NgFormValidationMixinTest(TestCase):
             '<li ng-show="subscribe_form.email.$error.required">This field is required.</li>',
             '<li ng-show="subscribe_form.email.$error.email">Enter a valid email address.</li>',
             '</ul>'))
-        self.assertHTMLEqual(self.subscription_form['email'].ng_validation_tags(), html)
+        self.assertHTMLEqual(self.subscription_form['email'].ng_errors(), html)
 
     def test_field_as_text(self):
         response = self.subscription_form['email'].field.ng_potential_errors.as_text()
