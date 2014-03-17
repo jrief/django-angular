@@ -24,10 +24,10 @@ class TupleErrorList(list):
             return ''
         if getattr(self, '_ng_non_field_errors', False):
             # renders a non-field error
-            return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}">{2}</ul>',
+            return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}" ng-cloak>{2}</ul>',
                 self.identifier, self.property, format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
         # renders a field error
-        return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}">{2}</ul>',
+        return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}" ng-cloak>{2}</ul>',
             self.identifier, self.property, format_html_join('', '<li ng-show="{0}.{1}">{2}</li>',
                 ((self.identifier, e[0], force_text(e[1])) for e in self)))
 
