@@ -20,8 +20,7 @@ class NgFormValidationView(TemplateView):
         return self.render_to_response(context)
 
     def post(self, request, **kwargs):
-        post_data = request.POST.copy()
-        form = SubscriptionForm(post_data)
+        form = SubscriptionForm(request.POST)
         if form.is_valid():
             return redirect('form_data_valid')
         context = self.get_context_data(form=form, **kwargs)
