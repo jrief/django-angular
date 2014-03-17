@@ -47,7 +47,7 @@ class NgFormValidationMixinTest(TestCase):
 
     def test_field_as_ul(self):
         html = ''.join((
-            '<ul class="djng-form-errors" ng-hide="subscribe_form.email.$pristine">',
+            '<ul class="djng-form-errors" ng-hide="subscribe_form.email.$pristine" ng-cloak>',
             '<li ng-show="subscribe_form.email.$error.required">This field is required.</li>',
             '<li ng-show="subscribe_form.email.$error.email">Enter a valid email address.</li>',
             '</ul>'))
