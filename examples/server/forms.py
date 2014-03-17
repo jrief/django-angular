@@ -8,7 +8,7 @@ from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 def reject_addresses(value):
     try:
         value.lower().index('@example.')
-        raise ValidationError(u'Email address ‘{0}’ is not accepted by the server.'.format(value))
+        raise ValidationError(u'Email address \'{0}\' is rejected by the server.'.format(value))
     except ValueError:
         pass
 
@@ -31,7 +31,7 @@ class SubscriptionForm(NgFormValidationMixin, forms.Form):
 
     def clean(self):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
-            raise ValidationError(u'‘John Doe’ is not accepted by the server.')
+            raise ValidationError(u'The full name \'John Doe\' is rejected by the server.')
         return super(SubscriptionForm, self).clean()
 
 
