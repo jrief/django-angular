@@ -12,6 +12,8 @@ Detailed documentation
 
 [![ReadTheDocs](https://raw.github.com/jrief/django-angular/master/docs/_static/badge-rtd.png)](http://django-angular.readthedocs.org/)
 
+Please drop me a line, where you use this project.
+
 Features
 --------
 * Seamless integration of Django forms with AngularJS controllers.
