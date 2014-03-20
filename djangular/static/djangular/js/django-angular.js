@@ -70,7 +70,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 
 		function on_open(evt) {
 			_console.log('Connected');
-			interval = 3000;
+			interval = 500;
 			deferred.resolve();
 		}
 
@@ -80,7 +80,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				timer = $timeout(function() {
 					connect(ws.url);
 				}, interval);
-				interval = Math.min(interval + 1000, 90000);
+				interval = Math.min(interval + 500, 5000);
 			}
 		}
 
