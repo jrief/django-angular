@@ -2,7 +2,6 @@
 import types
 from django.conf import settings
 from django.forms import forms
-from django.utils import six
 from django.utils.html import format_html, format_html_join
 from django.utils.encoding import force_text
 from django.utils.importlib import import_module
@@ -27,8 +26,8 @@ class TupleErrorList(list):
             return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}" ng-cloak>{2}</ul>',
                 self.identifier, self.property, format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
         # renders a field error
-        return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}" ng-cloak>{2}</ul>',
-            self.identifier, self.property, format_html_join('', '<li ng-show="{0}.{1}">{2}</li>',
+        return format_html('<ul class="djng-form-errors" ng-hide="{0}.{1}" ng-cloak>{2}<li ng-show="{0}.$valid" class="valid"></li></ul>',
+            self.identifier, self.property, format_html_join('', '<li ng-show="{0}.{1}" class="invalid">{2}</li>',
                 ((self.identifier, e[0], force_text(e[1])) for e in self)))
 
     def as_text(self):
