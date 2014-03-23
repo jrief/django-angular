@@ -14,17 +14,20 @@
 		display: inline-block;
 		float: right;
 		width: 360px;
+		list-style-type: none;
 	}
 	ul.errorlist li {
 		color: #e9322d;
 	}
-	ul.djng-form-errors li {
-		list-style-type: none;
+	ul.djng-form-errors li.invalid {
 		color: #e9322d;
 	}
-	ul.djng-form-errors li:before {
-		content: "* ";
-		font-size: 135%;
+	ul.djng-form-errors li.invalid:before {
+		content: "\2716\20";
+	}
+	ul.djng-form-errors li.valid:before {
+		color: #00c900;
+		content: "\2714";
 	}
 	span.helptext {
 		color: #8B8B8B;

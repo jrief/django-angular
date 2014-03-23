@@ -22,9 +22,9 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-maxlength': '20'}, attrib)
         lis = self.dom('label[for=id_first_name]').next('ul.djng-form-errors').children('li')
         if django.VERSION[1] == 5:
-            self.assertEqual(len(lis), 1)
+            self.assertEqual(len(lis), 2)
         else:
-            self.assertEqual(len(lis), 3)
+            self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
         self.assertDictContainsSubset({'ng-show': 'subscribe_form.first_name.$error.required'}, attrib)
 
@@ -48,8 +48,9 @@ class NgFormValidationMixinTest(TestCase):
     def test_field_as_ul(self):
         html = ''.join((
             '<ul class="djng-form-errors" ng-hide="subscribe_form.email.$pristine" ng-cloak>',
-            '<li ng-show="subscribe_form.email.$error.required">This field is required.</li>',
-            '<li ng-show="subscribe_form.email.$error.email">Enter a valid email address.</li>',
+            '<li class="invalid" ng-show="subscribe_form.email.$error.required">This field is required.</li>',
+            '<li class="invalid" ng-show="subscribe_form.email.$error.email">Enter a valid email address.</li>',
+            '<li class="valid" ng-show="subscribe_form.email.$valid"></li>',
             '</ul>'))
         self.assertHTMLEqual(self.subscription_form['email'].ng_errors(), html)
 

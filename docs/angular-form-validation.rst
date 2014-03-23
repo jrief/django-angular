@@ -158,9 +158,34 @@ messages, using ng-show_. The displayed message text is exactly the same as woul
 the server side code complains about invalid data during form validation. These prepared error
 messages can be customized during `form field definition`_.
 
-The default error list is rendered as ``<ul class="djng-form-errors">...</ul>``. If you desire an
-alternative CSS class or an alternative way of rendering the list of errors, then initialize the
-form instance with
+The default error list is rendered as ``<ul class="djng-form-errors">...</ul>``. To each ``<li>``
+of this error list, the attribute ``class="invalid"`` is added. The last list-item
+``<li class="valid"></li>`` is somehow special, as it is only visible if the corresponding input
+field contains valid data. By using special style sheets, one can for instance add a green
+tick after a validated input field, to signal that everything is OK.
+
+The styling of these validation elements must be done through CSS, for example with:
+
+.. code-block:: css
+
+	ul.djng-form-errors {
+		margin-left: 0;
+		display: inline-block;
+		list-style-type: none;
+	}
+	ul.djng-form-errors li.invalid {
+		color: #e9322d;
+	}
+	ul.djng-form-errors li.invalid:before {
+		content: "\2716\20";  /* adds a red cross before the error message */
+	}
+	ul.djng-form-errors li.valid:before {
+		color: #00c900;
+		content: "\2714";  /* adds a green tick */
+	}
+
+If you desire an alternative CSS class or an alternative way of rendering the list of errors, then
+initialize the form instance with
 
 .. code-block:: python
 
