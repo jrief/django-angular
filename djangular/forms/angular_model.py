@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 from base64 import b64encode
 from django.forms.util import ErrorDict
-from django.utils.safestring import mark_safe
 from djangular.forms.angular_base import NgFormBaseMixin
 
 
@@ -56,15 +54,12 @@ class NgModelFormMixin(NgFormBaseMixin):
         if self._errors and self.prefix:
             self._errors = ErrorDict((self.add_prefix(name), value) for name, value in self._errors.items())
 
-    def as_ng_init(self):
-        """
-        Return a JSON representation of a dictionary specifying the defaults for this form. This
-        dictionary can be used to inject the initial values for an Angular controller using
-        the directive 'ng-init={{ thisform.as_ng_init }}'.
-        """
-        return mark_safe(json.dumps(self.get_initial_data()))
-
     def get_initial_data(self):
+        """
+        Return a dictionary specifying the defaults for this form. This dictionary
+        shall be used to inject the initial values for an Angular controller using
+        the directive 'ng-init={{thisform.get_initial_data|js|safe}}'.
+        """
         data = {}
         for name, field in self.fields.items():
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
