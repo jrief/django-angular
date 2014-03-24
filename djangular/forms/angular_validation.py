@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 import types
 from django.conf import settings
-from django.forms import forms
 from django.utils.html import format_html, format_html_join
 from django.utils.encoding import force_text
 from django.utils.importlib import import_module
-from djangular.forms.angular_base import NgFormBaseMixin
+from djangular.forms.angular_base import NgFormBaseMixin, NgBoundField
 
 VALIDATION_MAPPING_MODULE = import_module(getattr(settings, 'DJANGULAR_VALIDATION_MAPPING_MODULE', 'djangular.forms.patched_fields'))
 
@@ -36,28 +35,6 @@ class TupleErrorList(list):
         if getattr(self, '_ng_non_field_errors', False):
             return '\n'.join(['* {0}'.format(force_text(e)) for e in self])
         return '\n'.join(['* {0}'.format(force_text(e[1])) for e in self])
-
-
-class NgValidationBoundField(forms.BoundField):
-    def ng_errors(self):
-        """
-        Returns an unsorted list of detected and potential errors, which may occur while validating
-        an input field, using AngularJS's form validation.
-        """
-        if hasattr(self.field, 'ng_detected_errors'):
-            return self.field.ng_detected_errors.as_ul() + self.field.ng_potential_errors.as_ul()
-        return self.field.ng_potential_errors.as_ul()
-
-    def label_tag(self, contents=None, attrs=None, label_suffix=None):
-        """
-        Overload method which inserts AngularJS form validation elements just after the <label> tag.
-        """
-        from django import VERSION
-        if VERSION[1] <= 5:
-            lt = super(NgValidationBoundField, self).label_tag(contents, attrs)
-        else:
-            lt = super(NgValidationBoundField, self).label_tag(contents, attrs, label_suffix)
-        return lt + self.ng_errors()
 
 
 class NgFormValidationMixin(NgFormBaseMixin):
@@ -92,12 +69,12 @@ class NgFormValidationMixin(NgFormBaseMixin):
             setattr(field, 'ng_potential_errors', ng_error_class(ng_potential_errors))
 
     def __getitem__(self, name):
-        "Returns a NgValidationBoundField with the given name."
+        "Returns a NgBoundField with the given name."
         try:
             field = self.fields[name]
         except KeyError:
             raise KeyError('Key %r not found in Form' % name)
-        return NgValidationBoundField(self, field, name)
+        return NgBoundField(self, field, name)
 
     def name(self):
         return self.form_name
