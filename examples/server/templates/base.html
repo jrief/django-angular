@@ -9,7 +9,8 @@
 	body {
 		padding-top: 60px;
 	}
-	ul.errorlist, ul.djng-form-errors {
+	ul.errorlist,
+	ul.djng-form-errors {
 		margin-left: 0;
 		display: inline-block;
 		float: right;
@@ -22,6 +23,7 @@
 	ul.djng-form-errors li.invalid {
 		color: #e9322d;
 	}
+	ul.errorlist li:before,
 	ul.djng-form-errors li.invalid:before {
 		content: "\2716\20";
 	}
@@ -34,6 +36,9 @@
 		display: inline-block;
 		margin-bottom: 15px;
 	}
+	[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+		display: none !important;
+	}
 	</style>
 </head>
 <body>
@@ -44,10 +49,13 @@
 				<div class="nav-collapse collapse">
 					<ul class="nav">
 						<li class="{% active request 'djng_form_validation' %}">
-							<a href="{% url 'djng_form_validation' %}">Simple Form</a>
+							<a href="{% url 'djng_form_validation' %}">Form Validation</a>
+						</li>
+						<li class="{% active request 'djng_model_form' %}">
+							<a href="{% url 'djng_model_form' %}">Model Form</a>
 						</li>
 						<li class="{% active request 'djng_model_form_validation' %}">
-							<a href="{% url 'djng_model_form_validation' %}">Model Form</a>
+							<a href="{% url 'djng_model_form_validation' %}">Model Form Validation</a>
 						</li>
 						{% if with_ws4redis %}
 						<li class="{% active request 'djng_3way_databinding' %}">
