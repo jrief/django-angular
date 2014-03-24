@@ -15,7 +15,7 @@ class NgModelFormMixin(NgFormBaseMixin):
     """
 
     def __init__(self, *args, **kwargs):
-        self.scope_prefix = kwargs.pop('scope_prefix', None)
+        self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
             if not isinstance(self.Meta.ng_models, list):
                 raise TypeError('Meta.ng_model is not of type list')
@@ -64,3 +64,9 @@ class NgModelFormMixin(NgFormBaseMixin):
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
                 data[name] = self.initial and self.initial.get(name) or field.initial
         return data
+
+    def name(self):
+        try:
+            return super(NgModelFormMixin, self).name()
+        except AttributeError:
+            return self.scope_prefix
