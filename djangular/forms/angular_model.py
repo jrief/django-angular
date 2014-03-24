@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from base64 import b64encode
 from django.forms.util import ErrorDict
 from djangular.forms.angular_base import NgFormBaseMixin
 
@@ -69,4 +70,5 @@ class NgModelFormMixin(NgFormBaseMixin):
         try:
             return super(NgModelFormMixin, self).name()
         except AttributeError:
-            return self.scope_prefix
+            # return a pseudo unique name for this form
+            return b64encode(self.scope_prefix).rstrip('=')
