@@ -25,18 +25,21 @@ this can be achieved automatically and on the fly
 	from djangular.forms import NgFormValidationMixin
 	
 	class MyValidatedForm(NgFormValidationMixin, forms.Form):
+	    form_name = 'my_valid_form'
 	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
 	    age = forms.DecimalField(min_value=18, max_value=99)
 
-When initializing this form, give it a name, otherwise it's name defaults to ``form``. Such a form
-name is required by the AngularJS's validation engine.
+Each page under control of AngularJS requires a unique form name, otherwise the AngularJS's form
+validation engine shows undefined behavior. Therefore you must name each form inheriting from
+``NgFormValidationMixin``. If a form is used only once per page, the form's name can be added to
+the class declaration, as shown above. If no form name is specified, it defaults to ``form``,
+limiting the number of validated forms per page to one.
 
-.. note:: Do not use an empty ``label`` when declaring a form field, otherwise the class
-          ``NgFormValidationMixin`` won't be able to render AngularJS's validation error elements.
-          This also applies to ``auto_id``, which if False, will not include ``<label>`` tags while
-          rendering the form.
+If a form inheriting from ``NgFormValidationMixin`` shall be instantiated more than once per page,
+each instance of that form must be instantiated with a different name. This then must be done in
+the constructor of the form, by passing in the argument ``form_name='my_form'``.
 
-In the view class, add the created form to the rendering context
+In the view class, add the created form to the rendering context:
 
 .. code-block:: python
 
@@ -44,6 +47,22 @@ In the view class, add the created form to the rendering context
 	    context = super(MyRenderingView, self).get_context_data(**kwargs)
 	    context.update(form=MyValidatedForm())
 	    return context
+
+or if the same form declaration shall be used more than once:
+
+.. code-block:: python
+
+	def get_context_data(self, **kwargs):
+	    context = super(MyRenderingView, self).get_context_data(**kwargs)
+	    context.update(form1=MyValidatedForm(form_name='my_valid_form1'),
+	                   form2=MyValidatedForm(form_name='my_valid_form2'))
+	    return context
+
+.. note:: Do not use an empty ``label`` when declaring a form field, otherwise the class
+          ``NgFormValidationMixin`` won't be able to render AngularJS's validation error elements.
+          This also applies to ``auto_id``, which if False, will not include ``<label>`` tags while
+          rendering the form.
+
 
 Render this form in a template
 ------------------------------
@@ -55,14 +74,23 @@ Render this form in a template
 	  <input type="submit" value="Submit" />
 	</form>
 
-Remember to add the entry ``name="{{ form.name }}"`` to the ``form`` element. Use the directive
-``novalidate`` to disable the browser’s native form validation. If you just need AngularJS's built
-in form validation mechanisms without customized checks on the forms data, there is no need to add
-an ``ng-controller`` onto a wrapping HTML element. The only measure to take, is to give each
-form on a unique name, otherwise the AngularJS form validation code might get confused.
+Remember to add the entry ``name="{{ form.name }}"`` to the ``form`` element, otherwise AngularJS's
+validation engine won't work. Use the directive ``novalidate`` to disable the browser’s native form
+validation. If you just need AngularJS's built in form validation mechanisms without customized
+checks on the forms data, there is no need to add an ``ng-controller`` onto a wrapping HTML element.
+The only measure to take, is to give each form on a unique name, otherwise the AngularJS form
+validation engine shows undefined behavior.
+
+Forms which do not validate on the client, probably shall not be posted. This can simply be disabled
+by replacing the submit button with the following HTML code:
+
+.. code-block:: html
+
+	<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Submit">
 
 .. note:: On Django-1.5, some field constraints, such as the attributes ``min_length`` and
-		``max_length``, are ignored when used with this Mixin. In Django-1.6 this has been fixed.
+		``max_length``, are ignored when used with ``NgFormValidationMixin``. This has been fixed
+		in Django-1.6 .
 
 More granular output
 ....................
@@ -119,32 +147,35 @@ On class declaration inherit first from ``NgModelFormMixin`` and *afterward* fro
 	from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 	
 	class MyValidatedForm(NgModelFormMixin, NgFormValidationMixin, forms.Form):
-	    pass
+	    # custom form fields
 
 but don't do this
 
 .. code-block:: python
 
 	class MyValidatedForm(NgFormValidationMixin, NgModelFormMixin, forms.Form):
-	    pass
+	    # custom form fields
 
 Another precaution to take, is to use different names for the forms name and the ``scope_prefix``.
 So, this is legal
 
 .. code-block:: python
 
-	form = MyValidatedForm(name='my_form', scope_prefix='my_model')
+	form = MyValidatedForm(form_name='my_form', scope_prefix='my_model')
 
 but this is not
 
 .. code-block:: python
 
-	form = MyValidatedForm(name='my_form', scope_prefix='my_form')
+	form = MyValidatedForm(form_name='my_form', scope_prefix='my_form')
 
+An implementation note
+......................
 AngularJS names each input field to validate, by concatenating its forms name with its fields name.
-This object member then contains an error object, named ``formname.fieldname.$error`` filled by the
-AngularJS validation mechanism. The placeholder for the error object would clash with ``ng-model``,
-if the forms name is identical to the model prefix. Therefore, remember to use different names.
+This object member then contains an error object, named ``my_form.field_name.$error`` filled by
+the AngularJS validation mechanism. The placeholder for the error object would clash with
+``ng-model``, if the form name is identical to the scope prefix. Therefore, just remember to use
+different names.
 
 
 Customize detected and potential validation errors
@@ -200,51 +231,16 @@ Refer to ``TupleErrorList`` on how to implement an error list renderer.
 
 Adding form validation to customized fields
 -------------------------------------------
-Django's form validation is not 100% compatible with AngularJS's validation. Therefore **djangular**
-is shipped with a mapping module to translate Django's form validation to AngularJS. This module
+Django's form validation is not 1:1 compatible with AngularJS's validation. Therefore **djangular**
+is shipped with a mapping module, which translate Django's form validation to AngularJS. This module
 is located in ``djangular.forms.patched_fields``.
 
 If you need to add or to replace any of these mappings, create a Python module which implements an
 alternative mapping to the module shipped with **djangular**. Refer to an alternative module in your
 ``settings.py`` with the configuration directive ``DJANGULAR_VALIDATION_MAPPING_MODULE``.
 
-
-Demos
-=====
-There are three forms using the AngularJS validation mechanisms.
-
-*Simple Form* shows how to implement a Django form with augmented functionality to add AngularJS's
-form validation in a DRY manner using the class ``NgFormValidationMixin``. This application does
-not require an AngularJS controller.
-
-*Model Form* show how to mix ``NgModelFormMixin`` with ``NgFormValidationMixin``. This demo shows
-how to add an AngularJS controller to a managed form.
-
-*Three-Way Data-Binding* shows a full working example of a form synchronized by the server with all
-browsers accessing the same URL.
-
-To test this code, a small demo is supplied with this package. With Django >= 1.5 installed, it
-should run out of the box.
-
-* Change into the directory ``examples``
-* run ``./manage.py runserver``
-* point your browser onto one of
-
-  * http://localhost:8000/simple_form/
-  * http://localhost:8000/model_form/
-  * http://localhost:8000/threeway_databinding/
-
-Start to fill out the fields. 
-
-* *First name* requires at least 3 characters.
-* *Last name* must start with a capital letter.
-* *E-Mail* must be a valid address.
-* *Phone number* can start with ``+`` and may contain only digits, spaces and dashes.
-
-Incorrect input is handled by AngularJS's form validation engine. For simulation purpose, a server
-side validation has been added, which disallows the use of email addresses containing
-``recipient@example.tld`` and the combination of *“John Doe”* for the first- and last name. A
-violation of the latter results in non-field errors, displayed independently of any field.
+For further information about how to use form validation with AngularJS, please refer to the
+:ref:`demo pages<demos>`.
 
 .. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
 .. _form field definition: https://docs.djangoproject.com/en/dev/ref/forms/fields/#error-messages

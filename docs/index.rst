@@ -18,6 +18,7 @@ Contents
 
   installation
   integration
+  demos
   angular-model-form
   angular-form-validation
   basic-crud-operations

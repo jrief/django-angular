@@ -143,10 +143,10 @@ Usage example
 
 .. note:: In real world applications you might want to restrict access to certain methods.
           This can be done using decorators, such as ``@login_required``.
-          For additional functionality :ref:`JSONResponseMixin <dispatch-ajax-requests>` and NgCRUDView can be used together.
+          For additional functionality :ref:`JSONResponseMixin <dispatch-ajax-requests>` and
+          ``NgCRUDView`` can be used together.
 
 .. _$resource: http://docs.angularjs.org/api/ngResource.$resource
-.. _JSONResponseMixin: dispatch-ajax-requests
 .. _ngRoute module: http://docs.angularjs.org/api/ngRoute
 .. _$route: http://docs.angularjs.org/api/ngRoute/service/$route
 .. _$routeParams: http://docs.angularjs.org/api/ngRoute/service/$routeParams

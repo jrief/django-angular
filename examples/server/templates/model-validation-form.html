@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block subscribe_me_form %}
+	<form name="{{ form.name }}" novalidate method="post" action=".">
+		{% csrf_token %}
+		{{ form }}
+		<div>
+			<input type="submit" class="btn" value="Submit through HTTP">
+			<button type="submit" class="btn">Submit through Ajax</button>
+		</div>
+	</form>
+	{% verbatim %}
+		<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock subscribe_me_form %}
