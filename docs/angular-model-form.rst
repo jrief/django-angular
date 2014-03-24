@@ -12,7 +12,7 @@ augment the rendered form output with an AngularJS HTML tag, such as::
 where *model_name* corresponds to the named field from the declared form class.
 
 Sample code
------------
+===========
 
 Assume to have a simple Django form class with a single input field. Augment its functionality
 by mixing in the **djangular** class ``NgModelFormMixin``
@@ -71,11 +71,11 @@ and using some Javascript code to define the AngularJS controller:
 
 	my_app.controller('MyFormCtrl', function($scope, $http) {
 	    $scope.submit = function() {
-	        $http.post('/url/of/your/contact_form_view', {
-	            subject: $scope.subject
-	        }).success(function(out_data) {
-	            // do something
-	        });
+	        var in_data = { subject: $scope.subject };
+	        $http.post('/url/of/your/contact_form_view', in_data)
+	            .success(function(out_data) {
+	                // do something
+	            });
 	    }
 	});
 
