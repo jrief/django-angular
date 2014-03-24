@@ -6,8 +6,8 @@
 		{% csrf_token %}
 		{{ form }}
 		<div>
-			<input type="submit" class="btn" value="Submit through HTTP"><span>&nbsp;</span>
-			<a class="btn" ng-click="send_data()">Submit through Ajax</a>
+			<input type="submit" class="btn" value="Submit via HTTP"><span>&nbsp;</span>
+			<a class="btn" ng-click="send_data()">Submit via Ajax</a>
 		</div>
 		{% verbatim %}
 			<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
@@ -18,22 +18,21 @@
 {% block scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', []);
+	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
 	my_app.config(function($httpProvider) {
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
 	});
 
 	my_app.controller('MyFormCtrl', function($scope, $http) {
-		console.log('MyFormCtrl');
-		console.log($scope);
 		$scope.send_data = function() {
-			console.log('Submit Ajax');
-			console.log($scope);
-			debugger;
 			if ($scope.subscribe_data) {
-				$http.post("{% url 'djng_model_form' %}", $scope.subscribe_data).success(function(data) {
-					alert('For successfully submitted');
+				$http.post("{% url 'djng_model_form' %}", $scope.subscribe_data).success(function(out_data) {
+					if (out_data.errors) {
+						alert('Some form field did not validate');
+					} else {
+						alert('Form submitted successfully');
+					}
 				}).error(function() {
 					alert('An error occured during submission');
 				});
