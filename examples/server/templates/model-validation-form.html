@@ -5,11 +5,18 @@
 		{% csrf_token %}
 		{{ form }}
 		<div>
-			<input type="submit" class="btn" value="Submit through HTTP">
-			<button type="submit" class="btn">Submit through Ajax</button>
+			<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Submit through HTTP"><span>&nbsp;</span>
+			<button type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid">Submit through Ajax</button>
 		</div>
 	</form>
 	{% verbatim %}
 		<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
 	{% endverbatim %}
 {% endblock subscribe_me_form %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	angular.module('djangular-demo', ['ng.django.forms']);
+	</script>
+{% endblock scripts %}

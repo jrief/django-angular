@@ -69,11 +69,13 @@
 	</div>
 	<div class="container">
 		{% block container %}
-		<h1>Bootstrap starter template</h1>
-		<p>
-			Use this document as a way to quick start any new project.<br> All you
-			get is this message and a barebones HTML document.
-		</p>
+		<h1>Subscribe Me</h1>
+		<div class="row">
+			<div class="span8">
+				{% block subscribe_me_form %}
+				{% endblock subscribe_me_form %}
+			</div>
+		</div>
 		{% endblock container %}
 	</div>
 	{% block scripts %}
