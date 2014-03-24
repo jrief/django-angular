@@ -13,8 +13,7 @@ def reject_addresses(value):
         pass
 
 
-class SubscriptionForm(NgFormValidationMixin, forms.Form):
-    form_name = 'subscribe_form'
+class SubscriptionForm(forms.Form):
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
     last_name = forms.RegexField(r'^[A-Z][a-z -]?', label='Last name',
         error_messages={'invalid': 'Last names shall start in upper case'},
@@ -35,5 +34,14 @@ class SubscriptionForm(NgFormValidationMixin, forms.Form):
         return super(SubscriptionForm, self).clean()
 
 
+class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
+    form_name = 'valid_form'
+
+
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
-    pass
+    scope_prefix = 'subscribe_data'
+
+
+class SubscriptionFormWithNgValidationAndModel(NgModelFormMixin, NgFormValidationMixin, SubscriptionForm):
+    form_name = 'valid_form'
+    scope_prefix = 'subscribe_data'
