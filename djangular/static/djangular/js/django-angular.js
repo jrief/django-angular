@@ -28,6 +28,22 @@ angular.module('ng.django.forms', []).directive('form', function() {
 			form.$setPristine();
 		}
 	};
+}).provider('djangoForm', function() {
+	var NON_FIELD_ERRORS = '__all__';
+
+	this.$get = function() {
+		return {
+			setErrors: function(form, errors) {
+				angular.forEach(errors, function(errors, key) {
+					if (errors.length > 0) {
+						form[key].$setPristine();
+						form[key].$setValidity('rejected', false);
+						form[key].$message = errors[0];
+					}
+				});
+			}
+		};
+	};
 });
 
 
