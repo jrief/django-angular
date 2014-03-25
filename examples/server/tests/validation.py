@@ -26,6 +26,8 @@ class NgFormValidationMixinTest(TestCase):
         else:
             self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
+        self.assertDictContainsSubset({'ng-show': 'valid_form.first_name.$valid'}, attrib)
+        attrib = dict(lis[1].attrib.items())
         self.assertDictContainsSubset({'ng-show': 'valid_form.first_name.$error.required'}, attrib)
 
     def test_type(self):
@@ -48,9 +50,9 @@ class NgFormValidationMixinTest(TestCase):
     def test_field_as_ul(self):
         html = ''.join((
             '<ul class="djng-form-errors" ng-hide="valid_form.email.$pristine" ng-cloak>',
+            '<li class="valid" ng-show="valid_form.email.$valid"></li>',
             '<li class="invalid" ng-show="valid_form.email.$error.required">This field is required.</li>',
             '<li class="invalid" ng-show="valid_form.email.$error.email">Enter a valid email address.</li>',
-            '<li class="valid" ng-show="valid_form.email.$valid"></li>',
             '</ul>'))
         self.assertHTMLEqual(self.subscription_form['email'].ng_errors(), html)
 
