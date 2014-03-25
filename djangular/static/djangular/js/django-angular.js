@@ -31,16 +31,30 @@ angular.module('ng.django.forms', []).directive('form', function() {
 }).provider('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
+	function isNotEmpty(obj) {
+		for (var p in obj) { 
+			if (obj.hasOwnProperty(p))
+				return true;
+		}
+		return false;
+	}
+
 	this.$get = function() {
 		return {
 			setErrors: function(form, errors) {
 				angular.forEach(errors, function(errors, key) {
 					if (errors.length > 0) {
-						form[key].$setPristine();
-						form[key].$setValidity('rejected', false);
-						form[key].$message = errors[0];
+						if (key === NON_FIELD_ERRORS) {
+							form.$setPristine();
+							form.$message = errors[0];
+						} else {
+							form[key].$setPristine();
+							form[key].$setValidity('rejected', false);
+							form[key].$message = errors[0];
+						}
 					}
 				});
+				return isNotEmpty(errors);
 			}
 		};
 	};
