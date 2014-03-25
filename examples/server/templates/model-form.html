@@ -24,17 +24,14 @@
 		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
 	});
 
-	my_app.controller('MyFormCtrl', function($scope, $http) {
+	my_app.controller('MyFormCtrl', function($scope, $http, djangoForm) {
 		$scope.send_data = function() {
 			if ($scope.subscribe_data) {
 				$http.post("{% url 'djng_model_form' %}", $scope.subscribe_data).success(function(out_data) {
-					if (out_data.errors) {
-						alert('Some form field did not validate');
-					} else {
-						alert('Form submitted successfully');
-					}
+					console.log(out_data.errors);
+					djangoForm.setErrors($scope.valid_form, out_data.errors);
 				}).error(function() {
-					alert('An error occured during submission');
+					console.error('An error occured during submission');
 				});
 			}
 			return false;

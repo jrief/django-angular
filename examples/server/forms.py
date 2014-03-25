@@ -36,9 +36,11 @@ class SubscriptionForm(forms.Form):
 
 class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
+    pass
 
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
+    form_name = 'valid_form'
     scope_prefix = 'subscribe_data'
 
 
