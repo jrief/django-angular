@@ -55,7 +55,7 @@ class TupleErrorList(list):
     def as_text(self):
         if not self:
             return ''
-        return '\n'.join(['* %s' % force_text(e[4]) for e in self])
+        return '\n'.join(['* %s' % force_text(e[4]) for e in self if bool(e[4])])
 
 
 class NgBoundField(forms.BoundField):
