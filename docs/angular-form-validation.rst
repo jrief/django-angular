@@ -224,9 +224,11 @@ initialize the form instance with
 	    # rendering methods go here
 	
 	# during form instantiation
-	my_form = MyForm(ng_validation_error_class=MyErrorList)
+	my_form = MyForm(error_class=MyErrorList)
 
-Refer to ``TupleErrorList`` on how to implement an error list renderer.
+Refer to ``TupleErrorList`` on how to implement an alternative error list renderer. Currently this
+error list renderer renders two ``<ul>``-elements for each input field, one to be shown for
+*pristine* forms and one to be shown for *dirty* forms.
 
 
 Adding form validation to customized fields
