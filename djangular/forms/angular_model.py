@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from django.forms.util import ErrorDict
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from djangular.forms.angular_base import NgFormBaseMixin
+from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
 
 
 class NgModelFormMixin(NgFormBaseMixin):
@@ -48,25 +46,6 @@ class NgModelFormMixin(NgFormBaseMixin):
         super(NgModelFormMixin, self).__init__(*args, **kwargs)
         if self.scope_prefix == self.name():
             raise ValueError("The form's name may not be identical with its scope_prefix")
-        for name, field in self.base_fields.items():
-            if not hasattr(field, 'ng_field_name'):
-                ng_model = self.add_prefix(name)
-                setattr(field, 'ng_field_name', '{0}.{1}'.format(self.name(), ng_model))
-            # to each field, add an empty <ul>-element which may be filled with form errors
-            # detected during run time, for instance through an Ajax submission
-            extra_list_item = format_html('<li ng-show="{0}.$invalid" class="invalid" ng-bind="{0}.$message"></li>',
-                                          field.ng_field_name)
-            ng_error_class = type('NgErrorList', (self.NgErrorClass,),
-                {'identifier': field.ng_field_name, 'property': '$dirty', 'extra_list_item': extra_list_item})
-            setattr(field, 'ng_potential_errors', ng_error_class())
-
-    def _clean_fields(self):
-        """
-        Rewrite the error dictionary, so that its keys correspond to the model fields.
-        """
-        super(NgModelFormMixin, self)._clean_fields()
-        if self.prefix:
-            self._errors = ErrorDict((self.add_prefix(name), value) for name, value in self._errors.items())
 
     def get_initial_data(self):
         """
@@ -79,3 +58,14 @@ class NgModelFormMixin(NgFormBaseMixin):
             if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
                 data[name] = self.initial and self.initial.get(name) or field.initial
         return data
+
+    def get_field_errors(self, field):
+        errors = super(NgModelFormMixin, self).get_field_errors(field)
+        identifier = format_html('{0}.{1}', self.name(), field.name)
+        errors.append(SafeTuple((identifier, '$pristine', '$invalid', 'invalid', '$message')))
+        return errors
+
+    def non_field_errors(self):
+        errors = super(NgModelFormMixin, self).non_field_errors()
+        errors.append(SafeTuple((self.name(), '$pristine', '$message', 'invalid', '$message')))
+        return errors

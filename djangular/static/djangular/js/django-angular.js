@@ -41,19 +41,34 @@ angular.module('ng.django.forms', []).directive('form', function() {
 
 	this.$get = function() {
 		return {
+			// setErrors takes care of updating prepared placeholder fields for displaying form errors
+			// deteced by an AJAX submission. Returns true if errors have been added to the form.
 			setErrors: function(form, errors) {
+				// remove errors from this form, which may have been rejected by an earlier validation
+				form.$message = '';
+				if (form.$error.hasOwnProperty('rejected')) {
+					var old_keys = [];
+					angular.forEach(form.$error.rejected, function(rejected) {
+						old_keys.push(rejected.$name);
+					});
+					angular.forEach(old_keys, function(key) {
+						form[key].$message = '';
+						form[key].$setValidity('rejected', true);
+					});
+				}
+				// add the new upstream errors
 				angular.forEach(errors, function(errors, key) {
 					if (errors.length > 0) {
 						if (key === NON_FIELD_ERRORS) {
-							form.$setPristine();
 							form.$message = errors[0];
 						} else {
-							form[key].$setPristine();
-							form[key].$setValidity('rejected', false);
 							form[key].$message = errors[0];
+							form[key].$setValidity('rejected', false);
 						}
 					}
 				});
+				// reset into pristine state, since the customer restarts with the form
+				form.$setPristine();
 				return isNotEmpty(errors);
 			}
 		};
