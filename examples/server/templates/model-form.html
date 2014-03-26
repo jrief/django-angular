@@ -5,10 +5,12 @@
 	<form name="{{ form.name }}" novalidate method="post" action="." ng-controller="MyFormCtrl">
 		{% csrf_token %}
 		{{ form }}
+		{% block submit_subscription %}
 		<div>
 			<input type="submit" class="btn" value="Submit via Post"><span>&nbsp;</span>
 			<a class="btn" ng-click="submit()">Submit via Ajax</a>
 		</div>
+		{% endblock submit_subscription %}
 		{% verbatim %}
 			<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
 		{% endverbatim %}

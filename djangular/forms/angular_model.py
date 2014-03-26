@@ -71,7 +71,7 @@ class NgModelFormMixin(NgFormBaseMixin):
     def get_field_errors(self, field):
         errors = super(NgModelFormMixin, self).get_field_errors(field)
         identifier = format_html('{0}.{1}', self.name(), field.name)
-        errors.append(SafeTuple((identifier, '$pristine', '$invalid', 'invalid', '$message')))
+        errors.append(SafeTuple((identifier, '$pristine', '$message', 'invalid', '$message')))
         return errors
 
     def non_field_errors(self):
