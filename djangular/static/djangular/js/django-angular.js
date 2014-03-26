@@ -80,11 +80,19 @@ angular.module('ng.django.forms', []).directive('form', function() {
 angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
 	var _prefix;
 	var _console = { log: noop, warn: noop, error: noop };
+	var heartbeat_interval = 0;
 
 	function noop() {}
 
 	this.prefix = function(prefix) {
 		_prefix = prefix;
+		return this;
+	};
+
+	// Set the heartbeat interval in milliseconds, which must be bigger than 1000.
+	// The default is 0, which means that no heartbeat messages are sent.
+	this.setHeartbeat = function(interval) {
+		heartbeat_interval = interval >= 1000 ? interval : 0;
 		return this;
 	};
 
@@ -118,9 +126,9 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			_console.log('Connected');
 			wait_for = 500;
 			deferred.resolve();
-			if (heartbeat_promise === null) {
+			if (heartbeat_promise === null && heartbeat_interval > 0) {
 				missed_heartbeats = 0;
-				heartbeat_promise = $interval(send_heartbeat, 5000);
+				heartbeat_promise = $interval(send_heartbeat, heartbeat_interval);
 			}
 		}
 
@@ -156,7 +164,6 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				if (missed_heartbeats > 3)
 					throw new Error("Too many missed heartbeats.");
 				ws.send(heartbeat_msg);
-				console.log('heartbeat');
 			} catch(e) {
 				$interval.cancel(heartbeat_promise);
 				heartbeat_promise = null;
