@@ -3,6 +3,7 @@ import django
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
 from server.forms import SubscriptionFormWithNgValidation, SubscriptionFormWithNgValidationAndModel
+from djangular.forms.angular_base import NgBoundField
 
 
 class NgFormValidationMixinTest(TestCase):
@@ -20,8 +21,9 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-required': 'true'}, attrib)
         self.assertDictContainsSubset({'ng-minlength': '3'}, attrib)
         self.assertDictContainsSubset({'ng-maxlength': '20'}, attrib)
-        lis = self.dom('label[for=id_first_name]').next('ul.djng-form-errors').children('li')
+        lis = self.dom('label[for=id_first_name]').closest('th').next('td').children('ul.djng-form-errors > li')
         if django.VERSION[1] == 5:
+            # Django < 1.6 not not know about minlength and maxlength
             self.assertEqual(len(lis), 2)
         else:
             self.assertEqual(len(lis), 4)
@@ -48,16 +50,19 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-pattern': '/^[A-Z][a-z -]?/'}, attrib)
 
     def test_field_as_ul(self):
+        bf = self.subscription_form['email']
         html = ''.join((
-            '<ul class="djng-form-errors" ng-hide="valid_form.email.$pristine" ng-cloak>',
-            '<li class="valid" ng-show="valid_form.email.$valid"></li>',
-            '<li class="invalid" ng-show="valid_form.email.$error.required">This field is required.</li>',
-            '<li class="invalid" ng-show="valid_form.email.$error.email">Enter a valid email address.</li>',
+            '<ul class="djng-form-errors" ng-show="valid_form.email.$dirty" ng-cloak>',
+              '<li ng-show="valid_form.email.$valid" class="valid"></li>',
+              '<li ng-show="valid_form.email.$error.required" class="invalid">This field is required.</li>',
+              '<li ng-show="valid_form.email.$error.email" class="invalid">Enter a valid email address.</li>',
             '</ul>'))
-        self.assertHTMLEqual(self.subscription_form['email'].ng_errors(), html)
+        self.assertHTMLEqual(bf.errors.as_ul(), html)
 
     def test_field_as_text(self):
-        response = self.subscription_form['email'].field.ng_potential_errors.as_text()
+        bf = self.subscription_form['email']
+        self.assertIsInstance(bf, NgBoundField)
+        response = bf.errors.as_text()
         self.assertMultiLineEqual(response, '* This field is required.\n* Enter a valid email address.')
 
 
