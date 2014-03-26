@@ -6,8 +6,8 @@
 		{% csrf_token %}
 		{{ form }}
 		<div>
-			<input type="submit" class="btn" value="Submit via HTTP"><span>&nbsp;</span>
-			<a class="btn" ng-click="send_data()">Submit via Ajax</a>
+			<input type="submit" class="btn" value="Submit via Post"><span>&nbsp;</span>
+			<a class="btn" ng-click="submit()">Submit via Ajax</a>
 		</div>
 		{% verbatim %}
 			<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
@@ -25,10 +25,11 @@
 	});
 
 	my_app.controller('MyFormCtrl', function($scope, $http, $window, djangoForm) {
-		$scope.send_data = function() {
+		$scope.submit = function() {
 			if ($scope.subscribe_data) {
 				$http.post("{% url 'djng_model_form' %}", $scope.subscribe_data).success(function(out_data) {
 					if (!djangoForm.setErrors($scope.valid_form, out_data.errors)) {
+						// on successful postin, redirect onto thank you page
 						$window.location.href = "{% url 'form_data_valid' %}";
 					}
 				}).error(function() {
