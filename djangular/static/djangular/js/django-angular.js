@@ -95,8 +95,9 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		return this;
 	};
 
-	this.$get = ['$window', '$q', '$timeout', function($window, $q, $timeout) {
-		var ws, deferred, timer = null, interval = null, scope, channels, collection;
+	this.$get = ['$window', '$q', '$timeout', '$interval', function($window, $q, $timeout, $interval) {
+		var ws, deferred, timer_promise = null, wait_for = null, scope, channels, collection;
+		var heartbeat_msg = '--heartbeat--', heartbeat_promise = null, missed_heartbeats = 0;
 
 		function connect(uri) {
 			try {
@@ -107,7 +108,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				ws.onmessage = on_message;
 				ws.onerror = on_error;
 				ws.onclose = on_close;
-				timer = null;
+				timer_promise = null;
 			} catch (err) {
 				deferred.reject(new Error(err));
 			}
@@ -115,17 +116,21 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 
 		function on_open(evt) {
 			_console.log('Connected');
-			interval = 500;
+			wait_for = 500;
 			deferred.resolve();
+			if (heartbeat_promise === null) {
+				missed_heartbeats = 0;
+				heartbeat_promise = $interval(send_heartbeat, 5000);
+			}
 		}
 
 		function on_close(evt) {
 			_console.log("Connection closed");
-			if (!timer && interval) {
-				timer = $timeout(function() {
+			if (!timer_promise && wait_for) {
+				timer_promise = $timeout(function() {
 					connect(ws.url);
-				}, interval);
-				interval = Math.min(interval + 500, 5000);
+				}, wait_for);
+				wait_for = Math.min(wait_for + 500, 5000);
 			}
 		}
 
@@ -142,6 +147,21 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				});
 			} catch(e) {
 				_console.warn('Data received by server is invalid JSON: ' + evt.data);
+			}
+		}
+
+		function send_heartbeat() {
+			try {
+				missed_heartbeats++;
+				if (missed_heartbeats > 3)
+					throw new Error("Too many missed heartbeats.");
+				ws.send(heartbeat_msg);
+				console.log('heartbeat');
+			} catch(e) {
+				$interval.cancel(heartbeat_promise);
+				heartbeat_promise = null;
+				_console.warn("Closing connection. Reason: " + e.message);
+				ws.close();
 			}
 		}
 
