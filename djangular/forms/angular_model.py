@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from django.forms.util import ErrorDict
 from django.utils.html import format_html
 from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
 
@@ -46,6 +47,14 @@ class NgModelFormMixin(NgFormBaseMixin):
         super(NgModelFormMixin, self).__init__(*args, **kwargs)
         if self.scope_prefix == self.name():
             raise ValueError("The form's name may not be identical with its scope_prefix")
+
+    def _post_clean(self):
+        """
+        Rewrite the error dictionary, so that its keys correspond to the model fields.
+        """
+        super(NgModelFormMixin, self)._post_clean()
+        if self._errors and self.prefix:
+            self._errors = ErrorDict((self.add_prefix(name), value) for name, value in self._errors.items())
 
     def get_initial_data(self):
         """
