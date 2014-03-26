@@ -1,14 +1,28 @@
-{% extends "subscribe-form-with-model.html" %}
+{% extends "validation-form.html" %}
 
-{% block subscribe_me_form %}
-	<form name="{{ form.name }}" novalidate ng-controller="MyFormController">
-		{{ form }}
+{% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
+
+{% block table_foot %}
+	<tr>
+		<td></td>
+		<td>
 		{% verbatim %}
-		<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
+			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
 		{% endverbatim %}
-	</form>
-{% endblock subscribe_me_form %}
+		</td>
+	</tr>
+{% endblock table_foot %}
 
 {% block scripts %}
-	<script src="{{ STATIC_URL }}demo.js"></script>
+	{{ block.super }}
+	<script type="text/javascript">
+	my_app.config(function(djangoWebsocketProvider) {
+		djangoWebsocketProvider.prefix('/ws');
+		djangoWebsocketProvider.debug(false);
+	});
+
+	my_app.controller('MyFormCtrl', function($scope, djangoWebsocket) {
+		djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'subscribe_data');
+	});
+	</script>
 {% endblock scripts %}

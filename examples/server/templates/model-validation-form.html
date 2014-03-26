@@ -1,8 +1,19 @@
 {% extends "model-form.html" %}
 
-{% block submit_subscription %}
-	<div>
-		<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Submit via Post"><span>&nbsp;</span>
-		<a class="btn" ng-disabled="{{ form.name }}.$invalid" ng-click="submit()">Submit via Ajax</a>
-	</div>
-{% endblock submit_subscription %}
+{% block table_foot %}
+	<tr>
+		<td></td>
+		<td>
+			<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Submit via Post"><span>&nbsp;</span>
+			<a class="btn" ng-disabled="{{ form.name }}.$invalid" ng-click="submit()">Submit via Ajax</a>
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
+		{% verbatim %}
+			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+		{% endverbatim %}
+		</td>
+	</tr>
+{% endblock table_foot %}

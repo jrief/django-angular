@@ -1,18 +1,21 @@
 {% extends "base.html" %}
 
 {% block subscribe_me_form %}
-	<form name="{{ form.name }}" novalidate method="post" action=".">
+	<form name="{{ form.name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %}>
 		{% csrf_token %}
-		{{ form }}
-		<div>
-			<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Subscribe">
-		</div>
+		<table class="span9" style="position: relative;">
+			<thead><tr></tr><td class="span3"></td><td class="span6"></td></tr></thead>
+			<tbody>{{ form }}</tbody>
+			<tfoot>
+				{% block table_foot %}
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Subscribe">
+					</td>
+				</tr>
+				{% endblock table_foot %}
+			</tfoot>
+		</table>
 	</form>
 {% endblock subscribe_me_form %}
-
-{% block scripts %}
-	{{ block.super }}
-	<script type="text/javascript">
-	angular.module('djangular-demo', ['ng.django.forms']);
-	</script>
-{% endblock scripts %}

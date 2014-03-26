@@ -9,13 +9,23 @@
 	body {
 		padding-top: 60px;
 	}
+	tbody label {
+		float: right;
+		margin-top: 5px;
+		margin-right: 1em;
+	}
+	tbody th {
+		vertical-align: top;
+	}
+	tfoot pre {
+		margin-top: 1em;
+	}
 	ul.errorlist,
 	ul.djng-form-errors {
-		margin-left: 0;
 		display: inline-block;
-		float: right;
-		width: 360px;
 		list-style-type: none;
+		position: absolute;
+		left: 500px;
 	}
 	ul.errorlist li {
 		color: #e9322d;
@@ -69,18 +79,18 @@
 	</div>
 	<div class="container">
 		{% block container %}
-		<h1>Subscribe Me</h1>
 		<div class="row">
-			<div class="span8">
-				{% block subscribe_me_form %}
-				{% endblock subscribe_me_form %}
-			</div>
+			<h1 class="span8 offset2">Subscribe Me</h1>
+			{% block subscribe_me_form %}{% endblock subscribe_me_form %}
 		</div>
 		{% endblock container %}
 	</div>
 	{% block scripts %}
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.14/angular.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}djangular/js/django-angular.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.forms', 'ng.django.websocket']);
+	</script>
 	{% endblock scripts %}
 </body>
 </html>

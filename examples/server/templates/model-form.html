@@ -1,26 +1,29 @@
-{% extends "base.html" %}
+{% extends "validation-form.html" %}
 {% load djangular_tags %}
 
-{% block subscribe_me_form %}
-	<form name="{{ form.name }}" novalidate method="post" action="." ng-controller="MyFormCtrl">
-		{% csrf_token %}
-		{{ form }}
-		{% block submit_subscription %}
-		<div>
+{% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
+
+{% block table_foot %}
+	<tr>
+		<td></td>
+		<td>
 			<input type="submit" class="btn" value="Submit via Post"><span>&nbsp;</span>
 			<a class="btn" ng-click="submit()">Submit via Ajax</a>
-		</div>
-		{% endblock submit_subscription %}
+		</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>
 		{% verbatim %}
-			<pre style="margin-top: 50px;">subscribe_data = {{ subscribe_data | json }}</pre>
+			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
 		{% endverbatim %}
-	</form>
-{% endblock subscribe_me_form %}
+		</td>
+	</tr>
+{% endblock table_foot %}
 
 {% block scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
 	my_app.config(function($httpProvider) {
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
