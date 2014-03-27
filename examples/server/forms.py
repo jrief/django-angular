@@ -24,8 +24,8 @@ class SubscriptionForm(forms.Form):
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
     birth_date = forms.DateField(label='Date of birth',
-        widget=DateInput(attrs={'validate-date': '^(\d{4})\/(\d{1,2})\/(\d{1,2})$'}),
-        help_text=u'Allowed date format: yyyy/mm/dd.')
+        widget=DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
+        help_text=u'Allowed date format: yyyy-mm-dd.')
     weight = forms.IntegerField(min_value=42, max_value=95, label='Weight in kg',
         error_messages={'min_value': 'You are too lightweight'})
     height = forms.FloatField(min_value=1.48, max_value=1.95, label='Height in meters',

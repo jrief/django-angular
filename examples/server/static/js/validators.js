@@ -1,6 +1,6 @@
 
 // this directive can be added to an input field which shall validate inserted dates, for example:
-// <input ng-model="a_date" type="text" validate-date="^(\d{4})\/(\d{1,2})\/(\d{1,2})$" />
+// <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
 // Now, this field is considered valid only if the date is valid and matches the given regular
 // expression.
 my_app.directive('validateDate', function() {
