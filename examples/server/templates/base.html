@@ -5,51 +5,7 @@
 	<title>Djangular Test Suite</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
-	<style>
-	body {
-		padding-top: 60px;
-	}
-	tbody label {
-		float: right;
-		margin-top: 5px;
-		margin-right: 1em;
-	}
-	tbody th {
-		vertical-align: top;
-	}
-	tfoot pre {
-		margin-top: 1em;
-	}
-	ul.errorlist,
-	ul.djng-form-errors {
-		display: inline-block;
-		list-style-type: none;
-		position: absolute;
-		left: 500px;
-	}
-	ul.errorlist li {
-		color: #e9322d;
-	}
-	ul.djng-form-errors li.invalid {
-		color: #e9322d;
-	}
-	ul.errorlist li:before,
-	ul.djng-form-errors li.invalid:before {
-		content: "\2716\20";
-	}
-	ul.djng-form-errors li.valid:before {
-		color: #00c900;
-		content: "\2714";
-	}
-	span.helptext {
-		color: #8B8B8B;
-		display: inline-block;
-		margin-bottom: 15px;
-	}
-	[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-		display: none !important;
-	}
-	</style>
+	<link href="{{ STATIC_URL }}css/djangular-demo.css" rel="stylesheet" />
 </head>
 <body>
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -80,7 +36,6 @@
 	<div class="container">
 		{% block container %}
 		<div class="row">
-			<h1 class="span8 offset2">Subscribe Me</h1>
 			{% block subscribe_me_form %}{% endblock subscribe_me_form %}
 		</div>
 		{% endblock container %}
@@ -91,6 +46,7 @@
 	<script type="text/javascript">
 	var my_app = angular.module('djangular-demo', ['ng.django.forms', 'ng.django.websocket']);
 	</script>
+	<script src="{{ STATIC_URL }}js/validators.js" type="text/javascript"></script>
 	{% endblock scripts %}
 </body>
 </html>
