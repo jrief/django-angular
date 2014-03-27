@@ -227,7 +227,7 @@ initialize the form instance with
 	my_form = MyForm(error_class=MyErrorList)
 
 Refer to ``TupleErrorList`` on how to implement an alternative error list renderer. Currently this
-error list renderer renders two ``<ul>``-elements for each input field, one to be shown for
+error list renderer, renders two ``<ul>``-elements for each input field, one to be shown for
 *pristine* forms and one to be shown for *dirty* forms.
 
 
@@ -243,6 +243,40 @@ alternative mapping to the module shipped with **djangular**. Refer to an altern
 
 For further information about how to use form validation with AngularJS, please refer to the
 :ref:`demo pages<demos>`.
+
+
+Adding an AngularJS directive for validating form fields
+--------------------------------------------------------
+Sometimes it can be useful to add a generic field validator on the client side, which can be
+controlled by the form's definition on the server. One such example is Django's DateField:
+
+.. code-block:: python
+
+	from django import forms
+	
+	class MyForm(forms.Form):
+	    # other fields
+	    date = forms.DateField(label='Date',
+	        widget=forms.widgets.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}))
+
+Since AngularJS can not validate dates, such a field requires a customized directive, which with
+the above definition, will be added as new attribute to the input element for date:
+
+.. code-block:: html
+
+	<input name="date" ng-model="my_form_data.birth_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
+
+If your AngularJS application has been initialized with
+
+.. code-block:: javascript
+
+	angular.module('MyApp', ['ng.django.forms']);
+
+then this new attribute is detected by the AngularJS directive ``validateDate``, which in turn
+checks the date for valid input and shows the content of the errors fields, if not.
+
+If you need to write a reusable component for customized form fields, refer to that directive as a
+starting point.
 
 .. _forms.Form: https://docs.djangoproject.com/en/dev/topics/forms/#form-objects
 .. _form field definition: https://docs.djangoproject.com/en/dev/ref/forms/fields/#error-messages
