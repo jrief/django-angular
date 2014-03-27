@@ -22,6 +22,11 @@ class NgFormValidationMixin(NgFormBaseMixin):
             field.widget.attrs.setdefault('ng-model', ng_model)
 
     def get_field_errors(self, bound_field):
+        """
+        Determine the kind of input field and create a list of potential errors which may occur
+        during validation of that field. This list is returned to be displayed in '$dirty' state
+        if the field does not validate for that criteria.
+        """
         errors = super(NgFormValidationMixin, self).get_field_errors(bound_field)
         identifier = format_html('{0}.{1}', self.name(), self.add_prefix(bound_field.name))
         errors_function = '{0}_angular_errors'.format(bound_field.field.__class__.__name__)
