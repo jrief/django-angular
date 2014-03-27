@@ -96,9 +96,19 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		return this;
 	};
 
-	this.debug = function(debug) {
-		if (debug) {
+	this.setLogLevel = function(logLevel) {
+		switch (logLevel) {
+		case 'debug':
 			_console = console;
+			break;
+		case 'log':
+			_console.log = console.log;
+		case 'warn':
+			_console.warn = console.warn;
+		case 'error':
+			_console.error = console.error;
+		default:
+			break;
 		}
 		return this;
 	};
