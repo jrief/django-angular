@@ -71,10 +71,13 @@ class NgBoundField(forms.BoundField):
 
 
 class NgFormBaseMixin(object):
-    form_name = None
-
     def __init__(self, *args, **kwargs):
-        self._form_name = kwargs.pop('form_name', self.form_name)
+        try:
+            form_name = self.form_name
+        except AttributeError:
+            # if form_name is unset, then generate a pseudo unique name, based upon the class name
+            form_name = b64encode(self.__class__.__name__).rstrip('=')
+        self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
         super(NgFormBaseMixin, self).__init__(*args, **kwargs)
@@ -94,21 +97,15 @@ class NgFormBaseMixin(object):
         """
         return self.prefix and ('%s.%s' % (self.prefix, field_name)) or field_name
 
-    def name(self):
-        if not self._form_name:
-            # generate a pseudo unique form name, based upon the class name
-            self._form_name = b64encode(self.__class__.__name__).rstrip('=')
-        return self._form_name
-
     def get_field_errors(self, field):
         """
         Return server side errors. Shall be overridden by derived forms to add their extra errors for AngularJS.
         """
-        identifier = format_html('{0}.{1}', self.name(), field.name)
+        identifier = format_html('{0}.{1}', self.form_name, field.name)
         return self.error_class([SafeTuple((identifier, '$pristine', '$pristine', 'invalid', e))
                          for e in self.errors.get(field.name, [])])
 
     def non_field_errors(self):
         errors = super(NgFormBaseMixin, self).non_field_errors()
-        return self.error_class([SafeTuple((self.name(), '$pristine', '$pristine', 'invalid', e))
+        return self.error_class([SafeTuple((self.form_name, '$pristine', '$pristine', 'invalid', e))
                          for e in errors])

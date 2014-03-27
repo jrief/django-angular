@@ -45,7 +45,7 @@ class NgModelFormMixin(NgFormBaseMixin):
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
         super(NgModelFormMixin, self).__init__(*args, **kwargs)
-        if self.scope_prefix == self.name():
+        if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
 
     def _post_clean(self):
@@ -70,11 +70,11 @@ class NgModelFormMixin(NgFormBaseMixin):
 
     def get_field_errors(self, field):
         errors = super(NgModelFormMixin, self).get_field_errors(field)
-        identifier = format_html('{0}.{1}', self.name(), field.name)
+        identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors.append(SafeTuple((identifier, '$pristine', '$message', 'invalid', '$message')))
         return errors
 
     def non_field_errors(self):
         errors = super(NgModelFormMixin, self).non_field_errors()
-        errors.append(SafeTuple((self.name(), '$pristine', '$message', 'invalid', '$message')))
+        errors.append(SafeTuple((self.form_name, '$pristine', '$message', 'invalid', '$message')))
         return errors

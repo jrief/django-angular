@@ -69,12 +69,12 @@ Render this form in a template
 
 .. code-block:: html
 
-	<form name="{{ form.name }}" novalidate>
+	<form name="{{ form.form_name }}" novalidate>
 	  {{ form }}
 	  <input type="submit" value="Submit" />
 	</form>
 
-Remember to add the entry ``name="{{ form.name }}"`` to the ``form`` element, otherwise AngularJS's
+Remember to add the entry ``name="{{ form.form_name }}"`` to the ``form`` element, otherwise AngularJS's
 validation engine won't work. Use the directive ``novalidate`` to disable the browser’s native form
 validation. If you just need AngularJS's built in form validation mechanisms without customized
 checks on the forms data, there is no need to add an ``ng-controller`` onto a wrapping HTML element.
@@ -86,7 +86,7 @@ by replacing the submit button with the following HTML code:
 
 .. code-block:: html
 
-	<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Submit">
+	<input type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid" value="Submit">
 
 .. note:: On Django-1.5, some field constraints, such as the attributes ``min_length`` and
 		``max_length``, are ignored when used with ``NgFormValidationMixin``. This has been fixed

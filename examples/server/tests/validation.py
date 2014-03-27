@@ -12,7 +12,7 @@ class NgFormValidationMixinTest(TestCase):
         self.dom = PyQuery(str(self.subscription_form))
 
     def test_form(self):
-        self.assertEqual(self.subscription_form.name(), 'valid_form')
+        self.assertEqual(self.subscription_form.form_name, 'valid_form')
 
     def test_ng_length(self):
         first_name = self.dom('input[name=first_name]')

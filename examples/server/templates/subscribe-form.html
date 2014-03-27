@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block subscribe_me_form %}
-	<form name="{{ form.name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %}>
+	<form name="{{ form.form_name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %}>
 		{% csrf_token %}
 		<table class="subscribe span12">
 			<caption class="offset2">{% block table_caption %}Form Validation Demo{% endblock %}</caption>
@@ -12,7 +12,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<input type="submit" class="btn" ng-disabled="{{ form.name }}.$invalid" value="Subscribe">
+						<input type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
 					</td>
 				</tr>
 				{% endblock table_foot %}
