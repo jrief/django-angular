@@ -36,7 +36,7 @@ class SubscribeFormView(TemplateView):
 
 
 class SubscribeViewWithFormValidation(SubscribeFormView):
-    template_name = 'validation-form.html'
+    template_name = 'subscribe-form.html'
     form = SubscriptionFormWithNgValidation
 
 
