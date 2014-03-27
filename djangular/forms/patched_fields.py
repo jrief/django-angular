@@ -95,6 +95,12 @@ def EmailField_angular_errors(field):
     return errors
 
 
+def DateField_angular_errors(field):
+    errors = _input_required(field)
+    errors.extend(_invalid_value_errors(field, 'date'))
+    return errors
+
+
 def FloatField_angular_errors(field):
     errors = _input_required(field)
     errors.extend(_min_max_value_errors(field))
