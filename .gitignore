@@ -3,6 +3,7 @@
 *.coverage
 *~
 .tmp*
+.DS_Store
 build
 docs/_build
 dist
