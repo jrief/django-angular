@@ -1,6 +1,8 @@
-{% extends "validation-form.html" %}
+{% extends "subscribe-form.html" %}
 
 {% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
+
+{% block table_caption %}Tree-Way Data-Binding{% endblock %}
 
 {% block table_foot %}
 	<tr>
@@ -18,7 +20,8 @@
 	<script type="text/javascript">
 	my_app.config(function(djangoWebsocketProvider) {
 		djangoWebsocketProvider.prefix('/ws');
-		djangoWebsocketProvider.debug(false);
+		djangoWebsocketProvider.setLogLevel('debug');
+		djangoWebsocketProvider.setHeartbeat(5000);
 	});
 
 	my_app.controller('MyFormCtrl', function($scope, djangoWebsocket) {

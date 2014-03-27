@@ -3,8 +3,9 @@
 {% block subscribe_me_form %}
 	<form name="{{ form.name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %}>
 		{% csrf_token %}
-		<table class="span9" style="position: relative;">
-			<thead><tr></tr><td class="span3"></td><td class="span6"></td></tr></thead>
+		<table class="subscribe span12">
+			<caption class="offset2">{% block table_caption %}Form Validation Demo{% endblock %}</caption>
+			<thead><td class="span3"></td><td class="span9"></td></tr></thead>
 			<tbody>{{ form }}</tbody>
 			<tfoot>
 				{% block table_foot %}

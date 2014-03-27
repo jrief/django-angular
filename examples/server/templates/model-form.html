@@ -1,7 +1,9 @@
-{% extends "validation-form.html" %}
+{% extends "subscribe-form.html" %}
 {% load djangular_tags %}
 
 {% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
+
+{% block table_caption %}Model-Form Demo{% endblock %}
 
 {% block table_foot %}
 	<tr>
