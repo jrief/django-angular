@@ -1,0 +1,54 @@
+body {
+	padding-top: 60px;
+}
+table.subscribe {
+	position: relative;
+}
+table.subscribe caption {
+	font-size: 32px;
+	font-weight: bold;
+	margin-top: 20px;
+	margin-bottom: 20px;
+	text-align: left;
+}
+table.subscribe tbody label {
+	float: right;
+	margin-top: 5px;
+	margin-right: 1em;
+}
+table.subscribe tbody th {
+	vertical-align: top;
+}
+table.subscribe tfoot pre {
+	margin-top: 1em;
+}
+table.subscribe ul.errorlist,
+table.subscribe ul.djng-form-errors {
+	display: inline-block;
+	list-style-type: none;
+	position: absolute;
+	left: 500px;
+	margin-top: 5px;
+}
+table.subscribe ul.errorlist li {
+	color: #e9322d;
+}
+table.subscribe ul.djng-form-errors li.invalid {
+	color: #e9322d;
+}
+table.subscribe ul.errorlist li:before,
+table.subscribe ul.djng-form-errors li.invalid:before {
+	content: "\2716\20";
+}
+table.subscribe ul.djng-form-errors li.valid:before {
+	color: #00c900;
+	content: "\2714";
+}
+table.subscribe span.helptext {
+	color: #8B8B8B;
+	display: inline-block;
+	margin-bottom: 15px;
+}
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
