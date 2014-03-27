@@ -158,6 +158,11 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		function on_message(evt) {
+			if (evt.data === heartbeat_msg) {
+				// reset the counter for missed heartbeats
+				missed_heartbeats = 0;
+				return;
+			}
 			try {
 				var server_data = JSON.parse(evt.data);
 				scope.$apply(function() {
