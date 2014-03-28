@@ -118,6 +118,8 @@ djng_forms.provider('djangoForm', function() {
 					}
 				});
 				// reset into pristine state, since the customer restarts with the form
+				form.$valid = true;
+				form.$invalid = false;
 				form.$setPristine();
 				return isNotEmpty(errors);
 			}
