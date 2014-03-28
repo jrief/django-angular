@@ -1,4 +1,4 @@
-.. demos
+.. _demos:
 
 =================
 Running the demos

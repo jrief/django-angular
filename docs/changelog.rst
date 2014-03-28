@@ -1,8 +1,15 @@
-.. changelog
+.. _changelog:
 
 ===============
 Release History
 ===============
+
+0.7.0
+-----
+* Refactored errors handling code:
+  It now is much easier and more flexible for mixing in other form based classes.
+* Added a date validator using an AngularJS directive. 
+* Added another view, which can be used for NgModelMixin without NgValidationMixin.
 
 0.6.3
 -----
