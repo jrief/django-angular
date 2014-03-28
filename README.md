@@ -1,8 +1,8 @@
 django-angular
 ==============
 
-Utilities to let Django play nice together with AngularJS
----------------------------------------------------------
+Let Django play nice together with AngularJS
+--------------------------------------------
 
 **NEW in 0.6.3**: 
 * Input fields of bound forms are displayed correctly.
