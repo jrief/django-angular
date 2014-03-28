@@ -8,8 +8,8 @@ env:
   - DJANGO=1.6.2 TEST=server.tests
 
 install:
-  - pip install -q Django==$DJANGO --use-mirrors
-  - pip install pyquery --use-mirrors
+  - pip install -q Django==$DJANGO
+  - pip install pyquery
   - python setup.py -q install
 
 branches:
