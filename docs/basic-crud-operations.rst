@@ -25,14 +25,14 @@ Of course this need support on the server side. This can easily be done with **d
 
 Configuration
 -------------
-Subclass ``NgCRUDView`` and override model_class attribute:
+Subclass ``NgCRUDView`` and override model attribute:
 
 .. code-block:: python
 
 	from djangular.views.crud import NgCRUDView
 	
 	class MyCRUDView(NgCRUDView):
-	    model_class = MyModel
+	    model = MyModel
 
 Add urlconf entry pointing to the view:
 

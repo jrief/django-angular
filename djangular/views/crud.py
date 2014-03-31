@@ -12,13 +12,13 @@ from django.views.generic import FormView
 class NgCRUDView(FormView):
     """
     Basic view to support default angular $resource CRUD actions on server side
-    Subclass and override model_class with your model
+    Subclass and override ``model`` with your model
 
     Optional 'pk' GET parameter must be passed when object identification is required (save to update and delete)
 
     If fields != None the serialized data will only contain field names from fields array
     """
-    model_class = None
+    model = None
     fields = None
     content_type = 'application/json'
     slug_field = 'slug'
@@ -40,7 +40,7 @@ class NgCRUDView(FormView):
                 return self.ng_save(request, *args, **kwargs)
             elif request.method == 'DELETE':
                 return self.ng_delete(request, *args, **kwargs)
-        except self.model_class.DoesNotExist as e:
+        except self.model.DoesNotExist as e:
             return self.error_json_response(str(e), 404)
         except ValueError as e:
             return self.error_json_response(str(e))
@@ -51,9 +51,9 @@ class NgCRUDView(FormView):
 
     def get_form_class(self):
         """
-        Build ModelForm from model_class
+        Build ModelForm from model
         """
-        return modelform_factory(self.model_class)
+        return modelform_factory(self.model)
 
     def build_json_response(self, data):
         response = HttpResponse(self.serialize_to_json(data), self.content_type)
@@ -103,9 +103,9 @@ class NgCRUDView(FormView):
 
     def get_object(self):
         if 'pk' in self.request.GET:
-            return self.model_class.objects.get(pk=self.request.GET['pk'])
+            return self.model.objects.get(pk=self.request.GET['pk'])
         elif self.slug_field in self.request.GET:
-            return self.model_class.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
+            return self.model.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
         raise ValueError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
 
     def get_fields(self):
@@ -115,19 +115,19 @@ class NgCRUDView(FormView):
         """
         return self.fields
 
-    def get_query(self):
+    def get_queryset(self):
         """
         Get query to use in ng_query
         Allows for easier overriding
         """
-        return self.model_class.objects.all()
+        return self.model.objects.all()
 
     def ng_query(self, request, *args, **kwargs):
         """
         Used when angular's query() method is called
         Build an array of all objects, return json response
         """
-        return self.build_json_response(self.get_query())
+        return self.build_json_response(self.get_queryset())
 
     def ng_get(self, request, *args, **kwargs):
         """
