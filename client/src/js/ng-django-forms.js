@@ -41,8 +41,13 @@ djng_forms.directive('validateDate', function() {
 		if (!date) // empty field are validated by the "required" validator
 			return true;
 		dateobj = new Date(date);
-		matched = validDatePattern ? Boolean(date.match(validDatePattern)) : true;
-		return matched && !isNaN(dateobj);
+		if (isNaN(dateobj))
+			return false;
+		if (validDatePattern) {
+			matched = validDatePattern.exec(date);
+			return matched && parseInt(matched[2]) === dateobj.getMonth() + 1;
+		}
+		return true;
 	}
 
 	return {
