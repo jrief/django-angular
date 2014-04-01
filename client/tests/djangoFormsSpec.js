@@ -1,23 +1,13 @@
 'use strict';
 
 describe('unit tests for module ng.django.forms', function() {
-	var john = 'john@example.net';
-	var template =
-		'<form name="valid_form" action=".">' +
-		'<input name="email_field" ng-model="model.email" type="text" {value} />' +
-		'</form>';
-
-	function compileUnboundForm($compile, scope) {
-		var doc = template.replace('{value}', '').replace('{date}', '');
-		var unbound_form = angular.element(doc);
-		$compile(unbound_form)(scope);
-		scope.$digest();
-	}
-
-	function compileBoundForm($compile, scope) {
-		var doc = template.replace('{value}', 'value="' + john + '"').replace('{date}', '');
-		var bound_form = angular.element(doc);
-		$compile(bound_form)(scope);
+	function compileForm($compile, scope, replace_value) {
+		var template =
+			'<form name="valid_form" action=".">' +
+			'<input name="email_field" ng-model="model.email" type="text" {value} />' +
+			'</form>';
+		var form = angular.element(template.replace('{value}', replace_value));
+		$compile(form)(scope);
 		scope.$digest();
 	}
 
@@ -30,14 +20,14 @@ describe('unit tests for module ng.django.forms', function() {
 
 		describe('on unbound forms', function() {
 			it('the view value of empty input fields should remain undefined', inject(function($compile) {
-				compileUnboundForm($compile, scope);
+				compileForm($compile, scope, '');
 				expect(scope.valid_form.email_field.$viewValue).toBe(undefined);
 			}));
 		});
 
 		describe('on bound forms', function() {
 			it('the view value of filled input fields should remain undefined', inject(function($compile) {
-				compileBoundForm($compile, scope);
+				compileForm($compile, scope, 'value="john@example.net"');
 				expect(scope.valid_form.email_field.$viewValue).toBe(undefined);
 			}));
 		});
@@ -57,15 +47,15 @@ describe('unit tests for module ng.django.forms', function() {
 
 		describe('on unbound forms', function() {
 			it('the view value of empty input fields should be empty', inject(function($compile) {
-				compileUnboundForm($compile, scope);
+				compileForm($compile, scope, '');
 				expect(scope.valid_form.email_field.$viewValue).toBe('');
 			}));
 		});
 
 		describe('on bound forms', function() {
 			it('the view value of filled input fields should remain as is', inject(function($compile) {
-				compileBoundForm($compile, scope);
-				expect(scope.valid_form.email_field.$viewValue).toBe(john);
+				compileForm($compile, scope, 'value="john@example.net"');
+				expect(scope.valid_form.email_field.$viewValue).toBe('john@example.net');
 			}));
 		});
 
@@ -112,4 +102,52 @@ describe('unit tests for module ng.django.forms', function() {
 			expect(form.date_field.$valid).toBe(false);
 		});
 	});
+
+	describe('test provider djangoForm', function() {
+		var scope, djangoForm;
+
+		beforeEach(function() {
+			module('ng.django.forms');
+		});
+		 
+		describe('using manual instantiation', function() {
+			beforeEach(function() {
+				angular.module('testApp', function() {}).config(function(djangoFormProvider) {
+					djangoForm = djangoFormProvider.$get();
+					dump(djangoForm);
+				});
+				module('ng.django.forms', 'testApp');
+				inject(function() {});
+			});
+
+			beforeEach(inject(function($rootScope) {
+				scope = $rootScope.$new();
+			}));
+
+			beforeEach(inject(function($compile) {
+				var form = angular.element(
+					'<form name="form" action=".">' +
+					'<input name="email_field" ng-model="model.email" type="text" />' +
+					'</form>'
+				);
+				$compile(form)(scope);
+				scope.$digest();
+			}));
+
+			it('should give a valid form', function() {
+				expect(djangoForm.setErrors(scope.form, {})).toBe(false);
+				expect(scope.form.email_field.$valid).toBe(true);
+				dump(scope.form);
+			});
+
+			it('should give an invalid form', function() {
+				var errors = { email_field: ['A server side error occurred'] };
+				expect(djangoForm.setErrors(scope.form, errors)).toBe(true);
+				expect(scope.form.email_field.$valid).toBe(false);
+				dump(scope.form);
+			});
+
+		});
+	});
+
 });
