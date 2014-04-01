@@ -10,6 +10,8 @@ Release History
   It now is much easier and more flexible for mixing in other form based classes.
 * Added a date validator using an AngularJS directive. 
 * Added another view, which can be used for NgModelMixin without NgValidationMixin.
+* Added new directory to handle client code. Grunt now builds, verifies and concatenates that code.
+* A minified version is available as ``django-angular.min.js``
 
 0.6.3
 -----
