@@ -12,7 +12,7 @@ install:
   - pip install pyquery
   - python setup.py -q install
   - npm install -g grunt-cli
-  - cd client && npm install
+  - pushd . ; cd client && npm install; popd
 
 branches:
   only:
@@ -23,6 +23,5 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
- - cd examples && ./manage.py test $TEST
- - cd client && grunt travis-ci
-
+ - pushd . ; cd examples && ./manage.py test $TEST; popd
+ - pushd . ; cd client && grunt travis-ci; popd
