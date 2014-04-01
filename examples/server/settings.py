@@ -1,6 +1,9 @@
 # Django settings for unit test project.
+import os
 
 DEBUG = True
+
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
 
 DATABASES = {
     'default': {
@@ -43,6 +46,10 @@ STATIC_ROOT = ''
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'client', 'src'),
+)
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
