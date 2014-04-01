@@ -11,6 +11,8 @@ install:
   - pip install -q Django==$DJANGO
   - pip install pyquery
   - python setup.py -q install
+  - npm install -g grunt-cli
+  - cd client && npm install
 
 branches:
   only:
@@ -22,3 +24,5 @@ before_script:
 
 script:
  - cd examples && ./manage.py test $TEST
+ - cd client && grunt travis-ci
+
