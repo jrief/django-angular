@@ -114,7 +114,6 @@ describe('unit tests for module ng.django.forms', function() {
 			beforeEach(function() {
 				angular.module('testApp', function() {}).config(function(djangoFormProvider) {
 					djangoForm = djangoFormProvider.$get();
-					dump(djangoForm);
 				});
 				module('ng.django.forms', 'testApp');
 				inject(function() {});
@@ -137,14 +136,12 @@ describe('unit tests for module ng.django.forms', function() {
 			it('should give a valid form', function() {
 				expect(djangoForm.setErrors(scope.form, {})).toBe(false);
 				expect(scope.form.email_field.$valid).toBe(true);
-				dump(scope.form);
 			});
 
 			it('should give an invalid form', function() {
 				var errors = { email_field: ['A server side error occurred'] };
 				expect(djangoForm.setErrors(scope.form, errors)).toBe(true);
 				expect(scope.form.email_field.$valid).toBe(false);
-				dump(scope.form);
 			});
 
 		});
