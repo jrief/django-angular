@@ -4,8 +4,9 @@
 *~
 .tmp*
 .DS_Store
-build
-docs/_build
-dist
-htmlcov
-/node_modules/
+cdncache/
+dist/
+htmlcov/
+docs/_build/
+node_modules/
+build/
