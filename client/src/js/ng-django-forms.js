@@ -96,30 +96,40 @@ djng_forms.provider('djangoForm', function() {
 				// remove errors from this form, which may have been rejected by an earlier validation
 				form.$message = '';
 				if (form.$error.hasOwnProperty('rejected')) {
-					var old_keys = [];
 					angular.forEach(form.$error.rejected, function(rejected) {
-						old_keys.push(rejected.$name);
-					});
-					angular.forEach(old_keys, function(key) {
-						form[key].$message = '';
-						form[key].$setValidity('rejected', true);
+						var field, key = rejected.$name;
+						if (form.hasOwnProperty(key)) {
+							field = form[key];
+							field.$message = '';
+							field.$setValidity('rejected', true);
+							if (field.rejectedListenerPos !== undefined) {
+								field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+								delete field.rejectedListenerPos;
+							}
+						}
 					});
 				}
 				// add the new upstream errors
 				angular.forEach(errors, function(errors, key) {
+					var field;
 					if (errors.length > 0) {
 						if (key === NON_FIELD_ERRORS) {
 							form.$message = errors[0];
-						} else {
-							form[key].$message = errors[0];
-							form[key].$setValidity('rejected', false);
+							form.$setPristine();
+						} else if (form.hasOwnProperty(key)) {
+							field = form[key];
+							field.$message = errors[0];
+							field.$setValidity('rejected', false);
+							field.$setPristine();
+							field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
+								// changing the field the server complained about, resets the form into valid state
+								field.$setValidity('rejected', true);
+								field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+								delete field.rejectedListenerPos;
+							}) - 1;
 						}
 					}
 				});
-				// reset into pristine state, since the customer restarts with the form
-				form.$valid = true;
-				form.$invalid = false;
-				form.$setPristine();
 				return isNotEmpty(errors);
 			}
 		};
