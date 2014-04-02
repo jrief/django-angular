@@ -2,7 +2,6 @@
 	"name": "django-angular",
 	"description": "Let Django play nice together with AngularJS",
 	"version": "0.7.0",
-	"files": ["dist/angular-retina.js", "dist/angular-retina.min.js"],
 	"homepage": "https://github.com/jrief/django-angular",
 	"author": {
 		"name": "Jacob Rief",

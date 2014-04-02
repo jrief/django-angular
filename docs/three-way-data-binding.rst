@@ -45,7 +45,7 @@ Refer to the Javascript file ``django-angular.js`` somewhere on your page:
 
 .. code-block:: html
 
-	<script src="{{ STATIC_URL }}djangular/js/django-angular.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}djangular/js/django-angular.min.js" type="text/javascript"></script>
 
 add the module dependency to your application initialization:
 

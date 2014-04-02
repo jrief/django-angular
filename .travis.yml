@@ -11,6 +11,8 @@ install:
   - pip install -q Django==$DJANGO
   - pip install pyquery
   - python setup.py -q install
+  - npm install -g grunt-cli
+  - pushd . ; cd client && npm install; popd
 
 branches:
   only:
@@ -21,4 +23,5 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
- - cd examples && ./manage.py test $TEST
+ - pushd . ; cd examples && ./manage.py test $TEST; popd
+ - pushd . ; cd client && grunt travis-ci; popd
