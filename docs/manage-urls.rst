@@ -86,7 +86,7 @@ belonging to a certain namespace
 	from djangular.core.urlresolvers import urls_by_namespace
 
 	class MyView(View):
-	    def get_context_data(self, **kwargs)
+	    def get_context_data(self, **kwargs):
 	        context = super(MyView, self).get_context_data(**kwargs)
 	        my_urls = json.dumps(urls_by_namespace('my_url_namespace'))
 	        context.update(my_urls=mark_safe(my_urls))
