@@ -77,7 +77,7 @@ djng_forms.directive('validateDate', function() {
 //      djangoForm.setErrors($scope.form, data.errors);
 //  });
 // djangoForm.setErrors returns false, if no errors have been transferred.
-djng_forms.provider('djangoForm', function() {
+djng_forms.factory('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
 	function isNotEmpty(obj) {
@@ -88,51 +88,49 @@ djng_forms.provider('djangoForm', function() {
 		return false;
 	}
 
-	this.$get = function() {
-		return {
-			// setErrors takes care of updating prepared placeholder fields for displaying form errors
-			// deteced by an AJAX submission. Returns true if errors have been added to the form.
-			setErrors: function(form, errors) {
-				// remove errors from this form, which may have been rejected by an earlier validation
-				form.$message = '';
-				if (form.$error.hasOwnProperty('rejected')) {
-					angular.forEach(form.$error.rejected, function(rejected) {
-						var field, key = rejected.$name;
-						if (form.hasOwnProperty(key)) {
-							field = form[key];
-							field.$message = '';
-							field.$setValidity('rejected', true);
-							if (field.rejectedListenerPos !== undefined) {
-								field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-								delete field.rejectedListenerPos;
-							}
-						}
-					});
-				}
-				// add the new upstream errors
-				angular.forEach(errors, function(errors, key) {
-					var field;
-					if (errors.length > 0) {
-						if (key === NON_FIELD_ERRORS) {
-							form.$message = errors[0];
-							form.$setPristine();
-						} else if (form.hasOwnProperty(key)) {
-							field = form[key];
-							field.$message = errors[0];
-							field.$setValidity('rejected', false);
-							field.$setPristine();
-							field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
-								// changing the field the server complained about, resets the form into valid state
-								field.$setValidity('rejected', true);
-								field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-								delete field.rejectedListenerPos;
-							}) - 1;
+	return {
+		// setErrors takes care of updating prepared placeholder fields for displaying form errors
+		// deteced by an AJAX submission. Returns true if errors have been added to the form.
+		setErrors: function(form, errors) {
+			// remove errors from this form, which may have been rejected by an earlier validation
+			form.$message = '';
+			if (form.$error.hasOwnProperty('rejected')) {
+				angular.forEach(form.$error.rejected, function(rejected) {
+					var field, key = rejected.$name;
+					if (form.hasOwnProperty(key)) {
+						field = form[key];
+						field.$message = '';
+						field.$setValidity('rejected', true);
+						if (field.rejectedListenerPos !== undefined) {
+							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+							delete field.rejectedListenerPos;
 						}
 					}
 				});
-				return isNotEmpty(errors);
 			}
-		};
+			// add the new upstream errors
+			angular.forEach(errors, function(errors, key) {
+				var field;
+				if (errors.length > 0) {
+					if (key === NON_FIELD_ERRORS) {
+						form.$message = errors[0];
+						form.$setPristine();
+					} else if (form.hasOwnProperty(key)) {
+						field = form[key];
+						field.$message = errors[0];
+						field.$setValidity('rejected', false);
+						field.$setPristine();
+						field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
+							// changing the field the server complained about, resets the form into valid state
+							field.$setValidity('rejected', true);
+							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+							delete field.rejectedListenerPos;
+						}) - 1;
+					}
+				}
+			});
+			return isNotEmpty(errors);
+		}
 	};
 });
 
