@@ -58,7 +58,7 @@ templates.
 Partials
 --------
 In AngularJS, when used together with external templates, static HTML code often is loaded by a
-`$routeProvider`_. These so named partials can be placed in their own sub-directory below
+`$templateCache`_. These so named partials can be placed in their own sub-directory below
 ``STATIC_ROOT``.
 
 If, for some reason you need mixed template code, ie. one which first is expanded by Django and
