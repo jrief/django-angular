@@ -4,7 +4,8 @@ django-angular
 Let Django play nice together with AngularJS
 --------------------------------------------
 
-**NEW in 0.7.0**: 
+NEW in 0.7.0
+------------
 * Form validation has been rewritten. It now is much more flexible and simpler to extend.
 * Added client side unit tests with grunt, karma and jasmine.
 * Rewritten demo pages to give a good starting point for your own projects.

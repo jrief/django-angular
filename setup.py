@@ -17,7 +17,7 @@ CLASSIFIERS = [
 
 def read(fname):
     readme_file = os.path.join(os.path.dirname(__file__), fname)
-    return os.popen('which pandoc && pandoc -t rst {0} || cat {0}'.format(readme_file)).read()
+    return os.popen('which -s pandoc && pandoc -t rst {0} || cat {0}'.format(readme_file)).read()
 
 setup(
     name='django-angular',
