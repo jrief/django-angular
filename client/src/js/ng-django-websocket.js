@@ -43,6 +43,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 
 	this.$get = ['$window', '$q', '$timeout', '$interval', function($window, $q, $timeout, $interval) {
 		var ws, deferred, timer_promise = null, wait_for = null, scope, channels, collection;
+		var is_subscriber = false, is_publisher = false;
 		var heartbeat_msg = '--heartbeat--', heartbeat_promise = null, missed_heartbeats = 0;
 
 		function connect(uri) {
@@ -93,9 +94,11 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			}
 			try {
 				var server_data = JSON.parse(evt.data);
-				scope.$apply(function() {
-					angular.extend(scope[collection], server_data);
-				});
+				if (is_subscriber) {
+					scope.$apply(function() {
+						angular.extend(scope[collection], server_data);
+					});
+				}
 			} catch(e) {
 				_console.warn('Data received by server is invalid JSON: ' + evt.data);
 			}
@@ -121,11 +124,26 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			}
 		}
 
+		function set_channels(channels_) {
+			channels = channels_;
+			angular.forEach(channels, function(channel) {
+				if (channel.substring(0, 9) === 'subscribe') {
+					is_subscriber = true;
+				} else if (channel.substring(0, 7) === 'publish') {
+					is_publisher = true;
+				}
+			});
+		}
+
+		function watch_collection() {
+			scope.$watchCollection(collection, listener);
+		}
+
 		return {
 			connect: function(scope_, channels_, collection_) {
 				var parts = [], location = $window.location;
 				scope = scope_;
-				channels = channels_;
+				set_channels(channels_);
 				collection = collection_;
 				parts.push(location.protocol === 'https' ? 'wss:' : 'ws:');
 				parts.push('//');
@@ -136,9 +154,9 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				parts.push(channels.join('&'));
 				connect(parts.join(''));
 				scope[collection] = scope[collection] || {};
-				deferred.promise.then(function() {
-					scope.$watchCollection(collection, listener);
-				});
+				if (is_publisher) {
+					deferred.promise.then(watch_collection);
+				}
 				return deferred.promise;
 			}
 		};
