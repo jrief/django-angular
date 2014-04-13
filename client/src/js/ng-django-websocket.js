@@ -97,7 +97,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				return;
 			}
 			try {
-				var server_data = JSON.parse(evt.data);
+				var server_data = angular.fromJson(evt.data);
 				if (is_subscriber) {
 					scope.$apply(function() {
 						angular.extend(scope[collection], server_data);
