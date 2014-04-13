@@ -4,7 +4,30 @@
 function noop() {}
 
 // Add three-way data-binding for AngularJS with Django using websockets.
-angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
+var djng_ws_module = angular.module('ng.django.websocket', []);
+
+// Wraps the built-in WebSocket into a replaceable provider suitable for dependency injection.
+djng_ws_module.service('$websocket', function() {
+	var ws;
+	this.connect = function(url) {
+		ws = new WebSocket(url);
+		ws.onopen = this.onopen;
+		ws.onmessage = this.onmessage;
+		ws.onerror = this.onerror;
+		ws.onclose = this.onclose;
+	};
+	this.reconnect = function() {
+		ws = new WebSocket(ws.url);
+	};
+	this.send = function(msg) {
+		ws.send(msg);
+	};
+	this.close = function() {
+		ws.close();
+	};
+});
+
+djng_ws_module.provider('djangoWebsocket', function() {
 	var _console = { log: noop, warn: noop, error: noop };
 	var websocket_uri, heartbeat_msg = null;
 
@@ -45,7 +68,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		return this;
 	};
 
-	this.$get = ['$q', '$timeout', '$interval', function($q, $timeout, $interval) {
+	this.$get = ['$websocket', '$q', '$timeout', '$interval', function($websocket, $q, $timeout, $interval) {
 		var ws, deferred, timer_promise = null, wait_for = null, scope, collection;
 		var is_subscriber = false, is_publisher = false;
 		var heartbeat_promise = null, missed_heartbeats = 0;
@@ -54,18 +77,14 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			try {
 				_console.log("Connecting to "+uri);
 				deferred = $q.defer();
-				ws = new WebSocket(uri);
-				ws.onopen = onOpen;
-				ws.onmessage = onMessage;
-				ws.onerror = onError;
-				ws.onclose = onClose;
+				$websocket.connect(uri);
 				timer_promise = null;
 			} catch (err) {
 				deferred.reject(new Error(err));
 			}
 		}
 
-		function onOpen(evt) {
+		$websocket.onopen = function(evt) {
 			_console.log('Connected');
 			wait_for = 500;
 			deferred.resolve();
@@ -73,24 +92,24 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 				missed_heartbeats = 0;
 				heartbeat_promise = $interval(sendHeartbeat, 5000);
 			}
-		}
+		};
 
-		function onClose(evt) {
+		$websocket.onclose = function(evt) {
 			_console.log("Connection closed");
 			if (!timer_promise && wait_for) {
 				timer_promise = $timeout(function() {
-					connect(ws.url);
+					$websocket.reconnect();
 				}, wait_for);
 				wait_for = Math.min(wait_for + 500, 5000);
 			}
-		}
+		};
 
-		function onError(evt) {
+		$websocket.onerror = function(evt) {
 			_console.error("Websocket connection is broken!");
 			deferred.reject(new Error(evt));
-		}
+		};
 
-		function onMessage(evt) {
+		$websocket.onmessage = function(evt) {
 			if (evt.data === heartbeat_msg) {
 				// reset the counter for missed heartbeats
 				missed_heartbeats = 0;
@@ -106,25 +125,25 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			} catch(e) {
 				_console.warn('Data received by server is invalid JSON: ' + evt.data);
 			}
-		}
+		};
 
 		function sendHeartbeat() {
 			try {
 				missed_heartbeats++;
 				if (missed_heartbeats > 3)
 					throw new Error("Too many missed heartbeats.");
-				ws.send(heartbeat_msg);
+				$websocket.send(heartbeat_msg);
 			} catch(e) {
 				$interval.cancel(heartbeat_promise);
 				heartbeat_promise = null;
 				_console.warn("Closing connection. Reason: " + e.message);
-				ws.close();
+				$websocket.close();
 			}
 		}
 
 		function listener(newValue, oldValue) {
 			if (newValue !== undefined) {
-				ws.send(JSON.stringify(newValue));
+				$websocket.send(angular.toJson(newValue));
 			}
 		}
 
@@ -149,7 +168,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		}
 
 		return {
-			connect: function($scope, facility, channels, scope_obj) {
+			connect: function($scope, scope_obj, facility, channels) {
 				scope = $scope;
 				setChannels(channels);
 				collection = scope_obj;
