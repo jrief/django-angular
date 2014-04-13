@@ -122,6 +122,7 @@ def RegexField_angular_errors(field):
     # Probably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
     field.widget.attrs['ng-pattern'] = '/{0}/'.format(field.regex.pattern)
     errors = _input_required(field)
+    errors.extend(_min_max_length_errors(field))
     errors.extend(_invalid_value_errors(field, 'pattern'))
     return errors
 
