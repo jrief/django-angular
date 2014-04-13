@@ -5,19 +5,23 @@ function noop() {}
 
 // Add three-way data-binding for AngularJS with Django using websockets.
 angular.module('ng.django.websocket', []).provider('djangoWebsocket', function() {
-	var _prefix;
 	var _console = { log: noop, warn: noop, error: noop };
-	var heartbeat_interval = 0;
+	var websocket_uri, heartbeat_msg = null;
 
-	this.prefix = function(prefix) {
-		_prefix = prefix;
+	// Set prefix for the Websocket's URI.
+	// This URI must be set during initialization using
+	// djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
+	this.setURI = function(uri) {
+		websocket_uri = uri;
 		return this;
 	};
 
-	// Set the heartbeat interval in milliseconds, which must be bigger than 1000.
-	// The default is 0, which means that no heartbeat messages are sent.
-	this.setHeartbeat = function(interval) {
-		heartbeat_interval = interval >= 1000 ? interval : 0;
+	// Set the heartbeat message and activate the heartbeat interval to 5 seconds.
+	// The heartbeat message shall be configured using
+	// djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});  // unquoted!
+	// The default behavior is to not listen on heartbeats.
+	this.setHeartbeat = function(msg) {
+		heartbeat_msg = msg;
 		return this;
 	};
 
@@ -41,37 +45,37 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 		return this;
 	};
 
-	this.$get = ['$window', '$q', '$timeout', '$interval', function($window, $q, $timeout, $interval) {
-		var ws, deferred, timer_promise = null, wait_for = null, scope, channels, collection;
+	this.$get = ['$q', '$timeout', '$interval', function($q, $timeout, $interval) {
+		var ws, deferred, timer_promise = null, wait_for = null, scope, collection;
 		var is_subscriber = false, is_publisher = false;
-		var heartbeat_msg = '--heartbeat--', heartbeat_promise = null, missed_heartbeats = 0;
+		var heartbeat_promise = null, missed_heartbeats = 0;
 
 		function connect(uri) {
 			try {
 				_console.log("Connecting to "+uri);
 				deferred = $q.defer();
 				ws = new WebSocket(uri);
-				ws.onopen = on_open;
-				ws.onmessage = on_message;
-				ws.onerror = on_error;
-				ws.onclose = on_close;
+				ws.onopen = onOpen;
+				ws.onmessage = onMessage;
+				ws.onerror = onError;
+				ws.onclose = onClose;
 				timer_promise = null;
 			} catch (err) {
 				deferred.reject(new Error(err));
 			}
 		}
 
-		function on_open(evt) {
+		function onOpen(evt) {
 			_console.log('Connected');
 			wait_for = 500;
 			deferred.resolve();
-			if (heartbeat_promise === null && heartbeat_interval > 0) {
+			if (heartbeat_msg && heartbeat_promise === null) {
 				missed_heartbeats = 0;
-				heartbeat_promise = $interval(send_heartbeat, heartbeat_interval);
+				heartbeat_promise = $interval(sendHeartbeat, 5000);
 			}
 		}
 
-		function on_close(evt) {
+		function onClose(evt) {
 			_console.log("Connection closed");
 			if (!timer_promise && wait_for) {
 				timer_promise = $timeout(function() {
@@ -81,12 +85,12 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			}
 		}
 
-		function on_error(evt) {
+		function onError(evt) {
 			_console.error("Websocket connection is broken!");
 			deferred.reject(new Error(evt));
 		}
 
-		function on_message(evt) {
+		function onMessage(evt) {
 			if (evt.data === heartbeat_msg) {
 				// reset the counter for missed heartbeats
 				missed_heartbeats = 0;
@@ -104,7 +108,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			}
 		}
 
-		function send_heartbeat() {
+		function sendHeartbeat() {
 			try {
 				missed_heartbeats++;
 				if (missed_heartbeats > 3)
@@ -124,8 +128,7 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			}
 		}
 
-		function set_channels(channels_) {
-			channels = channels_;
+		function setChannels(channels) {
 			angular.forEach(channels, function(channel) {
 				if (channel.substring(0, 9) === 'subscribe') {
 					is_subscriber = true;
@@ -135,27 +138,25 @@ angular.module('ng.django.websocket', []).provider('djangoWebsocket', function()
 			});
 		}
 
-		function watch_collection() {
+		function watchCollection() {
 			scope.$watchCollection(collection, listener);
 		}
 
+		function getWebsocketURL(facility, channels) {
+			var parts = [websocket_uri, facility, '?'];
+			parts.push(channels.join('&'));
+			return parts.join('');
+		}
+
 		return {
-			connect: function(scope_, channels_, collection_) {
-				var parts = [], location = $window.location;
-				scope = scope_;
-				set_channels(channels_);
-				collection = collection_;
-				parts.push(location.protocol === 'https' ? 'wss:' : 'ws:');
-				parts.push('//');
-				parts.push(location.host);
-				parts.push(_prefix);
-				parts.push(location.pathname);
-				parts.push('?');
-				parts.push(channels.join('&'));
-				connect(parts.join(''));
+			connect: function($scope, facility, channels, scope_obj) {
+				scope = $scope;
+				setChannels(channels);
+				collection = scope_obj;
 				scope[collection] = scope[collection] || {};
+				connect(getWebsocketURL(facility, channels));
 				if (is_publisher) {
-					deferred.promise.then(watch_collection);
+					deferred.promise.then(watchCollection);
 				}
 				return deferred.promise;
 			}
