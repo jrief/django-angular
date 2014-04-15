@@ -5,7 +5,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseBadRequest
 
 
-def allowed_action(func, method='auto'):
+def allow_remote_invocation(func, method='auto'):
     """
     All methods which shall be callable through a given Ajax 'action' must be
     decorated with @allowed_action. This is required for safety reasons. It
@@ -13,6 +13,11 @@ def allowed_action(func, method='auto'):
     """
     setattr(func, 'is_allowed_action', method)
     return func
+
+
+def allowed_action(func):
+    warnings.warn("Decorator `@allowed_action` is deprecated. Use `@allow_remote_invocation` instead.", DeprecationWarning)
+    return allow_remote_invocation(func)
 
 
 class JSONResponseMixin(object):
