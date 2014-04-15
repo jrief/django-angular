@@ -4,12 +4,12 @@
 // module: ng.django.forms
 // Correct Angular's form.FormController behavior after rendering bound forms.
 // Additional validators for form elements.
-var djng_forms = angular.module('ng.django.forms', []);
+var djng_forms_module = angular.module('ng.django.forms', []);
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // If not used, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms.
-djng_forms.directive('form', function() {
+djng_forms_module.directive('form', function() {
 	return {
 		restrict: 'E',
 		scope: 'isolate',
@@ -33,7 +33,7 @@ djng_forms.directive('form', function() {
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
 // Now, such an input field is only considered valid, if the date is a valid date and if it matches
 // against the given regular expression.
-djng_forms.directive('validateDate', function() {
+djng_forms_module.directive('validateDate', function() {
 	var validDatePattern = null;
 
 	function validateDate(date) {
@@ -77,7 +77,7 @@ djng_forms.directive('validateDate', function() {
 //      djangoForm.setErrors($scope.form, data.errors);
 //  });
 // djangoForm.setErrors returns false, if no errors have been transferred.
-djng_forms.factory('djangoForm', function() {
+djng_forms_module.factory('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
 	function isNotEmpty(obj) {
@@ -143,7 +143,7 @@ djng_forms.factory('djangoForm', function() {
 // djangoRMI.name.method(data).success(...).error(...)
 // @param data (optional): If set and @allowd_action was auto, then the call is performed as method
 //     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
-djng_forms.provider('djangoRMI', function() {
+djng_forms_module.provider('djangoRMI', function() {
 	var remote_methods, http;
 
 	this.configure = function(conf) {
@@ -160,17 +160,17 @@ djng_forms.provider('djangoRMI', function() {
 				val.headers['X-Requested-With'] = 'XMLHttpRequest';
 				obj[key] = function(data) {
 					var config = angular.copy(val);
-					if (config.method === 'auto') {
+					if (config.method === 'POST') {
+						if (data === undefined)
+							throw new Error('Calling remote method '+ key +' without data object');
+						config.data = data;
+					} else if (config.method === 'auto') {
 						if (data === undefined) {
 							config.method = 'GET';
 						} else {
 							config.method = 'POST';
 							config.data = data;
 						}
-					} else if (config.method === 'POST') {
-						if (data === undefined)
-							throw new Error('Calling remote method '+ key +' without data object');
-						config.data = data;
 					}
 					return http(config);
 				};
