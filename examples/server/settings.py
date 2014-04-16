@@ -116,5 +116,6 @@ try:
     # Set the number of seconds each message shall persited
     WS4REDIS_EXPIRE = 3600
 
+    TEMPLATE_CONTEXT_PROCESSORS += ('ws4redis.context_processors.default',)
 except ImportError:
     pass

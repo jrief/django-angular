@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load active %}
+
+{% block sub_menu_partials %}
+	<li class="active dropdown">
+		<a href="{% url 'djng_partials_demo' %}" class="dropdown-toggle">Partials <b class="caret"></b></a>
+		<ul class="dropdown-menu">
+			<li>
+				<a href="other">Default View</a>
+			</li>
+			<li>
+				<a href="list">List View</a>
+			</li>
+			<li>
+				<a href="detail">Detail View</a>
+			</li>
+		</ul>
+	</li>
+{% endblock sub_menu_partials %}
+
+{% block container %}
+	<div class="container">
+		<div class="row">
+			<div class="subscribe span12">
+				<ng-view></ng-view>
+			</div>	
+		</div>
+	</div>
+	<script type="text/ng-template" id="partial-demo/partialA.html">
+		<h3>Partial A</h3>
+	</script>
+	<script type="text/ng-template" id="partial-demo/partialB.html">
+		<h3>Partial B</h3>
+	</script>
+	<script type="text/ng-template" id="partial-demo/defaultPartial.html">
+		<h3>Default Partial</h3>
+	</script>
+{% endblock container %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	my_app.config({{ config_ng_routes }})
+		.config(['$locationProvider', function($locationProvider) {
+			$locationProvider.html5Mode(true);
+		}])
+		.controller('DefaultCtrl', function($scope, $routeParams) {
+			console.log('DefaultCtrl');
+			console.log($routeParams);
+		})
+		.controller('ListCtrl', function($scope, $routeParams) {
+			console.log('ListCtrl');
+		})
+		.controller('DetailCtrl', function($scope, $routeParams) {
+			console.log('DetailCtrl');
+		});
+	</script>
+{% endblock scripts %}
