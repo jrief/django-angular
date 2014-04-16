@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
+from django.utils.html import format_html, format_html_join
+from django.utils.safestring import mark_safe
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse, HttpResponseBadRequest
 
@@ -56,3 +58,31 @@ class JSONResponseMixin(object):
         if callable(handler):
             return handler(request, *args, **kwargs)
         raise ValueError('This view can not handle method %s' % request.method)
+
+
+class NgPartialViewMixin(object):
+    allowed_route_attrs = ['controller', 'template', 'templateUrl', 'redirectTo']
+
+    def render_config_routes(self):
+        if hasattr(self, 'get_ng_routes'):
+            routes = self.get_ng_routes()
+        elif hasattr(self, 'ng_routes'):
+            routes = self.ng_routes
+        else:
+            raise AttributeError("Class %s has neither an member 'ng_routes' nor a method 'get_ng_routes'" % self.__class__)
+        items = []
+        for key, elems in routes.items():
+            attrs = format_html_join(', ', "'{0}': '{1}'",
+                        ((k, v) for k, v in elems.items() if k in self.allowed_route_attrs))
+            if key == None:
+                # this special key is used to handle the default route
+                items.append(format_html("otherwise({{{0}}})", attrs))
+            else:
+                items.append(format_html("when('/{0}', {{{1}}})", key, attrs))
+        return format_html("['$routeProvider', function($routeProvider) {{ $routeProvider.{0}; }}]",
+                           mark_safe('.'.join(items)))
+
+    def get_context_data(self, **kwargs):
+        context = super(NgPartialViewMixin, self).get_context_data(**kwargs)
+        context.update(config_ng_routes=self.render_config_routes)
+        return context
