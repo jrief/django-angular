@@ -3,10 +3,12 @@
 <!doctype html>
 <html lang="en">
 <head>
+	{% block head %}
 	<title>Djangular Test Suite</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="{{ CDN_CACHE }}netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="{{ STATIC_URL }}css/djangular-demo.css" rel="stylesheet" />
+	{% endblock head %}
 </head>
 <body ng-app="djangular-demo">
 	<div class="navbar navbar-inverse navbar-fixed-top">
@@ -49,13 +51,12 @@
 		{% endblock container %}
 	</div>
 	{% block scripts %}
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.js" type="text/javascript"></script>
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.js" type="text/javascript"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
+	<script src="{{ CDN_CACHE }}ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.js" type="text/javascript"></script>
+	<script src="{{ CDN_CACHE }}ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular-route.js" type="text/javascript"></script>
+	<script src="{{ CDN_CACHE }}cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	angular.element(document.getElementsByTagName('head')).append(angular.element('<base href="' + window.location.pathname + '" />'));
 	var my_app = angular.module('djangular-demo', ['ngRoute', 'ui.bootstrap', 'ng.django.forms', 'ng.django.websocket']);
 	</script>
 	{% endblock scripts %}

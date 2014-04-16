@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% load active %}
 
+{% block head %}
+	{{ block.super }}
+	<base href="{{ request.path }}" />
+{% endblock head %}
+
 {% block sub_menu_partials %}
 	<li class="active dropdown">
 		<a href="{% url 'djng_partials_demo' %}" class="dropdown-toggle">Partials <b class="caret"></b></a>
@@ -41,12 +46,9 @@
 	{{ block.super }}
 	<script type="text/javascript">
 	my_app.config({{ config_ng_routes }})
-		.config(['$locationProvider', function($locationProvider) {
-			$locationProvider.html5Mode(true);
-		}])
-		.controller('DefaultCtrl', function($scope, $routeParams) {
+		.controller('DefaultCtrl', function($scope, $routeParams, $window) {
 			console.log('DefaultCtrl');
-			console.log($routeParams);
+			console.log($window);
 		})
 		.controller('ListCtrl', function($scope, $routeParams) {
 			console.log('ListCtrl');
