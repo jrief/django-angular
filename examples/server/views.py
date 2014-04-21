@@ -3,7 +3,7 @@ import json
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.http import HttpResponse
-from djangular.views.mixins import NgPartialViewMixin
+from djangular.views.mixins import DjngPartialViewMixin
 from server.forms import SubscriptionFormWithNgValidation, SubscriptionFormWithNgModel, SubscriptionFormWithNgValidationAndModel
 
 
@@ -61,7 +61,7 @@ class NgFormDataValidView(TemplateView):
     template_name = 'form-data-valid.html'
 
 
-class PartialsView(NgPartialViewMixin, TemplateView):
+class PartialsView(DjngPartialViewMixin, TemplateView):
     """
     This view demonstrates how to work with partials.
     """

@@ -10,3 +10,6 @@ htmlcov/
 docs/_build/
 node_modules/
 build/
+ajax.googleapis.com/
+cdnjs.cloudflare.com/
+netdna.bootstrapcdn.com/
