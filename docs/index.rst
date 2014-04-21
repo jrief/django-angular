@@ -22,7 +22,7 @@ Contents
   angular-model-form
   angular-form-validation
   basic-crud-operations
-  dispatch-ajax-requests
+  remote-method-invocation
   csrf-protection
   manage-urls
   three-way-data-binding
