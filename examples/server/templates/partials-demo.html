@@ -45,13 +45,13 @@
 {% block scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
-	my_app.config({{ config_ng_routes }})
+	my_app.config({{ config_djng_routes }})
 		.controller('DefaultCtrl', function($scope, $routeParams, $window) {
 			console.log('DefaultCtrl');
 			console.log($window);
 		})
 		.controller('ListCtrl', function($scope, $routeParams) {
-			console.log('ListCtrl');
+			console.log('ListCtrl1');
 		})
 		.controller('DetailCtrl', function($scope, $routeParams) {
 			console.log('DetailCtrl');

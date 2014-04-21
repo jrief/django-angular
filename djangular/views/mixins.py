@@ -3,7 +3,6 @@ import json
 from django.utils.html import format_html, format_html_join
 from django.utils.safestring import mark_safe
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseBadRequest
 
 
@@ -61,20 +60,22 @@ class JSONResponseMixin(object):
         raise ValueError('This view can not handle method %s' % request.method)
 
 
-class NgPartialViewMixin(object):
+class DjngPartialViewMixin(object):
+    hashPrefix = None
     html5mode = True
     allowed_route_attrs = ['controller', 'template', 'templateUrl', 'redirectTo']
 
-    def render_config_routes(self):
-        if hasattr(self, 'get_ng_routes'):
-            routes = self.get_ng_routes()
-        elif hasattr(self, 'ng_routes'):
-            routes = self.ng_routes
-        else:
-            raise AttributeError("Class %s has neither an member 'ng_routes' nor a method 'get_ng_routes'" % self.__class__)
-        base_href = reverse(self.request.resolver_match.view_name)
+    def location_provider_config(self, attr):
         items = []
-        for key, elems in routes.items():
+        if self.hashPrefix is not None:
+            items.append("hashPrefix('{0}')".format(str(self.hashPrefix)))
+        if isinstance(self.html5mode, bool):
+            items.append("html5Mode({0})".format(str(self.html5mode).lower()))
+        return items and [('$locationProvider', attr, format_html('.'.join([attr] + items)))] or []
+
+    def route_provider_config(self, attr):
+        items = []
+        for key, elems in self.ng_routes.items():
             attrs = format_html_join(',', "'{0}':'{1}'",
                         ((k, v) for k, v in elems.items() if k in self.allowed_route_attrs))
             if key == None:
@@ -82,11 +83,45 @@ class NgPartialViewMixin(object):
                 items.append(format_html("otherwise({{{0}}})", attrs))
             else:
                 items.append(format_html("when('/{0}',{{{1}}})", key, attrs))
-        html5mode = str(self.html5mode).lower()
-        return format_html("['$locationProvider','$routeProvider',function(l,r){{l.html5Mode({0});r.{1};}}]",
-                           html5mode, mark_safe('.'.join(items)))
+        return items and [('$routeProvider', attr, mark_safe('.'.join([attr] + items)))] or []
+
+    def state_provider_config(self, attr):
+        items = []
+        for key, elems in self.ng_routes.items():
+            attrs = format_html_join(',', "'{0}':'{1}'",
+                        ((k, v) for k, v in elems.items() if k in self.allowed_route_attrs))
+            if key == None:
+                # this special key is used to handle the default route
+                items.append(format_html("otherwise({{{0}}})", attrs))
+            else:
+                items.append(format_html("when('/{0}',{{{1}}})", key, attrs))
+        return items and [('$stateProvider', attr, mark_safe('.'.join([attr] + items)))] or []
+
+    @staticmethod
+    def join_configs(configs):
+        return format_html("[{0},function({1}){{{2}}}]",
+                format_html_join(',', "'{0}'", configs),  # named AngularJS providers
+                format_html_join(',', '{1}', configs),  # providers as minimized arguments
+                format_html_join('', '{2};', configs))  # function statements
+
+    def render_state_config(self):
+        """
+        Renders a Javascript function embedded into a dependency injection array, which shall be be
+        used to configure the Angular application, when used with partial routing.
+        """
+        pass
+
+    def render_routes_config(self):
+        """
+        Renders a Javascript function embedded into a dependency injection array, which shall be be
+        used to configure the Angular application, when used with partial routing.
+        """
+        provider_configs = []
+        provider_configs.extend(self.location_provider_config('l'))
+        provider_configs.extend(self.route_provider_config('r'))
+        return self.join_config(provider_configs)
 
     def get_context_data(self, **kwargs):
-        context = super(NgPartialViewMixin, self).get_context_data(**kwargs)
-        context.update(config_ng_routes=self.render_config_routes)
+        context = super(djngPartialViewMixin, self).get_context_data(**kwargs)
+        context.update(config_djng_routes=self.render_routes_config)
         return context
