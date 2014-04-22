@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
+import warnings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
@@ -10,14 +11,14 @@ from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation, a
 
 class JSONResponseView(JSONResponseMixin, View):
     @allow_remote_invocation
-    def method_one(self, in_data):
+    def method_allowed(self, in_data):
         return {'success': True}
 
-    def method_two(self):
+    def method_forbidden(self):
         """
         decorator @allow_remote_invocation is missing
         """
-        return { 'success': True }
+        return {'success': True}
 
     @allowed_action
     def deprecated_action(self, in_data):
@@ -39,6 +40,7 @@ class DummyResponseView(JSONResponseMixin, DummyView):
 class JSONResponseMixinTest(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
+        self.data = {'foo': 'bar'}
 
     def test_csrf_exempt_dispatch(self):
         request = self.factory.post('/dummy.json')
@@ -46,50 +48,50 @@ class JSONResponseMixinTest(TestCase):
         self.assertIsInstance(response, HttpResponseBadRequest)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
-    def test_action_undefined(self):
-        data = {'foo': 'bar'}
+    def test_method_undefined(self):
         request = self.factory.post('/dummy.json',
-            data=json.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(self.data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
         self.assertIsInstance(response, HttpResponseBadRequest)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
-    def test_action_not_callable(self):
-        data = {'foo': 'bar', 'action': 'blah'}
+    def test_method_not_callable(self):
         request = self.factory.post('/dummy.json',
-            data=json.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(self.data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
         self.assertIsInstance(response, HttpResponseBadRequest)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
-    def test_deprecated_action_is_callable(self):
-        data = {'foo': 'bar', 'action': 'deprecated_action'}
-        request = self.factory.post('/dummy.json',
-            data=json.dumps(data, cls=DjangoJSONEncoder),
-            content_type='application/json; charset=utf-8;',
-            HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        response = JSONResponseView().post(request)
-        self.assertIsInstance(response, HttpResponse)
-        out_data = json.loads(response.content)
-        self.assertTrue(out_data['success'])
+    def test_deprecated_action(self):
+        with warnings.catch_warnings(record=True) as w:
+            data = {'foo': 'bar', 'action': 'deprecated_action'}
+            request = self.factory.post('/dummy.json',
+                data=json.dumps(data, cls=DjangoJSONEncoder),
+                content_type='application/json; charset=utf-8;',
+                HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            response = JSONResponseView().post(request)
+            self.assertIsInstance(response, HttpResponse)
+            out_data = json.loads(response.content)
+            self.assertTrue(out_data['success'])
+            self.assertEqual(w[0].message[0], "Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'")
 
-    def test_action_is_forbidden(self):
-        data = {'foo': 'bar', 'action': 'action_two'}
+    def test_method_is_forbidden(self):
         request = self.factory.post('/dummy.json',
-            data=json.dumps(data, cls=DjangoJSONEncoder),
+            data=json.dumps(self.data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',
+            HTTP_DJNG_REMOTE_METHOD='method_forbidden',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
         self.assertIsInstance(response, HttpResponseBadRequest)
-        self.assertEqual(response.content, 'Method "action_two" is not decorated with @allowed_action')
+        self.assertEqual(response.content, "Method 'JSONResponseView.method_forbidden' has no decorator '@allow_remote_invocation'")
 
-    def test_ajax_get_action(self):
+    def test_ajax_get_method(self):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        response = JSONResponseView().get(request, action='action_two')
+        response = JSONResponseView().get(request, invoke_method='method_forbidden')
         self.assertIsInstance(response, HttpResponse)
         out_data = json.loads(str(response.content))
         self.assertTrue(out_data['success'])
