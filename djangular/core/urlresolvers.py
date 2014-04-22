@@ -3,6 +3,7 @@ from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch)
+from django.core.exceptions import ImproperlyConfigured
 from djangular.views.mixins import JSONResponseMixin
 
 
@@ -60,29 +61,47 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
                 for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
 
 
-def get_remote_methods(namespace=None, urlconf=None):
+def _get_remote_methods_for(ViewClass, url):
+    result = {}
+    for field in dir(ViewClass):
+        member = getattr(ViewClass, field)
+        if callable(member) and hasattr(member, 'allow_rmi'):
+            config = {
+                'url': url,
+                'method': getattr(member, 'allow_rmi'),
+                'headers': {'DjNg-Remote-Method': field},
+            }
+            result.update({field: config})
+    return result
+
+
+def get_all_remote_methods(resolver=None, ns_prefix=''):
     """
     Returns a dictionary to be used for calling ``djangoCall.configure()``, which itself extends the
     Angular API to the client, offering him to call remote methods.
     """
+    if not resolver:
+        resolver = get_resolver(get_urlconf())
     result = {}
-    if urlconf is None:
-        urlconf = get_urlconf()
-    resolver = get_resolver(urlconf)
     for name in resolver.reverse_dict.keys():
-        if isinstance(name, six.string_types):
-            url = reverse(name)
+        if not isinstance(name, six.string_types):
+            continue
+        try:
+            url = reverse(ns_prefix + name)
             resmgr = resolve(url)
             ViewClass = import_by_path('{0}.{1}'.format(resmgr.func.__module__, resmgr.func.__name__))
-            if not issubclass(ViewClass, JSONResponseMixin):
-                continue
-            for field in dir(ViewClass):
-                member = getattr(ViewClass, field)
-                if callable(member) and hasattr(member, 'is_allowed_action'):
-                    config = {
-                        'url': url,
-                        'method': getattr(member, 'is_allowed_action'),
-                        'headers': {'DjNg-Remote-Method': field},
-                    }
-                    result[name] = {field: config}
+            if issubclass(ViewClass, JSONResponseMixin):
+                result[name] = _get_remote_methods_for(ViewClass, url)
+        except (NoReverseMatch, ImproperlyConfigured):
+            pass
+    for namespace, ns_pattern in resolver.namespace_dict.items():
+        sub_res = get_all_remote_methods(ns_pattern[1], ns_prefix + namespace + ':')
+        if sub_res:
+            result[namespace] = sub_res
     return result
+
+
+def get_current_remote_methods(request):
+    ViewClass = import_by_path(request.resolver_match.view_name)
+    if issubclass(ViewClass, JSONResponseMixin):
+        return _get_remote_methods_for(ViewClass, request.path_info)
