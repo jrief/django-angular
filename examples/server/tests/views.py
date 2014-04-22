@@ -5,19 +5,23 @@ from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponseBadRequest, HttpResponse
 from django.views.generic import View
-from djangular.views.mixins import JSONResponseMixin, allowed_action
+from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation, allowed_action
 
 
 class JSONResponseView(JSONResponseMixin, View):
-    @allowed_action
-    def action_one(self, in_data):
+    @allow_remote_invocation
+    def method_one(self, in_data):
+        return {'success': True}
+
+    def method_two(self):
+        """
+        decorator @allow_remote_invocation is missing
+        """
         return { 'success': True }
 
-    def action_two(self):
-        """
-        decorator @allowed_action is missing
-        """
-        return { 'success': True }
+    @allowed_action
+    def deprecated_action(self, in_data):
+        return {'success': True}
 
 
 class DummyView(View):
@@ -62,8 +66,8 @@ class JSONResponseMixinTest(TestCase):
         self.assertIsInstance(response, HttpResponseBadRequest)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
-    def test_action_is_callable(self):
-        data = {'foo': 'bar', 'action': 'action_one'}
+    def test_deprecated_action_is_callable(self):
+        data = {'foo': 'bar', 'action': 'deprecated_action'}
         request = self.factory.post('/dummy.json',
             data=json.dumps(data, cls=DjangoJSONEncoder),
             content_type='application/json; charset=utf-8;',

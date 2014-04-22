@@ -11,7 +11,7 @@ def allow_remote_invocation(func, method='auto'):
     decorated with @allowed_action. This is required for safety reasons. It
     inhibits the caller to invoke all available methods of a class.
     """
-    setattr(func, 'is_allowed_action', method)
+    setattr(func, 'allow_rmi', method)
     return func
 
 
@@ -25,17 +25,26 @@ class JSONResponseMixin(object):
     A mixin that dispatches POST requests containing the keyword 'action' onto
     the method with that name. It renders the returned context as JSON response.
     """
-
-    def dispatch(self, *args, **kwargs):
-        return super(JSONResponseMixin, self).dispatch(*args, **kwargs)
-
     def get(self, request, *args, **kwargs):
         if not request.is_ajax():
             return self._dispatch_super(request, *args, **kwargs)
-        action = request.META.get('HTTP_DJNG_REMOTE_METHOD', kwargs.get('action'))
-        handler = action and getattr(self, action, None)
-        if not callable(handler):
-            return self._dispatch_super(request, *args, **kwargs)
+        if 'action' in kwargs:
+            warnings.warn("Using the keyword 'action' in URLresolvers is deprecated. Please use 'invoke_method' instead", DeprecationWarning)
+            remote_method = kwargs['action']
+        else:
+            remote_method = kwargs.get('invoke_method')
+        if remote_method:
+            # method for invocation is determined programmatically
+            handler = getattr(self, remote_method)
+        else:
+            # method for invocation is determined by HTTP header
+            remote_method = request.META.get('HTTP_DJNG_REMOTE_METHOD')
+            handler = remote_method and getattr(self, remote_method, None)
+            if not callable(handler):
+                return self._dispatch_super(request, *args, **kwargs)
+            if not hasattr(handler, 'allow_rmi'):
+                return HttpResponseBadRequest("Method '{0}.{1}' has no decorator '@allow_remote_invocation'"
+                                              .format(self.__class__.__name__, remote_method))
         out_data = json.dumps(handler(), cls=DjangoJSONEncoder)
         response = HttpResponse(out_data)
         response['Content-Type'] = 'application/json;charset=UTF-8'
@@ -48,15 +57,16 @@ class JSONResponseMixin(object):
                 return self._dispatch_super(request, *args, **kwargs)
             in_data = json.loads(str(request.body))
             if 'action' in in_data:
-                warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoAction' from module 'ng.django.forms'", DeprecationWarning)
-                action = in_data.pop('action', kwargs.get('action'))
+                warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'", DeprecationWarning)
+                remote_method = in_data.pop('action')
             else:
-                action = request.META.get('HTTP_DJNG_REMOTE_METHOD', kwargs.get('action'))
-            handler = action and getattr(self, action, None)
+                remote_method = request.META.get('HTTP_DJNG_REMOTE_METHOD')
+            handler = remote_method and getattr(self, remote_method, None)
             if not callable(handler):
                 return self._dispatch_super(request, *args, **kwargs)
-            if not hasattr(handler, 'is_allowed_action'):
-                raise ValueError('Method "%s" is not decorated with @allowed_action' % action)
+            if not hasattr(handler, 'allow_rmi'):
+                raise ValueError("Method '{0}.{1}' has no decorator '@allow_remote_invocation'"
+                                 .format(self.__class__.__name__, remote_method))
             out_data = json.dumps(handler(in_data), cls=DjangoJSONEncoder)
             return HttpResponse(out_data, content_type='application/json;charset=UTF-8')
         except ValueError as err:
