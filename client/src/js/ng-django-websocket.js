@@ -16,9 +16,6 @@ djng_ws_module.service('$websocket', function() {
 		ws.onerror = this.onerror;
 		ws.onclose = this.onclose;
 	};
-	this.reconnect = function() {
-		ws = new WebSocket(ws.url);
-	};
 	this.send = function(msg) {
 		ws.send(msg);
 	};
@@ -69,25 +66,20 @@ djng_ws_module.provider('djangoWebsocket', function() {
 	};
 
 	this.$get = ['$websocket', '$q', '$timeout', '$interval', function($websocket, $q, $timeout, $interval) {
-		var ws, deferred, timer_promise = null, wait_for = null, scope, collection;
+		var ws_url, deferred, scope, collection;
 		var is_subscriber = false, is_publisher = false;
-		var heartbeat_promise = null, missed_heartbeats = 0;
+		var wait_for_reconnect = 0, heartbeat_promise = null, missed_heartbeats = 0;
 
-		function connect(uri) {
-			try {
-				_console.log("Connecting to "+uri);
-				deferred = $q.defer();
-				$websocket.connect(uri);
-				timer_promise = null;
-			} catch (err) {
-				deferred.reject(new Error(err));
-			}
+		function connect() {
+			_console.log("Connecting to "+ws_url);
+			deferred = $q.defer();
+			$websocket.connect(ws_url);
 		}
 
 		$websocket.onopen = function(evt) {
 			_console.log('Connected');
-			wait_for = 500;
-			deferred.resolve();
+			deferred.resolve('connected');
+			wait_for_reconnect = 0;
 			if (heartbeat_msg && heartbeat_promise === null) {
 				missed_heartbeats = 0;
 				heartbeat_promise = $interval(sendHeartbeat, 5000);
@@ -95,18 +87,17 @@ djng_ws_module.provider('djangoWebsocket', function() {
 		};
 
 		$websocket.onclose = function(evt) {
-			_console.log("Connection closed");
-			if (!timer_promise && wait_for) {
-				timer_promise = $timeout(function() {
-					$websocket.reconnect();
-				}, wait_for);
-				wait_for = Math.min(wait_for + 500, 5000);
-			}
+			_console.log("Disconnected");
+			deferred.reject('disconnected');
+			wait_for_reconnect = Math.min(wait_for_reconnect + 1000, 10000);
+			$timeout(function() {
+				$websocket.connect(ws_url);
+			}, wait_for_reconnect);
 		};
 
 		$websocket.onerror = function(evt) {
 			_console.error("Websocket connection is broken!");
-			deferred.reject(new Error(evt));
+			$websocket.close();
 		};
 
 		$websocket.onmessage = function(evt) {
@@ -117,6 +108,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 			}
 			try {
 				var server_data = angular.fromJson(evt.data);
+				deferred.notify(server_data);
 				if (is_subscriber) {
 					scope.$apply(function() {
 						angular.extend(scope[collection], server_data);
@@ -142,7 +134,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 		}
 
 		function listener(newValue, oldValue) {
-			if (newValue !== undefined) {
+			if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
 				$websocket.send(angular.toJson(newValue));
 			}
 		}
@@ -161,10 +153,10 @@ djng_ws_module.provider('djangoWebsocket', function() {
 			scope.$watchCollection(collection, listener);
 		}
 
-		function getWebsocketURL(facility, channels) {
+		function buildWebsocketURL(facility, channels) {
 			var parts = [websocket_uri, facility, '?'];
 			parts.push(channels.join('&'));
-			return parts.join('');
+			ws_url = parts.join('');
 		}
 
 		return {
@@ -173,7 +165,8 @@ djng_ws_module.provider('djangoWebsocket', function() {
 				setChannels(channels);
 				collection = scope_obj;
 				scope[collection] = scope[collection] || {};
-				connect(getWebsocketURL(facility, channels));
+				buildWebsocketURL(facility, channels);
+				connect();
 				if (is_publisher) {
 					deferred.promise.then(watchCollection);
 				}
