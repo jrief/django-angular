@@ -106,6 +106,8 @@ try:
 
     INSTALLED_APPS += ('ws4redis',)
 
+    TEMPLATE_CONTEXT_PROCESSORS += ('ws4redis.context_processors.default',)
+
     # This setting is required to override the Django's main loop, when running in
     # development mode, such as ./manage runserver
     WSGI_APPLICATION = 'ws4redis.django_runserver.application'
