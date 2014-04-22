@@ -77,4 +77,4 @@ class JSONResponseMixin(object):
         handler = getattr(base, request.method.lower(), None)
         if callable(handler):
             return handler(request, *args, **kwargs)
-        raise ValueError('This view can not handle method %s' % request.method)
+        raise ValueError('This view can not handle method {0}'.format(request.method))
