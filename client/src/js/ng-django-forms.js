@@ -9,6 +9,11 @@ var djng_forms_module = angular.module('ng.django.forms', []);
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // If not used, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms.
+// TODO: Find out, if the form was bound or unbound. This can be done looking at the fields values
+// or by adding a special value to each field. If forms are unbound, use that information to send
+// data via PUT rather than POST, since this is how new objects shall be created. An alternative
+// would be to create a directive djng-bound-form, which shall be added to a form, whenever it is
+// bound. This can easily be done from django.
 djng_forms_module.directive('form', function() {
 	return {
 		restrict: 'E',
@@ -168,6 +173,7 @@ djng_forms_module.provider('djangoRMI', function() {
 						if (data === undefined) {
 							config.method = 'GET';
 						} else {
+							// TODO: distinguish between POST and PUT
 							config.method = 'POST';
 							config.data = data;
 						}
