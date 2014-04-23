@@ -78,7 +78,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 
 		$websocket.onopen = function(evt) {
 			_console.log('Connected');
-			deferred.resolve('connected');
+			deferred.resolve();
 			wait_for_reconnect = 0;
 			if (heartbeat_msg && heartbeat_promise === null) {
 				missed_heartbeats = 0;
@@ -88,7 +88,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 
 		$websocket.onclose = function(evt) {
 			_console.log("Disconnected");
-			deferred.reject('disconnected');
+			deferred.reject();
 			wait_for_reconnect = Math.min(wait_for_reconnect + 1000, 10000);
 			$timeout(function() {
 				$websocket.connect(ws_url);
@@ -108,7 +108,6 @@ djng_ws_module.provider('djangoWebsocket', function() {
 			}
 			try {
 				var server_data = angular.fromJson(evt.data);
-				deferred.notify(server_data);
 				if (is_subscriber) {
 					scope.$apply(function() {
 						angular.extend(scope[collection], server_data);
