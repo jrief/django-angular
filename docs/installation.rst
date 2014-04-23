@@ -37,6 +37,10 @@ Add ``'djangular'`` to the list of ``INSTALLED_APPS`` in your project's ``settin
 .. note:: **django-angular** does not define any database models. It can therefore easily be
           installed without any database synchronization.
 
+.. note:: don't forget to define your ``STATIC_ROOT`` and ``STATIC_URL`` properly, then
+          launch the ``python manage.py collectstatic`` command to update your
+          static content with the javascript files provided by django-angular
+
 .. _Django: http://djangoproject.com/
 .. _AngularJS: http://angularjs.org/
 .. _pip: http://pypi.python.org/pypi/pip
