@@ -22,6 +22,7 @@ class NgCRUDView(FormView):
     fields = None
     content_type = 'application/json'
     slug_field = 'slug'
+    serialize_natural_keys = False
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -80,9 +81,9 @@ class NgCRUDView(FormView):
         try:
             iter(queryset)
             is_queryset = True
-            raw_data = serializers.serialize('python', queryset, fields=query_fields)
+            raw_data = serializers.serialize('python', queryset, fields=query_fields, use_natural_keys=self.serialize_natural_keys)
         except TypeError:  # Not iterable
-            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields)
+            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields, use_natural_keys=self.serialize_natural_keys)
 
         for obj in raw_data:  # Add pk to fields
             obj['fields']['pk'] = obj['pk']
