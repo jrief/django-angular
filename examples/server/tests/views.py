@@ -4,7 +4,7 @@ import warnings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
-from django.http import HttpResponseBadRequest, HttpResponse
+from django.http import HttpResponse
 from django.views.generic import View
 from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation, allowed_action
 
@@ -45,7 +45,8 @@ class JSONResponseMixinTest(TestCase):
     def test_csrf_exempt_dispatch(self):
         request = self.factory.post('/dummy.json')
         response = JSONResponseView.as_view()(request)
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
     def test_post_method_undefined(self):
@@ -54,7 +55,8 @@ class JSONResponseMixinTest(TestCase):
             content_type='application/json; charset=utf-8;',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
     def test_post_method_not_callable(self):
@@ -64,7 +66,8 @@ class JSONResponseMixinTest(TestCase):
             HTTP_DJNG_REMOTE_METHOD='no_such_method',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 405)
         self.assertEqual(response.content, 'This view can not handle method POST')
 
     def test_post_method_is_forbidden(self):
@@ -74,7 +77,8 @@ class JSONResponseMixinTest(TestCase):
             HTTP_DJNG_REMOTE_METHOD='method_forbidden',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().post(request)
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(response.content, "Method 'JSONResponseView.method_forbidden' has no decorator '@allow_remote_invocation'")
 
     def test_post_deprecated_action(self):
@@ -86,6 +90,7 @@ class JSONResponseMixinTest(TestCase):
                 HTTP_X_REQUESTED_WITH='XMLHttpRequest')
             response = JSONResponseView().post(request)
             self.assertIsInstance(response, HttpResponse)
+            self.assertEqual(response.status_code, 200)
             out_data = json.loads(response.content)
             self.assertTrue(out_data['success'])
             self.assertEqual(w[0].message[0], "Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'")
@@ -94,6 +99,7 @@ class JSONResponseMixinTest(TestCase):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request, invoke_method='method_forbidden')
         self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
         out_data = json.loads(str(response.content))
         self.assertTrue(out_data['success'])
 
@@ -102,6 +108,7 @@ class JSONResponseMixinTest(TestCase):
             request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
             response = JSONResponseView().get(request, action='method_forbidden')
             self.assertIsInstance(response, HttpResponse)
+            self.assertEqual(response.status_code, 200)
             out_data = json.loads(response.content)
             self.assertTrue(out_data['success'])
             self.assertEqual(w[0].message[0], "Using the keyword 'action' in URLresolvers is deprecated. Please use 'invoke_method' instead")
@@ -111,15 +118,17 @@ class JSONResponseMixinTest(TestCase):
             HTTP_DJNG_REMOTE_METHOD='method_forbidden',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request)
-        self.assertIsInstance(response, HttpResponseBadRequest)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 403)
         self.assertEqual(response.content, "Method 'JSONResponseView.method_forbidden' has no decorator '@allow_remote_invocation'")
 
     def test_get_method_not_callable(self):
         request = self.factory.get('/dummy.json',
             HTTP_DJNG_REMOTE_METHOD='no_such_method',
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-        with self.assertRaises(ValueError):
-            JSONResponseView().get(request)
+        response = JSONResponseView().get(request)
+        self.assertEqual(response.status_code, 405)
+        self.assertEqual(response.content, "This view can not handle method GET")
 
     def test_get_method_allowed(self):
         request = self.factory.get('/dummy.json',
@@ -127,6 +136,7 @@ class JSONResponseMixinTest(TestCase):
             HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request)
         self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
         out_data = json.loads(str(response.content))
         self.assertTrue(out_data['success'])
 
@@ -134,10 +144,12 @@ class JSONResponseMixinTest(TestCase):
         request = self.factory.post('/dummy.json', data=self.data)
         response = DummyResponseView().post(request)
         self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(str(response.content), 'bar')
 
     def test_get_pass_through(self):
         request = self.factory.get('/dummy.json')
         response = DummyResponseView.as_view()(request)
         self.assertIsInstance(response, HttpResponse)
+        self.assertEqual(response.status_code, 200)
         self.assertEqual(str(response.content), 'GET OK')

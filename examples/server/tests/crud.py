@@ -13,14 +13,14 @@ class CRUDTestViewWithFK(JSONResponseMixin, NgCRUDView):
     """
     Include JSONResponseMixin to make sure there aren't any problems when using both together
     """
-    model_class = DummyModel
+    model = DummyModel
 
 
 class CRUDTestView(JSONResponseMixin, NgCRUDView):
     """
     Include JSONResponseMixin to make sure there aren't any problems when using both together
     """
-    model_class = DummyModel2
+    model = DummyModel2
 
 
 class CRUDTestViewWithSlug(NgCRUDView):
@@ -28,7 +28,7 @@ class CRUDTestViewWithSlug(NgCRUDView):
     Differs from CRUDTestViewWithFK in slug field 'email', which has a 'unique' constraint and
     can be used as an alternative key (for GET operations only).
     """
-    model_class = SimpleModel
+    model = SimpleModel
     slug_field = 'email'
 
 
