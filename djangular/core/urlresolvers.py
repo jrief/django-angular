@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from inspect import isclass
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
@@ -90,7 +91,7 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
             url = reverse(ns_prefix + name)
             resmgr = resolve(url)
             ViewClass = import_by_path('{0}.{1}'.format(resmgr.func.__module__, resmgr.func.__name__))
-            if issubclass(ViewClass, JSONResponseMixin):
+            if isclass(ViewClass) and issubclass(ViewClass, JSONResponseMixin):
                 result[name] = _get_remote_methods_for(ViewClass, url)
         except (NoReverseMatch, ImproperlyConfigured):
             pass
