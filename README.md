@@ -15,6 +15,8 @@ Project home: https://github.com/jrief/django-angular
 
 Detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/).
 
+Please participate at this [survey on naming conventions](https://github.com/jrief/django-angular/issues/35)!
+
 Please drop me a line, if and where you use this project.
 
 Features
