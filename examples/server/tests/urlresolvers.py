@@ -12,7 +12,7 @@ class TemplateRemoteMethods(TestCase):
 
     def test_get_current_remote_methods(self):
         request = self.factory.get('/straight_methods/')
-        request.resolver_match = type('ViewClass', (object,), {'view_name': 'server.test_urls.RemoteMethodsView'})
+        request.resolver_match = type('ViewClass', (object,), {'view_name': 'server.tests.urls.RemoteMethodsView'})
         remote_methods = get_current_remote_methods(request)
         self.assertDictEqual(remote_methods, {'foo': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}})
 
