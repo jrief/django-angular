@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import datetime
-
 from django.db import models
 
 
@@ -12,3 +11,8 @@ class DummyModel(models.Model):
 
 class DummyModel2(models.Model):
     name = models.CharField(max_length=255)
+
+
+class SimpleModel(models.Model):
+    name = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
