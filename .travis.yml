@@ -17,6 +17,7 @@ install:
 branches:
   only:
     - master
+    - rmi
 
 before_script:
   - export DISPLAY=:99.0
