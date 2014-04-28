@@ -26,10 +26,10 @@ class JSONResponseException(Exception):
     """
     status_code = 400
 
-    def __init__(self, status=None, *args, **kwargs):
+    def __init__(self, message=None, status=None, *args, **kwargs):
         if status is not None:
             self.status_code = status
-        super(JSONResponseException, self).__init__(*args, **kwargs)
+        super(JSONResponseException, self).__init__(message, *args, **kwargs)
 
 
 class JSONBaseMixin(object):
