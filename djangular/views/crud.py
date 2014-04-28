@@ -47,9 +47,9 @@ class NgCRUDView(JSONBaseMixin, FormView):
         except self.model.DoesNotExist as e:
             return self.error_json_response(str(e), 404)
         except NgMissingParameterError as e:
-            return self.error_json_response(e)
+            return self.error_json_response(e.message)
         except JSONResponseException as e:
-            return self.error_json_response(e, e.status_code)
+            return self.error_json_response(e.message, e.status_code)
         except ValidationError as e:
             return self.error_json_response('Form not valid', detail=e.message_dict)
 
