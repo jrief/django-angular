@@ -3,13 +3,17 @@ import json
 
 from django.core.exceptions import ValidationError
 from django.core import serializers
-from django.core.serializers.json import DjangoJSONEncoder
 from django.forms.models import modelform_factory
-from django.http import HttpResponse
 from django.views.generic import FormView
 
+from djangular.views.mixins import JSONBaseMixin, JSONResponseException
 
-class NgCRUDView(FormView):
+
+class NgMissingParameterError(ValueError):
+    pass
+
+
+class NgCRUDView(JSONBaseMixin, FormView):
     """
     Basic view to support default angular $resource CRUD actions on server side
     Subclass and override ``model`` with your model
@@ -20,7 +24,6 @@ class NgCRUDView(FormView):
     """
     model = None
     fields = None
-    content_type = 'application/json'
     slug_field = 'slug'
     serialize_natural_keys = False
 
@@ -43,10 +46,12 @@ class NgCRUDView(FormView):
                 return self.ng_delete(request, *args, **kwargs)
         except self.model.DoesNotExist as e:
             return self.error_json_response(str(e), 404)
-        except ValueError as e:
-            return self.error_json_response(str(e))
+        except NgMissingParameterError as e:
+            return self.error_json_response(e)
+        except JSONResponseException as e:
+            return self.error_json_response(e, e.status_code)
         except ValidationError as e:
-            return self.error_json_response(e.message)
+            return self.error_json_response('Form not valid', detail=e.message_dict)
 
         return self.error_json_response('This view can not handle method {0}'.format(request.method), 405)
 
@@ -56,19 +61,15 @@ class NgCRUDView(FormView):
         """
         return modelform_factory(self.model)
 
-    def build_json_response(self, data):
-        response = HttpResponse(self.serialize_to_json(data), self.content_type)
-        response['Cache-Control'] = 'no-cache'
-        return response
+    def build_json_response(self, data, **kwargs):
+        return self.json_response(self.serialize_to_json(data), separators=(',', ':'), **kwargs)
 
     def error_json_response(self, message, status_code=400, detail=None):
         response_data = {
             "message": message,
             "detail": detail,
         }
-        response = HttpResponse(json.dumps(response_data, cls=DjangoJSONEncoder, separators=(',', ':')), self.content_type, status=status_code)
-        response['Cache-Control'] = 'no-cache'
-        return response
+        return self.json_response(response_data, status=status_code, separators=(',', ':'))
 
     def serialize_to_json(self, queryset):
         """
@@ -90,8 +91,8 @@ class NgCRUDView(FormView):
             object_data.append(obj['fields'])
 
         if is_queryset:
-            return json.dumps(object_data, cls=DjangoJSONEncoder, separators=(',', ':'))
-        return json.dumps(object_data[0], cls=DjangoJSONEncoder, separators=(',', ':'))  # If there's only one object
+            return object_data
+        return object_data[0]  # If there's only one object
 
     def get_form_kwargs(self):
         kwargs = super(NgCRUDView, self).get_form_kwargs()
@@ -107,7 +108,7 @@ class NgCRUDView(FormView):
             return self.model.objects.get(pk=self.request.GET['pk'])
         elif self.slug_field in self.request.GET:
             return self.model.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
-        raise ValueError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
+        raise NgMissingParameterError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
 
     def get_fields(self):
         """
@@ -147,17 +148,14 @@ class NgCRUDView(FormView):
             obj = form.save()
             return self.build_json_response(obj)
 
-        # Do not fall back to dispatch error handling, instead provide field details.
-        error_detail = {"non_field_errors": form.non_field_errors()}
-        error_detail.update(form.errors)
-        return self.error_json_response("Form not valid", detail=error_detail)
+        raise ValidationError(form.errors)
 
     def ng_delete(self, request, *args, **kwargs):
         """
         Delete object and return it's data in JSON encoding
         """
         if 'pk' not in request.GET:
-            raise ValueError("Object id is required to delete.")
+            raise NgMissingParameterError("Object id is required to delete.")
 
         obj = self.get_object()
         obj.delete()
