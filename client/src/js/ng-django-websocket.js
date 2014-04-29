@@ -26,7 +26,7 @@ djng_ws_module.service('$websocket', function() {
 
 djng_ws_module.provider('djangoWebsocket', function() {
 	var _console = { log: noop, warn: noop, error: noop };
-	var websocket_uri, heartbeat_msg = null, receiving = false;
+	var websocket_uri, heartbeat_msg = null;
 
 	// Set prefix for the Websocket's URI.
 	// This URI must be set during initialization using
@@ -67,7 +67,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 
 	this.$get = ['$websocket', '$q', '$timeout', '$interval', function($websocket, $q, $timeout, $interval) {
 		var ws_url, deferred, scope, collection;
-		var is_subscriber = false, is_publisher = false;
+		var is_subscriber = false, is_publisher = false, receiving = false;
 		var wait_for_reconnect = 0, heartbeat_promise = null, missed_heartbeats = 0;
 
 		function connect() {
