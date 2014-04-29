@@ -66,10 +66,7 @@ def _get_remote_methods_for(view_object, url):
     # view_object can be a view class or instance
     result = {}
     for field in dir(view_object):
-        try:
-            member = getattr(view_object, field)
-        except AttributeError:
-            continue
+        member = getattr(view_object, field, None)
         if callable(member) and hasattr(member, 'allow_rmi'):
             config = {
                 'url': url,
