@@ -13,6 +13,8 @@ NEW in 0.7.0
 
 Project home: https://github.com/jrief/django-angular
 
+[Demo](http://djangular.aws.awesto.com/form_validation/) how to combine Django with Angular form validation.
+
 Detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/).
 
 Please participate at this [survey on naming conventions](https://github.com/jrief/django-angular/issues/35)!
