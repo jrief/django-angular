@@ -62,10 +62,14 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
                 for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
 
 
-def _get_remote_methods_for(ViewClass, url):
+def _get_remote_methods_for(view_object, url):
+    # view_object can be a view class or instance
     result = {}
-    for field in dir(ViewClass):
-        member = getattr(ViewClass, field)
+    for field in dir(view_object):
+        try:
+            member = getattr(view_object, field)
+        except AttributeError:
+            continue
         if callable(member) and hasattr(member, 'allow_rmi'):
             config = {
                 'url': url,
@@ -102,7 +106,6 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
     return result
 
 
-def get_current_remote_methods(request):
-    ViewClass = import_by_path(request.resolver_match.view_name)
-    if issubclass(ViewClass, JSONResponseMixin):
-        return _get_remote_methods_for(ViewClass, request.path_info)
+def get_current_remote_methods(view):
+    if isinstance(view, JSONResponseMixin):
+        return _get_remote_methods_for(view, view.request.path_info)
