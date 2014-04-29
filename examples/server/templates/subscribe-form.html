@@ -5,7 +5,10 @@
 		{% csrf_token %}
 		<table class="subscribe span12">
 			<caption class="offset2">{% block table_caption %}Form Validation Demo{% endblock %}</caption>
-			<thead><td class="span3"></td><td class="span9"></td></tr></thead>
+			<thead><tr>
+				<td class="span3"></td>
+				<td class="span9 lead">{% block table_header %}Pure client side form validation{% endblock %}</td>
+			</tr></thead>
 			<tbody>{{ form }}</tbody>
 			<tfoot>
 				{% block table_foot %}
