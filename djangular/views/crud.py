@@ -51,7 +51,10 @@ class NgCRUDView(JSONBaseMixin, FormView):
         except JSONResponseException as e:
             return self.error_json_response(e.message, e.status_code)
         except ValidationError as e:
-            return self.error_json_response('Form not valid', detail=e.message_dict)
+            if hasattr(e, 'error_dict'):
+                return self.error_json_response('Form not valid', detail=e.message_dict)
+            else:
+                return self.error_json_response(e.message)
 
         return self.error_json_response('This view can not handle method {0}'.format(request.method), 405)
 
