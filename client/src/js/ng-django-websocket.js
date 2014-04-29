@@ -26,7 +26,7 @@ djng_ws_module.service('$websocket', function() {
 
 djng_ws_module.provider('djangoWebsocket', function() {
 	var _console = { log: noop, warn: noop, error: noop };
-	var websocket_uri, heartbeat_msg = null;
+	var websocket_uri, heartbeat_msg = null, receiving = false;
 
 	// Set prefix for the Websocket's URI.
 	// This URI must be set during initialization using
@@ -101,20 +101,26 @@ djng_ws_module.provider('djangoWebsocket', function() {
 		};
 
 		$websocket.onmessage = function(evt) {
+			var data;
 			if (evt.data === heartbeat_msg) {
 				// reset the counter for missed heartbeats
 				missed_heartbeats = 0;
 				return;
 			}
 			try {
-				var server_data = angular.fromJson(evt.data);
-				if (is_subscriber) {
-					scope.$apply(function() {
-						angular.extend(scope[collection], server_data);
-					});
-				}
+				data = angular.fromJson(evt.data);
 			} catch(e) {
 				_console.warn('Data received by server is invalid JSON: ' + evt.data);
+				return;
+			}
+			if (is_subscriber) {
+				// temporarily disable the function 'listener', so that message received
+				// from the websocket, are not propagated back
+				receiving = true;
+				scope.$apply(function() {
+					angular.extend(scope[collection], data);
+				});
+				receiving = false;
 			}
 		};
 
@@ -133,7 +139,7 @@ djng_ws_module.provider('djangoWebsocket', function() {
 		}
 
 		function listener(newValue, oldValue) {
-			if (newValue !== undefined && !angular.equals(newValue, oldValue)) {
+			if (!receiving && !angular.equals(oldValue, newValue)) {
 				$websocket.send(angular.toJson(newValue));
 			}
 		}
