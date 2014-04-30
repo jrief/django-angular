@@ -45,11 +45,11 @@ class NgCRUDView(JSONBaseMixin, FormView):
             elif request.method == 'DELETE':
                 return self.ng_delete(request, *args, **kwargs)
         except self.model.DoesNotExist as e:
-            return self.error_json_response(str(e), 404)
+            return self.error_json_response(e.args[0], 404)
         except NgMissingParameterError as e:
-            return self.error_json_response(e.message)
+            return self.error_json_response(e.args[0])
         except JSONResponseException as e:
-            return self.error_json_response(e.message, e.status_code)
+            return self.error_json_response(e.args[0], e.status_code)
         except ValidationError as e:
             if hasattr(e, 'error_dict'):
                 return self.error_json_response('Form not valid', detail=e.message_dict)
@@ -101,7 +101,7 @@ class NgCRUDView(JSONBaseMixin, FormView):
         kwargs = super(NgCRUDView, self).get_form_kwargs()
         # Since angular sends data in JSON rather than as POST parameters, the default data (request.POST)
         # is replaced with request.body that contains JSON encoded data
-        kwargs['data'] = json.loads(self.request.body)
+        kwargs['data'] = json.loads(self.request.body.decode('utf-8'))
         if 'pk' in self.request.GET or self.slug_field in self.request.GET:
             kwargs['instance'] = self.get_object()
         return kwargs
