@@ -76,7 +76,7 @@ class JSONResponseMixin(JSONBaseMixin):
         try:
             response_data = handler()
         except JSONResponseException as e:
-            return self.json_response(e.args[0], e.status_code)
+            return self.json_response({'message': e.args[0]}, e.status_code)
         return self.json_response(response_data)
 
     def post(self, request, *args, **kwargs):
@@ -97,7 +97,7 @@ class JSONResponseMixin(JSONBaseMixin):
         try:
             response_data = handler(in_data)
         except JSONResponseException as e:
-            return self.json_response(e.args[0], e.status_code)
+            return self.json_response({'message': e.args[0]}, e.status_code)
         return self.json_response(response_data)
 
     def _dispatch_super(self, request, *args, **kwargs):
