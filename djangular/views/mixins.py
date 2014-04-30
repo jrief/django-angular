@@ -76,13 +76,13 @@ class JSONResponseMixin(JSONBaseMixin):
         try:
             response_data = handler()
         except JSONResponseException as e:
-            return self.json_response(e, e.status_code)
+            return self.json_response(e.args[0], e.status_code)
         return self.json_response(response_data)
 
     def post(self, request, *args, **kwargs):
         if not request.is_ajax():
             return self._dispatch_super(request, *args, **kwargs)
-        in_data = json.loads(str(request.body))
+        in_data = json.loads(request.body.decode('utf-8'))
         if 'action' in in_data:
             warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'", DeprecationWarning)
             remote_method = in_data.pop('action')
@@ -97,7 +97,7 @@ class JSONResponseMixin(JSONBaseMixin):
         try:
             response_data = handler(in_data)
         except JSONResponseException as e:
-            return self.json_response(e, e.status_code)
+            return self.json_response(e.args[0], e.status_code)
         return self.json_response(response_data)
 
     def _dispatch_super(self, request, *args, **kwargs):
