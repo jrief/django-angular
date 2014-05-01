@@ -2,6 +2,7 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
+from server.tests.urls import RemoteMethodsView
 
 
 class TemplateRemoteMethods(TestCase):
@@ -11,10 +12,11 @@ class TemplateRemoteMethods(TestCase):
         self.factory = RequestFactory()
 
     def test_get_current_remote_methods(self):
-        request = self.factory.get('/straight_methods/')
-        request.resolver_match = type('ViewClass', (object,), {'view_name': 'server.tests.urls.RemoteMethodsView'})
-        remote_methods = get_current_remote_methods(request)
-        self.assertDictEqual(remote_methods, {'foo': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}})
+        view = RemoteMethodsView()
+        view.request = self.factory.get('/straight_methods/')
+        remote_methods = get_current_remote_methods(view)
+        self.assertDictEqual({'foo': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}},
+                             remote_methods)
 
     def test_get_all_remote_methods(self):
         remote_methods = get_all_remote_methods()
