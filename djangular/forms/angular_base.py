@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import six
 from base64 import b64encode
 from django.forms import forms
 from django.utils.html import format_html
@@ -76,7 +77,7 @@ class NgFormBaseMixin(object):
             form_name = self.form_name
         except AttributeError:
             # if form_name is unset, then generate a pseudo unique name, based upon the class name
-            form_name = b64encode(self.__class__.__name__).rstrip('=')
+            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('='))
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)

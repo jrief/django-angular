@@ -143,14 +143,14 @@ class NgModelFormMixinTest(TestCase):
 
     def test_initial_data(self):
         initial_data = self.unbound_form.get_initial_data()
-        initial_keys = initial_data.keys()
+        initial_keys = list(initial_data.keys())
         initial_keys.sort()
-        valid_keys = self.valid_data.keys()
+        valid_keys = list(self.valid_data.keys())
         valid_keys.sort()
         self.assertEqual(initial_keys, valid_keys)
-        initial_keys = initial_data['sub1'].keys()
+        initial_keys = list(initial_data['sub1'].keys())
         initial_keys.sort()
-        valid_keys = self.valid_data['sub1'].keys()
+        valid_keys = list(self.valid_data['sub1'].keys())
         valid_keys.sort()
         self.assertEqual(initial_keys, valid_keys)
 

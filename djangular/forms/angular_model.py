@@ -24,7 +24,7 @@ class NgModelFormMixin(NgFormBaseMixin):
         else:
             ng_models = None
         directives = {}
-        for key in kwargs.keys():
+        for key in list(kwargs.keys()):
             if key.startswith('ng_'):
                 fmtstr = kwargs.pop(key)
                 directives[key.replace('_', '-')] = fmtstr
