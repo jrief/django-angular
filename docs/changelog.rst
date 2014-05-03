@@ -4,6 +4,13 @@
 Release History
 ===============
 
+0.7.1
+-----
+* For remote method invocation, replace keyword ``action`` against a private HTTP-header
+  ``DjNg-Remote-Method``. Added template tags ``djng_all_rmi`` and ``djng_current_rmi`` which
+  return a list of methods to be used for remote invocation.
+* Experimental support for Python-3.3.
+
 0.7.0
 -----
 * Refactored errors handling code for form validation.
