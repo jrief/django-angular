@@ -30,5 +30,6 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
- - pushd . ; cd examples && ./manage.py test server; popd
- - pushd . ; cd client && grunt travis-ci; popd
+ - pushd . && cd client && grunt travis-ci && popd
+ - pushd . && cd examples && ./manage.py test server && popd
+
