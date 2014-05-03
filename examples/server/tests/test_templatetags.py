@@ -9,6 +9,8 @@ class TemplateTagsTest(TestCase):
         client = Client(enforce_csrf_checks=True)
         request = client.get('/dummy.html')
         request.META = {}
+        request.is_secure = lambda: False
+        request.get_host = lambda: 'localhost'
         template = Template('{% load djangular_tags %}x="{% csrf_token %}"')
         context = RequestContext(request, {'csrf_token': '123'})
         response = template.render(context)

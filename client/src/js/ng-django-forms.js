@@ -4,12 +4,17 @@
 // module: ng.django.forms
 // Correct Angular's form.FormController behavior after rendering bound forms.
 // Additional validators for form elements.
-var djng_forms = angular.module('ng.django.forms', []);
+var djng_forms_module = angular.module('ng.django.forms', []);
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // If not used, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms.
-djng_forms.directive('form', function() {
+// TODO: Find out, if the form was bound or unbound. This can be done looking at the fields values
+// or by adding a special value to each field. If forms are unbound, use that information to send
+// data via PUT rather than POST, since this is how new objects shall be created. An alternative
+// would be to create a directive djng-bound-form, which shall be added to a form, whenever it is
+// bound. This can easily be done from django.
+djng_forms_module.directive('form', function() {
 	return {
 		restrict: 'E',
 		scope: 'isolate',
@@ -33,7 +38,7 @@ djng_forms.directive('form', function() {
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
 // Now, such an input field is only considered valid, if the date is a valid date and if it matches
 // against the given regular expression.
-djng_forms.directive('validateDate', function() {
+djng_forms_module.directive('validateDate', function() {
 	var validDatePattern = null;
 
 	function validateDate(date) {
@@ -77,7 +82,7 @@ djng_forms.directive('validateDate', function() {
 //      djangoForm.setErrors($scope.form, data.errors);
 //  });
 // djangoForm.setErrors returns false, if no errors have been transferred.
-djng_forms.factory('djangoForm', function() {
+djng_forms_module.factory('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
 	function isNotEmpty(obj) {
@@ -132,6 +137,60 @@ djng_forms.factory('djangoForm', function() {
 			return isNotEmpty(errors);
 		}
 	};
+});
+
+
+// A simple wrapper to extend the $httpProvider for executing remote methods on the server side
+// for Django Views derived from JSONResponseMixin.
+// It can be used to invoke GET and POST request. The return value is the same promise as returned
+// by $http.get() and $http.post().
+// Usage:
+// djangoRMI.name.method(data).success(...).error(...)
+// @param data (optional): If set and @allowd_action was auto, then the call is performed as method
+//     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
+djng_forms_module.provider('djangoRMI', function() {
+	var remote_methods, http;
+
+	this.configure = function(conf) {
+		remote_methods = conf;
+		convert_configuration(remote_methods);
+	};
+
+	function convert_configuration(obj) {
+		angular.forEach(obj, function(val, key) {
+			if (!angular.isObject(val))
+				throw new Error('djangoRMI.configure got invalid data');
+			if (val.hasOwnProperty('url')) {
+				// convert config object into function
+				val.headers['X-Requested-With'] = 'XMLHttpRequest';
+				obj[key] = function(data) {
+					var config = angular.copy(val);
+					if (config.method === 'POST') {
+						if (data === undefined)
+							throw new Error('Calling remote method '+ key +' without data object');
+						config.data = data;
+					} else if (config.method === 'auto') {
+						if (data === undefined) {
+							config.method = 'GET';
+						} else {
+							// TODO: distinguish between POST and PUT
+							config.method = 'POST';
+							config.data = data;
+						}
+					}
+					return http(config);
+				};
+			} else {
+				// continue to examine the values recursively
+				convert_configuration(val);
+			}
+		});
+	}
+
+	this.$get = ['$http', function($http) {
+		http = $http;
+		return remote_methods;
+	}];
 });
 
 })(window.angular);

@@ -41,7 +41,7 @@ MEDIA_URL = ''
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', '')
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"
@@ -106,6 +106,8 @@ try:
 
     INSTALLED_APPS += ('ws4redis',)
 
+    TEMPLATE_CONTEXT_PROCESSORS += ('ws4redis.context_processors.default',)
+
     # This setting is required to override the Django's main loop, when running in
     # development mode, such as ./manage runserver
     WSGI_APPLICATION = 'ws4redis.django_runserver.application'
@@ -115,6 +117,10 @@ try:
 
     # Set the number of seconds each message shall persited
     WS4REDIS_EXPIRE = 3600
+
+    WS4REDIS_HEARTBEAT = '--heartbeat--'
+
+    WS4REDIS_PREFIX = 'djangular'
 
 except ImportError:
     pass

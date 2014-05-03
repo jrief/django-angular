@@ -4,6 +4,8 @@
 
 {% block table_caption %}Tree-Way Data-Binding{% endblock %}
 
+{% block table_header %}Point a second browser onto the same URL and observer form synchronization{% endblock %}
+
 {% block table_foot %}
 	<tr>
 		<td></td>
@@ -18,14 +20,14 @@
 {% block scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
-	my_app.config(function(djangoWebsocketProvider) {
-		djangoWebsocketProvider.prefix('/ws');
+	my_app.config(['djangoWebsocketProvider', function(djangoWebsocketProvider) {
+		djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
 		djangoWebsocketProvider.setLogLevel('debug');
-		djangoWebsocketProvider.setHeartbeat(5000);
-	});
+		djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});
+	}]);
 
 	my_app.controller('MyFormCtrl', function($scope, djangoWebsocket) {
-		djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'subscribe_data');
+		djangoWebsocket.connect($scope, 'subscribe_data', 'subscribe_data', ['subscribe-broadcast', 'publish-broadcast']);
 	});
 	</script>
 {% endblock scripts %}

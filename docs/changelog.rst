@@ -4,18 +4,25 @@
 Release History
 ===============
 
+0.7.1
+-----
+* For remote method invocation, replace keyword ``action`` against a private HTTP-header
+  ``DjNg-Remote-Method``. Added template tags ``djng_all_rmi`` and ``djng_current_rmi`` which
+  return a list of methods to be used for remote invocation.
+* Experimental support for Python-3.3.
+
 0.7.0
 -----
 * Refactored errors handling code for form validation.
   It now is much easier and more flexible for mixing in other form based classes.
-* Added a date validator using an AngularJS directive. 
- * Can be used as a starting point for other customized validators.
+* Added a date validator using an AngularJS directive.
+  * Can be used as a starting point for other customized validators.
 * Added another view, which can be used for NgModelMixin without NgValidationMixin.
 * Added new directory to handle client code.
- * Separated JS files for easier development.
- * Grunt now builds, verifies and concatenates that code.
- * Karma and Jasmine run unit tests for client code.
- * A minified version of ``django-angular.js`` is build by grunt and npm-uglify.
+  * Separated JS files for easier development.
+  * Grunt now builds, verifies and concatenates that code.
+  * Karma and Jasmine run unit tests for client code.
+  * A minified version of ``django-angular.js`` is build by grunt and npm-uglify.
 * Rewritten the demo pages to give a good starting point for your own projects.
 
 0.6.3
