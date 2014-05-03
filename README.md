@@ -1,6 +1,13 @@
 django-angular
 ==============
 
+Please participate in testing the next upcoming version 0.7.1. New features are:
+
+* For remote method invocation, replace keyword ``action`` against a private HTTP-header
+  ``DjNg-Remote-Method``. Added template tags ``djng_all_rmi`` and ``djng_current_rmi`` which
+  return a list of methods to be used for remote invocation.
+* Experimental support for Python-3.3.
+
 Let Django play nice together with AngularJS
 --------------------------------------------
 
