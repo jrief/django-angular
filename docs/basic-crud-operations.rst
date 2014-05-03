@@ -143,7 +143,7 @@ Usage example
 
 .. note:: In real world applications you might want to restrict access to certain methods.
           This can be done using decorators, such as ``@login_required``.
-          For additional functionality :ref:`JSONResponseMixin <dispatch-ajax-requests>` and
+          For additional functionality :ref:`JSONResponseMixin <remote-method-invocation>` and
           ``NgCRUDView`` can be used together.
 
 .. _$resource: http://docs.angularjs.org/api/ngResource.$resource

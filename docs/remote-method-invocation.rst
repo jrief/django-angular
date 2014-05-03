@@ -1,11 +1,11 @@
-.. _dispatch-ajax-requests:
+.. _remote-method-invocation:
 
 ========================
 Remote Method Invocation
 ========================
 
-Wouldn't it be nice to call a Django view method, directly from your AngularJS controller, like
-a `Remote Procedure Call`_ or say **Remote Method Invocation**?
+Wouldn't it be nice to call a Django view method, directly from an AngularJS controller, similar
+to a `Remote Procedure Call`_ or say better **Remote Method Invocation**?
 
 Single Page Applications
 ========================
@@ -17,9 +17,9 @@ communication between the client and the server.
 Normally, this is done by adding a key to the request data, which upon evaluation calls the
 appropriate method. However, such an approach is cumbersome and error-prone.
 
-*Django-Angular* offers some helper functions, which allow a client to call a View's method just as
-if they would be normal asynchronous functions. To achieve this, let your View's class additionally
-inherit from JSONResponseMixin:
+*Django-Angular* offers some helper functions, which allows the client to call a Django's View
+method just as if it would be a normal asynchronous JavaScript function. To achieve this, let your
+View's class additionally inherit from JSONResponseMixin:
 
 .. code-block:: python
 
@@ -38,10 +38,10 @@ inherit from JSONResponseMixin:
 	      }
 	      return out_data
 
-In this View, methods decorated with ``@allow_remote_invocation`` can now be invoked remotely, for
-instance in an AngularJS controller. To handle this in an ubiquitous manner, *Django-Angular*
-implements two special template_tag, which exports all the methods allowed for remote invocation
-to an AngularJS Provider.
+In this Django View, methods decorated with ``@allow_remote_invocation`` can now be invoked
+remotely, for instance in an AngularJS controller. To handle this in an ubiquitous manner,
+*Django-Angular* implements two special template_tag, which exports *all* methods allowed for remote
+invocation to an AngularJS Provider.
 
 Template Tag ``djng_all_rmi``
 -----------------------------
@@ -58,8 +58,8 @@ client side, such as:
 	});
 	</script>
 
-This makes available all methods allowed for remote invocation, from all View classes of your Django
-project.
+This makes available *all* methods allowed for remote invocation, from *all* View classes of your
+Django project.
 
 Template Tag ``djng_current_rmi``
 ---------------------------------
@@ -72,21 +72,21 @@ initialization of the client side, such as:
 	    djangoRMIProvider.configure({­% djng_current_rmi %­});
 	});
 
-This makes available all methods allowed for remote invocation, from the current View classes of
-your Django project.
+This makes available *all* methods allowed for remote invocation, from the current View class,
+ie. the one rendering the current page.
 
 
-Have the client calling an allowed method from a Django View
-------------------------------------------------------------
-By injecting ``djangoRMI``, allowed methods from your Django Views can be called directly from any
-AngularJS Controller. This example shows how to call methods configured with the template tag
-``djng_current_rmi``:
+Let the client invoke an allowed method from a Django View
+----------------------------------------------------------
+By injecting the service ``djangoRMI`` into an AngularJS controller, allowed methods from the
+Django View, which renders the current page, can be invoked directly from JavaScript. This example
+shows how to call methods configured with the template tag ``djng_current_rmi``:
 
 .. code-block:: javascript
 
 	my_app.controller("SinglePageCtlr", function($scope, djangoRMI) {
 	    $scope.invoke = function() {
-	        var in_data = { some: data };
+	        var in_data = { some: 'data' };
 	        djangoRMI.process_something(in_data)
 	           .success(function(out_data) {
 	               // do something with out_data
@@ -102,10 +102,12 @@ namespace_, the above objects furthermore are grouped into objects named by thei
 .. _URL patterns: https://docs.djangoproject.com/en/dev/ref/urls/#patterns
 .. _namespace: https://docs.djangoproject.com/en/dev/ref/urlresolvers/#django.core.urlresolvers.ResolverMatch.namespace
 
-.. note:: djangoRMI is a simple wrapper around AngularJS's built in $httpProvider. However, it
+.. note:: djangoRMI is a simple wrapper around AngularJS's built in `$http service`_. However, it
           automatically determines the correct URL and embeds the method name into the special
-          HTTP-header ``DjNg-Remote-Method``. In all other aspects, it behaves like $httpProvider.
+          HTTP-header ``DjNg-Remote-Method``. In all other aspects, it behaves like the
+          `$http service`_.
 
+.. _$http service: https://code.angularjs.org/1.2.16/docs/api/ng/service/$http
 
 Dispatching Ajax requests using method GET
 ==========================================
@@ -133,7 +135,7 @@ it is possible to hard-code the method for invocation in the urlpatterns_ inside
 
 If a client calls the URL ``/fetch-some-data.json``, the responding view dispatches incoming
 requests directly onto the method ``get_some_data``. This kind of invocation only works for GET
-requests. Here the fetching methods do not require the decorator ``@allow_remote_invocation``,
-since the programmer determines all possible invocations.
+requests. Here these methods do not require the decorator ``@allow_remote_invocation``,
+since the server-side programmer is responsible for choosing the correct method.
 
 .. _Remote Procedure Call: http://en.wikipedia.org/wiki/Remote_procedure_calls
