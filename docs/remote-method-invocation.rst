@@ -7,6 +7,8 @@ Remote Method Invocation
 Wouldn't it be nice to call a Django view method, directly from an AngularJS controller, similar
 to a `Remote Procedure Call`_ or say better **Remote Method Invocation**?
 
+.. _Remote Procedure Call: http://en.wikipedia.org/wiki/Remote_procedure_calls
+
 Single Page Applications
 ========================
 By nature, Single Page Web Applications implemented in Django, require one single View. These kind
@@ -18,7 +20,7 @@ Normally, this is done by adding a key to the request data, which upon evaluatio
 appropriate method. However, such an approach is cumbersome and error-prone.
 
 *Django-Angular* offers some helper functions, which allows the client to call a Django's View
-method just as if it would be a normal asynchronous JavaScript function. To achieve this, let your
+method, just as if it would be a normal asynchronous JavaScript function. To achieve this, let the
 View's class additionally inherit from JSONResponseMixin:
 
 .. code-block:: python
@@ -38,10 +40,10 @@ View's class additionally inherit from JSONResponseMixin:
 	      }
 	      return out_data
 
-In this Django View, methods decorated with ``@allow_remote_invocation`` can now be invoked
-remotely, for instance in an AngularJS controller. To handle this in an ubiquitous manner,
-*Django-Angular* implements two special template_tag, which exports *all* methods allowed for remote
-invocation to an AngularJS Provider.
+In this Django View, the method ``process_something`` is decorated with ``@allow_remote_invocation``.
+It now can be invoked directly from an AngularJS controller or directive. To handle this in an
+ubiquitous manner, *Django-Angular* implements two special template tags, which exports *all*
+methods allowed for remote invocation to the provided AngularJS service ``djangoRMI``.
 
 Template Tag ``djng_all_rmi``
 -----------------------------
@@ -68,9 +70,13 @@ initialization of the client side, such as:
 
 .. code-block:: javascript
 
+	{­% load djangular_tags %­}
+	…
+	<script type="text/javascript">
 	my_app.config(function(djangoRMIProvider) {
 	    djangoRMIProvider.configure({­% djng_current_rmi %­});
 	});
+	</script>
 
 This makes available *all* methods allowed for remote invocation, from the current View class,
 ie. the one rendering the current page.
@@ -79,8 +85,9 @@ ie. the one rendering the current page.
 Let the client invoke an allowed method from a Django View
 ----------------------------------------------------------
 By injecting the service ``djangoRMI`` into an AngularJS controller, allowed methods from the
-Django View, which renders the current page, can be invoked directly from JavaScript. This example
-shows how to call methods configured with the template tag ``djng_current_rmi``:
+Django View which renders the current page, can be invoked directly from JavaScript. This example
+shows how to call the above Python method ``process_something``, when configured using the template
+tag ``djng_current_rmi``:
 
 .. code-block:: javascript
 
@@ -113,7 +120,8 @@ Dispatching Ajax requests using method GET
 ==========================================
 Sometimes you only have to retrieve some data from the server. If you prefer to fetch this data
 using an ordinary GET request, ie. one without the special AngularJS provider ``djangoRMI``, then
-it is possible to hard-code the method for invocation in the urlpatterns_ inside the URL dispatcher.
+it is possible to hard-code the method for invocation into the urlpatterns_ inside the URL
+dispatcher.
 
 .. _urlpatterns: https://docs.djangoproject.com/en/dev/ref/urls/#django.conf.urls.patterns
 
@@ -135,7 +143,6 @@ it is possible to hard-code the method for invocation in the urlpatterns_ inside
 
 If a client calls the URL ``/fetch-some-data.json``, the responding view dispatches incoming
 requests directly onto the method ``get_some_data``. This kind of invocation only works for GET
-requests. Here these methods do not require the decorator ``@allow_remote_invocation``,
-since the server-side programmer is responsible for choosing the correct method.
-
-.. _Remote Procedure Call: http://en.wikipedia.org/wiki/Remote_procedure_calls
+requests. Here these methods *do not* require the decorator ``@allow_remote_invocation``,
+since now the server-side programmer is responsible for choosing the correct method and thus a
+malicious client cannot bypass the intended behavior.
