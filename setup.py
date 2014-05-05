@@ -13,6 +13,8 @@ CLASSIFIERS = [
     'Programming Language :: Python',
     'Topic :: Software Development :: Libraries :: Python Modules',
     'Development Status :: 4 - Beta',
+    'Programming Language :: Python :: 2.7',
+    'Programming Language :: Python :: 3.3',
 ]
 
 def read(fname):
@@ -28,7 +30,7 @@ setup(
     long_description=read('README.md'),
     url='https://github.com/jrief/django-angular',
     license='MIT',
-    keywords = ['django', 'angularjs'],
+    keywords=['django', 'angularjs'],
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
     install_requires=['six'],
