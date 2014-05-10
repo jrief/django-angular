@@ -82,7 +82,10 @@ class JSONResponseMixin(JSONBaseMixin):
     def post(self, request, *args, **kwargs):
         if not request.is_ajax():
             return self._dispatch_super(request, *args, **kwargs)
-        in_data = json.loads(request.body.decode('utf-8'))
+        try:
+            in_data = json.loads(request.body.decode('utf-8'))
+        except ValueError:
+            in_data = request.body.decode('utf-8')
         if 'action' in in_data:
             warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'", DeprecationWarning)
             remote_method = in_data.pop('action')
