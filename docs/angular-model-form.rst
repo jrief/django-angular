@@ -58,7 +58,7 @@ with a template named ``contact.html``:
 
 .. code-block:: html
 
-	<form ng-controller="MyFormCtrl">
+	<form ng-controller="MyFormCtrl" name="contact_form">
 	    {{contact_form}}
 	    <button ng-click="submit()">Submit</button>
 	</form>
