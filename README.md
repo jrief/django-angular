@@ -8,8 +8,9 @@ Please participate in testing the next upcoming version 0.7.1. New features are:
   return a list of methods to be used for remote invocation.
 * Experimental support for Python-3.3.
 
-Let Django play nice together with AngularJS
---------------------------------------------
+Let Django play well with AngularJS
+------------------------------------
+Slides from the Django Conference 2014 are available [here](http://djangoconf.aws.awesto.com/slides).
 
 NEW in 0.7.0
 ------------
