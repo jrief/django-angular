@@ -23,7 +23,16 @@
       priority: -1,
       link: function (scope, element, attrs) {
         var form = scope[attrs.name];
+        // restore input fields value
         var fields = angular.element(element).find('input');
+        angular.forEach(fields, function (field) {
+          if (form[field.name] !== undefined) {
+            // restore the field's content from the rendered content of bound fields
+            form[field.name].$setViewValue(field.defaultValue);
+          }
+        });
+        // restore textarea fields value
+        fields = angular.element(element).find('textarea');
         angular.forEach(fields, function (field) {
           if (form[field.name] !== undefined) {
             // restore the field's content from the rendered content of bound fields
