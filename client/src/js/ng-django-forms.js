@@ -149,9 +149,11 @@ djng_forms_module.factory('djangoForm', function() {
 // @param data (optional): If set and @allowd_action was auto, then the call is performed as method
 //     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
 djng_forms_module.provider('djangoRMI', function() {
-	var remote_methods, http;
+	var $http, remote_methods;
 
 	this.configure = function(conf) {
+		if (typeof conf !== 'object')
+			throw new Error('First argument to djangoRMI.configure() must be an object');
 		remote_methods = conf;
 		convert_configuration(remote_methods);
 	};
@@ -178,7 +180,7 @@ djng_forms_module.provider('djangoRMI', function() {
 							config.data = data;
 						}
 					}
-					return http(config);
+					return $http(config);
 				};
 			} else {
 				// continue to examine the values recursively
@@ -187,8 +189,8 @@ djng_forms_module.provider('djangoRMI', function() {
 		});
 	}
 
-	this.$get = ['$http', function($http) {
-		http = $http;
+	this.$get = ['$http', function(http) {
+		$http = http;
 		return remote_methods;
 	}];
 });

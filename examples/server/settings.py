@@ -116,7 +116,7 @@ try:
     WEBSOCKET_URL = '/ws/'
 
     # Set the number of seconds each message shall persited
-    WS4REDIS_EXPIRE = 3600
+    WS4REDIS_EXPIRE = 84600
 
     WS4REDIS_HEARTBEAT = '--heartbeat--'
 

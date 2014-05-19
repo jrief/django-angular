@@ -1,13 +1,13 @@
 {% load active %}
 <!doctype html>
-<html lang="en" ng-app="djangular-demo">
+<html lang="en">
 <head>
 	<title>Django-Angular Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" />
 	<link href="{{ STATIC_URL }}css/djangular-demo.css" rel="stylesheet" />
 </head>
-<body>
+<body ng-app="djangular-demo">
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container">
@@ -23,11 +23,16 @@
 						<li class="{% active request 'djng_model_form_validation' %}">
 							<a href="{% url 'djng_model_form_validation' %}">Model Form Validation</a>
 						</li>
-						{% if with_ws4redis %}
+						{% if WEBSOCKET_URI %}
 						<li class="{% active request 'djng_3way_databinding' %}">
 							<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>
 						</li>
 						{% endif %}
+						{% block sub_menu_partials %}
+						<li class="dropdown">
+							<a href="{% url 'djng_partial_home' %}">Partials Home <b class="caret"></b></a>
+						</li>
+						{% endblock %}
 					</ul>
 				</div>
 			</div>
@@ -42,10 +47,13 @@
 	</div>
 	{% block scripts %}
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js" type="text/javascript"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.10.0/ui-bootstrap-tpls.min.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/angular-ui-router.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/djangular-router.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.forms', 'ng.django.websocket']);
+	var my_app = angular.module('djangular-demo', ['ui.bootstrap', 'djng.router', 'ng.django.forms', 'ng.django.websocket']);
 	</script>
 	{% endblock scripts %}
 </body>

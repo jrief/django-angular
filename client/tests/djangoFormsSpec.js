@@ -153,6 +153,15 @@ describe('unit tests for module ng.django.forms', function() {
 			module('ng.django.forms');
 		});
 
+		/*
+		it('shoud raise an exception, if djangoRMI is misconfigured', function() {
+			angular.module('testApp', function() {}).config(function(djangoRMIProvider) {
+				dump('it should raise');
+				expect(djangoRMIProvider.configure()).toBe('success');
+			});
+		});
+		*/
+
 		describe('emulating get_current_remote_methods', function() {
 			beforeEach(function() {
 				angular.module('testApp', function() {}).config(function(djangoRMIProvider) {

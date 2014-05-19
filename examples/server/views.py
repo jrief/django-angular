@@ -2,8 +2,8 @@
 import json
 from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
-from django.conf import settings
 from django.http import HttpResponse
+from djangular.views.partials import DjngPartialViewMixin
 from server.forms import SubscriptionFormWithNgValidation, SubscriptionFormWithNgModel, SubscriptionFormWithNgValidationAndModel
 
 
@@ -11,7 +11,7 @@ class SubscribeFormView(TemplateView):
     def get_context_data(self, form=None, **kwargs):
         context = super(SubscribeFormView, self).get_context_data(**kwargs)
         form.fields['height'].widget.attrs['step'] = 0.05  # Ugly hack to set step size
-        context.update(form=form, with_ws4redis=hasattr(settings, 'WEBSOCKET_URL'))
+        context.update(form=form)
         return context
 
     def get(self, request, **kwargs):
@@ -60,7 +60,14 @@ class NgFormDataValidView(TemplateView):
     """
     template_name = 'form-data-valid.html'
 
-    def get_context_data(self, **kwargs):
-        context = super(NgFormDataValidView, self).get_context_data(**kwargs)
-        context.update(with_ws4redis=hasattr(settings, 'WEBSOCKET_URL'))
-        return context
+
+class PartialsView(DjngPartialViewMixin, TemplateView):
+    """
+    This view demonstrates how to work with partials.
+    """
+    template_name = 'partial-home.html'
+    ng_routes = {
+        'list': {'controller': 'ListCtrl', 'templateUrl': 'partial-demo/partialA.html'},
+        'detail': {'controller': 'DetailCtrl', 'templateUrl': 'partial-demo/partialB.html'},
+        None: {'controller': 'DefaultCtrl', 'templateUrl': 'partial-demo/defaultPartial.html'},
+    }
