@@ -49,6 +49,9 @@ table.subscribe span.helptext {
 	display: inline-block;
 	margin-bottom: 15px;
 }
+table.subscribe tbody textarea {
+	width: 400px;
+}
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	display: none !important;
 }
