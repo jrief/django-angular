@@ -28,11 +28,17 @@
 							<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>
 						</li>
 						{% endif %}
-						{% block sub_menu_partials %}
-						<li class="dropdown">
-							<a href="{% url 'djng_partial_home' %}">Partials Home <b class="caret"></b></a>
+						<li class="{% active request 'djng_partial_home' %} dropdown">
+							<a href="{% url 'djng_partial_home' %}" class="dropdown-toggle">Partials <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li>
+									<a ui-sref="contacts">Contacts</a>
+								</li>
+								<li>
+									<a ui-sref="about">About</a>
+								</li>
+							</ul>
 						</li>
-						{% endblock %}
 					</ul>
 				</div>
 			</div>
@@ -53,7 +59,25 @@
 	<script src="{{ STATIC_URL }}js/angular-ui-router.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/djangular-router.js" type="text/javascript"></script>
 	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ui.bootstrap', 'djng.router', 'ng.django.forms', 'ng.django.websocket']);
+	var my_app = angular.module('djangular-demo', ['ui.bootstrap', 'djangular.router', 'ng.django.forms', 'ng.django.websocket']);
+	my_app.config(function($locationProvider, $urlRouterProvider, $stateProvider) {
+		$locationProvider.html5Mode(true);
+		$urlRouterProvider.otherwise(function($location) {
+			console.log('redirect');
+			console.log($location);
+		});
+		$stateProvider.initialize({});
+		$stateProvider.state('contacts', {
+			url: "/partial_home/contacts",
+			templateUrl: "{{ STATIC_URL }}partials/home.html"
+		}).state('about', {
+			url: "/partial_home/about",
+			templateUrl: "{{ STATIC_URL }}partials/about.html",
+			controller: function($scope) {
+				$scope.items = ["A", "List", "Of", "Items"];
+			}
+		});
+	});
 	</script>
 	{% endblock scripts %}
 </body>
