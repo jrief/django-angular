@@ -1,23 +1,16 @@
 django-angular
 ==============
 
-Please participate in testing the next upcoming version 0.7.1. New features are:
-
-* For remote method invocation, replace keyword ``action`` against a private HTTP-header
-  ``DjNg-Remote-Method``. Added template tags ``djng_all_rmi`` and ``djng_current_rmi`` which
-  return a list of methods to be used for remote invocation.
-* Experimental support for Python-3.3.
-
 Let Django play well with AngularJS
 ------------------------------------
 Slides from the Django Conference 2014 are available [here](http://djangoconf.aws.awesto.com/slides).
 
-NEW in 0.7.0
+NEW in 0.7.1
 ------------
-* Form validation has been rewritten. It now is much more flexible and simpler to extend.
-* Added client side unit tests with grunt, karma and jasmine.
-* Rewritten demo pages to give a good starting point for your own projects.
-* Angular validator for date fields. Can be used as a starting point for other customized validators.
+* For remote method invocation, replace keyword ``action`` against a private HTTP-header
+  ``DjNg-Remote-Method``. Added template tags ``djng_all_rmi`` and ``djng_current_rmi`` which
+  return a list of methods to be used for remote invocation.
+* Experimental support for Python-3.3.
 
 Project home: https://github.com/jrief/django-angular
 
