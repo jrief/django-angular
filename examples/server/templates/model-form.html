@@ -27,7 +27,6 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script type="text/javascript">
 	my_app.config(function($httpProvider) {
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
@@ -48,5 +47,4 @@
 			return false;
 		};
 	});
-	</script>
 {% endblock scripts %}

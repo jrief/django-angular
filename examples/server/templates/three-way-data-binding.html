@@ -19,7 +19,6 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script type="text/javascript">
 	my_app.config(['djangoWebsocketProvider', function(djangoWebsocketProvider) {
 		djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
 		djangoWebsocketProvider.setLogLevel('debug');
@@ -29,5 +28,4 @@
 	my_app.controller('MyFormCtrl', function($scope, djangoWebsocket) {
 		djangoWebsocket.connect($scope, 'subscribe_data', 'subscribe_data', ['subscribe-broadcast', 'publish-broadcast']);
 	});
-	</script>
 {% endblock scripts %}
