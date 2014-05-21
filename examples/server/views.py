@@ -71,3 +71,7 @@ class PartialsView(DjngPartialViewMixin, TemplateView):
         'detail': {'controller': 'DetailCtrl', 'templateUrl': 'partial-demo/partialB.html'},
         None: {'controller': 'DefaultCtrl', 'templateUrl': 'partial-demo/defaultPartial.html'},
     }
+
+    def get_context_data(self, form=None, **kwargs):
+        context = super(PartialsView, self).get_context_data(**kwargs)
+        return context

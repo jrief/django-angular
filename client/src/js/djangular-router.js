@@ -13,7 +13,6 @@ angular.module('djangular.router', ['ui.router']).provider('$state', ['$provide'
 	$stateProvider.state = function(name, params) {
 		if (state_config === undefined)
 			throw new Error("$stateProvider has not been initialized");
-		console.log($stateProvider);
 		super_state(name, params);
 		return $stateProvider;
 	};

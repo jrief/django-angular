@@ -1,4 +1,4 @@
-{% load active %}
+{% load active djangular_tags %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -62,9 +62,25 @@
 	var my_app = angular.module('djangular-demo', ['ui.bootstrap', 'djangular.router', 'ng.django.forms', 'ng.django.websocket']);
 	my_app.config(function($locationProvider, $urlRouterProvider, $stateProvider) {
 		$locationProvider.html5Mode(true);
-		$urlRouterProvider.otherwise(function($location) {
-			console.log('redirect');
-			console.log($location);
+		$urlRouterProvider.rule(function($injector, $location) {
+			var $window, $state, urlMatcher;
+			$injector.invoke(['$window', '$state', '$urlMatcherFactory', function(w, s, u) {
+				$window = w;
+				$state = s;
+				urlMatcher = u.compile('{% djng_canonical_url %}{remain:.*}');
+			}]);
+			if (!urlMatcher.exec($location.path())) {
+				// redirect on other URL
+				$window.location.assign($location.path());
+			} else {
+				// remain on this URL, but transition to named state
+				angular.forEach($state.get(), function(state) {
+					if (state.url === $location.path()) {
+						$state.go(state.name);
+					}
+				});
+			}
+			return $location.path();
 		});
 		$stateProvider.initialize({});
 		$stateProvider.state('contacts', {

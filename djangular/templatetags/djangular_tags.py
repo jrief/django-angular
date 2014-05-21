@@ -3,6 +3,7 @@ import json
 from django.template import Library
 from django.template.base import Node
 from django.core.exceptions import ImproperlyConfigured
+from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
 register = Library()
@@ -42,3 +43,14 @@ def djng_current_rmi(context):
     the AngularJS provider, such as ``djangoRMIProvider.configure({­% djng_current_rmi %­});``
     """
     return mark_safe(json.dumps(get_current_remote_methods(context['view'])))
+
+
+@register.simple_tag(name='djng_canonical_url', takes_context=True)
+def djng_canonical_url(context):
+    """
+    Return the canonical URL for the current view. Note: When using partial views, this is not
+    equivalent with ``request.path_info``, since ui-router works with URLs which are not propagated
+    to the backend.
+    """
+    canonical_url = reverse(context['request'].resolver_match.url_name)
+    return mark_safe(canonical_url)
