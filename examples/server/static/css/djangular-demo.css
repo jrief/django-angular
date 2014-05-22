@@ -49,6 +49,18 @@ table.subscribe span.helptext {
 	display: inline-block;
 	margin-bottom: 15px;
 }
+table.subscribe tbody ul#id_sex {
+	display: inline-block;
+	list-style-type: none;
+	margin-left: 0;
+}
+table.subscribe tbody ul#id_sex li {
+	display: inline-block;
+}
+table.subscribe tbody ul#id_sex li input,
+table.subscribe tbody #id_subscribe {
+	margin-bottom: 5px;
+}
 table.subscribe tbody textarea {
 	width: 400px;
 }

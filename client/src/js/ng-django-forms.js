@@ -15,32 +15,64 @@ var djng_forms_module = angular.module('ng.django.forms', []);
 // would be to create a directive djng-bound-form, which shall be added to a form, whenever it is
 // bound. This can easily be done from django.
 djng_forms_module.directive('form', function() {
-	// use this function to restore input fields and textareas
 	function restoreInputFields(form, fields) {
 		angular.forEach(fields, function(field) {
+			var model_field = form[field.name];
+			if (model_field !== undefined) {
+				// restore the field's content from the rendered content of bound fields
+				switch (field.type) {
+				case 'text': case 'email': case 'number':
+					model_field.$setViewValue(field.defaultValue);
+					break;
+				case 'radio':
+					if (field.defaultChecked) {
+						model_field.$setViewValue(field.defaultValue);
+					}
+					break;
+				case 'checkbox':
+					if (field.defaultChecked) {
+						model_field.$setViewValue(true);
+					}
+					break;
+				case 'password':
+					// after an (un)successful submission, reset the password field
+					model_field.$setViewValue(null);
+					break;
+				}
+			}
+		});
+	}
+
+	function restoreSelectOptions(form, selects) {
+		angular.forEach(selects, function(field) {
+			var multivalues = [];
+			if (form[field.name] !== undefined) {
+				angular.forEach(field.options, function(option) {
+					if (option.defaultSelected) {
+						// restore the select option to selected
+						angular.element(option).prop('selected', 'selected');
+						if (field.multiple) {
+							multivalues.push(option.value);
+						} else {
+							form[field.name].$setViewValue(option.value);
+						}
+					}
+				});
+				if (field.multiple) {
+					form[field.name].$setViewValue(multivalues);
+				}
+			}
+		});
+	}
+
+	function restoreTextAreas(form, textareas) {
+		angular.forEach(textareas, function(field) {
 			if (form[field.name] !== undefined && field.defaultValue) {
 				// restore the field's content from the rendered content of bound fields
 				form[field.name].$setViewValue(field.defaultValue);
 			}
 		});
 	}
-
-	// use this function to restore select fields
-	function restoreSelectOptions(form, fields) {
-		angular.forEach(fields, function(field) {
-			if (form[field.name] !== undefined) {
-				angular.forEach(field.options, function(option) {
-					if (option.defaultSelected) {
-						// restore the select option to selected
-						angular.element(option).prop('selected', 'selected');
-						form[field.name].$setViewValue(option.value);
-					}
-				});
-			}
-		});
-	}
-
-	// TODO: restore multiple select fields
 
 	return {
 		restrict: 'E',
@@ -49,8 +81,8 @@ djng_forms_module.directive('form', function() {
 		link: function(scope, element, attrs) {
 			var form = scope[attrs.name], ngelem = angular.element(element);
 			restoreInputFields(form, ngelem.find('input'));
-			restoreInputFields(form, ngelem.find('textarea'));
 			restoreSelectOptions(form, ngelem.find('select'));
+			restoreTextAreas(form, ngelem.find('textarea'));
 			// restore the form's pristine state
 			form.$setPristine();
 		}
@@ -81,6 +113,7 @@ djng_forms_module.directive('validateDate', function() {
 	return {
 		require: 'ngModel',
 		restrict: 'A',
+		scope: 'isolate',
 		link: function(scope, elem, attrs, controller) {
 			if (attrs.validateDate) {
 				// if a pattern is set, only valid dates with that pattern are accepted
