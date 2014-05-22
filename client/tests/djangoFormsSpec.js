@@ -48,7 +48,7 @@ describe('unit tests for module ng.django.forms', function() {
 		describe('on unbound forms', function() {
 			it('the view value of empty input fields should be empty', inject(function($compile) {
 				compileForm($compile, scope, '');
-				expect(scope.valid_form.email_field.$viewValue).toBe(undefined);
+				expect(scope.valid_form.email_field.$viewValue).toBe('');
 			}));
 		});
 
