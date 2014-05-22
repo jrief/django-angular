@@ -6,8 +6,8 @@ Release History
 
 0.7.2
 -----
-* Fixed: select fields and text areas are handled by the built-in form directive to
-  adopt Django's bound forms for AngularJS.
+* Fixed: select fields, multiple select fields, radio and checkbox input fields and text areas are
+  handled by the built-in form directive to adopt Django's bound forms for AngularJS.
 
 0.7.1
 -----
