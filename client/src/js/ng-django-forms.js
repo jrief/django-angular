@@ -21,7 +21,7 @@ djng_forms_module.directive('form', function() {
 			if (model_field !== undefined) {
 				// restore the field's content from the rendered content of bound fields
 				switch (field.type) {
-				case 'text': case 'email': case 'number':
+				case 'text': case 'email': case 'number': case 'url':
 					model_field.$setViewValue(field.defaultValue);
 					break;
 				case 'radio':
