@@ -32,8 +32,8 @@ class NgModelFormMixin(NgFormBaseMixin):
         if ng_models is None and 'ng-model' not in directives:
             directives['ng-model'] = '%(model)s'
         self.prefix = kwargs.get('prefix')
-        if self.prefix and kwargs.get('data'):
-            kwargs['data'] = dict((self.add_prefix(name), value) for name, value in kwargs['data'].get(self.prefix).items())
+        if self.prefix and data:
+            data = dict((self.add_prefix(name), value) for name, value in data.get(self.prefix).items())
         for name, field in self.base_fields.items():
             identifier = self.add_prefix(name)
             ng = {
