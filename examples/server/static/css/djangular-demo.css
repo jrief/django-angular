@@ -49,15 +49,18 @@ table.subscribe span.helptext {
 	display: inline-block;
 	margin-bottom: 15px;
 }
-table.subscribe tbody ul#id_sex {
+table.subscribe tbody ul#id_sex,
+table.subscribe tbody ul#id_notifyme {
 	display: inline-block;
 	list-style-type: none;
 	margin-left: 0;
 }
-table.subscribe tbody ul#id_sex li {
+table.subscribe tbody ul#id_sex li,
+table.subscribe tbody ul#id_notifyme li {
 	display: inline-block;
 }
 table.subscribe tbody ul#id_sex li input,
+table.subscribe tbody ul#id_notifyme li input,
 table.subscribe tbody #id_subscribe {
 	margin-bottom: 5px;
 }

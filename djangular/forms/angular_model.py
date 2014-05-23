@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.forms.util import ErrorDict
 from django.utils.html import format_html
+from django.http import QueryDict
 from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
 
 
@@ -15,7 +16,7 @@ class NgModelFormMixin(NgFormBaseMixin):
     for its models.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, data=None, *args, **kwargs):
         self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))
         if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
             if not isinstance(self.Meta.ng_models, list):
@@ -44,7 +45,12 @@ class NgModelFormMixin(NgFormBaseMixin):
                 field.widget.attrs['ng-model'] = ng['model']
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
-        super(NgModelFormMixin, self).__init__(*args, **kwargs)
+            try:
+                if isinstance(data, QueryDict):
+                    data = field.implode_multi_values(name, data.copy())
+            except AttributeError:
+                pass
+        super(NgModelFormMixin, self).__init__(data, *args, **kwargs)
         if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
 
