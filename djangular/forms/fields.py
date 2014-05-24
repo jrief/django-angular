@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.html import format_html
 from django.forms.util import flatatt
 from django.forms.widgets import (RendererMixin, ChoiceFieldRenderer, CheckboxChoiceInput,
@@ -26,9 +27,13 @@ class DjngCheckboxSelectMultiple(RendererMixin, SelectMultiple):
     renderer = DjngCheckboxFieldRenderer
     _empty_value = []
 
-
-class DjngMultipleCheckboxField(forms.MultipleChoiceField):
-    widget = DjngCheckboxSelectMultiple
+#     def __init__(self, widget):
+#         """
+#         Copy constructor to convert forms.CheckboxSelectMultiple into DjngCheckboxSelectMultiple
+#         """
+#         if not isinstance(widget, forms.CheckboxSelectMultiple):
+#             raise ImproperlyConfigured('widget is not of type forms.CheckboxSelectMultiple')
+#         self = widget
 
     def implode_multi_values(self, name, data):
         mkeys = [k for k in data.keys() if k.startswith(name + '.')]
@@ -36,3 +41,7 @@ class DjngMultipleCheckboxField(forms.MultipleChoiceField):
         if mvls:
             data.setlist(name, mvls)
         return data
+
+
+# class DjngMultipleCheckboxField(forms.MultipleChoiceField):
+#     widget = DjngCheckboxSelectMultiple

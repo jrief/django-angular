@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
+from django.forms import MultipleChoiceField, CheckboxSelectMultiple
 from django.forms.util import ErrorDict
 from django.utils.html import format_html
 from django.http import QueryDict
 from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
+from djangular.forms.fields import DjngCheckboxSelectMultiple
 
 
 class NgModelFormMixin(NgFormBaseMixin):
@@ -45,11 +47,10 @@ class NgModelFormMixin(NgFormBaseMixin):
                 field.widget.attrs['ng-model'] = ng['model']
             for key, fmtstr in directives.items():
                 field.widget.attrs[key] = fmtstr % ng
-            try:
+            if isinstance(field, MultipleChoiceField) and isinstance(field.widget, CheckboxSelectMultiple):
+                field.widget = DjngCheckboxSelectMultiple()
                 if isinstance(data, QueryDict):
-                    data = field.implode_multi_values(name, data.copy())
-            except AttributeError:
-                pass
+                    data = field.widget.implode_multi_values(name, data.copy())
         super(NgModelFormMixin, self).__init__(data, *args, **kwargs)
         if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
