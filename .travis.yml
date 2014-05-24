@@ -5,8 +5,8 @@ python:
   - 3.3
 
 env:
-  - DJANGO=1.5.7
-  - DJANGO=1.6.4
+  - DJANGO=1.5.8
+  - DJANGO=1.6.5
 
 install:
   - pip install -q Django==$DJANGO
@@ -23,7 +23,7 @@ branches:
 matrix:
   exclude:
   - python: 3.3
-    env: DJANGO=1.5.7
+    env: DJANGO=1.5.8
 
 before_script:
   - export DISPLAY=:99.0
