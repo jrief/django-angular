@@ -1,26 +1,5 @@
-body {
-	padding-top: 60px;
-}
-table.subscribe {
-	position: relative;
-}
-table.subscribe caption {
-	font-size: 32px;
-	font-weight: bold;
-	margin-top: 20px;
-	margin-bottom: 20px;
-	text-align: left;
-}
-table.subscribe tbody label {
-	float: right;
-	margin-top: 5px;
-	margin-right: 1em;
-}
-table.subscribe tbody th {
-	vertical-align: top;
-}
-table.subscribe tfoot pre {
-	margin-top: 1em;
+body{
+	position:relative;
 }
 table.subscribe ul.errorlist,
 table.subscribe ul.djng-form-errors {
@@ -49,6 +28,7 @@ table.subscribe span.helptext {
 	display: inline-block;
 	margin-bottom: 15px;
 }
+
 table.subscribe tbody ul#id_sex,
 table.subscribe tbody ul#id_notifyme {
 	display: inline-block;
@@ -66,6 +46,25 @@ table.subscribe tbody #id_subscribe {
 }
 table.subscribe tbody textarea {
 	width: 400px;
+}
+
+.radio-inline ul,
+.checkbox-inline ul {
+	display: inline-block;
+	list-style-type: none;
+	margin-left: 0;
+}
+.radio-inline ul li,
+.checkbox-inline ul li {
+	display: inline-block;
+}
+.radio-inline > label,
+.checkbox-inline > label {
+	padding-right: 25px;
+}
+.radio-inline ul li label,
+.checkbox-inline ul li label {
+	display: inline-block;
 }
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
 	display: none !important;

@@ -1,23 +1,16 @@
 {% extends "model-form.html" %}
 
-{% block table_caption %}Validated Model-Form Demo{% endblock %}
+{% block form_title %}Validated Model-Form Demo{% endblock %}
 
-{% block table_header %}Combined Django Form with ng-model and client side validation{% endblock %}
+{% block form_header %}Combined Django Form with ng-model and client side validation{% endblock %}
 
-{% block table_foot %}
-	<tr>
-		<td></td>
-		<td>
-			<input type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid" value="Submit via Post"><span>&nbsp;</span>
-			<a class="btn" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</a>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
-		{% verbatim %}
-			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
-		{% endverbatim %}
-		</td>
-	</tr>
-{% endblock table_foot %}
+{% block form_submission %}
+	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Submit via Post"><span>&nbsp;</span>
+	<a class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</a>
+{% endblock %}
+
+{% block form_foot %}
+	{% verbatim %}
+		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock %}

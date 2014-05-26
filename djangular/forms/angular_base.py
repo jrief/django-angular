@@ -70,6 +70,32 @@ class NgBoundField(forms.BoundField):
             self._errors_cache = self.form.get_field_errors(self)
         return self._errors_cache
 
+    def css_classes(self, extra_classes=None):
+        """
+        Returns a string of space-separated CSS classes for this field.
+        """
+        if extra_classes is None:
+            # retrieve extra_classes from own field
+            extra_classes = getattr(self.field, 'extra_classes', set())
+        return super(NgBoundField, self).css_classes(extra_classes)
+
+    def as_widget(self, widget=None, attrs=None, **kwargs):
+        """
+        Renders the field.
+        """
+        attrs = attrs or {}
+        css_classes = getattr(self.field, 'widget_css_classes', None)
+        if css_classes:
+            attrs.update({'class': css_classes})
+        return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
+
+    def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        attrs = attrs or {}
+        css_classes = getattr(self.field, 'label_css_classes', None)
+        if css_classes:
+            attrs.update({'class': css_classes})
+        return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
+
 
 class NgFormBaseMixin(object):
     def __init__(self, *args, **kwargs):

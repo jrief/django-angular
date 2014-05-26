@@ -4,6 +4,7 @@ from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from djangular.forms import NgFormValidationMixin, NgModelFormMixin
 from djangular.forms.fields import DjngMultipleCheckboxField
+from djangular.plugins.bootstrap3mixins import Bootstrap3FormMixin
 
 
 def reject_addresses(value):
@@ -14,7 +15,7 @@ def reject_addresses(value):
         pass
 
 
-class SubscriptionForm(forms.Form):
+class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
