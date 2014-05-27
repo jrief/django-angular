@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+from djangular.forms.angular_base import NgFormBaseMixin
 
 
-class Bootstrap3FormMixin(object):
+class Bootstrap3FormMixin(NgFormBaseMixin):
     WRAPPER_MAP = {
         'default': 'form-group',
         'RadioSelect': 'radio-inline',

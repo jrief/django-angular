@@ -21,6 +21,9 @@
 			</div>
 			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 				<ul class="nav navbar-nav">
+					<li class="{% active request 'djng_base_form' %}">
+						<a href="{% url 'djng_base_form' %}">Base Form</a>
+					</li>
 					<li class="{% active request 'djng_form_validation' %}">
 						<a href="{% url 'djng_form_validation' %}">Form Validation</a>
 					</li>

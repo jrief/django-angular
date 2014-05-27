@@ -4,10 +4,14 @@ from django.shortcuts import redirect
 from django.views.generic.base import TemplateView
 from django.conf import settings
 from django.http import HttpResponse
-from server.forms import SubscriptionFormWithNgValidation, SubscriptionFormWithNgModel, SubscriptionFormWithNgValidationAndModel
+from server.forms import (SubscriptionForm, SubscriptionFormWithNgValidation,
+                          SubscriptionFormWithNgModel, SubscriptionFormWithNgValidationAndModel)
 
 
 class SubscribeFormView(TemplateView):
+    template_name = 'subscribe-form.html'
+    form = SubscriptionForm
+
     def get_context_data(self, form=None, **kwargs):
         context = super(SubscribeFormView, self).get_context_data(**kwargs)
         form.fields['height'].widget.attrs['step'] = 0.05  # Ugly hack to set step size

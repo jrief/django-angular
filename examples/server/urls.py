@@ -2,11 +2,14 @@
 from django.conf.urls import url, patterns
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
-from server.views import (SubscribeViewWithFormValidation, SubscribeViewWithModelForm,
-        SubscribeViewWithModelFormAndValidation, Ng3WayDataBindingView, NgFormDataValidView)
+from server.views import (SubscribeFormView, SubscribeViewWithFormValidation,
+        SubscribeViewWithModelForm, SubscribeViewWithModelFormAndValidation, Ng3WayDataBindingView,
+        NgFormDataValidView)
 
 
 urlpatterns = patterns('',
+    url(r'^base_form/$', SubscribeFormView.as_view(),
+        name='djng_base_form'),
     url(r'^form_validation/$', SubscribeViewWithFormValidation.as_view(),
         name='djng_form_validation'),
     url(r'^model_form/$', SubscribeViewWithModelForm.as_view(),
