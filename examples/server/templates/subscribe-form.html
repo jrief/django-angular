@@ -1,25 +1,31 @@
 {% extends "base.html" %}
 
-{% block subscribe_me_form %}
-	<form name="{{ form.form_name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %}>
-		{% csrf_token %}
-		<table class="subscribe span12">
-			<caption class="offset2">{% block table_caption %}Form Validation Demo{% endblock %}</caption>
-			<thead><tr>
-				<td class="span3"></td>
-				<td class="span9 lead">{% block table_header %}Pure client side form validation{% endblock %}</td>
-			</tr></thead>
-			<tbody>{{ form }}</tbody>
-			<tfoot>
-				{% block table_foot %}
-				<tr>
-					<td></td>
-					<td>
-						<input type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
-					</td>
-				</tr>
-				{% endblock table_foot %}
-			</tfoot>
-		</table>
-	</form>
-{% endblock subscribe_me_form %}
+{% block container %}
+<h1>{% block form_title %}Basic Form Demo{% endblock %}</h1>
+<div class="row">
+	<div class="col-md-12">
+		<p class="lead">{% block form_header %}Form submission without AngularJS{% endblock %}</p>
+	</div>
+</div>
+
+<form name="{{ form.form_name }}" novalidate method="post" action="." {% block form_ctrl %}{% endblock %} class="subscribe ">
+	{% csrf_token %}
+	<div class="row">
+		<div class="col-md-12">
+			{{ form.as_div }}
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			{% block form_submission %}
+				<input type="submit" class="btn btn-primary" value="Subscribe">
+			{% endblock %}
+		</div>
+	</div>
+	<div class="row" style="margin-top: 2em;">
+		<div class="col-md-12">
+			{% block form_foot %}{% endblock %}
+		</div>
+	</div>
+</form>
+{% endblock container %}

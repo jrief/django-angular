@@ -1,29 +1,22 @@
-{% extends "subscribe-form.html" %}
+{% extends "validation-form.html" %}
 {% load djangular_tags %}
 
 {% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
 
-{% block table_caption %}Model-Form Demo{% endblock %}
+{% block form_title %}Model-Form Demo{% endblock %}
 
-{% block table_header %}Combine Django Form with ng-model{% endblock %}
+{% block form_header %}Combine Django Form with ng-model{% endblock %}
 
-{% block table_foot %}
-	<tr>
-		<td></td>
-		<td>
-			<input type="submit" class="btn" value="Submit via Post"><span>&nbsp;</span>
-			<a class="btn" ng-click="submit()">Submit via Ajax</a>
-		</td>
-	</tr>
-	<tr>
-		<td></td>
-		<td>
-		{% verbatim %}
-			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
-		{% endverbatim %}
-		</td>
-	</tr>
-{% endblock table_foot %}
+{% block form_submission %}
+	<input type="submit" class="btn btn-primary" value="Submit via Post"><span>&nbsp;</span>
+	<a class="btn btn-primary" ng-click="submit()">Submit via Ajax</a>
+{% endblock %}
+
+{% block form_foot %}
+	{% verbatim %}
+		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock form_foot %}
 
 {% block scripts %}
 	{{ block.super }}

@@ -1,0 +1,20 @@
+{% extends "subscribe-form.html" %}
+
+{% block ng_app %}ng-app="djangular-demo"{% endblock %}
+
+{% block form_title %}Form Validation Demo{% endblock %}
+
+{% block form_header %}Pure client side form validation{% endblock %}
+
+{% block form_submission %}
+	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
+{% endblock %}
+
+{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.forms', 'ng.django.websocket']);
+	</script>
+{% endblock %}

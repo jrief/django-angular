@@ -2,20 +2,17 @@
 
 {% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
 
-{% block table_caption %}Tree-Way Data-Binding{% endblock %}
+{% block form_title %}Tree-Way Data-Binding{% endblock %}
 
-{% block table_header %}Point a second browser onto the same URL and observer form synchronization{% endblock %}
+{% block form_header %}Point a second browser onto the same URL and observer form synchronization{% endblock %}
 
-{% block table_foot %}
-	<tr>
-		<td></td>
-		<td>
-		{% verbatim %}
-			<pre>subscribe_data = {{ subscribe_data | json }}</pre>
-		{% endverbatim %}
-		</td>
-	</tr>
-{% endblock table_foot %}
+{% block form_foot %}
+	{% verbatim %}
+		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock %}
+
+{% block form_submission %}{% endblock %}
 
 {% block scripts %}
 	{{ block.super }}

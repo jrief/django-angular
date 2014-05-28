@@ -2,9 +2,12 @@
 import six
 from base64 import b64encode
 from django.forms import forms
+from django.forms import MultipleChoiceField, CheckboxSelectMultiple
+from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
+from djangular.forms.fields import DjngCheckboxSelectMultiple
 
 
 class SafeTuple(SafeData, tuple):
@@ -70,9 +73,35 @@ class NgBoundField(forms.BoundField):
             self._errors_cache = self.form.get_field_errors(self)
         return self._errors_cache
 
+    def css_classes(self, extra_classes=None):
+        """
+        Returns a string of space-separated CSS classes for this field.
+        """
+        if extra_classes is None:
+            # retrieve extra_classes from own field
+            extra_classes = getattr(self.field, 'extra_classes', set())
+        return super(NgBoundField, self).css_classes(extra_classes)
+
+    def as_widget(self, widget=None, attrs=None, **kwargs):
+        """
+        Renders the field.
+        """
+        attrs = attrs or {}
+        css_classes = getattr(self.field, 'widget_css_classes', None)
+        if css_classes:
+            attrs.update({'class': css_classes})
+        return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
+
+    def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        attrs = attrs or {}
+        css_classes = getattr(self.field, 'label_css_classes', None)
+        if css_classes:
+            attrs.update({'class': css_classes})
+        return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
+
 
 class NgFormBaseMixin(object):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, data=None, *args, **kwargs):
         try:
             form_name = self.form_name
         except AttributeError:
@@ -81,7 +110,14 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        super(NgFormBaseMixin, self).__init__(*args, **kwargs)
+        for name, field in self.base_fields.items():
+            if isinstance(field, MultipleChoiceField) and isinstance(field.widget, CheckboxSelectMultiple):
+                fw_dict = field.widget.__dict__
+                field.widget = DjngCheckboxSelectMultiple()
+                field.widget.__dict__ = fw_dict
+                if isinstance(data, QueryDict):
+                    data = field.widget.implode_multi_values(name, data.copy())
+        super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
 
     def __getitem__(self, name):
         "Returns a NgBoundField with the given name."

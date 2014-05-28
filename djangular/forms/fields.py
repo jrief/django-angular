@@ -3,15 +3,16 @@ from django import forms
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.html import format_html
 from django.forms.util import flatatt
-from django.forms.widgets import (RendererMixin, ChoiceFieldRenderer, CheckboxChoiceInput,
-                                  SelectMultiple)
+from django.forms.widgets import (ChoiceFieldRenderer, CheckboxChoiceInput,
+                                  CheckboxSelectMultiple)
 
 
 class DjngCheckboxChoiceInput(CheckboxChoiceInput):
     def tag(self):
         if 'id' in self.attrs:
             self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
-        self.attrs['ng-model'] = '%s.%s' % (self.attrs['ng-model'], self.choice_value)
+        if 'ng-model' in self.attrs:
+            self.attrs['ng-model'] = '%s.%s' % (self.attrs['ng-model'], self.choice_value)
         name = '%s.%s' % (self.name, self.choice_value)
         final_attrs = dict(self.attrs, type=self.input_type, name=name, value=self.choice_value)
         if self.is_checked():
@@ -23,25 +24,20 @@ class DjngCheckboxFieldRenderer(ChoiceFieldRenderer):
     choice_input_class = DjngCheckboxChoiceInput
 
 
-class DjngCheckboxSelectMultiple(RendererMixin, SelectMultiple):
+class DjngCheckboxSelectMultiple(CheckboxSelectMultiple):
+    """
+    Form fields of type 'MultipleChoiceField' using the widget 'CheckboxSelectMultiple' must behave
+    slightly different from the original. This widget overrides the default functionality.
+    """
     renderer = DjngCheckboxFieldRenderer
-    _empty_value = []
-
-#     def __init__(self, widget):
-#         """
-#         Copy constructor to convert forms.CheckboxSelectMultiple into DjngCheckboxSelectMultiple
-#         """
-#         if not isinstance(widget, forms.CheckboxSelectMultiple):
-#             raise ImproperlyConfigured('widget is not of type forms.CheckboxSelectMultiple')
-#         self = widget
 
     def implode_multi_values(self, name, data):
+        """
+        Fields for CheckboxSelectMultiple are converted to a list by this method, if sent through
+        POST data.
+        """
         mkeys = [k for k in data.keys() if k.startswith(name + '.')]
         mvls = [data.pop(k)[0] for k in mkeys]
         if mvls:
             data.setlist(name, mvls)
         return data
-
-
-# class DjngMultipleCheckboxField(forms.MultipleChoiceField):
-#     widget = DjngCheckboxSelectMultiple
