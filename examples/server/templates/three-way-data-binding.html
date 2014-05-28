@@ -1,6 +1,8 @@
 {% extends "subscribe-form.html" %}
 
-{% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
+{% block ng_app %}ng-app="djangular-demo"{% endblock %}
+
+{% block form_ctrl %}ng-controller="MyWebsocketCtrl"{% endblock %}
 
 {% block form_title %}Tree-Way Data-Binding{% endblock %}
 
@@ -15,15 +17,19 @@
 {% block form_submission %}{% endblock %}
 
 {% block scripts %}
-	{{ block.super }}
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
 	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.forms', 'ng.django.websocket']);
+
 	my_app.config(['djangoWebsocketProvider', function(djangoWebsocketProvider) {
 		djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
 		djangoWebsocketProvider.setLogLevel('debug');
 		djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});
 	}]);
 
-	my_app.controller('MyFormCtrl', function($scope, djangoWebsocket) {
+	my_app.controller('MyWebsocketCtrl', function($scope, djangoWebsocket) {
 		djangoWebsocket.connect($scope, 'subscribe_data', 'subscribe_data', ['subscribe-broadcast', 'publish-broadcast']);
 	});
 	</script>
