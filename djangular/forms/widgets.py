@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-from django import forms
-from django.core.exceptions import ImproperlyConfigured
+from django.forms import widgets
 from django.utils.html import format_html
 from django.forms.util import flatatt
-from django.forms.widgets import (ChoiceFieldRenderer, CheckboxChoiceInput,
-                                  CheckboxSelectMultiple)
 
 
-class DjngCheckboxChoiceInput(CheckboxChoiceInput):
+class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
     def tag(self):
         if 'id' in self.attrs:
             self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
@@ -20,16 +17,16 @@ class DjngCheckboxChoiceInput(CheckboxChoiceInput):
         return format_html('<input{0} />', flatatt(final_attrs))
 
 
-class DjngCheckboxFieldRenderer(ChoiceFieldRenderer):
-    choice_input_class = DjngCheckboxChoiceInput
+class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
+    choice_input_class = CheckboxChoiceInput
 
 
-class DjngCheckboxSelectMultiple(CheckboxSelectMultiple):
+class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
     """
     Form fields of type 'MultipleChoiceField' using the widget 'CheckboxSelectMultiple' must behave
     slightly different from the original. This widget overrides the default functionality.
     """
-    renderer = DjngCheckboxFieldRenderer
+    renderer = CheckboxFieldRenderer
 
     def implode_multi_values(self, name, data):
         """

@@ -2,12 +2,13 @@
 import six
 from base64 import b64encode
 from django.forms import forms
-from django.forms import MultipleChoiceField, CheckboxSelectMultiple
+from django.forms import fields
+from django.forms import widgets
 from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
-from djangular.forms.fields import DjngCheckboxSelectMultiple
+from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class SafeTuple(SafeData, tuple):
@@ -101,7 +102,7 @@ class NgBoundField(forms.BoundField):
 
 
 class NgFormBaseMixin(object):
-    def __init__(self, data=None, *args, **kwargs):
+    def __init__(self, data, *args, **kwargs):
         try:
             form_name = self.form_name
         except AttributeError:
@@ -110,13 +111,7 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        for name, field in self.base_fields.items():
-            if isinstance(field, MultipleChoiceField) and isinstance(field.widget, CheckboxSelectMultiple):
-                fw_dict = field.widget.__dict__
-                field.widget = DjngCheckboxSelectMultiple()
-                field.widget.__dict__ = fw_dict
-                if isinstance(data, QueryDict):
-                    data = field.widget.implode_multi_values(name, data.copy())
+        data = self.convert_widgets(data)
         super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
 
     def __getitem__(self, name):
@@ -146,3 +141,17 @@ class NgFormBaseMixin(object):
         errors = super(NgFormBaseMixin, self).non_field_errors()
         return self.error_class([SafeTuple((self.form_name, '$pristine', '$pristine', 'invalid', e))
                          for e in errors])
+
+    def convert_widgets(self, data):
+        """
+        During form initialization, some widgets have to be replaced by a counterpart suitable to
+        be rendered the AngularJS way.
+        """
+        for name, field in self.base_fields.items():
+            if isinstance(field, fields.MultipleChoiceField) and isinstance(field.widget, widgets.CheckboxSelectMultiple):
+                fw_dict = field.widget.__dict__
+                field.widget = DjngCheckboxSelectMultiple()
+                field.widget.__dict__ = fw_dict
+                if isinstance(data, QueryDict):
+                    data = field.widget.implode_multi_values(name, data.copy())
+        return data

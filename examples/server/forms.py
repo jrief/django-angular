@@ -3,8 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from djangular.forms import NgFormValidationMixin, NgModelFormMixin
-#from djangular.forms.fields import DjngMultipleCheckboxField
-from djangular.plugins.bootstrap3mixins import Bootstrap3FormMixin
+from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 
 
 def reject_addresses(value):
@@ -16,6 +15,7 @@ def reject_addresses(value):
 
 
 class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
+#class SubscriptionForm(forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
@@ -45,7 +45,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
     height = forms.FloatField(min_value=1.48, max_value=1.95, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by')
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', widget=forms.CheckboxSelectMultiple)
+    #notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
 
@@ -57,7 +57,6 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
 
 class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
-    pass
 
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):

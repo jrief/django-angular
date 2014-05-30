@@ -127,6 +127,18 @@ def RegexField_angular_errors(field):
     return errors
 
 
+def BooleanField_angular_errors(field):
+    errors = _input_required(field)
+    # TODO: fill this out
+    return errors
+
+
+def MultipleChoiceField_angular_errors(field):
+    errors = _input_required(field)
+    # TODO: fill this out
+    return errors
+
+
 def Default_angular_errors(field):
     errors = _input_required(field)
     return errors
