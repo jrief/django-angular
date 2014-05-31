@@ -23,13 +23,14 @@ class TupleErrorList(list):
     A list of errors, which in comparison to Django's ErrorList contains a tuple for each item.
     This tuple consists of the following fields:
     0: identifier: This is the model name of the field.
-    1: property: $pristine or $dirty used by ng-show on the wrapping <ul>-element.
-    2: A arbitrary property used by ng-show on the actual <li>-element.
-    3: The CSS class added to the <li>-element.
-    4: The used error message. If this contains the magic word '$message' it will be added with
+    1: The CSS class added to the embedding <ul>-element.
+    2: property: $pristine or $dirty used by ng-show on the wrapping <ul>-element.
+    3: A arbitrary property used by ng-show on the actual <li>-element.
+    4: The CSS class added to the <li>-element.
+    5: The used error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
     """
-    ul_format = '<ul class="djng-form-errors" ng-show="{0}.{1}" ng-cloak>{2}</ul>'
+    ul_format = '<ul class="{1}" ng-show="{0}.{2}" ng-cloak>{3}</ul>'
     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
     li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
@@ -37,7 +38,7 @@ class TupleErrorList(list):
         return self.as_ul()
 
     def __repr__(self):
-        return repr([force_text(e[4]) for e in self])
+        return repr([force_text(e[5]) for e in self])
 
     def as_ul(self):
         if not self:
@@ -45,22 +46,24 @@ class TupleErrorList(list):
         pristine_list_items = []
         dirty_list_items = []
         for e in self:
-            li_format = e[4] == '$message' and self.li_format_bind or self.li_format
-            err_tuple = (e[0], e[2], e[3], force_text(e[4]))
-            if e[1] == '$pristine':
+            li_format = e[5] == '$message' and self.li_format_bind or self.li_format
+            err_tuple = (e[0], e[3], e[4], force_text(e[5]))
+            if e[2] == '$pristine':
                 pristine_list_items.append(format_html(li_format, *err_tuple))
             else:
                 dirty_list_items.append(format_html(li_format, *err_tuple))
         # renders and combine both of these lists
-        return (pristine_list_items and
-                format_html(self.ul_format, self[0][0], '$pristine', mark_safe(''.join(pristine_list_items))) or '') + \
-            (dirty_list_items and
-             format_html(self.ul_format, self[0][0], '$dirty', mark_safe(''.join(dirty_list_items))) or '')
+        first = self[0]
+        return (pristine_list_items and \
+             format_html(self.ul_format, first[0], first[1], '$pristine', mark_safe(''.join(pristine_list_items)))
+          or '') + (dirty_list_items and \
+             format_html(self.ul_format, first[0], first[1], '$dirty', mark_safe(''.join(dirty_list_items)))
+          or '')
 
     def as_text(self):
         if not self:
             return ''
-        return '\n'.join(['* %s' % force_text(e[4]) for e in self if bool(e[4])])
+        return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
 
 
 class NgBoundField(forms.BoundField):
@@ -102,6 +105,9 @@ class NgBoundField(forms.BoundField):
 
 
 class NgFormBaseMixin(object):
+    form_error_css_classes = 'djng-form-errors'
+    field_error_css_classes = 'djng-field-errors'
+
     def __init__(self, data, *args, **kwargs):
         try:
             form_name = self.form_name
@@ -134,13 +140,14 @@ class NgFormBaseMixin(object):
         Return server side errors. Shall be overridden by derived forms to add their extra errors for AngularJS.
         """
         identifier = format_html('{0}.{1}', self.form_name, field.name)
-        return self.error_class([SafeTuple((identifier, '$pristine', '$pristine', 'invalid', e))
-                         for e in self.errors.get(field.name, [])])
+        errors = self.errors.get(field.name, [])
+        return self.error_class([SafeTuple(
+            (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
     def non_field_errors(self):
         errors = super(NgFormBaseMixin, self).non_field_errors()
-        return self.error_class([SafeTuple((self.form_name, '$pristine', '$pristine', 'invalid', e))
-                         for e in errors])
+        return self.error_class([SafeTuple(
+            (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
     def convert_widgets(self, data):
         """

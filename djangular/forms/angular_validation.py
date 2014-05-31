@@ -36,7 +36,7 @@ class NgFormValidationMixin(NgFormBaseMixin):
         except (TypeError, AttributeError):
             errors_function = getattr(VALIDATION_MAPPING_MODULE, 'Default_angular_errors')
             potential_errors = types.MethodType(errors_function, bound_field.field)()
-        errors.append(SafeTuple((identifier, '$dirty', '$valid', 'valid', '')))  # for valid fields
-        errors.extend([SafeTuple((identifier, '$dirty', pe[0], 'invalid', force_text(pe[1])))
+        errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
+        errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
         return errors
