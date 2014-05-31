@@ -56,6 +56,7 @@ class SubscribeViewWithModelFormAndValidation(SubscribeFormView):
 
 class Ng3WayDataBindingView(SubscribeFormView):
     template_name = 'three-way-data-binding.html'
+    form = SubscriptionFormWithNgModel
 
 
 class NgFormDataValidView(TemplateView):
