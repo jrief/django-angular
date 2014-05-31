@@ -1,0 +1,25 @@
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+	display: none !important;
+}
+ul.djng-form-errors, ul.djng-field-errors {
+	display: inline-block;
+	list-style-type: none;
+	margin: 5px 0 0 0;
+	padding: 0;
+}
+ul.djng-form-errors li, ul.djng-field-errors li {
+	color: #e9322d;
+}
+/*
+ul.djng-field-errors li.invalid {
+	color: #e9322d;
+}
+*/
+ul.djng-field-errors li.invalid:before {
+	content: "\2716";
+	margin-right: 10px;
+}
+ul.djng-field-errors li.valid:before {
+	color: #00c900;
+	content: "\2714";
+}

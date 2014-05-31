@@ -1,0 +1,10 @@
+.djng-form-control-feedback {
+	position: absolute;
+	text-align: right;
+	top: -5px;
+	right: 10px;
+}
+.djng-line-spreader {
+	height: 20px;
+	margin-bottom: 10px;
+}
