@@ -7,11 +7,12 @@ from django.utils.translation import gettext_lazy, ungettext_lazy
 
 
 def _input_required(field):
-    field.widget.attrs['ng-required'] = str(field.required).lower()
     errors = []
-    for key, msg in field.error_messages.items():
-        if key == 'required':
-            errors.append(('$error.required', msg))
+    if field.required:
+        field.widget.attrs['ng-required'] = 'true'
+        for key, msg in field.error_messages.items():
+            if key == 'required':
+                errors.append(('$error.required', msg))
     return errors
 
 
@@ -128,8 +129,8 @@ def RegexField_angular_errors(field):
 
 
 def BooleanField_angular_errors(field):
-    # No errors to report for
-    return []
+    errors = _input_required(field)
+    return errors
 
 
 def MultipleChoiceField_angular_errors(field):
