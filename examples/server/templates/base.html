@@ -1,6 +1,6 @@
 {% load active %}
 <!doctype html>
-<html lang="en" {% block ng_app %}{% endblock %}>
+<html lang="en" ng-app="djangular-demo">
 <head>
 	<title>Django-Angular Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -49,6 +49,12 @@
 	<div class="container">
 		{% block container %}{% endblock %}
 	</div>
-	{% block scripts %}{% endblock %}
+	{% block scripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
+	</script>
+	{% endblock %}
 </body>
 </html>
