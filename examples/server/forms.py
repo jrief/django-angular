@@ -15,7 +15,6 @@ def reject_addresses(value):
 
 
 class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
-#class SubscriptionForm(forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
@@ -36,7 +35,6 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
     birth_date = forms.DateField(label='Date of birth',
-        widget=forms.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
         help_text=u'Allowed date format: yyyy-mm-dd.')
     continent = forms.ChoiceField(choices=CONTINENT_CHOICES, label='Living on continent',
          error_messages={'invalid_choice': 'Please select your continent'})
@@ -55,7 +53,13 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
         return super(SubscriptionForm, self).clean()
 
 
-class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
+class ValidatedSubscriptionForm(SubscriptionForm):
+    def __init__(self, *args, **kwargs):
+        self.base_fields['birth_date'].widget.attrs['validate-date'] = '^(\d{4})-(\d{1,2})-(\d{1,2})$'
+        super(SubscriptionForm, self).__init__(*args, **kwargs)
+
+
+class SubscriptionFormWithNgValidation(NgFormValidationMixin, ValidatedSubscriptionForm):
     form_name = 'valid_form'
 
 
@@ -64,6 +68,6 @@ class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
     scope_prefix = 'subscribe_data'
 
 
-class SubscriptionFormWithNgValidationAndModel(NgModelFormMixin, NgFormValidationMixin, SubscriptionForm):
+class SubscriptionFormWithNgValidationAndModel(NgModelFormMixin, NgFormValidationMixin, ValidatedSubscriptionForm):
     form_name = 'valid_form'
     scope_prefix = 'subscribe_data'
