@@ -89,6 +89,7 @@ djng_forms_module.directive('form', function() {
 	};
 });
 
+
 // This directive can be added to an input field which shall validate inserted dates, for example:
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
 // Now, such an input field is only considered valid, if the date is a valid date and if it matches
@@ -111,24 +112,30 @@ djng_forms_module.directive('validateDate', function() {
 	}
 
 	return {
-		require: 'ngModel',
+		require: '?ngModel',
 		restrict: 'A',
-		scope: 'isolate',
 		link: function(scope, elem, attrs, controller) {
+			if (!controller)
+				return;
+
 			if (attrs.validateDate) {
 				// if a pattern is set, only valid dates with that pattern are accepted
-				validDatePattern = new RegExp(attrs.validateDate, 'g');
+				validDatePattern = new RegExp(attrs.validateDate, 'i');
 			}
 
-			// watch for modifications on input fields containing attribute 'validate-date="/pattern/"'
-			scope.$watch(attrs.ngModel, function(date) {
-				if (controller.$pristine)
-					return;
-				controller.$setValidity('date', validateDate(date));
-			});
+			var validator = function(value) {
+				if (controller.$isEmpty(value)) {
+					controller.$setValidity('date', true);
+				} else {
+					controller.$setValidity('date', validateDate(value));
+				}
+			};
+
+			controller.$parsers.push(validator);
 		}
 	};
 });
+
 
 // If forms are validated using Ajax, the server shall return a dictionary of detected errors to the
 // client code. The success-handler of this Ajax call, now can set those error messages on their
