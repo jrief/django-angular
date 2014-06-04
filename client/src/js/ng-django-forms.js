@@ -7,84 +7,80 @@
 var djng_forms_module = angular.module('ng.django.forms', []);
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
-// If not used, the content of bound forms is not displayed, because AngularJS does not know about
-// the concept of bound forms.
-// TODO: Find out, if the form was bound or unbound. This can be done looking at the fields values
-// or by adding a special value to each field. If forms are unbound, use that information to send
-// data via PUT rather than POST, since this is how new objects shall be created. An alternative
-// would be to create a directive djng-bound-form, which shall be added to a form, whenever it is
-// bound. This can easily be done from django.
-djng_forms_module.directive('form', function() {
-	function restoreInputFields(form, fields) {
-		angular.forEach(fields, function(field) {
-			var model_field = form[field.name];
-			if (model_field !== undefined) {
-				// restore the field's content from the rendered content of bound fields
-				switch (field.type) {
-				case 'text': case 'email': case 'number': case 'url':
-					model_field.$setViewValue(field.defaultValue);
-					break;
-				case 'radio':
-					if (field.defaultChecked) {
-						model_field.$setViewValue(field.defaultValue);
-					}
-					break;
-				case 'checkbox':
-					if (field.defaultChecked) {
-						model_field.$setViewValue(true);
-					}
-					break;
-				case 'password':
-					// after an (un)successful submission, reset the password field
-					model_field.$setViewValue(null);
-					break;
-				}
+// Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
+// the concept of bound forms and thus hides values preset by Django while rendering HTML.
+djng_forms_module.directive('ngModel', function() {
+	function restoreInputField(modelCtrl, field) {
+		// restore the field's content from the rendered content of bound fields
+		switch (field.type) {
+		case 'text': case 'email': case 'number': case 'url':
+			if (field.defaultValue) {
+				modelCtrl.$setViewValue(field.defaultValue);
 			}
-		});
+			break;
+		case 'radio':
+			if (field.defaultChecked) {
+				modelCtrl.$setViewValue(field.defaultValue);
+			}
+			break;
+		case 'checkbox':
+			if (field.defaultChecked) {
+				modelCtrl.$setViewValue(true);
+			}
+			break;
+		case 'password':
+			// after an (un)successful submission, reset the password field
+			modelCtrl.$setViewValue(null);
+			break;
+		}
 	}
 
-	function restoreSelectOptions(form, selects) {
-		angular.forEach(selects, function(field) {
-			var multivalues = [];
-			if (form[field.name] !== undefined) {
-				angular.forEach(field.options, function(option) {
-					if (option.defaultSelected) {
-						// restore the select option to selected
-						angular.element(option).prop('selected', 'selected');
-						if (field.multiple) {
-							multivalues.push(option.value);
-						} else {
-							form[field.name].$setViewValue(option.value);
-						}
-					}
-				});
+	function restoreSelectOptions(modelCtrl, field) {
+		var multivalues = [];
+		angular.forEach(field.options, function(option) {
+			if (option.defaultSelected) {
+				// restore the select option to selected
+				angular.element(option).prop('selected', 'selected');
 				if (field.multiple) {
-					form[field.name].$setViewValue(multivalues);
+					multivalues.push(option.value);
+				} else {
+					modelCtrl.$setViewValue(option.value);
 				}
 			}
 		});
+		if (field.multiple) {
+			modelCtrl.$setViewValue(multivalues);
+		}
 	}
 
-	function restoreTextAreas(form, textareas) {
-		angular.forEach(textareas, function(field) {
-			if (form[field.name] !== undefined && field.defaultValue) {
-				// restore the field's content from the rendered content of bound fields
-				form[field.name].$setViewValue(field.defaultValue);
-			}
-		});
+	function restoreTextArea(modelCtrl, field) {
+		if (field.defaultValue) {
+			// restore the field's content from the rendered content of bound fields
+			modelCtrl.$setViewValue(field.defaultValue);
+		}
 	}
 
 	return {
-		restrict: 'E',
-		scope: 'isolate',
-		priority: -1,
-		link: function(scope, element, attrs) {
-			var form = scope[attrs.name], ngelem = angular.element(element);
-			restoreInputFields(form, ngelem.find('input'));
-			restoreSelectOptions(form, ngelem.find('select'));
-			restoreTextAreas(form, ngelem.find('textarea'));
+		restrict: 'A',
+		require: ['ngModel', '^?form'],
+		link: function(scope, element, attrs, ctrls) {
+			var field = angular.isElement(element) ? element[0] : null;
+			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
+			if (!field || !formCtrl)
+				return;
+			switch (field.tagName) {
+			case 'INPUT':
+				restoreInputField(modelCtrl, field);
+				break;
+			case 'SELECT':
+				restoreSelectOptions(modelCtrl, field);
+				break;
+			case 'TEXTAREA':
+				restoreTextArea(modelCtrl, field);
+				break;
+			}
 			// restore the form's pristine state
-			form.$setPristine();
+			formCtrl.$setPristine();
 		}
 	};
 });
