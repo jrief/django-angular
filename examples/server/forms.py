@@ -18,8 +18,9 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-        ('bus', 'Bus'), ('taxi', 'Taxi'), ('tram', 'Tram'), ('subway', 'Subway'), ('train', 'Train'),
-        ('boat', 'Boat'), ('funicular', 'Funicular'), ('air', 'Airplane'),)
+                     ('bus', 'Bus'), ('taxi', 'Taxi'), ('tram', 'Tram'), ('subway', 'Subway'),
+                     ('train', 'Train'), ('boat', 'Boat'), ('funicular', 'Funicular'),
+                     ('air', 'Airplane'),)
     NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
 
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
@@ -27,23 +28,24 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
         error_messages={'invalid': 'Last names shall start in upper case'},
         help_text=u'The name ‘John Doe’ is rejected by the server.')
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')),
-         widget=forms.RadioSelect,
-         error_messages={'invalid_choice': 'Please select your sex'})
+        widget=forms.RadioSelect, error_messages={'invalid_choice': 'Please select your sex'})
     email = forms.EmailField(label='E-Mail', validators=[reject_addresses, validate_email],
         help_text=u'Addresses containing ‘@example’ are rejected by the server.')
     subscribe = forms.BooleanField(initial=False, label='Subscribe Newsletter', required=False)
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
     birth_date = forms.DateField(label='Date of birth',
-        help_text=u'Allowed date format: yyyy-mm-dd.')
+        widget=forms.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
+        help_text=u'Allowed date format: yyyy-mm-dd')
     continent = forms.ChoiceField(choices=CONTINENT_CHOICES, label='Living on continent',
-         error_messages={'invalid_choice': 'Please select your continent'})
+        error_messages={'invalid_choice': 'Please select your continent'})
     weight = forms.IntegerField(min_value=42, max_value=95, label='Weight in kg',
         error_messages={'min_value': 'You are too lightweight'})
     height = forms.FloatField(min_value=1.48, max_value=1.95, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by')
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', widget=forms.CheckboxSelectMultiple)
+    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
+        widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
 
@@ -53,13 +55,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
         return super(SubscriptionForm, self).clean()
 
 
-class ValidatedSubscriptionForm(SubscriptionForm):
-    def __init__(self, *args, **kwargs):
-        self.base_fields['birth_date'].widget.attrs['validate-date'] = '^(\d{4})-(\d{1,2})-(\d{1,2})$'
-        super(SubscriptionForm, self).__init__(*args, **kwargs)
-
-
-class SubscriptionFormWithNgValidation(NgFormValidationMixin, ValidatedSubscriptionForm):
+class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
 
 
@@ -68,6 +64,6 @@ class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
     scope_prefix = 'subscribe_data'
 
 
-class SubscriptionFormWithNgValidationAndModel(NgModelFormMixin, NgFormValidationMixin, ValidatedSubscriptionForm):
+class SubscriptionFormWithNgValidationAndModel(NgModelFormMixin, SubscriptionFormWithNgValidation):
     form_name = 'valid_form'
     scope_prefix = 'subscribe_data'
