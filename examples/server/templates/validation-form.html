@@ -4,6 +4,8 @@
 
 {% block form_header %}Pure client-side Form validation{% endblock %}
 
+{% block form_ctrl %}novalidate{% endblock %}
+
 {% block form_submission %}
 	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
 {% endblock %}

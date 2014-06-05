@@ -1,11 +1,11 @@
 {% extends "validation-form.html" %}
 {% load djangular_tags %}
 
-{% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
-
 {% block form_title %}Model-Form Demo{% endblock %}
 
 {% block form_header %}Django Forms with two-way data-binding{% endblock %}
+
+{% block form_ctrl %}ng-controller="MyFormCtrl"{% endblock %}
 
 {% block form_submission %}
 	<input type="submit" class="btn btn-primary" value="Submit via Post"><span>&nbsp;</span>
