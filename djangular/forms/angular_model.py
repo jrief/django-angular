@@ -43,9 +43,9 @@ class NgModelFormMixin(NgFormBaseMixin):
 
     def get_initial_data(self):
         """
-        Return a dictionary specifying the defaults for this form. This dictionary
-        shall be used to inject the initial values for an Angular controller using
-        the directive 'ng-init={{thisform.get_initial_data|js|safe}}'.
+        Return a dictionary specifying the defaults for this form. This dictionary can be used to
+        inject the initial values for an Angular controller using the directive:
+        ``ng-init={{ thisform.get_initial_data|js|safe }}``.
         """
         data = {}
         for name, field in self.fields.items():
