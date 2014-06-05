@@ -117,7 +117,7 @@ class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-field-errors'
 
-    def __init__(self, data, *args, **kwargs):
+    def __init__(self, data=None, *args, **kwargs):
         try:
             form_name = self.form_name
         except AttributeError:
