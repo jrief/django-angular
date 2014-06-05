@@ -6,6 +6,34 @@
 // Additional validators for form elements.
 var djng_forms_module = angular.module('ng.django.forms', []);
 
+// create a simple hash code for the given string
+function hashCode(s) {
+	return s.split("").reduce(function(a, b) {
+		a = (a << 5) - a + b.charCodeAt(0);
+		return a & a;
+	}, 0);
+}
+
+// This directive adds a dummy binding to input fields without attribute ng-model, so that AngularJS
+// form validation gets notified whenever the fields content changes.
+djng_forms_module.directive('input', function($compile) {
+	return {
+		restrict: 'E',
+		require: '?^form',
+		//priority: 9999,
+		//terminal: true,
+		link: function(scope, element, attr, formCtrl) {
+			var modelName;
+			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden'
+				|| angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel)) return;
+			modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name;
+			attr.$set('ngModel', modelName);
+			$compile(element, null, 9999)(scope);
+		}
+	};
+});
+
+
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
