@@ -22,8 +22,9 @@ class NgModelFormMixin(NgFormBaseMixin):
             if key.startswith('ng_'):
                 fmtstr = kwargs.pop(key)
                 self.ng_directives[key.replace('_', '-')] = fmtstr
-        if hasattr(self, 'Meta') and not isinstance(getattr(self.Meta, 'ng_models', []), list):
-            raise TypeError('Meta.ng_model is not of type list')
+        if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
+            if not isinstance(getattr(self.Meta, 'ng_models'), list):
+                raise TypeError('Meta.ng_model is not of type list')
         elif 'ng-model' not in self.ng_directives:
             self.ng_directives['ng-model'] = '%(model)s'
         self.prefix = kwargs.get('prefix')
@@ -48,8 +49,9 @@ class NgModelFormMixin(NgFormBaseMixin):
         ``ng-init={{ thisform.get_initial_data|js|safe }}``.
         """
         data = {}
+        ng_models = hasattr(self, 'Meta') and getattr(self.Meta, 'ng_models', []) or []
         for name, field in self.fields.items():
-            if hasattr(field, 'widget') and 'ng-model' in field.widget.attrs:
+            if 'ng-model' in self.ng_directives or name in ng_models:
                 data[name] = self.initial and self.initial.get(name) or field.initial
         return data
 
