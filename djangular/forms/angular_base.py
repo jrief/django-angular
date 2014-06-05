@@ -91,6 +91,7 @@ class NgBoundField(forms.BoundField):
         Renders the field.
         """
         attrs = attrs or {}
+        attrs.update(self.form.get_widget_attrs(self))
         css_classes = getattr(self.field, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
@@ -148,6 +149,12 @@ class NgFormBaseMixin(object):
         errors = super(NgFormBaseMixin, self).non_field_errors()
         return self.error_class([SafeTuple(
             (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
+
+    def get_widget_attrs(self, bound_field):
+        """
+        Return a dictionary of additional widget attributes.
+        """
+        return {}
 
     def convert_widgets(self, data):
         """

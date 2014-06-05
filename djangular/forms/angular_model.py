@@ -17,33 +17,18 @@ class NgModelFormMixin(NgFormBaseMixin):
 
     def __init__(self, data=None, *args, **kwargs):
         self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))
-        if hasattr(self, 'Meta') and hasattr(self.Meta, 'ng_models'):
-            if not isinstance(self.Meta.ng_models, list):
-                raise TypeError('Meta.ng_model is not of type list')
-            ng_models = self.Meta.ng_models
-        else:
-            ng_models = None
-        directives = {}
+        self.ng_directives = {}
         for key in list(kwargs.keys()):
             if key.startswith('ng_'):
                 fmtstr = kwargs.pop(key)
-                directives[key.replace('_', '-')] = fmtstr
-        if ng_models is None and 'ng-model' not in directives:
-            directives['ng-model'] = '%(model)s'
+                self.ng_directives[key.replace('_', '-')] = fmtstr
+        if hasattr(self, 'Meta') and not isinstance(getattr(self.Meta, 'ng_models', []), list):
+            raise TypeError('Meta.ng_model is not of type list')
+        elif 'ng-model' not in self.ng_directives:
+            self.ng_directives['ng-model'] = '%(model)s'
         self.prefix = kwargs.get('prefix')
         if self.prefix and data:
             data = dict((self.add_prefix(name), value) for name, value in data.get(self.prefix).items())
-        for name, field in self.base_fields.items():
-            identifier = self.add_prefix(name)
-            ng = {
-                'name': name,
-                'identifier': identifier,
-                'model': self.scope_prefix and ('%s.%s' % (self.scope_prefix, identifier)) or identifier
-            }
-            if ng_models and name in ng_models:
-                field.widget.attrs['ng-model'] = ng['model']
-            for key, fmtstr in directives.items():
-                field.widget.attrs[key] = fmtstr % ng
         super(NgModelFormMixin, self).__init__(data, *args, **kwargs)
         if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
@@ -78,3 +63,17 @@ class NgModelFormMixin(NgFormBaseMixin):
         errors = super(NgModelFormMixin, self).non_field_errors()
         errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$message', 'invalid', '$message')))
         return errors
+
+    def get_widget_attrs(self, bound_field):
+        identifier = self.add_prefix(bound_field.name)
+        ng = {
+            'name': bound_field.name,
+            'identifier': identifier,
+            'model': self.scope_prefix and ('%s.%s' % (self.scope_prefix, identifier)) or identifier
+        }
+        attrs = {}
+        if hasattr(self, 'Meta') and bound_field.name in getattr(self.Meta, 'ng_models', []):
+            attrs['ng-model'] = ng['model']
+        for key, fmtstr in self.ng_directives.items():
+            attrs[key] = fmtstr % ng
+        return attrs
