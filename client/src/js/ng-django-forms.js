@@ -96,6 +96,11 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
+			// transfer error state from Django's bound field to AngularJS validation
+			if (attrs.djngError) {
+				modelCtrl.$setValidity(attrs.djngError, false);
+				element.removeAttr('djng-error');
+			}
 			switch (field.tagName) {
 			case 'INPUT':
 				restoreInputField(modelCtrl, field);

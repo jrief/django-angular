@@ -25,7 +25,7 @@ class TupleErrorList(list):
     0: identifier: This is the model name of the field.
     1: The CSS class added to the embedding <ul>-element.
     2: property: $pristine or $dirty used by ng-show on the wrapping <ul>-element.
-    3: A arbitrary property used by ng-show on the actual <li>-element.
+    3: An arbitrary property used by ng-show on the actual <li>-element.
     4: The CSS class added to the <li>-element.
     5: The used error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
@@ -99,6 +99,10 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
+        # transfer error state from bound field to AngularJS validation
+        errors = [e for e in self.errors if e[3] == '$pristine']
+        if errors:
+            attrs.update({'djng-error': errors[0][4]})
         return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
