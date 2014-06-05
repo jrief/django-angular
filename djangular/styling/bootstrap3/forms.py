@@ -11,14 +11,6 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
 
-    def __init__(self, data=None, *args, **kwargs):
-        for field in self.base_fields.values():
-            if not hasattr(field, 'extra_classes'):
-                setattr(field, 'extra_classes', self.field_css_classes)
-            if not hasattr(field, 'widget_css_classes'):
-                setattr(field, 'widget_css_classes', self.widget_css_classes)
-        super(Bootstrap3FormMixin, self).__init__(data, *args, **kwargs)
-
     def convert_widgets(self, data):
         """
         During initialization, some widgets have to be replaced by a counterpart suitable for

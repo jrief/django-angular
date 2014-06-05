@@ -81,9 +81,10 @@ class NgBoundField(forms.BoundField):
         """
         Returns a string of space-separated CSS classes for this field.
         """
-        if extra_classes is None:
-            # retrieve extra_classes from own field
-            extra_classes = getattr(self.field, 'extra_classes', set())
+        if hasattr(extra_classes, 'split'):
+            extra_classes = extra_classes.split()
+        extra_classes = set(extra_classes or [])
+        extra_classes.update(getattr(self.form, 'field_css_classes', '').split())
         return super(NgBoundField, self).css_classes(extra_classes)
 
     def as_widget(self, widget=None, attrs=None, **kwargs):
@@ -92,7 +93,10 @@ class NgBoundField(forms.BoundField):
         """
         attrs = attrs or {}
         attrs.update(self.form.get_widget_attrs(self))
-        css_classes = getattr(self.field, 'widget_css_classes', None)
+        if hasattr(self.field, 'widget_css_classes'):
+            css_classes = self.field.widget_css_classes
+        else:
+            css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
         return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
