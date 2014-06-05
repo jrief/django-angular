@@ -21,7 +21,7 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-required': 'true'}, attrib)
         self.assertDictContainsSubset({'ng-minlength': '3'}, attrib)
         self.assertDictContainsSubset({'ng-maxlength': '20'}, attrib)
-        lis = self.dom('label[for=id_first_name]').closest('th').next('td').children('ul.djng-form-errors > li')
+        lis = self.dom('label[for=id_first_name]').closest('th').next('td').children('ul.djng-field-errors > li')
         if django.VERSION[1] == 5:
             # Django < 1.6 not not know about minlength and maxlength
             self.assertEqual(len(lis), 2)
@@ -52,7 +52,7 @@ class NgFormValidationMixinTest(TestCase):
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
         html = ''.join((
-            '<ul class="djng-form-errors" ng-show="valid_form.email.$dirty" ng-cloak>',
+            '<ul class="djng-field-errors djng-form-control-feedback" ng-show="valid_form.email.$dirty" ng-cloak>',
               '<li ng-show="valid_form.email.$valid" class="valid"></li>',
               '<li ng-show="valid_form.email.$error.required" class="invalid">This field is required.</li>',
               '<li ng-show="valid_form.email.$error.email" class="invalid">Enter a valid email address.</li>',
