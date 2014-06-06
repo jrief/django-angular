@@ -4,6 +4,21 @@
 Release History
 ===============
 
+0.7.3
+-----
+* Added support to render a Django Form using a plugable style. Bootstrap3 styling has been
+  implemented.
+* Added AngularJS directive for ``<input>`` fields: They now add a dummy ``ngModel`` to some
+  input fields, so that Forms using the ``NgFormBaseMixin`` honor the pristine state and display
+  an error list from the bound form.
+* Replaced AngularJS directive for ``form`` by a directive for ``ngModel``. This directive
+  restores the values in bound forms otherwise not vivible in the browser.
+* Fixed: Instead of adding attributes to Form Field Widgets, those additional attributes now are
+  added on the fly while rendering. This caused some problems, when Forms were reused in different
+  contexts.
+* Fixed: Behavior for BooleanField and MultipleChoiceField has been fixed so AngularJS form
+  validation.
+
 0.7.2
 -----
 * Fixed: select fields, multiple select fields, radio and checkbox input fields and text areas are
