@@ -5,12 +5,12 @@ Let Django play well with AngularJS
 ------------------------------------
 Slides from the Django Conference 2014 are available [here](http://djangoconf.aws.awesto.com/slides).
 
-NEW in 0.7.2
-------------
-* Support for almost all Django's built-in Form fields, such as Select, SelectMultiple, RadioSelect,
-  CheckboxInput, CheckboxSelectMultiple and TextAreas in addition to normal Text Input fields.
+Please test version 0.7.3 beta
+------------------------------
+* Added support to render Django Forms using a plugable style. Bootstrap3 styling has been
+  implemented.
+* Lots of bugfixes. Please check the ChangeLog for details.
 
-Project home: https://github.com/jrief/django-angular
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 
