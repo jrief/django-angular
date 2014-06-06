@@ -24,8 +24,8 @@ djng_forms_module.directive('input', function($compile) {
 		//terminal: true,
 		link: function(scope, element, attr, formCtrl) {
 			var modelName;
-			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden'
-				|| angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel)) return;
+			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
+				return;
 			modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name;
 			attr.$set('ngModel', modelName);
 			$compile(element, null, 9999)(scope);
