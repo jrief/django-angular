@@ -8,7 +8,7 @@ from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
-# from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
+from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class SafeTuple(SafeData, tuple):
