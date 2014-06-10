@@ -41,11 +41,6 @@ djng_forms_module.directive('ngModel', function() {
 	function restoreInputField(modelCtrl, field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
-		case 'text': case 'email': case 'number': case 'url':
-			if (field.defaultValue) {
-				modelCtrl.$setViewValue(field.defaultValue);
-			}
-			break;
 		case 'radio':
 			if (field.defaultChecked) {
 				modelCtrl.$setViewValue(field.defaultValue);
@@ -60,6 +55,11 @@ djng_forms_module.directive('ngModel', function() {
 			// after an (un)successful submission, reset the password field
 			modelCtrl.$setViewValue(null);
 			break;
+		default:
+		  if (field.defaultValue) {
+        modelCtrl.$setViewValue(field.defaultValue);
+      }
+      break;
 		}
 	}
 
