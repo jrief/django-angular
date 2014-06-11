@@ -8,7 +8,7 @@ from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
-from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
+# from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class SafeTuple(SafeData, tuple):
@@ -110,8 +110,10 @@ class NgBoundField(forms.BoundField):
         css_classes = getattr(self.field, 'label_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
-
+        try:
+            return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
+        except TypeError:
+            return super(NgBoundField, self).label_tag(contents, attrs)
 
 class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
@@ -126,7 +128,7 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        data = self.convert_widgets(data)
+#         data = self.convert_widgets(data)
         super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
 
     def __getitem__(self, name):
