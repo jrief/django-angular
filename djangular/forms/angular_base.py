@@ -110,7 +110,7 @@ class NgBoundField(forms.BoundField):
         css_classes = getattr(self.field, 'label_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        self.forms.label_suffix = ''
+        self.form.label_suffix = ''
         return super(NgBoundField, self).label_tag(contents, attrs)
 
 
