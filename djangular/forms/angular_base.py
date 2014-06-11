@@ -131,7 +131,7 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-#         data = self.convert_widgets(data)
+        data = self.convert_widgets(data)
         super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
 
     def __getitem__(self, name):
