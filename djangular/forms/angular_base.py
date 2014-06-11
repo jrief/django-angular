@@ -110,10 +110,8 @@ class NgBoundField(forms.BoundField):
         css_classes = getattr(self.field, 'label_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        try:
-            return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
-        except TypeError:
-            return super(NgBoundField, self).label_tag(contents, attrs)
+        self.form.label_suffix = ''
+        return super(NgBoundField, self).label_tag(contents, attrs)
 
 class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
