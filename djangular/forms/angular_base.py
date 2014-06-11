@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import six
 from base64 import b64encode
+from ast import literal_eval
 from django.forms import forms
 from django.forms import fields
 from django.forms import widgets
@@ -46,6 +47,9 @@ class TupleErrorList(list):
         pristine_list_items = []
         dirty_list_items = []
         for e in self:
+            if type(e) == unicode and e[:7] == '(Hidden':
+                start_tuple = e.find(') ') + 2
+                e = literal_eval(e[start_tuple:])
             li_format = e[5] == '$message' and self.li_format_bind or self.li_format
             err_tuple = (e[0], e[3], e[4], force_text(e[5]))
             if e[2] == '$pristine':
@@ -112,6 +116,7 @@ class NgBoundField(forms.BoundField):
             attrs.update({'class': css_classes})
         self.form.label_suffix = ''
         return super(NgBoundField, self).label_tag(contents, attrs)
+
 
 class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
