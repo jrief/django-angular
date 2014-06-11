@@ -5,7 +5,6 @@ from django.core.exceptions import ValidationError
 from django.core import serializers
 from django.forms.models import modelform_factory
 from django.views.generic import FormView
-
 from djangular.views.mixins import JSONBaseMixin, JSONResponseException
 
 
@@ -65,7 +64,7 @@ class NgCRUDView(JSONBaseMixin, FormView):
         return modelform_factory(self.model)
 
     def build_json_response(self, data, **kwargs):
-        return self.json_response(self.serialize_to_json(data), separators=(',', ':'), **kwargs)
+        return self.json_response(self.serialize_queryset(data), separators=(',', ':'), **kwargs)
 
     def error_json_response(self, message, status_code=400, detail=None):
         response_data = {
@@ -74,9 +73,9 @@ class NgCRUDView(JSONBaseMixin, FormView):
         }
         return self.json_response(response_data, status=status_code, separators=(',', ':'))
 
-    def serialize_to_json(self, queryset):
+    def serialize_queryset(self, queryset):
         """
-        Return JSON serialized data
+        Return serialized queryset or single object as python dictionary
         serialize() only works on iterables, so to serialize a single object we put it in a list
         """
         object_data = []
@@ -85,9 +84,11 @@ class NgCRUDView(JSONBaseMixin, FormView):
         try:
             iter(queryset)
             is_queryset = True
-            raw_data = serializers.serialize('python', queryset, fields=query_fields, use_natural_keys=self.serialize_natural_keys)
+            raw_data = serializers.serialize('python', queryset, fields=query_fields,
+                                             use_natural_keys=self.serialize_natural_keys)
         except TypeError:  # Not iterable
-            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields, use_natural_keys=self.serialize_natural_keys)
+            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields,
+                                             use_natural_keys=self.serialize_natural_keys)
 
         for obj in raw_data:  # Add pk to fields
             obj['fields']['pk'] = obj['pk']
@@ -102,6 +103,8 @@ class NgCRUDView(JSONBaseMixin, FormView):
         # Since angular sends data in JSON rather than as POST parameters, the default data (request.POST)
         # is replaced with request.body that contains JSON encoded data
         kwargs['data'] = json.loads(self.request.body.decode('utf-8'))
+
+        # Add instance if object identifier present
         if 'pk' in self.request.GET or self.slug_field in self.request.GET:
             kwargs['instance'] = self.get_object()
         return kwargs
@@ -111,7 +114,8 @@ class NgCRUDView(JSONBaseMixin, FormView):
             return self.model.objects.get(pk=self.request.GET['pk'])
         elif self.slug_field in self.request.GET:
             return self.model.objects.get(**{self.slug_field: self.request.GET[self.slug_field]})
-        raise NgMissingParameterError("Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
+        raise NgMissingParameterError(
+            "Attempted to get an object by 'pk' or slug field, but no identifier is present. Missing GET parameter?")
 
     def get_fields(self):
         """
