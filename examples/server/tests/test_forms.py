@@ -43,6 +43,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')), widget=forms.RadioSelect)
     select_multi = forms.MultipleChoiceField(choices=CHOICES)
     check_multi = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple)
+    hide_me = forms.CharField(widget=forms.HiddenInput)
     scope_prefix = 'dataroot'
 
     def __init__(self, *args, **kwargs):
@@ -51,7 +52,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
         super(DummyForm, self).__init__(*args, **kwargs)
         self.sub1 = SubForm1(prefix='sub1', **kwargs)
         self.sub2 = SubForm2(prefix='sub2', **kwargs)
-
+ 
     def get_initial_data(self):
         data = super(DummyForm, self).get_initial_data()
         data.update({
@@ -59,7 +60,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
             self.sub2.prefix: self.sub2.get_initial_data(),
         })
         return data
-
+ 
     def is_valid(self):
         if not self.sub1.is_valid():
             self.errors.update(self.sub1.errors)
@@ -84,6 +85,7 @@ class NgModelFormMixinTest(TestCase):
             'select_choices': 'b',
             'radio_choices': 'a',
         },
+        'hide_me': 'hidden string',
     }
 
     def setUp(self):
@@ -238,3 +240,16 @@ class AddPlaceholderFormMixinTest(TestCase):
         self.assertEqual(len(password_field), 1)
         email_field_attrib = dict(password_field[0].attrib.items())
         self.assertDictContainsSubset({'placeholder': 'Password'}, email_field_attrib)
+
+def render_top_errors(form):
+    from django.utils.html import conditional_escape
+    from django.utils.encoding import force_text
+    top_errors = form.non_field_errors()
+    for name,field in form.fields.items():
+        bf = form[name]
+        if bf.is_hidden:
+            bf_errors = form.error_class([conditional_escape(error) for error in bf.errors])
+            top_errors.extend(
+                [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_text(e)}
+                 for e in bf_errors])
+    return top_errors
