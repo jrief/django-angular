@@ -58,7 +58,7 @@ djng_forms_module.directive('ngModel', function() {
 		default:
 			if (field.defaultValue) {
 				modelCtrl.$setViewValue(field.defaultValue);
-      			}
+			}
 			break;
 		}
 	}
@@ -153,11 +153,9 @@ djng_forms_module.directive('validateDate', function() {
 			}
 
 			var validator = function(value) {
-				if (controller.$isEmpty(value)) {
-					controller.$setValidity('date', true);
-				} else {
-					controller.$setValidity('date', validateDate(value));
-				}
+				var validity = controller.$isEmpty(value) || validateDate(value);
+				controller.$setValidity('date', validity);
+				return validity ? value : undefined;
 			};
 
 			controller.$parsers.push(validator);
