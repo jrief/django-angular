@@ -10,3 +10,9 @@ htmlcov/
 docs/_build/
 node_modules/
 build/
+client/node_modules
+.project
+.pydevproject
+.settings*
+djangular/static*
+.gitignore
