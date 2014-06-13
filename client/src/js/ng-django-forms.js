@@ -41,6 +41,8 @@ djng_forms_module.directive('ngModel', function() {
 	function restoreInputField(modelCtrl, field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
+		case 'hidden':
+			break;
 		case 'radio':
 			if (field.defaultChecked) {
 				modelCtrl.$setViewValue(field.defaultValue);
