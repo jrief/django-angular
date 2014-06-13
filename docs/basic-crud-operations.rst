@@ -62,11 +62,12 @@ Another quick change is required to Angular app config, without this ``DELETE`` 
 
 .. code-block:: javascript
 
-    var my_app = angular.module('myApp', [/* other dependencies */, 'ngCookies']).run(function($http, $cookies) {
-	    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-	    // Add the following two lines
-	    $http.defaults.xsrfCookieName = 'csrftoken';
-	    $http.defaults.xsrfHeaderName = 'X-CSRFToken';
+    var my_app = angular.module('myApp', [/* other dependencies */, 'ngCookies']).run(
+        function($http, $cookies) {
+            $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+            // Add the following two lines
+            $http.defaults.xsrfCookieName = 'csrftoken';
+            $http.defaults.xsrfHeaderName = 'X-CSRFToken';
 	});
 
 That's it. Now you can use CRUD methods.
