@@ -9,8 +9,12 @@ from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
-# from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
+try:
+    from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
+except:
+    pass
 
+import pdb
 
 class SafeTuple(SafeData, tuple):
     """
@@ -39,7 +43,7 @@ class TupleErrorList(list):
         return self.as_ul()
 
     def __repr__(self):
-        return repr([force_text(e[5]) for e in self])
+        return repr([force_text(e[5]) if hasattr(e,'__iter__') else e for e in self])
 
     def as_ul(self):
         if not self:
@@ -68,7 +72,6 @@ class TupleErrorList(list):
         if not self:
             return ''
         return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
-
 
 class NgBoundField(forms.BoundField):
     @property
@@ -114,7 +117,10 @@ class NgBoundField(forms.BoundField):
         css_classes = getattr(self.field, 'label_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        self.form.label_suffix = ''
+        if hasattr(self.form,'force_label_suffix'):
+            self.form.label_suffix = self.form.force_label_suffix
+        else:
+            self.form.label_suffix = ''
         return super(NgBoundField, self).label_tag(contents, attrs)
 
 
