@@ -234,7 +234,7 @@ djng_forms_module.factory('djangoForm', function() {
 
 // A simple wrapper to extend the $httpProvider for executing remote methods on the server side
 // for Django Views derived from JSONResponseMixin.
-// It can be used to invoke GET and POST request. The return value is the same promise as returned
+// It can be used to invoke GET and POST requests. The return value is the same promise as returned
 // by $http.get() and $http.post().
 // Usage:
 // djangoRMI.name.method(data).success(...).error(...)
