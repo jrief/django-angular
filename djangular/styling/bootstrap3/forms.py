@@ -30,7 +30,7 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
                     field.widget = bs3widgets.CheckboxInput()
                     field.widget.__dict__ = fw_dict
                     # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-                    field.widget.choice_label = field.label
+                    field.widget.choice_label = unicode(field.label)
                     field.label = ''
                 setattr(field, 'widget_css_classes', None)
             elif isinstance(field.widget, widgets.RadioSelect):
