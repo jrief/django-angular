@@ -4,23 +4,17 @@
 *~
 .tmp*
 .DS_Store
-.pydevproject
-.settings/
-.project
 cdncache/
 dist/
 htmlcov/
 docs/_build/
 node_modules/
 build/
-<<<<<<< HEAD
 client/node_modules
 .project
 .pydevproject
-.settings*
+.settings/
 djangular/static*
 .gitignore
-||||||| merged common ancestors
-=======
 djangular/static/djangular/js/
->>>>>>> master
+examples/test.sqlite
