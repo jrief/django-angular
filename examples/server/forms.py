@@ -15,6 +15,8 @@ def reject_addresses(value):
 
 
 class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
+    scope_prefix = 'base_subscribe_data'
+    
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
@@ -48,6 +50,10 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
         widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
+    confirmation_key = forms.CharField(max_length=40,
+                                        required=True,
+                                        widget=forms.HiddenInput(),
+                                        initial='hidden value')
 
     def clean(self):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
@@ -57,11 +63,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
 
 class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
-    
-    confirmation_key = forms.CharField(max_length=40,
-                                        required=False,
-                                        widget=forms.HiddenInput())
-
+    scope_prefix = 'valid_data'
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
     form_name = 'valid_form'
