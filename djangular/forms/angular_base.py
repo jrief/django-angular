@@ -14,7 +14,6 @@ try:
 except:
     pass
 
-import pdb
 
 class SafeTuple(SafeData, tuple):
     """
@@ -72,6 +71,7 @@ class TupleErrorList(list):
         if not self:
             return ''
         return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+
 
 class NgBoundField(forms.BoundField):
     @property
