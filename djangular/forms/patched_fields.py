@@ -81,6 +81,7 @@ def DecimalField_angular_errors(field):
     if hasattr(field, 'max_digits') and field.max_digits > 0:
         field.widget.attrs['ng-maxlength'] = field.max_digits + 1
     errors.extend(_min_max_value_errors(field))
+    errors.extend(_invalid_value_errors(field, 'number'))
     return errors
 
 
@@ -105,12 +106,14 @@ def DateField_angular_errors(field):
 def FloatField_angular_errors(field):
     errors = _input_required(field)
     errors.extend(_min_max_value_errors(field))
+    errors.extend(_invalid_value_errors(field, 'number'))
     return errors
 
 
 def IntegerField_angular_errors(field):
     errors = _input_required(field)
     errors.extend(_min_max_value_errors(field))
+    errors.extend(_invalid_value_errors(field, 'number'))
     return errors
 
 
