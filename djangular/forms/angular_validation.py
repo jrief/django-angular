@@ -28,6 +28,8 @@ class NgFormValidationMixin(NgFormBaseMixin):
         if the field does not validate for that criteria.
         """
         errors = super(NgFormValidationMixin, self).get_field_errors(bound_field)
+        if bound_field.is_hidden:
+            return errors
         identifier = format_html('{0}.{1}', self.form_name, self.add_prefix(bound_field.name))
         errors_function = '{0}_angular_errors'.format(bound_field.field.__class__.__name__)
         try:
