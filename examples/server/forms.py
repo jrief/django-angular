@@ -57,6 +57,10 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
 
 class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
+    
+    confirmation_key = forms.CharField(max_length=40,
+                                        required=False,
+                                        widget=forms.HiddenInput())
 
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
