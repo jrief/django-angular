@@ -10,10 +10,3 @@ htmlcov/
 docs/_build/
 node_modules/
 build/
-client/node_modules
-.project
-.pydevproject
-.settings/
-.gitignore
-djangular/static/djangular/js/
-examples/test.sqlite

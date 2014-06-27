@@ -240,16 +240,3 @@ class AddPlaceholderFormMixinTest(TestCase):
         self.assertEqual(len(password_field), 1)
         email_field_attrib = dict(password_field[0].attrib.items())
         self.assertDictContainsSubset({'placeholder': 'Password'}, email_field_attrib)
-
-def render_top_errors(form):
-    from django.utils.html import conditional_escape
-    from django.utils.encoding import force_text
-    top_errors = form.non_field_errors()
-    for name,field in form.fields.items():
-        bf = form[name]
-        if bf.is_hidden:
-            bf_errors = form.error_class([conditional_escape(error) for error in bf.errors])
-            top_errors.extend(
-                [_('(Hidden field %(name)s) %(error)s') % {'name': name, 'error': force_text(e)}
-                 for e in bf_errors])
-    return top_errors

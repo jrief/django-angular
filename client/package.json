@@ -1,42 +1,35 @@
 {
-  "name": "django-angular",
-  "description": "Let Django play nice together with AngularJS",
-  "version": "0.7.0",
-  "homepage": "https://github.com/jrief/django-angular",
-  "author": {
-    "name": "Jacob Rief",
-    "email": "jacob.rief@gmail.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/jrief/django-angular.git"
-  },
-  "bugs": {
-    "url": "https://github.com/jrief/django-angular/issues"
-  },
-  "licenses": [
-    {
-      "type": "MIT",
-      "url": "https://github.com/jrief/django-angular/LICENSE.txt"
-    }
-  ],
-  "dependencies": {},
-  "devDependencies": {
-    "karma": "latest",
-    "karma-firefox-launcher": "latest",
-    "karma-chrome-launcher": "latest",
-    "karma-jasmine": "latest",
-    "grunt": "latest",
-    "grunt-contrib-concat": "latest",
-    "grunt-contrib-jshint": "latest",
-    "grunt-contrib-uglify": "latest",
-    "grunt-ngmin": "latest",
-    "grunt-karma": "latest",
-    "grunt-contrib-watch": "~0.6.1"
-  },
-  "keywords": [
-    "Django",
-    "AngularJS",
-    "djangular"
-  ]
+	"name": "django-angular",
+	"description": "Let Django play nice together with AngularJS",
+	"version": "0.7.0",
+	"homepage": "https://github.com/jrief/django-angular",
+	"author": {
+		"name": "Jacob Rief",
+		"email": "jacob.rief@gmail.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/jrief/django-angular.git"
+	},
+	"bugs": {
+		"url": "https://github.com/jrief/django-angular/issues"
+	},
+	"licenses": [{
+		"type": "MIT",
+		"url": "https://github.com/jrief/django-angular/LICENSE.txt"
+	}],
+	"dependencies": {},
+	"devDependencies": {
+		"karma": "latest",
+		"karma-firefox-launcher": "latest",
+		"karma-chrome-launcher": "latest",
+		"karma-jasmine": "latest",
+		"grunt": "latest",
+		"grunt-contrib-concat": "latest",
+		"grunt-contrib-jshint": "latest",
+		"grunt-contrib-uglify": "latest",
+		"grunt-ngmin": "latest",
+		"grunt-karma": "latest"
+	},
+	"keywords": ["Django", "AngularJS", "djangular"]
 }

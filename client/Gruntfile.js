@@ -90,12 +90,6 @@ module.exports = function(grunt) {
 				reporters: ['dots'],
 				configFile: 'karma.conf.js'
 			}
-		},
-		watch: {
-		  client: {
-		    files: 'src/js/*.js',
-		    tasks: ['build'],
-		  }
 		}
 	});
 
@@ -103,7 +97,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-watch');
 	grunt.loadNpmTasks('grunt-ngmin');
 	grunt.loadNpmTasks('grunt-karma');
 
