@@ -10,7 +10,6 @@ from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeData
 from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
-
 class SafeTuple(SafeData, tuple):
     """
     Used to bypass escaping of TupleErrorList by the ``conditional_escape`` function in Django's form rendering.
@@ -38,7 +37,7 @@ class TupleErrorList(list):
         return self.as_ul()
 
     def __repr__(self):
-        return repr([force_text(e[5]) for e in self])
+        return repr([force_text(e[5]) if hasattr(e,'__iter__') else e for e in self])
 
     def as_ul(self):
         if not self:
@@ -118,6 +117,7 @@ class NgFormBaseMixin(object):
     field_error_css_classes = 'djng-field-errors'
 
     def __init__(self, data=None, *args, **kwargs):
+        self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))
         try:
             form_name = self.form_name
         except AttributeError:
@@ -160,9 +160,12 @@ class NgFormBaseMixin(object):
 
     def get_widget_attrs(self, bound_field):
         """
-        Return a dictionary of additional widget attributes.
-        """
-        return {}
+       Return a dictionary of additional widget attributes.
+       """
+        attrs = {}
+        attrs['ng-model'] = '%s.%s' % (self.scope_prefix, bound_field.name) or bound_field.name
+        return attrs
+
 
     def convert_widgets(self, data):
         """
