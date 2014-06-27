@@ -14,3 +14,4 @@ docs/_build/
 node_modules/
 build/
 djangular/static/djangular/js/
+examples/test.sqlite
