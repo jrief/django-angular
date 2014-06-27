@@ -41,6 +41,8 @@ djng_forms_module.directive('ngModel', function() {
 	function restoreInputField(modelCtrl, field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
+		case 'hidden':
+			break;
 		case 'radio':
 			if (field.defaultChecked) {
 				modelCtrl.$setViewValue(field.defaultValue);
@@ -245,7 +247,7 @@ djng_forms_module.factory('djangoForm', function() {
 
 // A simple wrapper to extend the $httpProvider for executing remote methods on the server side
 // for Django Views derived from JSONResponseMixin.
-// It can be used to invoke GET and POST request. The return value is the same promise as returned
+// It can be used to invoke GET and POST requests. The return value is the same promise as returned
 // by $http.get() and $http.post().
 // Usage:
 // djangoRMI.name.method(data).success(...).error(...)
