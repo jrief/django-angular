@@ -4,6 +4,9 @@
 *~
 .tmp*
 .DS_Store
+.pydevproject
+.settings/
+.project
 cdncache/
 dist/
 htmlcov/
