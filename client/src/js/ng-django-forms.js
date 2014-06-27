@@ -112,6 +112,19 @@ djng_forms_module.directive('ngModel', function() {
 				restoreTextArea(modelCtrl, field);
 				break;
 			}
+			
+			// store the initial data on the form controller
+			if ( !formCtrl.hasOwnProperty('initial_data') ){
+			  formCtrl.initial_data = {};
+			}
+			if ( modelCtrl.$modelValue ) {
+			  if ( typeof modelCtrl.$modelValue === "object" ){
+			    formCtrl.initial_data[modelCtrl.$name] = angular.copy(modelCtrl.$modelValue);
+			  }
+			  else{
+          formCtrl.initial_data[modelCtrl.$name] = modelCtrl.$modelValue;
+        }
+			}
 			// restore the form's pristine state
 			formCtrl.$setPristine();
 		}
