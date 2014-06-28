@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from inspect import isclass
+from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
-    get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch)
+    get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
 from django.core.exceptions import ImproperlyConfigured
 from djangular.views.mixins import JSONResponseMixin
 
@@ -60,6 +61,32 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
     resolver = get_ns_resolver(ns_pattern, resolver)
     return dict((name, iri_to_uri(resolver._reverse_with_prefix(name, prefix, *args, **kwargs)))
                 for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
+
+
+def get_url_patterns(patterns, namespace=None):
+    """
+    Build a dictionary with url_name:regex_pattern pairs
+    Names also include namespace, e.g. {'accounts:login': '^login/$'}
+    """
+    pattern_dict = {}
+    for pattern in patterns:
+
+        if isinstance(pattern, RegexURLResolver):  # included namespace
+            included_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
+            included_patterns = get_url_patterns(pattern.url_patterns, namespace=included_namespace)
+            pattern_dict.update(included_patterns)
+
+        elif isinstance(pattern, RegexURLPattern):  # url pattern
+            name = ":".join(filter(None, [namespace, pattern.name]))
+            url_regex = pattern.regex.pattern
+            pattern_dict[name] = url_regex
+
+    return pattern_dict
+
+
+def get_urls():
+    root_url_conf = __import__(settings.ROOT_URLCONF, fromlist=['urlpatterns', ])
+    print get_url_patterns(root_url_conf.urlpatterns)
 
 
 def _get_remote_methods_for(view_object, url):
