@@ -47,4 +47,4 @@ def djng_current_rmi(context):
 
 @register.simple_tag(name='load_djng_urls')
 def djng_urls():
-    return mark_safe(render_to_string('djangular/urls.html', {'patterns': mark_safe(json.dumps(get_urls()))}))
+    return mark_safe(json.dumps(get_urls()))
