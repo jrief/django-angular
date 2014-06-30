@@ -8,7 +8,7 @@
     djngUrls.service('djangoUrl', ['patterns', function (patterns) {
         function fill_args(url_regex, args) {
             return url_regex.replace(/\([^/]+\)/g, function (match) {
-                if (args.length == 0) {
+                if (args.length === 0) {
                     throw "Djangular URL error: Not enough arguments";
                 }
                 return args.shift();
@@ -35,7 +35,7 @@
                 return fill_args(re, args_or_kwargs);
             }
             return fill_kwargs(re, args_or_kwargs);
-        }
-    }])
+        };
+    }]);
 
 })(window.angular);
