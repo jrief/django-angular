@@ -5,7 +5,8 @@ from django.template.base import Node
 from django.core.exceptions import ImproperlyConfigured
 from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
-from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
+from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
+
 register = Library()
 
 
@@ -46,4 +47,4 @@ def djng_current_rmi(context):
 
 @register.simple_tag(name='load_djng_urls')
 def djng_urls():
-    return mark_safe(render_to_string('core/urls.html', {'patterns': mark_safe(json.dumps(get_urls()))}))
+    return mark_safe(render_to_string('djangular/urls.html', {'patterns': mark_safe(json.dumps(get_urls()))}))
