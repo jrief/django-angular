@@ -63,7 +63,14 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
                 for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
 
 
-def get_url_patterns(patterns, namespace=None):
+def regex_pattern_to_url(pattern):
+    url = pattern.replace('^', '').rstrip('$')
+    if not url.startswith('/'):
+        return '/' + url
+    return url
+
+
+def get_url_patterns(patterns, namespace=None, parent_regex=None):
     """
     Build a dictionary with url_name:regex_pattern pairs
     Names also include namespace, e.g. {'accounts:login': '^login/$'}
@@ -72,21 +79,24 @@ def get_url_patterns(patterns, namespace=None):
     for pattern in patterns:
 
         if isinstance(pattern, RegexURLResolver):  # included namespace
-            included_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
-            included_patterns = get_url_patterns(pattern.url_patterns, namespace=included_namespace)
+            include_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
+            include_regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
+            included_patterns = get_url_patterns(pattern.url_patterns,
+                                                 namespace=include_namespace,
+                                                 parent_regex=include_regex)
             pattern_dict.update(included_patterns)
 
         elif isinstance(pattern, RegexURLPattern):  # url pattern
             name = ":".join(filter(None, [namespace, pattern.name]))
             url_regex = pattern.regex.pattern
-            pattern_dict[name] = url_regex
+            pattern_dict[name] = regex_pattern_to_url("".join(filter(None, [parent_regex, url_regex])))
 
     return pattern_dict
 
 
 def get_urls():
     root_url_conf = __import__(settings.ROOT_URLCONF, fromlist=['urlpatterns', ])
-    print get_url_patterns(root_url_conf.urlpatterns)
+    return get_url_patterns(root_url_conf.urlpatterns)
 
 
 def _get_remote_methods_for(view_object, url):
