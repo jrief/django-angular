@@ -107,7 +107,10 @@ class NgBoundField(forms.BoundField):
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
         attrs = attrs or {}
-        css_classes = getattr(self.field, 'label_css_classes', None)
+        if hasattr(self.field, 'label_css_classes'):
+            css_classes = self.field.label_css_classes
+        else:
+            css_classes = getattr(self.form, 'label_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
         return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
