@@ -52,7 +52,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
         super(DummyForm, self).__init__(*args, **kwargs)
         self.sub1 = SubForm1(prefix='sub1', **kwargs)
         self.sub2 = SubForm2(prefix='sub2', **kwargs)
- 
+
     def get_initial_data(self):
         data = super(DummyForm, self).get_initial_data()
         data.update({
@@ -60,7 +60,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
             self.sub2.prefix: self.sub2.get_initial_data(),
         })
         return data
- 
+
     def is_valid(self):
         if not self.sub1.is_valid():
             self.errors.update(self.sub1.errors)
