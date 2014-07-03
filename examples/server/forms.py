@@ -22,6 +22,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
                      ('train', 'Train'), ('boat', 'Boat'), ('funicular', 'Funicular'),
                      ('air', 'Airplane'),)
     NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
+    scope_prefix = 'base_subscribe_data'
 
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
     last_name = forms.RegexField(r'^[A-Z][a-z -]?', label='Last name',
@@ -48,6 +49,8 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
         widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
+    confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
+        initial='hidden value')
 
     def clean(self):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
@@ -57,6 +60,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
 
 class SubscriptionFormWithNgValidation(NgFormValidationMixin, SubscriptionForm):
     form_name = 'valid_form'
+    scope_prefix = 'valid_data'
 
 
 class SubscriptionFormWithNgModel(NgModelFormMixin, SubscriptionForm):
