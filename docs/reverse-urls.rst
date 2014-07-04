@@ -13,22 +13,25 @@ It is good practice to add configuration directives to applications as constants
 module definition`_. This can safely be done in the template code rendered by Django, where it
 belongs!
 
+Installation
+============
+
 It is assumed that your AngularJS application has already been initialized and that you have included
- ``django-angular.js``. You will also need to load django angular template tags, ``{% load djangular_tags %}``:
+``django-angular.js``. You will also need to load django angular template tags, ``{% load djangular_tags %}``:
 
 .. code-block:: html
-    {% load djangular_tags %}
 
-	<script>
-	    var my_app = angular.module('MyApp', [/* application dependencies */]);
-	</script>
+    {% load djangular_tags %}
+    <script>
+        var my_app = angular.module('MyApp', [/* application dependencies */]);
+    </script>
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
-Now, you have to give some data about your url config to angular:
+Now, you have to give some data about your django url configuration to angular:
 
 .. code-block:: html
 
-	<script src="{% static 'djangular/js/django-angular.js' %}"></script>
+    <script src="{% static 'djangular/js/django-angular.js' %}"></script>
     <script>angular.module('ng.django.urls').constant('patterns', {% load_djng_urls %});</script>
 
 The ``djangoUrl`` service is then available through `dependency injection`_
