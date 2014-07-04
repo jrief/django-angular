@@ -62,7 +62,7 @@ Example
         });
 
         // Or $http.post(djangoUrl.reverse('api:articles', {'id': 1}) ...
-        // djangoUrl.reverse('api:article', {'id': 1}) returns something like /api/article/1/
+        // djangoUrl.reverse('api:article', {'id': 1}) returns something like '/api/article/1/'
 	}]);
 
 Parametrized URL templates
@@ -88,7 +88,8 @@ in keyword arguments object will be replaced by ``:`` prefixed name from urlpatt
         // djangoUrl.reverse('api', {'type': 'article'}) -> /api/article/:id/
         // djangoUrl.reverse('api', {}) -> /api/:type/:id/
         // djangoUrl.reverse('api') -> /api/:type/:id/
-        // When nothing is passed as args_or_kwargs argument, reverse() defaults to keyword arguments mode
+        // When nothing is passed as args_or_kwargs argument, reverse() defaults
+        // to keyword arguments mode
 	}]);
 
 So when building a service with ``$resource`` you can use ``djangoUrl.reverse()`` method just to make a parametrized
@@ -98,9 +99,9 @@ URL template, or to partially fill it and have Angular add other arguments.
 
     my_app.controller('MyCtrl', ['$resource', 'djangoUrl', function($resource, djangoUrl) {
 
-        var User = $resource(djangoUrl.reverse('api'), {'id': '@id', 'type': 'article'});
+        var Article = $resource(djangoUrl.reverse('api'), {'id': '@id', 'type': 'article'});
         // or
-        var User = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
+        var Article = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
 
 	}]);
 
