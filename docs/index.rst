@@ -25,6 +25,7 @@ Contents
   remote-method-invocation
   csrf-protection
   manage-urls
+  reverse-urls
   three-way-data-binding
   changelog
 
