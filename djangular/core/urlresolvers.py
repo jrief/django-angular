@@ -64,6 +64,9 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
 
 
 def regex_pattern_to_url(pattern):
+    """
+    Take a url regex pattern from urlconf and return a url that matches it
+    """
     url = pattern.replace('^', '').rstrip('$')
     if not url.startswith('/'):
         return '/' + url
@@ -79,6 +82,7 @@ def get_url_patterns(patterns, namespace=None, parent_regex=None):
     for pattern in patterns:
 
         if isinstance(pattern, RegexURLResolver):  # included namespace
+            # Recursively call self with parent namespace name and parent regex
             include_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
             include_regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
             included_patterns = get_url_patterns(pattern.url_patterns,
@@ -87,14 +91,19 @@ def get_url_patterns(patterns, namespace=None, parent_regex=None):
             pattern_dict.update(included_patterns)
 
         elif isinstance(pattern, RegexURLPattern):  # url pattern
+            # Join own name with parent namespace name, if one is passed as namespace keyword argument
+            # Join own regex with parent regex, if one is passed as parent_regex keyword argument
             name = ":".join(filter(None, [namespace, pattern.name]))
-            url_regex = pattern.regex.pattern
-            pattern_dict[name] = regex_pattern_to_url("".join(filter(None, [parent_regex, url_regex])))
+            regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
+            pattern_dict[name] = regex_pattern_to_url(regex)
 
     return pattern_dict
 
 
 def get_urls():
+    """
+    Load urlconf from settings.ROOT_URLCONF attribute
+    """
     root_url_conf = __import__(settings.ROOT_URLCONF, fromlist=['urlpatterns', ])
     return get_url_patterns(root_url_conf.urlpatterns)
 
