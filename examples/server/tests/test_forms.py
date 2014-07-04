@@ -43,6 +43,7 @@ class DummyForm(NgModelFormMixin, forms.Form):
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')), widget=forms.RadioSelect)
     select_multi = forms.MultipleChoiceField(choices=CHOICES)
     check_multi = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple)
+    hide_me = forms.CharField(widget=forms.HiddenInput)
     scope_prefix = 'dataroot'
 
     def __init__(self, *args, **kwargs):
@@ -84,6 +85,7 @@ class NgModelFormMixinTest(TestCase):
             'select_choices': 'b',
             'radio_choices': 'a',
         },
+        'hide_me': 'hidden string',
     }
 
     def setUp(self):

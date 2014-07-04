@@ -8,7 +8,7 @@
 	</div>
 </div>
 
-<form name="{{ form.form_name }}" method="post" action="." {% block form_ctrl %}{% endblock %}>
+<form name="{{ form.form_name }}" method="post" action="." {% block form_ctrl %}validate{% endblock %}>
 	{% csrf_token %}
 	<div class="row">
 		<div class="col-md-12">

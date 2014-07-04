@@ -9,4 +9,6 @@ Many Thanks to
 * Jakob Košir
  - for adding CRUD view.
 * Matthias Erll
-  - for contributing to CRUD view and server-side form validation.
+ - for contributing to CRUD view and server-side form validation.
+* Nate Dudenhoeffer
+ - for fixing an issue regarding validation of forms with hidden fields.
