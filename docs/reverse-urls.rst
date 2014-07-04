@@ -16,8 +16,8 @@ belongs!
 Installation
 ============
 
-It is assumed that your AngularJS application has already been initialized and that you have included
-``django-angular.js``. You will also need to load django angular template tags, ``{% load djangular_tags %}``:
+It is assumed that your AngularJS application has already been initialized and that you have loaded
+django-angular tags ``{% load djangular_tags %}``:
 
 .. code-block:: html
 
@@ -25,9 +25,8 @@ It is assumed that your AngularJS application has already been initialized and t
     <script>
         var my_app = angular.module('MyApp', [/* application dependencies */]);
     </script>
-    <script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
-Now, you have to give some data about your django url configuration to angular:
+Now, you have to include ``django-angular.js`` and add some data about your django url configuration:
 
 .. code-block:: html
 
@@ -54,7 +53,7 @@ Example
 -------
 .. code-block:: javascript
 
-	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
+    my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
 
 	    $http.post(djangoUrl.reverse('api:articles', [1]),
             {action: 'get_data'}).success(function (out_data) {
@@ -73,6 +72,7 @@ filled by Angular.
 
 You can create parametrized templates by using ``reverse()`` method in keyword arguments mode. Parameters not present
 in keyword arguments object will be replaced by ``:`` prefixed name from urlpatterns.
+
 .. code-block:: javascript
 
 	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
@@ -91,6 +91,7 @@ in keyword arguments object will be replaced by ``:`` prefixed name from urlpatt
 
 So when building a service with ``$resource`` you can use ``djangoUrl.reverse()`` method just to make a parametrized
 URL template, or to partially fill it and have Angular add other arguments.
+
 .. code-block:: javascript
 
     my_app.controller('MyCtrl', ['$resource', 'djangoUrl', function($resource, djangoUrl) {
