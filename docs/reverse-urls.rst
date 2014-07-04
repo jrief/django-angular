@@ -17,7 +17,7 @@ Installation
 ============
 
 It is assumed that your AngularJS application has already been initialized and that you have loaded
-django-angular tags ``{% load djangular_tags %}``:
+django-angular tags, ``{% load djangular_tags %}``:
 
 .. code-block:: html
 
@@ -26,7 +26,7 @@ django-angular tags ``{% load djangular_tags %}``:
         var my_app = angular.module('MyApp', [/* application dependencies */]);
     </script>
 
-Now, you have to include ``django-angular.js`` and add some data about your django url configuration:
+Now, you have to include ``django-angular.js`` and add data about your django url configuration:
 
 .. code-block:: html
 
@@ -53,12 +53,13 @@ Example
 -------
 .. code-block:: javascript
 
-    my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
+    my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
+     function($scope, $http, djangoUrl) {
 
-	    $http.post(djangoUrl.reverse('api:articles', [1]),
-            {action: 'get_data'}).success(function (out_data) {
+	    $http.post(djangoUrl.reverse('api:articles', [1]), {action: 'get_data'})
+	        .success(function (out_data) {
                 $scope.data = out_data;
-            });
+        });
 
         // Or $http.post(djangoUrl.reverse('api:articles', {'id': 1}) ...
         // djangoUrl.reverse('api:article', {'id': 1}) returns something like /api/article/1/
@@ -75,7 +76,8 @@ in keyword arguments object will be replaced by ``:`` prefixed name from urlpatt
 
 .. code-block:: javascript
 
-	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
+	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
+	 function($scope, $http, djangoUrl) {
         // Urlconf
         // ...
         // url(r'^api/(?P<type>\w+)/(?P<id>\d+)/$', api.models, name='api'),
@@ -97,8 +99,8 @@ URL template, or to partially fill it and have Angular add other arguments.
     my_app.controller('MyCtrl', ['$resource', 'djangoUrl', function($resource, djangoUrl) {
 
         var User = $resource(djangoUrl.reverse('api'), {'id': '@id', 'type': 'article'});
-	    // or
-	    var User = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
+        // or
+        var User = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
 
 	}]);
 
