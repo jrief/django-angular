@@ -4,6 +4,12 @@
 Release History
 ===============
 
+0.7.4
+-----
+* Fixed: Error rendering while for hidden input fields.
+* Fixed: Bootstrap3 styling: label for field was rendered as lazy object instead of string.
+* Added: Url resolvers for angular controllers.
+
 0.7.3
 -----
 * Added support to render a Django Form using a plugable style. Bootstrap3 styling has been
