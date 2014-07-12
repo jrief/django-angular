@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from inspect import isclass
+from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
-    get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch)
+    get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
 from django.core.exceptions import ImproperlyConfigured
 from djangular.views.mixins import JSONResponseMixin
 
@@ -60,6 +61,51 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
     resolver = get_ns_resolver(ns_pattern, resolver)
     return dict((name, iri_to_uri(resolver._reverse_with_prefix(name, prefix, *args, **kwargs)))
                 for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
+
+
+def regex_pattern_to_url(pattern):
+    """
+    Take a url regex pattern from urlconf and return a url that matches it
+    """
+    url = pattern.replace('^', '').rstrip('$')
+    if not url.startswith('/'):
+        return '/' + url
+    return url
+
+
+def get_url_patterns(patterns, namespace=None, parent_regex=None):
+    """
+    Build a dictionary with url_name:regex_pattern pairs
+    Names also include namespace, e.g. {'accounts:login': '^login/$'}
+    """
+    pattern_dict = {}
+    for pattern in patterns:
+
+        if isinstance(pattern, RegexURLResolver):  # included namespace
+            # Recursively call self with parent namespace name and parent regex
+            include_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
+            include_regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
+            included_patterns = get_url_patterns(pattern.url_patterns,
+                                                 namespace=include_namespace,
+                                                 parent_regex=include_regex)
+            pattern_dict.update(included_patterns)
+
+        elif isinstance(pattern, RegexURLPattern):  # url pattern
+            # Join own name with parent namespace name, if one is passed as namespace keyword argument
+            # Join own regex with parent regex, if one is passed as parent_regex keyword argument
+            name = ":".join(filter(None, [namespace, pattern.name]))
+            regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
+            pattern_dict[name] = regex_pattern_to_url(regex)
+
+    return pattern_dict
+
+
+def get_urls():
+    """
+    Load urlconf from settings.ROOT_URLCONF attribute
+    """
+    root_url_conf = __import__(settings.ROOT_URLCONF, fromlist=['urlpatterns', ])
+    return get_url_patterns(root_url_conf.urlpatterns)
 
 
 def _get_remote_methods_for(view_object, url):
