@@ -5,11 +5,10 @@ Let Django play well with AngularJS
 ------------------------------------
 Slides from the Django Conference 2014 are available [here](http://djangoconf.aws.awesto.com/slides).
 
-New in 0.7.3
+New in 0.7.4
 ------------
-* Added support to render Django Forms using a plugable style. Bootstrap3 styling has been
-  implemented. The idea is allow styling similar to Crispy-Forms.
-* Lots of bugfixes. Please check the ChangeLog for details.
+* Added support for URL resolvers for AngularJS controllers.
+* Minor bugfixes.
 
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
