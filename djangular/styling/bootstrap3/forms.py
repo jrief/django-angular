@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.forms import widgets
 from django.http import QueryDict
+from django.utils.encoding import force_text
 from djangular.forms.angular_base import NgFormBaseMixin
 from . import widgets as bs3widgets
 
@@ -30,7 +31,7 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
                     field.widget = bs3widgets.CheckboxInput()
                     field.widget.__dict__ = fw_dict
                     # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-                    field.widget.choice_label = field.label
+                    field.widget.choice_label = force_text(field.label)
                     field.label = ''
                 setattr(field, 'widget_css_classes', None)
             elif isinstance(field.widget, widgets.RadioSelect):

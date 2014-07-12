@@ -30,7 +30,7 @@ Template tags
 =============
 Django and AngularJS share the same token for variable substitution in templates, ie.
 ``{{ variable_name }}``. This should not be a big problem, since you are discouraged to mix
-Django template code with AngularJS template code. However, this recommendation is not 
+Django template code with AngularJS template code. However, this recommendation is not
 viable in all situations. Sometime there might be the need to mix both template languages, one
 which is expanded by Django on the server, and one which is expanded by AngularJS in the browser.
 
@@ -80,7 +80,7 @@ Resolve this view in ``urls.py``
 	    url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
 	    # ... more partials ...,
 	)
-	
+
 	urlpatterns = patterns('',
 	    # ...
 	    url(r'^partials/', include(partial_patterns, namespace='partials')),
@@ -92,7 +92,7 @@ By using the utility function
 .. code-block:: python
 
 	from djangular.core.urlsresolvers import urls_by_namespace
-	
+
 	my_partials = urls_by_namespace('partials')
 
 the caller obtains a list of all partials defined for the given namespace. This list can be used
@@ -146,7 +146,7 @@ the form's input fields by a controller function. This, for Django developers ma
 their way of thinking. Hence, if bound forms shall be rendered by Django, the behavior of AngularJS
 on forms must be adopted using a special directive which overrides the `built-in form directive`_.
 
-To overrides the built-in behavior, refer to the Javascript file ``django-angular.js`` somewhere on
+To override the built-in behavior, refer to the Javascript file ``django-angular.js`` somewhere on
 your page
 
 .. code-block:: html
