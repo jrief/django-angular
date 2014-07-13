@@ -30,12 +30,12 @@ class TupleErrorList(list):
     5: The used error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
     """
-    ul_format = '<ul class="{1}" ng-show="{0}.{2}" ng-cloak>{3}</ul>'
-    li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
-    li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
+    ul_format = u'<ul class="{1}" ng-show="{0}.{2}" ng-cloak>{3}</ul>'
+    li_format = u'<li ng-show="{0}.{1}" class="{2}">{3}</li>'
+    li_format_bind = u'<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
     def __str__(self):
-        return self.as_ul()
+        return self.as_ul().encode("utf-8")
 
     def __repr__(self):
         return repr([force_text(e[5]) for e in self])
