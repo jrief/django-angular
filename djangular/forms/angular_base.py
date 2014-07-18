@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import unicode_literals
+
 import six
 from base64 import b64encode
 from django.forms import forms
