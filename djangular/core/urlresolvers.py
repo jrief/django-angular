@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from inspect import isclass
+import warnings
 from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
@@ -14,6 +15,9 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
     Return a dictionary containing the name together with the URL of all configured
     URLs specified for this namespace.
     """
+    warnings.warn("urls_by_namespace is deprecated. Please view django-angular documentation for new way to manage URLs",
+                  DeprecationWarning)
+
     if urlconf is None:
         urlconf = get_urlconf()
     resolver = get_resolver(urlconf)
