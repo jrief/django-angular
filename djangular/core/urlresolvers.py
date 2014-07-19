@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from inspect import isclass
 import warnings
+from inspect import isclass
+
 from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
 from django.core.exceptions import ImproperlyConfigured
+
 from djangular.views.mixins import JSONResponseMixin
 
 
