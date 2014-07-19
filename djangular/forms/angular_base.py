@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import six
 from base64 import b64encode
 from django.forms import forms
@@ -6,7 +7,7 @@ from django.forms import fields
 from django.forms import widgets
 from django.http import QueryDict
 from django.utils.html import format_html
-from django.utils.encoding import force_text
+from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeData
 from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
@@ -18,6 +19,7 @@ class SafeTuple(SafeData, tuple):
     pass
 
 
+@python_2_unicode_compatible
 class TupleErrorList(list):
     """
     A list of errors, which in comparison to Django's ErrorList contains a tuple for each item.
@@ -54,9 +56,9 @@ class TupleErrorList(list):
                 dirty_list_items.append(format_html(li_format, *err_tuple))
         # renders and combine both of these lists
         first = self[0]
-        return (pristine_list_items and \
+        return (pristine_list_items and
              format_html(self.ul_format, first[0], first[1], '$pristine', mark_safe(''.join(pristine_list_items)))
-          or '') + (dirty_list_items and \
+          or '') + (dirty_list_items and
              format_html(self.ul_format, first[0], first[1], '$dirty', mark_safe(''.join(dirty_list_items)))
           or '')
 

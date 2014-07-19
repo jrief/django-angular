@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import types
 from django.conf import settings
 from django.utils.importlib import import_module

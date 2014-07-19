@@ -15,7 +15,7 @@ class TemplateRemoteMethods(TestCase):
         view = RemoteMethodsView()
         view.request = self.factory.get('/straight_methods/')
         remote_methods = get_current_remote_methods(view)
-        self.assertDictEqual({'foo': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': u'/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}},
+        self.assertDictEqual({'foo': {'url': '/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': '/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}},
                              remote_methods)
 
     def test_get_all_remote_methods(self):

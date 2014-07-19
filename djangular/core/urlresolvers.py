@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from inspect import isclass
 from django.conf import settings
 from django.utils import six

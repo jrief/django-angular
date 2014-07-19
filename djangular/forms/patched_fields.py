@@ -3,6 +3,7 @@
 Class methods to be added to form fields such as django.forms.fields. These methods add additional
 error messages for AngularJS form validation.
 """
+from __future__ import unicode_literals
 from django.utils.translation import gettext_lazy, ungettext_lazy
 
 

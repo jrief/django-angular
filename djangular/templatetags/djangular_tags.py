@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import json
 from django.template import Library
 from django.template.base import Node
 from django.core.exceptions import ImproperlyConfigured
-from django.template.loader import render_to_string
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
 
