@@ -18,7 +18,6 @@ install:
 branches:
   only:
     - master
-    - unicode_literals
 
 matrix:
   exclude:
