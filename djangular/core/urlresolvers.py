@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import warnings
 from inspect import isclass
+
 from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
 from django.core.exceptions import ImproperlyConfigured
+
 from djangular.views.mixins import JSONResponseMixin
 
 
@@ -15,6 +18,9 @@ def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=No
     Return a dictionary containing the name together with the URL of all configured
     URLs specified for this namespace.
     """
+    warnings.warn("urls_by_namespace is deprecated. Please view django-angular documentation for new way to manage URLs",
+                  DeprecationWarning)
+
     if urlconf is None:
         urlconf = get_urlconf()
     resolver = get_resolver(urlconf)
@@ -153,3 +159,4 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
 def get_current_remote_methods(view):
     if isinstance(view, JSONResponseMixin):
         return _get_remote_methods_for(view, view.request.path_info)
+

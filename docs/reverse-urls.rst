@@ -13,6 +13,9 @@ It is good practice to add configuration directives to applications as constants
 module definition`_. This can safely be done in the template code rendered by Django, where it
 belongs!
 
+.. note:: Documentation for **django-angular's** deprecated way of managing URLs is available
+          :ref:`here <manage-urls>`.
+
 Installation
 ============
 
@@ -23,7 +26,7 @@ django-angular tags, ``{% load djangular_tags %}``:
 
     {% load djangular_tags %}
     <script>
-        var my_app = angular.module('MyApp', [/* application dependencies */]);
+        var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
     </script>
 
 Now, you have to include ``django-angular.js`` and add data about your django url configuration:
