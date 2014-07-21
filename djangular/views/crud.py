@@ -25,6 +25,7 @@ class NgCRUDView(JSONBaseMixin, FormView):
     model = None
     fields = None
     slug_field = 'slug'
+    serializer_name = 'python'
     serialize_natural_keys = False
 
     def dispatch(self, request, *args, **kwargs):
@@ -85,10 +86,10 @@ class NgCRUDView(JSONBaseMixin, FormView):
         try:
             iter(queryset)
             is_queryset = True
-            raw_data = serializers.serialize('python', queryset, fields=query_fields,
+            raw_data = serializers.serialize(self.serializer_name, queryset, fields=query_fields,
                                              use_natural_keys=self.serialize_natural_keys)
         except TypeError:  # Not iterable
-            raw_data = serializers.serialize('python', [queryset, ], fields=query_fields,
+            raw_data = serializers.serialize(self.serializer_name, [queryset, ], fields=query_fields,
                                              use_natural_keys=self.serialize_natural_keys)
 
         for obj in raw_data:  # Add pk to fields

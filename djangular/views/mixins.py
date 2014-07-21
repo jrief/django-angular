@@ -36,10 +36,11 @@ class JSONBaseMixin(object):
     """
     Basic mixin for encoding HTTP responses in JSON format.
     """
+    json_encoder = DjangoJSONEncoder
     json_content_type = 'application/json;charset=UTF-8'
 
     def json_response(self, response_data, status=200, **kwargs):
-        out_data = json.dumps(response_data, cls=DjangoJSONEncoder, **kwargs)
+        out_data = json.dumps(response_data, cls=self.json_encoder, **kwargs)
         response = HttpResponse(out_data, self.json_content_type, status=status)
         response['Cache-Control'] = 'no-cache'
         return response
