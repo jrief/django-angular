@@ -90,6 +90,8 @@ djng_forms_module.directive('ngModel', function() {
 
 	return {
 		restrict: 'A',
+        // make sure this directive is applyed after angular built-in one
+        priority: 1,
 		require: ['ngModel', '^?form'],
 		link: function(scope, element, attrs, ctrls) {
 			var field = angular.isElement(element) ? element[0] : null;
