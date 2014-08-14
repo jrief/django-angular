@@ -27,7 +27,7 @@
             kwargs = kwargs || {};
             // The behaviour differs from django's url templatetag here
             // If there are missing kwargs, do the ':' prefixing rather than raising an error
-            return url_regex.replace(/\([^/]+\)/g, function (match) {
+            return url_regex.replace(/\([^\)]+\)/g, function (match) {
                 var name = match.match(/<([^>]+)>/)[1];
                 if (typeof kwargs[name] === 'undefined') {
                     return ':' + name;
