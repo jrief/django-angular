@@ -1,9 +1,9 @@
+==============
 django-angular
 ==============
 
 Let Django play well with AngularJS
-------------------------------------
-Slides from the Django Conference 2014 are available [here](http://djangoconf.aws.awesto.com/slides).
+===================================
 
 New in 0.7.4
 ------------
