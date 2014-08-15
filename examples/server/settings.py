@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Django settings for unit test project.
 import os
 
@@ -29,6 +30,17 @@ INSTALLED_APPS = (
 )
 
 USE_L10N = True
+
+LANGUAGE_CODE = 'es'
+
+LANGUAGES = (
+    ('en', 'English'),
+    ('de', 'Deutsch'),
+    ('es', 'Español'),
+    ('fr', 'Français'),
+    ('it', 'Italiano'),
+    ('ru', 'Русский'),
+)
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
