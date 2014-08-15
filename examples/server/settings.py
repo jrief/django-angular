@@ -31,7 +31,7 @@ INSTALLED_APPS = (
 
 USE_L10N = True
 
-LANGUAGE_CODE = 'es'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('en', 'English'),
