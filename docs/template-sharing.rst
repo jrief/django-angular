@@ -8,14 +8,14 @@ Templates syntax for Django and AngularJS is very similar, and with some caveats
 reuse a Django template for rendering in AngularJS. The classical approach to embed AngularJS
 template code inside Django's template code, is to use the ``{% verbatim %}`` template tag.
 This tag however deactivates all Django's template parsing, so every block tag must be placed
-outside a ``{% verbatim %}``...``{% endverbatim %}`` section. This makes mixed template coding quite
-messy.
+outside a ``{% verbatim %}`` ... ``{% endverbatim %}`` section. This makes mixed template coding
+quite messy.
 
-For this purpose **django-angular** offers a special template tag
------------------------------------------------------------------
+For this purpose use the template tag ``{% angularjs %}``
+=========================================================
 
-The template tag ``{% angularjs %}``...``{% endangularjs %}`` delegates Django's variable expansion
-to AngularJS, but continues to process the Django block tags, such as ``{% if ... %}``,
+The template tag ``{% angularjs %}`` ... ``{% endangularjs %}`` delegates Django's variable
+expansion to AngularJS, but continues to process the Django block tags, such as ``{% if ... %}``,
 ``{% for ... %}``, ``{% load ... %}``, etc.
 
 Conditionally activate variable expansion
@@ -26,7 +26,8 @@ true, it turns on AngularJS's variable expansion. Otherwise, if it evaluates to 
 Django's variable expansion. This becomes handy when using include snippets which then can be used
 by both, the client and the server side template rendering engines.
 
-Example:
+Example
+=======
 
 A Django ListView produces a list of items and this list is serializable as JSON. For browsers
 without JavaScript and for crawlers from search engines, these items shall be rendered through the
@@ -78,7 +79,7 @@ A few things to note here:
 
 The content between the template tags ``{% angularjs ng %}`` and ``{% endangularjs %}`` is rendered
 through the Django template engine as usual, if the context variable ``ng`` evaluates to false.
-Otherwise all variable expansions, ie. ``{{ varname }}`` or ``{{ varname|filter }}`` are kept as is
+Otherwise all variable expansions, ie. ``{{ varname }}`` or ``{{ varname|filter }}`` are kept as-is
 in HTML, while block tags are expanded by the Django template engine.
 
 The context data, as created by the list view, must be processed into a list serializable as
@@ -95,9 +96,9 @@ and ``<img ng-src="...">``, rather than using ``<a href="...">`` or ``<img src="
 respectively. Therefore, while rendering the Django template, these fields are added twice.
 
 In AngularJS, text data containing HTML tags, must be rendered using ng-bind-html_ rather than
-using the mustache syntax. This is to ensure, that the content from the upstream source is
+using the mustache syntax. This is to ensure, that unverified content from upstream sources is
 sanitized. We can assert this, since this text content is coming from the database field
-``description`` and thus is marked as a `safe string`_ by Django.
+``description`` and thus is marked as `safe string`_ by Django.
 
 .. _references onto URLs: https://docs.angularjs.org/api/ng/directive/ngHref
 .. _image sources: https://docs.angularjs.org/api/ng/directive/ngSrc
