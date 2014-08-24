@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from django.template import Library
-from django.template.base import Node
+from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
@@ -45,6 +45,51 @@ def djng_current_rmi(context):
     """
     return mark_safe(json.dumps(get_current_remote_methods(context['view'])))
 
+
 @register.simple_tag(name='load_djng_urls')
 def djng_urls():
     return mark_safe(json.dumps(get_urls()))
+
+
+class AngularJsNode(Node):
+    def __init__(self, django_nodelist, angular_nodelist, variable):
+        self.django_nodelist = django_nodelist
+        self.angular_nodelist = angular_nodelist
+        self.variable = variable
+
+    def render(self, context):
+        if self.variable.resolve(context):
+            return self.angular_nodelist.render(context)
+        return self.django_nodelist.render(context)
+
+
+@register.tag
+def angularjs(parser, token):
+    """
+    Conditionally switch between AngularJS and Django variable expansion.
+
+    Usage::
+
+        {% angularjs 1 %} or simple {% angularjs %}
+            {% process variables through the AngularJS template engine %}
+        {% endangularjs %}
+
+        {% angularjs 0 %}
+            {% process variables through the Django template engine %}
+        {% endangularjs %}
+
+    """
+    bits = token.contents.split()
+    if len(bits) < 2:
+        bits.append('1')
+    values = [parser.compile_filter(bit) for bit in bits[1:]]
+    django_nodelist = parser.parse(('endangularjs',))
+    angular_nodelist = NodeList()
+    for node in django_nodelist:
+        # convert all occurrences of VariableNode into a TextNode using the AngularJS double curly
+        # bracket notation
+        if isinstance(node, VariableNode):
+            node = TextNode('{{ %s }}' % node.filter_expression.token)
+        angular_nodelist.append(node)
+    parser.delete_first_token()
+    return AngularJsNode(django_nodelist, angular_nodelist, values[0])
