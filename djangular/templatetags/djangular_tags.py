@@ -70,7 +70,7 @@ def angularjs(parser, token):
 
     Usage::
 
-        {% angularjs 1 %} or simple {% angularjs %}
+        {% angularjs 1 %} or simply {% angularjs %}
             {% process variables through the AngularJS template engine %}
         {% endangularjs %}
 
