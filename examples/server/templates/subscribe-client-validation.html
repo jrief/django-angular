@@ -1,0 +1,35 @@
+{% extends "subscribe-form.html" %}
+{% load tutorial_tags %}
+
+{% block form_title %}Client-Side Form Validation{% endblock %}
+
+{% block form_header %}Form validation with AngularJS using only a Django Form{% endblock %}
+
+{% block form_ctrl %}novalidate{% endblock %}
+
+{% block form_submission %}
+	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
+{% endblock %}
+
+{% block tutorial_intro %}
+<p ng-init="tabList=['Form', 'View', 'HTML']" class="lead">This example shows how to let AngularJS
+validate input fields from a Django Form in a DRY manner.</p>
+<p>The Django <code>forms.Form</code> class offers many possibilities to validate a given form.
+This, for obvious reasons is done on the server. However, customers may not always accept to submit
+a form, just to find out that they missed to input some correct data into a field. Therefore, adding
+client side form validation is a good idea and very common. But since this validation easily can be
+bypassed by a malicious client, the same validation has to occur a second time, when the server
+accepts the form's data for final processing.</p>
+<p><b>Django-Angular</b> can handle this without having to re-implement any client side form
+validation. Not even one single line of JavaScript code is required for this feature.</p>
+<p>The differences to the <em>Classic Subscription</em> example is, that the form now additionally
+must inhert from the mixin class <code>NgFormValidationMixin</code>.
+Furthermore, the browsers internal form validation must be disabled. This must be done by adding
+the property <code>novalidate</code> to the form's HTML element.</p>
+{% endblock tutorial_intro %}
+
+{% block tutorial_code %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/client_validation.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/subscribe_client_validation.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/subscribe-client-validation.html" %}</div>
+{% endblock tutorial_code %}

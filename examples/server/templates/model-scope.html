@@ -1,0 +1,74 @@
+{% extends "subscribe-form.html" %}
+{% load djangular_tags tutorial_tags %}
+
+{% block form_title %}Django Form Model as Scope{% endblock %}
+
+{% block form_header %}Django Form's two-way data-binding with an AngularJS controller{% endblock %}
+
+{% block form_ctrl %}validate ng-controller="MyFormCtrl"{% endblock %}
+
+{% block form_submission %}
+	<input type="submit" class="btn btn-primary" value="Submit via Post"><span>&nbsp;</span>
+	<a class="btn btn-primary" ng-click="submit()">Submit via Ajax</a>
+{% endblock %}
+
+{% block form_foot %}
+	{% verbatim %}
+		<h5><code>MyFormCtrl</code>'s scope:</h5>
+		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock form_foot %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+
+	my_app.controller('MyFormCtrl', function($scope, $http, $window, djangoForm) {
+		$scope.submit = function() {
+			if ($scope.subscribe_data) {
+				$http.post("{% url 'djng_model_scope' %}", $scope.subscribe_data).success(function(out_data) {
+					if (!djangoForm.setErrors($scope.valid_form, out_data.errors)) {
+						// on successful postin, redirect onto thank you page
+						$window.location.href = "{% url 'form_data_valid' %}";
+					}
+				}).error(function() {
+					console.error('An error occured during submission');
+				});
+			}
+			return false;
+		};
+	});
+	</script>
+{% endblock scripts %}
+
+{% block tutorial_intro %}
+<p ng-init="tabList=['Form', 'View', 'HTML']" class="lead">This example shows how to reflect a
+Django form into an AngularJS controller.</p>
+<p>When working with Django Forms and AngularJS, it is a common use case to access the Form's model
+from within a Controller. If the the directive <code>ng-model</code> is added
+to an input field, then the Controller's <code>$scope</code> object always contains the actual
+field's content for further disposal.</p>
+<p>If a Form inherits from the mixin class <code>NgModelFormMixin</code>, then Django renders each
+Field with the directive <code>ng-model="<em>fieldname</em>"</code>. To prevent the pollution of the
+scope's namespace, it is common practice to encapsulate all the Form Fields into a separate
+JavaScript object. The name of this encapsulating object can be set during the Form declaration
+using the member variable <code>scope_prefix</code>.</p>
+<p>During the Form declaration use the member variable <code>form_name</code> to set the The Form's
+name. This must be different from the scope's prefix because AngularJS's internal Form Controller
+adds its own object to the scope using the Form's name. This object then stores the internal Form
+state, for instance the flags <code>$pristine</code>, <code>$dirty</code> and <code>$invalid</code>.
+</p>
+<p>The Form used for this demo contains two additional validations, which are handled by the server.
+The validator <code>reject_addresses</code> is used by the Form's <em>email</em> field. The second
+validator is integrated into the <code>cleam()</code> method and runs as a final validation step for
+whole the Form. Errors from these validations are send back to the client and displayed by the
+<b>django-angular</b> mixin classes.
+</p>
+{% endblock tutorial_intro %}
+
+{% block tutorial_code %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/model_scope.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/model_scope_view.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/model-scope.html" %}</div>
+<div ng-show="activeTab==='JavaScript'">{% pygments "tutorial/model-scope.html" %}</div>
+{% endblock tutorial_code %}
