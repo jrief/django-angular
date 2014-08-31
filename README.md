@@ -5,9 +5,10 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-New in 0.7.4
+New in 0.7.5
 ------------
-* Added support for URL resolvers for AngularJS controllers.
+* Added template tag ``{% angularjs %}`` which allows to reuse templates for Django in AngularJS. More on
+  this great new feature in the docs.
 * Minor bugfixes.
 
 
