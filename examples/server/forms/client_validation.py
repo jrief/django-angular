@@ -3,17 +3,15 @@ from __future__ import unicode_literals
 # start tutorial
 from django import forms
 from djangular.forms import NgFormValidationMixin
-from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 from djangular.forms.fields import FloatField
+from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 
 
 class SubscribeForm(NgFormValidationMixin, Bootstrap3FormMixin, forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-                     ('bus', 'Bus'), ('taxi', 'Taxi'), ('tram', 'Tram'), ('subway', 'Subway'),
-                     ('train', 'Train'), ('boat', 'Boat'), ('funicular', 'Funicular'),
-                     ('air', 'Airplane'),)
+                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
     NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
 
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
@@ -35,7 +33,7 @@ class SubscribeForm(NgFormValidationMixin, Bootstrap3FormMixin, forms.Form):
     height = FloatField(min_value=1.48, max_value=1.95, step=0.05, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by')
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
+    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', required=False,
         widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))

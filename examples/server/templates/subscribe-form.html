@@ -9,8 +9,7 @@
 	</div>
 </div>
 
-<!-- start tutorial -->
-<form name="{{ form.form_name }}" method="post" action="." {% block form_ctrl %}validate{% endblock %}>
+<form {% block form_tag %}name="{{ form.form_name }}" method="post" action="." validate{% endblock %}>
 	{% csrf_token %}
 	<div class="row">
 		<div class="col-md-12">
@@ -20,7 +19,7 @@
 	<div class="row" style="margin-bottom: 20px;">
 		<div class="col-md-12">
 			{% block form_submission %}
-			<input type="submit" class="btn btn-primary" value="Subscribe">
+			<button type="submit" class="btn btn-primary">Subscribe</button>
 			{% endblock %}
 		</div>
 	</div>
@@ -30,10 +29,10 @@
 		</div>
 	</div>
 </form>
-<!-- end tutorial -->
 
 <div class="row">
 	<div class="col-md-12">
+		<hr />
 		<div class="djng-tutorial" ng-controller="TutorialCtrl">
 			<h3>How does it work?</h3>
 	{% block tutorial_intro %}
@@ -67,5 +66,8 @@ the rejected field.</p>
 
 {% block scripts %}
 	{{ block.super }}
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', []);
+	</script>
 	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
 {% endblock %}

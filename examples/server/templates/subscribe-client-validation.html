@@ -5,10 +5,10 @@
 
 {% block form_header %}Form validation with AngularJS using only a Django Form{% endblock %}
 
-{% block form_ctrl %}novalidate{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate{% endblock %}
 
 {% block form_submission %}
-	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Subscribe">
+	<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
 {% endblock %}
 
 {% block tutorial_intro %}

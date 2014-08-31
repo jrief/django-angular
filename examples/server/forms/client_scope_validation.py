@@ -2,11 +2,26 @@
 from __future__ import unicode_literals
 # start tutorial
 from django import forms
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from djangular.forms import NgModelFormMixin, NgFormValidationMixin
 from djangular.forms.fields import FloatField
 from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 
 
-class SubscribeForm(Bootstrap3FormMixin, forms.Form):
+def reject_addresses(value):
+    """Reject email addresses ending with @example..."""
+    try:
+        value.lower().index('@example.')
+        raise ValidationError('Email address \'{0}\' is rejected by the server.'.format(value))
+    except ValueError:
+        pass
+
+
+class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3FormMixin, forms.Form):
+    scope_prefix = 'subscribe_data'
+    form_name = 'valid_form'
+
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
@@ -18,7 +33,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         error_messages={'invalid': 'Last names shall start in upper case'})
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')),
         widget=forms.RadioSelect, error_messages={'invalid_choice': 'Please select your sex'})
-    email = forms.EmailField(label='E-Mail')
+    email = forms.EmailField(label='E-Mail', validators=[reject_addresses, validate_email],
+        help_text='Addresses containing ‘@example’ are rejected by the server.')
     subscribe = forms.BooleanField(initial=False, label='Subscribe Newsletter', required=False)
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
@@ -38,3 +54,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
     confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
         initial='hidden value')
+
+    def clean(self):
+        if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
+            raise ValidationError('The full name \'John Doe\' is rejected by the server.')
+        return super(SubscribeForm, self).clean()

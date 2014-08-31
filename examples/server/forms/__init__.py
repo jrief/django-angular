@@ -46,7 +46,7 @@ class SubscriptionForm(Bootstrap3FormMixin, forms.Form):
     height = forms.FloatField(min_value=1.48, max_value=1.95, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by')
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
+    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', required=False,
         widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))

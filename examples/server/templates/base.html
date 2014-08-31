@@ -33,16 +33,14 @@
 					<li class="{% active request 'djng_model_scope' %}">
 						<a href="{% url 'djng_model_scope' %}">Model Scope</a>
 					</li>
-					{% comment %}
-					<li class="{% active request 'djng_model_form_validation' %}">
-						<a href="{% url 'djng_model_form_validation' %}">Model Form Validation</a>
+					<li class="{% active request 'djng_client_scope_validation' %}">
+						<a href="{% url 'djng_client_scope_validation' %}">Combined Validation</a>
 					</li>
-					{% if with_ws4redis %}
+					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
 						<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>
 					</li>
 					{% endif %}
-					{% endcomment %}
 				</ul>
 			</nav>
 		</div>
@@ -52,15 +50,8 @@
 		{% block container %}{% endblock %}
 	</div>
 	{% block scripts %}
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.js" type="text/javascript"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.22/angular.js" type="text/javascript"></script>
 	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
-	my_app.config(function($httpProvider) {
-		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
-	});
-	</script>
 	{% endblock %}
 </body>
 </html>

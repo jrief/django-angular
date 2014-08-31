@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
-from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 from djangular.forms import NgModelFormMixin
 from djangular.forms.fields import FloatField
+from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
 
 
 def reject_addresses(value):
@@ -25,9 +25,7 @@ class SubscribeForm(NgModelFormMixin, Bootstrap3FormMixin, forms.Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-                     ('bus', 'Bus'), ('taxi', 'Taxi'), ('tram', 'Tram'), ('subway', 'Subway'),
-                     ('train', 'Train'), ('boat', 'Boat'), ('funicular', 'Funicular'),
-                     ('air', 'Airplane'),)
+                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
     NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
 
     first_name = forms.CharField(label='First name', min_length=3, max_length=20)
@@ -50,7 +48,7 @@ class SubscribeForm(NgModelFormMixin, Bootstrap3FormMixin, forms.Form):
     height = FloatField(min_value=1.48, max_value=1.95, step=0.05, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by')
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
+    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', required=False,
         widget=forms.CheckboxSelectMultiple)
     annotation = forms.CharField(required=False, label='Annotation',
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
@@ -60,4 +58,4 @@ class SubscribeForm(NgModelFormMixin, Bootstrap3FormMixin, forms.Form):
     def clean(self):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
             raise ValidationError('The full name \'John Doe\' is rejected by the server.')
-        return super(SubscriptionForm, self).clean()
+        return super(SubscribeForm, self).clean()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from server.forms.model_scope import SubscribeForm
+from server.forms.client_scope_validation import SubscribeForm
 # start tutorial
 import json
 from django.http import HttpResponse
@@ -9,7 +9,7 @@ from django.utils.encoding import force_text
 
 
 class SubscribeView(FormView):
-    template_name = 'model-scope.html'
+    template_name = 'client-scope-validation.html'
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
 

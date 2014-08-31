@@ -1,5 +1,5 @@
 <form method="post" action="." novalidate>
     {% csrf_token %}
     {{ form.as_div }}
-    <input type="submit" class="btn btn-primary" value="Subscribe">
+    <button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
 </form>

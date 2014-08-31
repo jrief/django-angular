@@ -1,19 +1,33 @@
-{% extends "model-form.html" %}
+{% extends "model-scope.html" %}
+{% load tutorial_tags %}
 
 {% block form_title %}Validated Model-Form Demo{% endblock %}
 
 {% block form_header %}Combine client-side Form validation with two-way data-binding{% endblock %}
 
-{% block form_ctrl %}novalidate ng-controller="MyFormCtrl"{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl"{% endblock %}
 
 {% block form_submission %}
-	<input type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" value="Submit via Post"><span>&nbsp;</span>
-	<a class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</a>
+	<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Submit via Post</button><span>&nbsp;</span>
+	<button type="button" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</button>
 {% endblock %}
 
-{% block form_foot %}
-	{% verbatim %}
-		<h5><code>MyFormCtrl</code>'s scope:</h5>
-		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
-	{% endverbatim %}
-{% endblock %}
+{% block tutorial_intro %}
+<p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">In this example,
+client-side Form validation is combined with two-way data-binding.</p>
+<p>If a Form inherits from both mixin classes <code>NgModelFormMixin</code> and
+<code>NgFormValidationMixin</code>, then Django combines the
+<a href="{% url 'djng_form_validation' %}">pure client-side validation</a> with AngularJS's
+<a href="{% url 'djng_model_scope' %}">two-way data-binding</a> on Forms, as explained in the
+previous examples.</p>
+<p>Under normal circumstances, this setting presumably is the most useful.</p>
+<p>Note that the submit buttons are disabled until the client-side Form validation has validated all
+the fields.</p>
+{% endblock tutorial_intro %}
+
+{% block tutorial_code %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/client_scope_validation.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/client_scope_view.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/client-scope-validation.html" %}</div>
+<div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
+{% endblock tutorial_code %}
