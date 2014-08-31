@@ -32,9 +32,9 @@
 	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
 {% endblock scripts %}
 
-{% block tutorial_intro %}
+{% block tutorial_intro %}{% verbatim %}
 <p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">This example shows how to
-reflect Django's form data into an AngularJS controller.</p>
+reflect Django's form data into a AngularJS controller.</p>
 <p>When working with Django Forms and AngularJS, it is a common use case to access the Form's model
 from within a Controller. If the the directive <code>ng-model</code> is added
 to an input field, then the Controller's <code>$scope</code> object always contains the actual
@@ -43,19 +43,21 @@ field's content for further disposal.</p>
 each Field with the directive <code>ng-model="<em>fieldname</em>"</code>. To prevent the pollution
 of the scope's namespace, it is common practice to encapsulate all the Form Fields into a separate
 JavaScript object. The name of this encapsulating object can be set during the Form declaration
-using the member variable <code>scope_prefix</code>.</p>
-<p>During the Form declaration use the member variable <code>form_name</code> to set the The Form's
-name. This must be different from the scope's prefix because AngularJS's internal Form Controller
-adds its own object to the scope, using the Form's name. This object then stores the internal Form
-state, for instance the flags <code>$pristine</code>, <code>$dirty</code> and <code>$invalid</code>.
-</p>
+using the class member <code>scope_prefix</code>.</p>
+<p>During the Form declaration use the class member <code>form_name</code> to set the The Form's
+name. Otherwise the mixin class will invent a unique Form name for you. The Form name must be
+different from the scope's prefix because AngularJS's internal Form Controller adds its own object
+to the scope, using the Form's name. The latter then stores the internal Form state, for instance
+the flags <code>$pristine</code>, <code>$dirty</code> and <code>$invalid</code>.</p>
 <p>The Form used for this demo contains two additional validations, which are handled by the server.
-The validator <code>reject_addresses</code> is used by the Form's <em>email</em> field. The second
-validator is integrated into the <code>clean()</code> method and runs as a final validation step for
-whole the Form. Errors from these validations are send back to the client and displayed by the
-<b>django-angular</b> mixin classes.
-</p>
-{% endblock tutorial_intro %}
+The validator <code>reject_addresses</code> is used by the Form's <em>email</em> field and rejects
+addresses ending in “@example.<em>tld</em>”. The second validator is integrated into the
+<code>clean()</code> method and runs as a final validation step for the whole Form. This demo
+rejects the combination of “John” and “Doe” for the first- and last name respectively. Errors from
+this validator are send back to the client and displayed at the top of the Form.</p>
+<p class="well well-sm">Note that the AngularJS app is configured inside HTML, since only Django
+can expand template tags, such as <code>{% csrf_value %}</code>.</p>
+{% endverbatim %}{% endblock tutorial_intro %}
 
 {% block tutorial_code %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/model_scope.py" %}</div>

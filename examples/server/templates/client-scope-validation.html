@@ -20,9 +20,13 @@ client-side Form validation is combined with two-way data-binding.</p>
 <a href="{% url 'djng_form_validation' %}">pure client-side validation</a> with AngularJS's
 <a href="{% url 'djng_model_scope' %}">two-way data-binding</a> on Forms, as explained in the
 previous examples.</p>
-<p>Under normal circumstances, this setting presumably is the most useful.</p>
+<p>This demo also rejects email addresses ending in “@example.<em>tld</em>” and the combination of
+“John” and “Doe” for the first- and last name respectively. These validators have been added to
+demonstrate how to integrate server-side validation on the client.</p>
 <p>Note that the submit buttons are disabled until the client-side Form validation has validated all
 the fields.</p>
+<p class="well well-sm">For productive web sites, this configuration presumably is the only useful
+one.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}

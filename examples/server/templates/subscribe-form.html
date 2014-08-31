@@ -43,10 +43,11 @@ a way, compatible with Twitter Bootstrap. Here the correct CSS classes are added
 <code>&lt;input&gt;</code> elements, which are embedded inside
 <code>&lt;div class="form-group"&gt;</code> containers.</p>
 <p>When this form is rejected by the server, the list of errors is rendered using AngularJS's built
-in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a>. Then errors for
-form fields, which did not validate, are rendered using the directive <code>ng-show="$pristine"</code>.
-With this feature, the field's error message disappears as soon, as the user types something into
-the rejected field.</p>
+in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a>. Then errors from
+Form fields, which did not validate on the server, are rendered using the directive
+<code>ng-show="<em>formname.fieldname</em>.$pristine"</code>.
+In contrast to Django's internal behavior, the Field's error message disappears as soon, as the
+user types something into the rejected field.</p>
 <p class="well well-sm">Note: No JavaScript is required to handle this Form</p>
 	{% endblock %}
 <ul class="nav nav-tabs" role="tablist">
@@ -67,7 +68,7 @@ the rejected field.</p>
 {% block scripts %}
 	{{ block.super }}
 	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', []);
+	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
 	</script>
 	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
 {% endblock %}

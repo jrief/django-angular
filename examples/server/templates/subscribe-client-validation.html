@@ -22,10 +22,10 @@ bypassed by a malicious client, the same validation has to occur a second time, 
 accepts the form's data for final processing.</p>
 <p><b>Django-Angular</b> can handle this without having to re-implement any client side form
 validation. Not even one single line of JavaScript code is required for this feature.</p>
-<p>The differences to the <em>Classic Subscription</em> example is, that the form now additionally
-must inhert from the mixin class <code>NgFormValidationMixin</code>.
-Furthermore, the browsers internal form validation must be disabled. This must be done by adding
-the property <code>novalidate</code> to the form's HTML element.</p>
+<p>Here the differences to the <em>Classic Subscription</em> example is, that the Form now
+additionally must inherit from the mixin class <code>NgFormValidationMixin</code>.
+Furthermore, the browsers internal Form validation must be disabled. This is achieved by adding
+the property <code>novalidate</code> to the Form's HTML element.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}

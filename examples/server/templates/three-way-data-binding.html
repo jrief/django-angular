@@ -48,6 +48,8 @@ every change event. Apart from initializing the angular module, the only JavaScr
 for this example, is the statement <code>djangoWebsocket.connect</code>, which bi-directionally
 binds the object <code>subscribe_data</code> from our Controller's <code>$scope</code> object, to an
 equally named data bucket inside the remote Redis datastore.</p>
+<p class="well well-sm">Note that AngularJS directives are configured inside HTML, since only Django
+templates can expand server variables.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}
