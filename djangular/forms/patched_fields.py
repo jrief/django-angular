@@ -4,6 +4,7 @@ Class methods to be added to form fields such as django.forms.fields. These meth
 error messages for AngularJS form validation.
 """
 from __future__ import unicode_literals
+from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
 
 
@@ -138,8 +139,9 @@ def BooleanField_angular_errors(field):
 
 
 def MultipleChoiceField_angular_errors(field):
-    # No errors to report for
-    return []
+    if isinstance(field.widget, widgets.CheckboxSelectMultiple):
+        return []
+    return _input_required(field)
 
 
 def Default_angular_errors(field):
