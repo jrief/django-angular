@@ -185,6 +185,15 @@ djng_forms_module.factory('djangoForm', function() {
 		return false;
 	}
 
+	function resetFieldValidity(field) {
+		field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
+			// changing the field the server complained about, resets the form into valid state
+			field.$setValidity('rejected', true);
+			field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+			delete field.rejectedListenerPos;
+		}) - 1;
+	}
+
 	return {
 		// setErrors takes care of updating prepared placeholder fields for displaying form errors
 		// deteced by an AJAX submission. Returns true if errors have been added to the form.
@@ -217,12 +226,16 @@ djng_forms_module.factory('djangoForm', function() {
 						field.$message = errors[0];
 						field.$setValidity('rejected', false);
 						field.$setPristine();
-						field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
-							// changing the field the server complained about, resets the form into valid state
-							field.$setValidity('rejected', true);
-							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-							delete field.rejectedListenerPos;
-						}) - 1;
+						if (angular.isArray(field.$viewChangeListeners)) {
+							resetFieldValidity(field);
+						} else {
+							// this field is a composite of input elements
+							angular.forEach(field, function(subField, subKey) {
+								if (angular.isArray(subField.$viewChangeListeners)) {
+									resetFieldValidity(subField);
+								}
+							});
+						}
 					}
 				}
 			});
