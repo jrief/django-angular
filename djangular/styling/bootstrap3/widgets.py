@@ -36,11 +36,10 @@ class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
 
     def render(self):
         """
-        Outputs a <ul> for this set of choice fields.
-        If an id was given to the field, it is applied to the <ul> (each
-        item in the list will get an id of `$id_$i`).
+        Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
         """
-        output = ['<div>']
+        start_tag = format_html('<div ng-form="{0}">', self.name)
+        output = [start_tag]
         for widget in self:
             output.append(force_text(widget))
         output.append('</div>')

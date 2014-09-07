@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from django.forms import widgets
+from django.utils.safestring import mark_safe
+from django.utils.encoding import force_text
 from django.utils.html import format_html
 from django.forms.util import flatatt
 
@@ -20,6 +22,17 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
 
 class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
     choice_input_class = CheckboxChoiceInput
+
+    def render(self):
+        """
+        Outputs a <ul ng-form="name"> for this set of choice fields to nest an ngForm.
+        """
+        start_tag = format_html('<ul ng-form="{0}">', self.name)
+        output = [start_tag]
+        for widget in self:
+            output.append(format_html('<li>{0}</li>', force_text(widget)))
+        output.append('</ul>')
+        return mark_safe('\n'.join(output))
 
 
 class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
