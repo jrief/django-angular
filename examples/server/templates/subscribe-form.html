@@ -41,14 +41,15 @@ Django Form inside an AngularJS application.</p>
 <p>By inheriting from the mixin class <code>Bootstrap3FormMixin</code>, Django renders the Form in
 a way, compatible with Twitter Bootstrap. Here the correct CSS classes are added to the
 <code>&lt;input&gt;</code> elements, which are embedded inside
-<code>&lt;div class="form-group"&gt;</code> containers.</p>
+<code>&lt;div class="form-group"&gt;</code> containers. If you omit <code>Bootstrap3FormMixin</code>,
+then the Form is rendered, as Django would by default.</p>
 <p>When this form is rejected by the server, the list of errors is rendered using AngularJS's built
-in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a>. Then errors from
-Form fields, which did not validate on the server, are rendered using the directive
-<code>ng-show="<em>formname.fieldname</em>.$pristine"</code>.
-In contrast to Django's internal behavior, the Field's error message disappears as soon, as the
-user types something into the rejected field.</p>
-<p class="well well-sm">Note: No JavaScript is required to handle this Form</p>
+in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a>. When the server
+rejects Form fields, because the contain invalid data, then errors are rendered using the directive
+<code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. This has the advantage, that in
+contrast to Django's internal behavior, the Field's error message disappears as soon, as the user
+starts typing into the rejected field.</p>
+<p class="well well-sm">Note: Here no JavaScript is required to handle this Form behavior.</p>
 	{% endblock %}
 <ul class="nav nav-tabs" role="tablist">
 	<li ng-repeat="tab in tabList" ng-class="tabClass(tab)">

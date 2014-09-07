@@ -1,41 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 # start tutorial
-from django import forms
 from djangular.forms import NgFormValidationMixin
-from djangular.forms.fields import FloatField
-from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
+from . import subscribe_form
 
 
-class SubscribeForm(NgFormValidationMixin, Bootstrap3FormMixin, forms.Form):
-    CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
-                         ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
-    TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
-    NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
-
-    first_name = forms.CharField(label='First name', min_length=3, max_length=20)
-    last_name = forms.RegexField(r'^[A-Z][a-z -]?', label='Last name',
-        error_messages={'invalid': 'Last names shall start in upper case'})
-    sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')),
-        widget=forms.RadioSelect, error_messages={'invalid_choice': 'Please select your sex'})
-    email = forms.EmailField(label='E-Mail')
-    subscribe = forms.BooleanField(initial=False, label='Subscribe Newsletter', required=False)
-    phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
-        error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
-    birth_date = forms.DateField(label='Date of birth',
-        widget=forms.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
-        help_text='Allowed date format: yyyy-mm-dd')
-    continent = forms.ChoiceField(choices=CONTINENT_CHOICES, label='Living on continent',
-        error_messages={'invalid_choice': 'Please select your continent'})
-    weight = forms.IntegerField(min_value=42, max_value=95, label='Weight in kg',
-        error_messages={'min_value': 'You are too lightweight'})
-    height = FloatField(min_value=1.48, max_value=1.95, step=0.05, label='Height in meters',
-        error_messages={'max_value': 'You are too tall'})
-    traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by', required=False)
-    notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by', required=False,
-        widget=forms.CheckboxSelectMultiple)
-    annotation = forms.CharField(required=False, label='Annotation',
-        widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
-    confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
-        initial='hidden value')
+class SubscribeForm(NgFormValidationMixin, subscribe_form.SubscribeForm):
+    # Apart from an additional  mixin class, the Form declaration from the
+    # 'Classic Subscription' view did not change here
+    pass

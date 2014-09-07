@@ -8,7 +8,7 @@
 {% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate{% endblock %}
 
 {% block form_submission %}
-	<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
+	<button type="submit" class="btn btn-primary" {#ng-disabled="{{ form.form_name }}.$invalid"#}>Subscribe</button>
 {% endblock %}
 
 {% block tutorial_intro %}
@@ -30,6 +30,6 @@ the property <code>novalidate</code> to the Form's HTML element.</p>
 
 {% block tutorial_code %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/client_validation.py" %}</div>
-<div ng-show="activeTab==='View'">{% pygments "views/subscribe_client_validation.py" %}</div>
-<div ng-show="activeTab==='HTML'">{% pygments "tutorial/subscribe-client-validation.html" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/client_validation.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/client-validation.html" %}</div>
 {% endblock tutorial_code %}
