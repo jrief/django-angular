@@ -16,7 +16,7 @@ function hashCode(s) {
 
 // This directive adds a dummy binding to input fields without attribute ng-model, so that AngularJS
 // form validation gets notified whenever the fields content changes.
-djng_forms_module.directive('input', function($compile) {
+djng_forms_module.directive('input', ['$compile', function($compile) {
 	return {
 		restrict: 'E',
 		require: '?^form',
@@ -31,7 +31,7 @@ djng_forms_module.directive('input', function($compile) {
 			$compile(element, null, 9999)(scope);
 		}
 	};
-});
+}]);
 
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
