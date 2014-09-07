@@ -22,14 +22,14 @@ class SafeTuple(SafeData, tuple):
 @python_2_unicode_compatible
 class TupleErrorList(list):
     """
-    A list of errors, which in comparison to Django's ErrorList contains a tuple for each item.
+    A list of errors, which in contrast to Django's ErrorList, contains a tuple for each item.
     This tuple consists of the following fields:
     0: identifier: This is the model name of the field.
     1: The CSS class added to the embedding <ul>-element.
     2: property: $pristine or $dirty used by ng-show on the wrapping <ul>-element.
     3: An arbitrary property used by ng-show on the actual <li>-element.
     4: The CSS class added to the <li>-element.
-    5: The used error message. If this contains the magic word '$message' it will be added with
+    5: The desired error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
     """
     ul_format = '<ul class="{1}" ng-show="{0}.{2}" ng-cloak>{3}</ul>'
