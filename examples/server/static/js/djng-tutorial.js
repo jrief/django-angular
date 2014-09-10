@@ -6,7 +6,6 @@ var my_app = angular.module('djangular-demo');
 my_app.controller('TutorialCtrl', function($scope) {
 	$scope.setTab = function(tab) {
 		$scope.activeTab = tab;
-		console.log(tab);
 	};
 
 	$scope.tabClass = function(tab) {

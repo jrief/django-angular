@@ -2,7 +2,7 @@ angular.module('djangular-demo').controller('MyFormCtrl', function($scope, $http
     $scope.submit = function() {
         if ($scope.subscribe_data) {
             $http.post(".", $scope.subscribe_data).success(function(out_data) {
-                if (!djangoForm.setErrors($scope.valid_form, out_data.errors)) {
+                if (!djangoForm.setErrors($scope.my_form, out_data.errors)) {
                     // on successful post, redirect onto success page
                     $window.location.href = out_data.success_url;
                 }

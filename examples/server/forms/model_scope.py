@@ -19,7 +19,7 @@ def reject_addresses(value):
 
 class SubscribeForm(NgModelFormMixin, subscribe_form.SubscribeForm):
     scope_prefix = 'subscribe_data'
-    form_name = 'valid_form'
+    form_name = 'my_form'
 
     # Override the email field to add a server-side validator
     email = EmailField(label='E-Mail', validators=[reject_addresses, validate_email],

@@ -19,7 +19,7 @@
 	<div class="row" style="margin-bottom: 20px;">
 		<div class="col-md-12">
 			{% block form_submission %}
-			<button type="submit" class="btn btn-primary">Subscribe</button>
+			<button type="submit" class="btn btn-primary">Subscribe Me</button>
 			{% endblock %}
 		</div>
 	</div>
@@ -49,7 +49,6 @@ rejects Form fields, because the contain invalid data, then errors are rendered 
 <code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. This has the advantage, that in
 contrast to Django's internal behavior, the Field's error message disappears as soon, as the user
 starts typing into the rejected field.</p>
-<p class="well well-sm">Note: Here no JavaScript is required to handle this Form behavior.</p>
 	{% endblock %}
 <ul class="nav nav-tabs" role="tablist">
 	<li ng-repeat="tab in tabList" ng-class="tabClass(tab)">
@@ -60,6 +59,10 @@ starts typing into the rejected field.</p>
 <div ng-show="activeTab==='Form'">{% pygments "forms/subscribe_form.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/classic_subscribe.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/subscribe-form.html" %}</div>
+<p class="bg-info">Use this setting, if you want your forms behave the way intended by Django.
+Here the only exception is, that errors from a previous and failed form validation disappear, as
+soon as the user changes that field.<br/> To get this working, a dummy <code>ng-model</code> is added
+to every input field</p>
 	{% endblock %}
 		</div>
 	</div>
@@ -67,9 +70,8 @@ starts typing into the rejected field.</p>
 {% endblock container %}
 
 {% block scripts %}
-	{{ block.super }}
+	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
 	<script type="text/javascript">
 	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
 	</script>
-	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
 {% endblock %}
