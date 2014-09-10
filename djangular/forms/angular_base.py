@@ -8,7 +8,7 @@ from django.forms import widgets
 from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import python_2_unicode_compatible, force_text
-from django.utils.safestring import mark_safe, SafeData, SafeText
+from django.utils.safestring import mark_safe, SafeData
 from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
@@ -53,7 +53,7 @@ class TupleErrorList(list):
         # renders and combine both of these lists
         first = self[0]
         return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
-                      mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+                    mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
 
     def as_text(self):
         if not self:
