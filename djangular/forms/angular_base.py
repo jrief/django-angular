@@ -97,7 +97,11 @@ class NgBoundField(forms.BoundField):
         # transfer error state from bound field to AngularJS validation
         errors = [e for e in self.errors if e[3] == '$pristine']
         if errors:
-            attrs.update({'djng-error': errors[0][4]})
+            attrs.update({'djng-error': 'bound-field'})
+        try:
+            attrs.update(self.field.widget.get_field_attrs(self.field))
+        except AttributeError:
+            pass
         return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):

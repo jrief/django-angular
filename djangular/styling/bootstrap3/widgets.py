@@ -5,7 +5,8 @@ from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.forms.util import flatatt
 from django.forms import widgets
-from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
+from djangular.forms.widgets import (CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
+                                     CheckboxFieldRenderer as DjngCheckboxFieldRenderer)
 
 
 class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
@@ -31,14 +32,14 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         return format_html('<input{0} />', flatatt(final_attrs))
 
 
-class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
+class CheckboxFieldRenderer(DjngCheckboxFieldRenderer):
     choice_input_class = CheckboxChoiceInput
 
     def render(self):
         """
         Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
         """
-        start_tag = format_html('<div ng-form="{0}">', self.name)
+        start_tag = format_html('<div {0}>', mark_safe(' '.join(self.field_attrs)))
         output = [start_tag]
         for widget in self:
             output.append(force_text(widget))

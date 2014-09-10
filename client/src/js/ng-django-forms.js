@@ -20,8 +20,7 @@ djng_forms_module.directive('input', ['$compile', function($compile) {
 	return {
 		restrict: 'E',
 		require: '?^form',
-		//priority: 9999,
-		//terminal: true,
+		priority: 9,
 		link: function(scope, element, attr, formCtrl) {
 			var modelName;
 			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
@@ -33,6 +32,27 @@ djng_forms_module.directive('input', ['$compile', function($compile) {
 	};
 }]);
 
+// Bound fields with invalid input data, shall be marked as ng-invalid-bound, so that
+// the input field visibly contains invalid data, even if pristine
+djng_forms_module.directive('djngError', function() {
+	return {
+		restrict: 'A',
+		require: '?^form',
+		priority: 10,
+		link: function(scope, element, attrs, formCtrl) {
+			var boundField;
+			if (!formCtrl || angular.isUndefined(attrs.name) || attrs.djngError !== 'bound-field')
+				return;
+			boundField = formCtrl[attrs.name];
+			boundField.$setValidity('bound', false);
+			boundField.$parsers.push(function(value) {
+				// set bound field into valid state after changing value
+				boundField.$setValidity('bound', true);
+				element.removeAttr('djng-error');
+			});
+		}
+	};
+});
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
@@ -98,11 +118,6 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
-			// transfer error state from Django's bound field to AngularJS validation
-			if (attrs.djngError) {
-				modelCtrl.$setValidity(attrs.djngError, false);
-				element.removeAttr('djng-error');
-			}
 			switch (field.tagName) {
 			case 'INPUT':
 				restoreInputField(modelCtrl, field);
@@ -113,9 +128,42 @@ djng_forms_module.directive('ngModel', function() {
 			case 'TEXTAREA':
 				restoreTextArea(modelCtrl, field);
 				break;
+			default:
+				console.log('Unknown field type');
 			}
 			// restore the form's pristine state
 			formCtrl.$setPristine();
+		}
+	};
+});
+
+
+djng_forms_module.directive('validateMultipleCheckbox', function() {
+	var formCtrl, checkboxElems = [];
+
+	function validate() {
+		var valid = false;
+		angular.forEach(checkboxElems, function(checkbox) {
+			valid = valid || checkbox.checked;
+		});
+		formCtrl.$setValidity('required', valid);
+	}
+
+	return {
+		restrict: 'A',
+		require: '^?form',
+		link: function(scope, element, attrs, controller) {
+			var subFields = attrs.validateMultipleCheckbox.split(',');
+			if (!controller)
+				return;
+			formCtrl = controller;
+			angular.forEach(element.find('input'), function(elem) {
+				if (subFields.indexOf(elem.name) >= 0) {
+					checkboxElems.push(elem);
+				}
+			});
+			element.on('change', validate);
+			validate();
 		}
 	};
 });

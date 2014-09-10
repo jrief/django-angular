@@ -34,9 +34,9 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
     traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by',
         help_text='Choose one or more carriers', required=True)
     notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple, required=True,
         help_text='Must choose at least one type of notification')
-    annotation = forms.CharField(required=False, label='Annotation',
+    annotation = forms.CharField(label='Annotation', required=False,
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
     confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
         initial='hidden value')

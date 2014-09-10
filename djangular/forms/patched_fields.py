@@ -77,6 +77,15 @@ def _invalid_value_errors(field, ng_error_key):
     return errors
 
 
+def _multiple_checkbox_required(field):
+    errors = []
+    if field.required:
+        for key, msg in field.error_messages.items():
+            if key == 'required':
+                errors.append(('$error.required', msg))
+    return errors
+
+
 def DecimalField_angular_errors(field):
     errors = _input_required(field)
     field.widget.attrs['ng-minlength'] = 1
@@ -140,7 +149,7 @@ def BooleanField_angular_errors(field):
 
 def MultipleChoiceField_angular_errors(field):
     if isinstance(field.widget, widgets.CheckboxSelectMultiple):
-        return []
+        return _multiple_checkbox_required(field)
     return _input_required(field)
 
 
