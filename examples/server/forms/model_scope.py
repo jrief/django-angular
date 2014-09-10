@@ -12,7 +12,7 @@ def reject_addresses(value):
     """Reject email addresses ending with @example..."""
     try:
         value.lower().index('@example.')
-        raise ValidationError('Email address \'{0}\' is rejected by the server.'.format(value))
+        raise ValidationError('Email address "{0}" is rejected by the server.'.format(value))
     except ValueError:
         pass
 
@@ -23,9 +23,9 @@ class SubscribeForm(NgModelFormMixin, subscribe_form.SubscribeForm):
 
     # Override the email field to add a server-side validator
     email = EmailField(label='E-Mail', validators=[reject_addresses, validate_email],
-        help_text='Addresses containing ‘@example’ are rejected by the server.')
+        help_text='Addresses containing "@example" are rejected by the server.')
 
     def clean(self):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
-            raise ValidationError('The full name \'John Doe\' is rejected by the server.')
+            raise ValidationError('The full name "John Doe" is rejected by the server.')
         return super(SubscribeForm, self).clean()
