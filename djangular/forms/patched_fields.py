@@ -77,7 +77,8 @@ def _invalid_value_errors(field, ng_error_key):
     return errors
 
 
-def _multiple_checkbox_required(field):
+def _multiple_choices_required(field):
+    # only add the required message, but no 'ng-required' attribute to the input fields
     errors = []
     if field.required:
         for key, msg in field.error_messages.items():
@@ -147,10 +148,20 @@ def BooleanField_angular_errors(field):
     return errors
 
 
+def ChoiceField_angular_errors(field):
+    if isinstance(field.widget, widgets.RadioSelect):
+        errors = _multiple_choices_required(field)
+    else:
+        errors = _input_required(field)
+    return errors
+
+
 def MultipleChoiceField_angular_errors(field):
     if isinstance(field.widget, widgets.CheckboxSelectMultiple):
-        return _multiple_checkbox_required(field)
-    return _input_required(field)
+        errors = _multiple_choices_required(field)
+    else:
+        errors = _input_required(field)
+    return errors
 
 
 def Default_angular_errors(field):
