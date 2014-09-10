@@ -18,7 +18,7 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
         During initialization, some widgets have to be replaced by a counterpart suitable for
         rendering labels, input fields and select element the "Bootstrap way".
         """
-        super(Bootstrap3FormMixin, self).convert_widgets(data)
+        data = super(Bootstrap3FormMixin, self).convert_widgets(data)
         for name, field in self.base_fields.items():
             fw_dict = field.widget.__dict__
             if isinstance(field.widget, widgets.CheckboxSelectMultiple):

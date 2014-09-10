@@ -166,6 +166,8 @@ class NgFormBaseMixin(object):
                 fw_dict = field.widget.__dict__
                 field.widget = DjngCheckboxSelectMultiple()
                 field.widget.__dict__ = fw_dict
-                if isinstance(data, QueryDict):
-                    data = field.widget.implode_multi_values(name, data.copy())
+                if isinstance(data, dict) and name in data and isinstance(data[name], dict):
+                    # convert JSON data for form validator
+                    data = data.copy()
+                    data[name] = [key for key, val in data[name].items() if val]
         return data
