@@ -15,14 +15,16 @@
 {% block tutorial_intro %}
 <p ng-init="tabList=['Form', 'View', 'HTML']" class="lead">This example shows how to let AngularJS
 validate input fields from a Django Form in a DRY manner.</p>
+
 <p>The Django <code>forms.Form</code> class offers many possibilities to validate a given form.
-This, for obvious reasons is done on the server. However, customers may not always accept to submit
-a form, just to find out that they missed to input some correct data into a field. Therefore, adding
-client side form validation is a good idea and very common. But since this validation easily can be
-bypassed by a malicious client, the same validation has to occur a second time, when the server
-accepts the form's data for final processing.</p>
-<p><b>Django-Angular</b> can handle this without having to re-implement any client side form
-validation. Not even one single line of JavaScript code is required for this feature.</p>
+This for obvious reasons is done on the server. However, while typing,it is unacceptable to send
+the form's content to the server for continuous validation. Therefore, adding client side form
+validation is a good idea and very common. But since this validation easily can be bypassed by a
+malicious client, the same validation has to occur a second time, when the server receives the
+form's data for final processing.</p>
+<p>With <strong>django-angular</strong>, we can handle this without having to re-implement any
+client side form validation. Not even one single line of JavaScript code is required the enable
+this feature.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}

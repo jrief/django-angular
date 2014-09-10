@@ -38,6 +38,7 @@
 	{% block tutorial_intro %}
 <p ng-init="tabList=['Form', 'View', 'HTML']" class="lead">This example shows how to use a classic
 Django Form inside an AngularJS application.</p>
+
 <p>By inheriting from the mixin class <code>Bootstrap3FormMixin</code>, Django renders the Form in
 a way, compatible with Twitter Bootstrap. Here the correct CSS classes are added to the
 <code>&lt;input&gt;</code> elements, which are embedded inside
@@ -45,10 +46,10 @@ a way, compatible with Twitter Bootstrap. Here the correct CSS classes are added
 then the Form is rendered, as Django would by default.</p>
 <p>When this form is rejected by the server, the list of errors is rendered using AngularJS's built
 in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a>. When the server
-rejects Form fields, because the contain invalid data, then errors are rendered using the directive
-<code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. This has the advantage, that in
-contrast to Django's internal behavior, the Field's error message disappears as soon, as the user
-starts typing into the rejected field.</p>
+rejects a form, because some fields contain invalid data, then errors are rendered using the
+directive <code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. In contrast to Django's
+internal behavior, this has the advantage that the field's error message disappears as soon as the
+user starts typing.</p>
 	{% endblock %}
 <ul class="nav nav-tabs" role="tablist">
 	<li ng-repeat="tab in tabList" ng-class="tabClass(tab)">
@@ -61,8 +62,8 @@ starts typing into the rejected field.</p>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/subscribe-form.html" %}</div>
 <p class="bg-info">Use this setting, if you want your forms behave the way intended by Django.
 Here the only exception is, that errors from a previous and failed form validation disappear, as
-soon as the user changes that field.<br/> To get this working, a dummy <code>ng-model</code> is added
-to every input field</p>
+soon as the user changes that field.<br/>In this setting, AngularJS adds a dummy
+<code>ng-model</code> attribute to each input field.</p>
 	{% endblock %}
 		</div>
 	</div>
