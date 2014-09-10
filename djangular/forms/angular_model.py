@@ -70,13 +70,13 @@ class NgModelFormMixin(NgFormBaseMixin):
         return errors
 
     def get_widget_attrs(self, bound_field):
+        attrs = super(NgModelFormMixin, self).get_widget_attrs(bound_field)
         identifier = self.add_prefix(bound_field.name)
         ng = {
             'name': bound_field.name,
             'identifier': identifier,
             'model': self.scope_prefix and ('%s.%s' % (self.scope_prefix, identifier)) or identifier
         }
-        attrs = {}
         if hasattr(self, 'Meta') and bound_field.name in getattr(self.Meta, 'ng_models', []):
             attrs['ng-model'] = ng['model']
         for key, fmtstr in self.ng_directives.items():

@@ -41,8 +41,21 @@ class NgFormValidationMixin(NgFormBaseMixin):
             potential_errors = types.MethodType(errors_function, bound_field.field)()
         errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
         if bound_field.value():
-            # valid bound fields shall display OK tick, even when in pristine state
+            # valid bound fields shall display OK tick, even in pristine state
             errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
         errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
         return errors
+
+    def get_widget_attrs(self, bound_field):
+        attrs = super(NgFormValidationMixin, self).get_widget_attrs(bound_field)
+        # transfer error state from bound field to AngularJS validation
+        errors = [e for e in bound_field.errors if e[3] == '$pristine']
+        if errors:
+            attrs.update({'djng-error': 'bound-field'})
+        # some fields require special directives to work with AngularJS
+        try:
+            attrs.update(bound_field.field.widget.get_field_attrs(bound_field.field))
+        except AttributeError:
+            pass
+        return attrs

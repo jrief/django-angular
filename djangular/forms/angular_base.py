@@ -94,14 +94,6 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        # transfer error state from bound field to AngularJS validation
-        errors = [e for e in self.errors if e[3] == '$pristine']
-        if errors:
-            attrs.update({'djng-error': 'bound-field'})
-        try:
-            attrs.update(self.field.widget.get_field_attrs(self.field))
-        except AttributeError:
-            pass
         return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
@@ -159,7 +151,8 @@ class NgFormBaseMixin(object):
 
     def get_widget_attrs(self, bound_field):
         """
-        Return a dictionary of additional widget attributes.
+        Return a dictionary of additional attributes which shall be added to the widget,
+        used to render this field.
         """
         return {}
 
