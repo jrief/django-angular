@@ -31,7 +31,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         error_messages={'min_value': 'You are too lightweight'})
     height = FloatField(min_value=1.48, max_value=1.95, step=0.05, label='Height in meters',
         error_messages={'max_value': 'You are too tall'})
-    traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by', required=False)
+    traveling = forms.MultipleChoiceField(choices=TRAVELLING_BY, label='Traveling by',
+        help_text='Choose one or more carriers', required=True)
     notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
         widget=forms.CheckboxSelectMultiple,
         help_text='Must choose at least one type of notification')
