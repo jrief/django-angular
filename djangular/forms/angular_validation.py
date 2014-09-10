@@ -40,6 +40,9 @@ class NgFormValidationMixin(NgFormBaseMixin):
             errors_function = getattr(VALIDATION_MAPPING_MODULE, 'Default_angular_errors')
             potential_errors = types.MethodType(errors_function, bound_field.field)()
         errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
+        if bound_field.value():
+            # valid bound fields shall display OK tick, even when in pristine state
+            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
         errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
         return errors
