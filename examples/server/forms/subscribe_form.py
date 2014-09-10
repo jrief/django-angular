@@ -18,7 +18,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         error_messages={'invalid': 'Last names shall start in upper case'})
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')),
         widget=forms.RadioSelect, error_messages={'invalid_choice': 'Please select your sex'})
-    email = forms.EmailField(label='E-Mail')
+    email = forms.EmailField(label='E-Mail', required=True,
+        help_text='Please enter a valid email address')
     subscribe = forms.BooleanField(initial=False, label='Subscribe Newsletter', required=False)
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
@@ -36,7 +37,9 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
     notifyme = forms.MultipleChoiceField(choices=NOTIFY_BY, label='Notify by',
         widget=forms.CheckboxSelectMultiple, required=True,
         help_text='Must choose at least one type of notification')
-    annotation = forms.CharField(label='Annotation', required=False,
+    annotation = forms.CharField(label='Annotation', required=True,
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
+    agree = forms.BooleanField(label='Agree with our terms and conditions',
+        initial=False, required=True)
     confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
         initial='hidden value')
