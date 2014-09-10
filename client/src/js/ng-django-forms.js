@@ -20,7 +20,6 @@ djng_forms_module.directive('input', ['$compile', function($compile) {
 	return {
 		restrict: 'E',
 		require: '?^form',
-		priority: 9,
 		link: function(scope, element, attr, formCtrl) {
 			var modelName;
 			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
