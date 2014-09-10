@@ -8,7 +8,8 @@
 {% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate{% endblock %}
 
 {% block form_submission %}
-	<button type="submit" class="btn btn-primary" {#ng-disabled="{{ form.form_name }}.$invalid"#}>Subscribe</button>
+	<p><button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe Me</button></p>
+	<p><small>Test submission of invalid Forms:</small><br/><button type="submit" class="btn btn-warning btn-xs">Force Form Submission</button></p>
 {% endblock %}
 
 {% block tutorial_intro %}
