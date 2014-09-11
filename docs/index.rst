@@ -24,6 +24,7 @@ Contents
   basic-crud-operations
   remote-method-invocation
   csrf-protection
+  template-sharing
   reverse-urls
   three-way-data-binding
   changelog

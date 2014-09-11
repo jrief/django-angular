@@ -7,13 +7,12 @@ from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
 
 class NgModelFormMixin(NgFormBaseMixin):
     """
-    Add this NgModelFormMixin to every class derived from forms.Form, if
-    you want to manage that form through an Angular controller.
-    It adds attributes ng-model, and optionally ng-change, ng-class and ng-style
+    Add this NgModelFormMixin to every class derived from ``forms.Form``, if that custom ``Form``
+    shall be managed through an Angular controller.
+    It adds attributes ``ng-model``, and optionally ``ng-change``, ``ng-class`` and ``ng-style``
     to each of your input fields.
-    If form validation fails, the ErrorDict is rewritten in a way, so that the
-    Angular controller can access the error strings using the same key values as
-    for its models.
+    If form validation fails, the ErrorDict is rewritten in a way, so that the Angular controller
+    can access the error strings using the same key values as for its models.
     """
 
     def __init__(self, data=None, *args, **kwargs):

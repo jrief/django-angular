@@ -4,6 +4,16 @@
 Release History
 ===============
 
+0.7.6
+-----
+* Fixed regression when using ``Bootstrap3FormMixin`` in combination with ``widgets.CheckboxSelectMultiple``.
+
+0.7.5
+-----
+* Added: Template tag {% angularjs %} which allows to share templates between Django and AngularJS.
+* Fixed: Using {{ field.error }} returned unsafe text.
+* Fixed: Adjust the regular expression and run grunt build.
+
 0.7.4
 -----
 * Fixed: Error rendering while for hidden input fields.

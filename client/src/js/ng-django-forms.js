@@ -109,7 +109,7 @@ djng_forms_module.directive('ngModel', function() {
 
 	return {
 		restrict: 'A',
-		// make sure this directive is applyed after angular built-in one
+		// make sure this directive is applied after angular built-in one
 		priority: 1,
 		require: ['ngModel', '^?form'],
 		link: function(scope, element, attrs, ctrls) {
