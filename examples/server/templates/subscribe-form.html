@@ -47,7 +47,7 @@ then the Form is rendered, as Django would by default.</p>
 <p>When this form is rejected by the server, the list of errors is rendered using AngularJS's built
 in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a> using the
 directive <code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. This in contrast to Django's
-internal behavior has the advantage that the field's error message disappears as soon as the
+internal behavior has the advantage, that the field's error message disappears as soon as the
 user starts typing.</p>
 <p>Passwords can, for obvious reasons only be validated by the server. Here for demonstration
 purpose, this is performed by the password field itself, but don't do this in a productive

@@ -1,3 +1,7 @@
+<script type="text/javascript">
+    angular.module('djangular-demo', ['ng.django.forms']);
+</script>
+
 <form method="post" action="." novalidate>
     {% csrf_token %}
     {{ form.as_div }}
