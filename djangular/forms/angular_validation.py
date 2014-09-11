@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 import types
 from django.conf import settings
+from django.forms import widgets
 from django.utils.importlib import import_module
 from django.utils.html import format_html
 from django.utils.encoding import force_text
@@ -39,12 +40,13 @@ class NgFormValidationMixin(NgFormBaseMixin):
         except (TypeError, AttributeError):
             errors_function = getattr(VALIDATION_MAPPING_MODULE, 'Default_angular_errors')
             potential_errors = types.MethodType(errors_function, bound_field.field)()
-        errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
-        if bound_field.value():
-            # valid bound fields shall display OK tick, even in pristine state
-            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
         errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
+        if not isinstance(bound_field.field.widget, widgets.PasswordInput):
+            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
+            if bound_field.value():
+                # valid bound fields shall display OK tick, even in pristine state
+                errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
         return errors
 
     def get_widget_attrs(self, bound_field):
