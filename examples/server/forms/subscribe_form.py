@@ -2,8 +2,15 @@
 from __future__ import unicode_literals
 # start tutorial
 from django import forms
+from django.core.exceptions import ValidationError
 from djangular.forms.fields import FloatField
 from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
+
+
+def validate_password(value):
+    # Just for demo. Do not validate passwords like this!
+    if value != 'secret':
+        raise ValidationError('The password is wrong.')
 
 
 class SubscribeForm(Bootstrap3FormMixin, forms.Form):
@@ -41,5 +48,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
     agree = forms.BooleanField(label='Agree with our terms and conditions',
         initial=False, required=True)
+    password = forms.CharField(label='Password', widget=forms.PasswordInput,
+        validators=[validate_password],
+        help_text='The password is "secret"')
     confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
         initial='hidden value')
