@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from django.template import Library
-from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
+from django.template.base import Node, NodeList, TextNode, VariableNode
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
@@ -70,7 +70,7 @@ def angularjs(parser, token):
 
     Usage::
 
-        {% angularjs 1 %} or simple {% angularjs %}
+        {% angularjs 1 %} or simply {% angularjs %}
             {% process variables through the AngularJS template engine %}
         {% endangularjs %}
 
@@ -78,6 +78,7 @@ def angularjs(parser, token):
             {% process variables through the Django template engine %}
         {% endangularjs %}
 
+        Instead of 0 and 1, it is possible to use a context variable.
     """
     bits = token.contents.split()
     if len(bits) < 2:
@@ -86,8 +87,8 @@ def angularjs(parser, token):
     django_nodelist = parser.parse(('endangularjs',))
     angular_nodelist = NodeList()
     for node in django_nodelist:
-        # convert all occurrences of VariableNode into a TextNode using the AngularJS double curly
-        # bracket notation
+        # convert all occurrences of VariableNode into a TextNode using the
+        # AngularJS double curly bracket notation
         if isinstance(node, VariableNode):
             node = TextNode('{{ %s }}' % node.filter_expression.token)
         angular_nodelist.append(node)
