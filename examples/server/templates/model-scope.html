@@ -49,11 +49,10 @@ using the class member <code>scope_prefix</code>. Furthermore, set the class mem
 name for you. The <code>form_name</code> must be different from <code>scope_prefix</code>, because
 AngularJS's internal form controller adds its own object to the scope, using the form's name and
 this <em>must</em> be different from the scope's content.</p>
-<p>In this example, two additional server-side validations have been added to the form. The function
-<code>reject_addresses</code> rejects email addresses ending in “@example.<em>tld</em>”.
-Additionally, the form method <code>clean()</code>, rejects the combination of “John” and “Doe” for
-the first- and last name respectively. Errors for a failed form validation are send back to the
-client and displayed on top of the form.</p>
+<p>In this example, an additional server-side validations has been added to the form: The method
+method <code>clean()</code> rejects the combination of “John” and “Doe” for the first- and last name
+respectively. Errors for a failed form validation are send back to the client and displayed on top
+of the form.</p>
 <p>Form data submitted by Ajax, is validated by the server using the same functionality. Errors
 detected during such a validation, are sent back to the client using a JSON object. In JavaScript,
 the controller submitting the form, shall use the returned data and pass it to the special function
