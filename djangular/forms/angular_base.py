@@ -5,7 +5,6 @@ from base64 import b64encode
 from django.forms import forms
 from django.forms import fields
 from django.forms import widgets
-from django.http import QueryDict
 from django.utils.html import format_html
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeData

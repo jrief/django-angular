@@ -129,6 +129,7 @@ djng_forms_module.directive('ngModel', function() {
 				break;
 			default:
 				console.log('Unknown field type');
+				break;
 			}
 			// restore the form's pristine state
 			formCtrl.$setPristine();
