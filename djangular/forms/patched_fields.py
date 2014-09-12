@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Class methods to be added to form fields such as django.forms.fields. These methods add additional
+Mixin class methods to be added to django.forms.fields at runtime. These methods add additional
 error messages for AngularJS form validation.
 """
 from __future__ import unicode_literals
@@ -8,162 +8,173 @@ from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
 
 
-def _input_required(field):
-    errors = []
-    if field.required:
-        field.widget.attrs['ng-required'] = 'true'
-        for key, msg in field.error_messages.items():
-            if key == 'required':
-                errors.append(('$error.required', msg))
-    return errors
+class DefaultFieldMixin(object):
+    def get_potential_errors(self):
+        return self.get_input_required_errors()
+
+    def get_input_required_errors(self):
+        errors = []
+        if self.required:
+            self.widget.attrs['ng-required'] = 'true'
+            for key, msg in self.error_messages.items():
+                if key == 'required':
+                    errors.append(('$error.required', msg))
+        return errors
+
+    def get_min_max_length_errors(self):
+        errors = []
+        if hasattr(self, 'min_length') and self.min_length > 0:
+            self.widget.attrs['ng-minlength'] = self.min_length
+        if hasattr(self, 'max_length') and self.max_length > 0:
+            self.widget.attrs['ng-maxlength'] = self.max_length
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'min_length':
+                message = ungettext_lazy(
+                    'Ensure this value has at least %(limit_value)d character',
+                    'Ensure this value has at least %(limit_value)d characters')
+                errors.append(('$error.minlength', message % {'limit_value': self.min_length}))
+            if getattr(item, 'code', None) == 'max_length':
+                message = ungettext_lazy(
+                    'Ensure this value has at most %(limit_value)d character',
+                    'Ensure this value has at most %(limit_value)d characters')
+                errors.append(('$error.maxlength', message % {'limit_value': self.max_length}))
+        return errors
+
+    def get_min_max_value_errors(self):
+        errors = []
+        if isinstance(getattr(self, 'min_value', None), int):
+            self.widget.attrs['min'] = self.min_value
+        if isinstance(getattr(self, 'max_value', None), int):
+            self.widget.attrs['max'] = self.max_value
+        errkeys = []
+        for key, msg in self.error_messages.items():
+            if key == 'min_value':
+                errors.append(('$error.min', msg))
+                errkeys.append(key)
+            if key == 'max_value':
+                errors.append(('$error.max', msg))
+                errkeys.append(key)
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'min_value' and 'min_value' not in errkeys:
+                errors.append(('$error.min', item.message % {'limit_value': self.min_value}))
+                errkeys.append('min_value')
+            if getattr(item, 'code', None) == 'max_value' and 'max_value' not in errkeys:
+                errors.append(('$error.max', item.message % {'limit_value': self.max_value}))
+                errkeys.append('max_value')
+        return errors
+
+    def get_invalid_value_errors(self, ng_error_key):
+        errors = []
+        errkeys = []
+        for key, msg in self.error_messages.items():
+            if key == 'invalid':
+                errors.append(('$error.{0}'.format(ng_error_key), msg))
+                errkeys.append(key)
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'invalid' and 'invalid' not in errkeys:
+                errmsg = getattr(item, 'message', gettext_lazy('This input self does not contain valid data.'))
+                errors.append(('$error.{0}'.format(ng_error_key), errmsg))
+                errkeys.append('invalid')
+        return errors
 
 
-def _min_max_length_errors(field):
-    errors = []
-    if hasattr(field, 'min_length') and field.min_length > 0:
-        field.widget.attrs['ng-minlength'] = field.min_length
-    if hasattr(field, 'max_length') and field.max_length > 0:
-        field.widget.attrs['ng-maxlength'] = field.max_length
-    for item in field.validators:
-        if getattr(item, 'code', None) == 'min_length':
-            message = ungettext_lazy(
-                'Ensure this value has at least %(limit_value)d character',
-                'Ensure this value has at least %(limit_value)d characters')
-            errors.append(('$error.minlength', message % {'limit_value': field.min_length}))
-        if getattr(item, 'code', None) == 'max_length':
-            message = ungettext_lazy(
-                'Ensure this value has at most %(limit_value)d character',
-                'Ensure this value has at most %(limit_value)d characters')
-            errors.append(('$error.maxlength', message % {'limit_value': field.max_length}))
-    return errors
+class CharFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_length_errors())
+        return errors
 
 
-def _min_max_value_errors(field):
-    errors = []
-    if isinstance(getattr(field, 'min_value', None), int):
-        field.widget.attrs['min'] = field.min_value
-    if isinstance(getattr(field, 'max_value', None), int):
-        field.widget.attrs['max'] = field.max_value
-    errkeys = []
-    for key, msg in field.error_messages.items():
-        if key == 'min_value':
-            errors.append(('$error.min', msg))
-            errkeys.append(key)
-        if key == 'max_value':
-            errors.append(('$error.max', msg))
-            errkeys.append(key)
-    for item in field.validators:
-        if getattr(item, 'code', None) == 'min_value' and 'min_value' not in errkeys:
-            errors.append(('$error.min', item.message % {'limit_value': field.min_value}))
-            errkeys.append('min_value')
-        if getattr(item, 'code', None) == 'max_value' and 'max_value' not in errkeys:
-            errors.append(('$error.max', item.message % {'limit_value': field.max_value}))
-            errkeys.append('max_value')
-    return errors
+class DecimalFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        self.widget.attrs['ng-minlength'] = 1
+        if hasattr(self, 'max_digits') and self.max_digits > 0:
+            self.widget.attrs['ng-maxlength'] = self.max_digits + 1
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
 
 
-def _invalid_value_errors(field, ng_error_key):
-    errors = []
-    errkeys = []
-    for key, msg in field.error_messages.items():
-        if key == 'invalid':
-            errors.append(('$error.{0}'.format(ng_error_key), msg))
-            errkeys.append(key)
-    for item in field.validators:
-        if getattr(item, 'code', None) == 'invalid' and 'invalid' not in errkeys:
-            errmsg = getattr(item, 'message', gettext_lazy('This input field does not contain valid data.'))
-            errors.append(('$error.{0}'.format(ng_error_key), errmsg))
-            errkeys.append('invalid')
-    return errors
+class EmailFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('email'))
+        return errors
 
 
-def _multiple_choices_required(field):
-    # only add the required message, but no 'ng-required' attribute to the input fields
-    errors = []
-    if field.required:
-        for key, msg in field.error_messages.items():
-            if key == 'required':
-                errors.append(('$error.required', msg))
-    return errors
+class DateFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('date'))
+        return errors
 
 
-def DecimalField_angular_errors(field):
-    errors = _input_required(field)
-    field.widget.attrs['ng-minlength'] = 1
-    if hasattr(field, 'max_digits') and field.max_digits > 0:
-        field.widget.attrs['ng-maxlength'] = field.max_digits + 1
-    errors.extend(_min_max_value_errors(field))
-    errors.extend(_invalid_value_errors(field, 'number'))
-    return errors
+class FloatFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
 
 
-def CharField_angular_errors(field):
-    errors = _input_required(field)
-    errors.extend(_min_max_length_errors(field))
-    return errors
+class IntegerFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
 
 
-def EmailField_angular_errors(field):
-    errors = _input_required(field)
-    errors.extend(_invalid_value_errors(field, 'email'))
-    return errors
+class SlugFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        return errors
 
 
-def DateField_angular_errors(field):
-    errors = _input_required(field)
-    errors.extend(_invalid_value_errors(field, 'date'))
-    return errors
-
-
-def FloatField_angular_errors(field):
-    errors = _input_required(field)
-    errors.extend(_min_max_value_errors(field))
-    errors.extend(_invalid_value_errors(field, 'number'))
-    return errors
-
-
-def IntegerField_angular_errors(field):
-    errors = _input_required(field)
-    errors.extend(_min_max_value_errors(field))
-    errors.extend(_invalid_value_errors(field, 'number'))
-    return errors
-
-
-def SlugField_angular_errors(field):
-    errors = _input_required(field)
-    return errors
-
-
-def RegexField_angular_errors(field):
+class RegexFieldMixin(DefaultFieldMixin):
     # Probably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
-    field.widget.attrs['ng-pattern'] = '/{0}/'.format(field.regex.pattern)
-    errors = _input_required(field)
-    errors.extend(_min_max_length_errors(field))
-    errors.extend(_invalid_value_errors(field, 'pattern'))
-    return errors
+    def get_potential_errors(self):
+        self.widget.attrs['ng-pattern'] = '/{0}/'.format(self.regex.pattern)
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_length_errors())
+        errors.extend(self.get_invalid_value_errors('pattern'))
+        return errors
 
 
-def BooleanField_angular_errors(field):
-    errors = _input_required(field)
-    return errors
+class BooleanFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        return errors
 
 
-def ChoiceField_angular_errors(field):
-    if isinstance(field.widget, widgets.RadioSelect):
-        errors = _multiple_choices_required(field)
-    else:
-        errors = _input_required(field)
-    return errors
+class MultipleFieldMixin(DefaultFieldMixin):
+    def get_multiple_choices_required(self):
+        """
+        Add only the required message, but no 'ng-required' attribute to the input fields,
+        otherwise all Checkboxes of a MultipleChoiceField would require the property "checked".
+        """
+        errors = []
+        if self.required:
+            for key, msg in self.error_messages.items():
+                if key == 'required':
+                    errors.append(('$error.required', msg))
+        return errors
 
 
-def MultipleChoiceField_angular_errors(field):
-    if isinstance(field.widget, widgets.CheckboxSelectMultiple):
-        errors = _multiple_choices_required(field)
-    else:
-        errors = _input_required(field)
-    return errors
+class ChoiceFieldMixin(MultipleFieldMixin):
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.RadioSelect):
+            errors = self.get_multiple_choices_required()
+        else:
+            errors = self.get_input_required_errors()
+        return errors
 
 
-def Default_angular_errors(field):
-    errors = _input_required(field)
-    return errors
+class MultipleChoiceFieldMixin(MultipleFieldMixin):
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            errors = self.get_multiple_choices_required()
+        else:
+            errors = self.get_input_required_errors()
+        return errors
