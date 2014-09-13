@@ -12,8 +12,9 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
     widget_css_classes = 'form-control'
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
+    field_mixins_module = 'djangular.styling.bootstrap3.field_mixins'
 
-    def convert_widgets(self, data):
+    def xx_convert_widgets(self, data):
         """
         During initialization, some widgets have to be replaced by a counterpart suitable for
         rendering labels, input fields and select element the "Bootstrap way".

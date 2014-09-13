@@ -4,8 +4,10 @@ Mixin class methods to be added to django.forms.fields at runtime. These methods
 error messages for AngularJS form validation.
 """
 from __future__ import unicode_literals
+from django.forms import fields
 from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
+from .widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class DefaultFieldMixin(object):
@@ -76,6 +78,14 @@ class DefaultFieldMixin(object):
                 errors.append(('$error.{0}'.format(ng_error_key), errmsg))
                 errkeys.append('invalid')
         return errors
+
+    def convert_ajax_data(self, field_data):
+        """
+        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
+        then for certain field widgets, this data has to be converted into a format suitable
+        for Django's Form validation.
+        """
+        return field_data
 
 
 class CharFieldMixin(DefaultFieldMixin):
@@ -178,3 +188,14 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         else:
             errors = self.get_input_required_errors()
         return errors
+
+    def get_converted_widget(self):
+        assert(isinstance(self, fields.MultipleChoiceField))
+        if not isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            return
+        new_widget = DjngCheckboxSelectMultiple()
+        new_widget.__dict__ = self.widget.__dict__
+        return new_widget
+
+    def convert_ajax_data(self, field_data):
+        return [key for key, val in field_data.items() if val]

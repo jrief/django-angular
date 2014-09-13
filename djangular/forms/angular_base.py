@@ -3,12 +3,11 @@ from __future__ import unicode_literals
 import six
 from base64 import b64encode
 from django.forms import forms
-from django.forms import fields
-from django.forms import widgets
+from django.http import QueryDict
+from django.utils.importlib import import_module
 from django.utils.html import format_html
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeData
-from djangular.forms.widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class SafeTuple(SafeData, tuple):
@@ -106,6 +105,24 @@ class NgBoundField(forms.BoundField):
 class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-field-errors'
+    field_mixins_module = field_mixins_module_fallback = 'djangular.forms.field_mixins'
+
+    def __new__(cls, **kwargs):
+        field_mixins_module = import_module(cls.field_mixins_module)
+        field_mixins_module_fallback = import_module(cls.field_mixins_module_fallback)
+        new_cls = super(NgFormBaseMixin, cls).__new__(cls, **kwargs)
+        # add additional methods to django.form.fields at runtime
+        for field in new_cls.base_fields.values():
+            FieldMixinName = field.__class__.__name__ + 'Mixin'
+            try:
+                FieldMixin = getattr(field_mixins_module, FieldMixinName)
+            except AttributeError:
+                try:
+                    FieldMixin = getattr(field_mixins_module_fallback, FieldMixinName)
+                except AttributeError:
+                    FieldMixin = field_mixins_module_fallback.DefaultFieldMixin
+            field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+        return new_cls
 
     def __init__(self, data=None, *args, **kwargs):
         try:
@@ -161,12 +178,24 @@ class NgFormBaseMixin(object):
         be rendered the AngularJS way.
         """
         for name, field in self.base_fields.items():
-            if isinstance(field, fields.MultipleChoiceField) and isinstance(field.widget, widgets.CheckboxSelectMultiple):
-                fw_dict = field.widget.__dict__
-                field.widget = DjngCheckboxSelectMultiple()
-                field.widget.__dict__ = fw_dict
-                if isinstance(data, dict) and name in data and isinstance(data[name], dict):
-                    # convert JSON data for form validator
-                    data = data.copy()
-                    data[name] = [key for key, val in data[name].items() if val]
+            try:
+                new_widget = field.get_converted_widget()
+            except AttributeError:
+                pass
+            else:
+                if new_widget:
+                    field.widget = new_widget
+                    # If the widget was converted and the data received through Ajax, then
+                    # some data fields must be converted to suit the Django Form validation
+                    if data and not isinstance(data, QueryDict) and name in data:
+                        data[name] = field.convert_ajax_data(data[name])
+
+#             if isinstance(field, fields.MultipleChoiceField) and isinstance(field.widget, widgets.CheckboxSelectMultiple):
+#                 fw_dict = field.widget.__dict__
+#                 field.widget = DjngCheckboxSelectMultiple()
+#                 field.widget.__dict__ = fw_dict
+#                 if isinstance(data, dict) and name in data and isinstance(data[name], dict):
+#                     # convert JSON data for form validator
+#                     data = data.copy()
+#                     data[name] = [key for key, val in data[name].items() if val]
         return data

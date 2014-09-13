@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from django.conf import settings
 from django.forms import widgets
-from django.utils.importlib import import_module
 from django.utils.html import format_html
 from django.utils.encoding import force_text
 from .angular_base import NgFormBaseMixin, SafeTuple
-
-patched_fields = import_module(getattr(settings, 'DJANGULAR_VALIDATION_MAPPING_MODULE', 'djangular.forms.patched_fields'))
 
 
 class NgFormValidationMixin(NgFormBaseMixin):
@@ -15,17 +11,6 @@ class NgFormValidationMixin(NgFormBaseMixin):
     Add this NgFormValidationMixin to every class derived from forms.Form, which shall be
     auto validated using the Angular's validation mechanism.
     """
-    def __new__(cls, **kwargs):
-        new_cls = super(NgFormValidationMixin, cls).__new__(cls, **kwargs)
-        # add additional methods to django.form.fields at runtime
-        for field in new_cls.base_fields.values():
-            try:
-                FieldMixin = getattr(patched_fields, field.__class__.__name__ + 'Mixin')
-            except AttributeError:
-                FieldMixin = patched_fields.DefaultFieldMixin
-            field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
-        return new_cls
-
     def __init__(self, *args, **kwargs):
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
         for name, field in self.fields.items():
