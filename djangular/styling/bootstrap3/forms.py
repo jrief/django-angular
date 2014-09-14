@@ -50,9 +50,10 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
         """
         # wrap non-field-errors into <div>-element to prevent re-boxing
         error_row = '<div class="djng-line-spreader">%s</div>'
-        return self._html_output(
+        div_element = self._html_output(
             normal_row='<div%(html_class_attr)s>%(label)s%(field)s%(help_text)s%(errors)s</div>',
             error_row=error_row,
             row_ender='</div>',
             help_text_html='<span class="help-block">%s</span>',
             errors_on_separate_row=False)
+        return div_element

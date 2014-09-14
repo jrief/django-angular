@@ -79,14 +79,6 @@ class DefaultFieldMixin(object):
                 errkeys.append('invalid')
         return errors
 
-    def convert_ajax_data(self, field_data):
-        """
-        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
-        then for certain field widgets, this data has to be converted into a format suitable
-        for Django's Form validation.
-        """
-        return field_data
-
 
 class CharFieldMixin(DefaultFieldMixin):
     def get_potential_errors(self):
@@ -196,6 +188,3 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         new_widget = DjngCheckboxSelectMultiple()
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
-
-    def convert_ajax_data(self, field_data):
-        return [key for key, val in field_data.items() if val]

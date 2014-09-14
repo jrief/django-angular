@@ -9,15 +9,15 @@ from django.forms.util import flatatt
 
 class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
     def tag(self):
+        name = '{0}.{1}'.format(self.name, self.choice_value)
+        tag_attrs = dict(self.attrs, type=self.input_type, name=name, value=self.choice_value)
         if 'id' in self.attrs:
-            self.attrs['id'] = '%s_%s' % (self.attrs['id'], self.index)
+            tag_attrs['id'] = '{0}_{1}'.format(self.attrs['id'], self.index)
         if 'ng-model' in self.attrs:
-            self.attrs['ng-model'] = '%s.%s' % (self.attrs['ng-model'], self.choice_value)
-        name = '%s.%s' % (self.name, self.choice_value)
-        final_attrs = dict(self.attrs, type=self.input_type, name=name, value=self.choice_value)
+            tag_attrs['ng-model'] = '{0}.{1}'.format(self.attrs['ng-model'], self.choice_value)
         if self.is_checked():
-            final_attrs['checked'] = 'checked'
-        return format_html('<input{0} />', flatatt(final_attrs))
+            tag_attrs['checked'] = 'checked'
+        return format_html('<input{0} />', flatatt(tag_attrs))
 
 
 class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
@@ -52,14 +52,47 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
 
     def implode_multi_values(self, name, data):
         """
-        Fields for CheckboxSelectMultiple are converted to a list by this method, if sent through
-        POST data.
+        Due to the way Angular organizes it model, when Form data is sent via a POST request,
+        then for this kind of widget, the posted data must to be converted into a format suitable
+        for Django's Form validation.
         """
         mkeys = [k for k in data.keys() if k.startswith(name + '.')]
         mvls = [data.pop(k)[0] for k in mkeys]
         if mvls:
             data.setlist(name, mvls)
-        return data
+
+    def convert_ajax_data(self, field_data):
+        """
+        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
+        then for this kind of widget, the sent data has to be converted into a format suitable
+        for Django's Form validation.
+        """
+        return [key for key, val in field_data.items() if val]
+
+    def get_field_attrs(self, field):
+        return {'multiple_checkbox_required': field.required}
+
+
+class RadioFieldRenderer(widgets.RadioFieldRenderer):
+    def render(self):
+        """
+        Outputs a <ul> for this set of choice fields.
+        If an id was given to the field, it is applied to the <ul> (each
+        item in the list will get an id of `$id_$i`).
+        """
+        output = ['<div>']
+        for widget in self:
+            output.append(force_text(widget))
+        output.append('</div>')
+        return mark_safe('\n'.join(output))
+
+
+class RadioSelect(widgets.RadioSelect):
+    """
+    Form fields of type 'ChoiceField' using the widget 'RadioSelect' must behave
+    slightly different from the original. This widget overrides the default functionality.
+    """
+    renderer = RadioFieldRenderer
 
     def get_field_attrs(self, field):
         return {'multiple_checkbox_required': field.required}

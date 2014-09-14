@@ -105,11 +105,11 @@ class NgBoundField(forms.BoundField):
 class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-field-errors'
-    field_mixins_module = field_mixins_module_fallback = 'djangular.forms.field_mixins'
+    field_mixins_module = field_mixins_fallback_module = 'djangular.forms.field_mixins'
 
     def __new__(cls, **kwargs):
         field_mixins_module = import_module(cls.field_mixins_module)
-        field_mixins_module_fallback = import_module(cls.field_mixins_module_fallback)
+        field_mixins_fallback_module = import_module(cls.field_mixins_fallback_module)
         new_cls = super(NgFormBaseMixin, cls).__new__(cls, **kwargs)
         # add additional methods to django.form.fields at runtime
         for field in new_cls.base_fields.values():
@@ -118,9 +118,9 @@ class NgFormBaseMixin(object):
                 FieldMixin = getattr(field_mixins_module, FieldMixinName)
             except AttributeError:
                 try:
-                    FieldMixin = getattr(field_mixins_module_fallback, FieldMixinName)
+                    FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
                 except AttributeError:
-                    FieldMixin = field_mixins_module_fallback.DefaultFieldMixin
+                    FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
             field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
         return new_cls
 
@@ -133,7 +133,11 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        data = self.convert_widgets(data)
+        self.convert_widgets()
+        if isinstance(data, QueryDict):
+            data = self.rectify_multipart_form_data(data.copy())
+        elif isinstance(data, dict):
+            data = self.rectify_ajax_form_data(data.copy())
         super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
 
     def __getitem__(self, name):
@@ -172,12 +176,12 @@ class NgFormBaseMixin(object):
         """
         return {}
 
-    def convert_widgets(self, data):
+    def convert_widgets(self):
         """
         During form initialization, some widgets have to be replaced by a counterpart suitable to
         be rendered the AngularJS way.
         """
-        for name, field in self.base_fields.items():
+        for field in self.base_fields.values():
             try:
                 new_widget = field.get_converted_widget()
             except AttributeError:
@@ -185,17 +189,27 @@ class NgFormBaseMixin(object):
             else:
                 if new_widget:
                     field.widget = new_widget
-                    # If the widget was converted and the data received through Ajax, then
-                    # some data fields must be converted to suit the Django Form validation
-                    if data and not isinstance(data, QueryDict) and name in data:
-                        data[name] = field.convert_ajax_data(data[name])
 
-#             if isinstance(field, fields.MultipleChoiceField) and isinstance(field.widget, widgets.CheckboxSelectMultiple):
-#                 fw_dict = field.widget.__dict__
-#                 field.widget = DjngCheckboxSelectMultiple()
-#                 field.widget.__dict__ = fw_dict
-#                 if isinstance(data, dict) and name in data and isinstance(data[name], dict):
-#                     # convert JSON data for form validator
-#                     data = data.copy()
-#                     data[name] = [key for key, val in data[name].items() if val]
+    def rectify_multipart_form_data(self, data):
+        """
+        If a widget was converted and the Form data was submitted through a multipart request,
+        then these data fields must be converted to suit the Django Form validation
+        """
+        for name, field in self.base_fields.items():
+            try:
+                field.widget.implode_multi_values(name, data)
+            except AttributeError:
+                pass
+        return data
+
+    def rectify_ajax_form_data(self, data):
+        """
+        If a widget was converted and the Form data was submitted through an Ajax request,
+        then these data fields must be converted to suit the Django Form validation
+        """
+        for name, field in self.base_fields.items():
+            try:
+                data[name] = field.widget.convert_ajax_data(data.get(name, {}))
+            except AttributeError:
+                pass
         return data

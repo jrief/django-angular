@@ -6,17 +6,32 @@ from djangular.forms import field_mixins
 from . import widgets as bs3widgets
 
 
-class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
+class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
     def get_converted_widget(self):
-        assert(isinstance(self, fields.ChoiceField))
+        assert(isinstance(self, fields.BooleanField))
         if isinstance(self.widget, widgets.CheckboxInput):
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
                 new_widget = bs3widgets.CheckboxInput()
                 new_widget.__dict__ = self.widget.__dict__
                 # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-                self.label = ''
                 new_widget.choice_label = force_text(self.label)
+                self.label = ''
+                return new_widget
+
+
+class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
+    def get_converted_widget(self):
+        assert(isinstance(self, fields.ChoiceField))
+        if isinstance(self.widget, widgets.CheckboxInput):
+            raise RuntimeError('Shouls never reach this')
+            self.widget_css_classes = None
+            if not isinstance(self.widget, bs3widgets.CheckboxInput):
+                new_widget = bs3widgets.CheckboxInput()
+                new_widget.__dict__ = self.widget.__dict__
+                # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
+                new_widget.choice_label = force_text(self.label)
+                self.label = ''
                 return new_widget
         if isinstance(self.widget, widgets.RadioSelect):
             self.widget_css_classes = None
