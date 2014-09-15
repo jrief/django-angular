@@ -4,7 +4,7 @@ from django.db import models
 from django import forms
 from django.http import QueryDict
 from django.test import TestCase
-from djangular.forms import NgModelFormMixin, AddPlaceholderFormMixin
+from djangular.forms import NgModelFormMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -216,27 +216,3 @@ class InvalidNgModelFormMixinTest(TestCase):
     def test_invalid_form(self):
         # create a form with an invalid Meta class
         self.assertRaises(TypeError, InvalidForm)
-
-
-class AddPlaceholderFormMixinTest(TestCase):
-    class EmailOnlyForm(AddPlaceholderFormMixin, forms.Form):
-        email = forms.EmailField(label='E-Mail')
-        password = forms.CharField(label='Password', widget=forms.PasswordInput)
-        radio = forms.Select(choices=CHOICES)
-
-    def setUp(self):
-        self.email_form = self.EmailOnlyForm()
-        htmlsource = str(self.email_form)
-        self.dom = PyQuery(htmlsource)
-
-    def test_email_field(self):
-        email_field = self.dom('input[name=email]')
-        self.assertEqual(len(email_field), 1)
-        email_field_attrib = dict(email_field[0].attrib.items())
-        self.assertDictContainsSubset({'placeholder': 'E-Mail'}, email_field_attrib)
-
-    def test_password_field(self):
-        password_field = self.dom('input[name=password]')
-        self.assertEqual(len(password_field), 1)
-        email_field_attrib = dict(password_field[0].attrib.items())
-        self.assertDictContainsSubset({'placeholder': 'Password'}, email_field_attrib)
