@@ -24,7 +24,7 @@ class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
     def get_converted_widget(self):
         assert(isinstance(self, fields.ChoiceField))
         if isinstance(self.widget, widgets.CheckboxInput):
-            raise RuntimeError('Shouls never reach this')
+            raise RuntimeError('Should never reach this')
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
                 new_widget = bs3widgets.CheckboxInput()
