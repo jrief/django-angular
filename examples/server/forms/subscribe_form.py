@@ -27,7 +27,8 @@ class SubscribeForm(Bootstrap3FormMixin, forms.Form):
         widget=forms.RadioSelect, error_messages={'invalid_choice': 'Please select your sex'})
     email = forms.EmailField(label='E-Mail', required=True,
         help_text='Please enter a valid email address')
-    subscribe = forms.BooleanField(initial=False, label='Subscribe Newsletter', required=False)
+    subscribe = forms.BooleanField(label='Subscribe Newsletter',
+        initial=False, required=False)
     phone = forms.RegexField(r'^\+?[0-9 .-]{4,25}$', label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
     birth_date = forms.DateField(label='Date of birth',

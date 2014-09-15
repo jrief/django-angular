@@ -135,7 +135,7 @@ class SlugFieldMixin(DefaultFieldMixin):
 
 
 class RegexFieldMixin(DefaultFieldMixin):
-    # Probably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
+    # Presumably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
     def get_potential_errors(self):
         self.widget.attrs['ng-pattern'] = '/{0}/'.format(self.regex.pattern)
         errors = self.get_input_required_errors()
