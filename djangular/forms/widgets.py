@@ -7,6 +7,19 @@ from django.utils.html import format_html, format_html_join
 from django.forms.util import flatatt
 
 
+class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):
+    def render(self):
+        """
+        Outputs a <ul ng-form="name"> for this set of choice fields to nest an ngForm.
+        """
+        start_tag = format_html('<ul {0}>', mark_safe(' '.join(self.field_attrs)))
+        output = [start_tag]
+        for widget in self:
+            output.append(format_html('<li>{0}</li>', force_text(widget)))
+        output.append('</ul>')
+        return mark_safe('\n'.join(output))
+
+
 class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
     def tag(self):
         name = '{0}.{1}'.format(self.name, self.choice_value)
@@ -20,27 +33,18 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         return format_html('<input{0} />', flatatt(tag_attrs))
 
 
-class CheckboxFieldRenderer(widgets.ChoiceFieldRenderer):
-    choice_input_class = CheckboxChoiceInput
-
+class CheckboxFieldRendererMixin(object):
     def __init__(self, name, value, attrs, choices):
-        attrs.pop('djng-error', None)  # TODO: use for bound forms
+        attrs.pop('djng-error', None)
         self.field_attrs = [format_html('ng-form="{0}"', name)]
         if attrs.pop('multiple_checkbox_required', False):
             self.field_attrs.append(format_html('validate-multiple-checkbox="{0}"',
                 format_html_join(',', '{0}.{1}', ((name, choice) for choice, dummy in choices))))
-        super(CheckboxFieldRenderer, self).__init__(name, value, attrs, choices)
+        super(CheckboxFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
-    def render(self):
-        """
-        Outputs a <ul ng-form="name"> for this set of choice fields to nest an ngForm.
-        """
-        start_tag = format_html('<ul {0}>', mark_safe(' '.join(self.field_attrs)))
-        output = [start_tag]
-        for widget in self:
-            output.append(format_html('<li>{0}</li>', force_text(widget)))
-        output.append('</ul>')
-        return mark_safe('\n'.join(output))
+
+class CheckboxFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
+    choice_input_class = CheckboxChoiceInput
 
 
 class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
@@ -73,18 +77,17 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
         return {'multiple_checkbox_required': field.required}
 
 
-class RadioFieldRenderer(widgets.RadioFieldRenderer):
-    def render(self):
-        """
-        Outputs a <ul> for this set of choice fields.
-        If an id was given to the field, it is applied to the <ul> (each
-        item in the list will get an id of `$id_$i`).
-        """
-        output = ['<div>']
-        for widget in self:
-            output.append(force_text(widget))
-        output.append('</div>')
-        return mark_safe('\n'.join(output))
+class RadioFieldRendererMixin(object):
+    def __init__(self, name, value, attrs, choices):
+        attrs.pop('djng-error', None)
+        self.field_attrs = []
+        if attrs.pop('radio_select_required', False):
+            self.field_attrs.append(format_html('validate-multiple-checkbox="{0}"', name))
+        super(RadioFieldRendererMixin, self).__init__(name, value, attrs, choices)
+
+
+class RadioFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
+    choice_input_class = widgets.RadioChoiceInput
 
 
 class RadioSelect(widgets.RadioSelect):
@@ -95,4 +98,4 @@ class RadioSelect(widgets.RadioSelect):
     renderer = RadioFieldRenderer
 
     def get_field_attrs(self, field):
-        return {'multiple_checkbox_required': field.required}
+        return {'radio_select_required': field.required}
