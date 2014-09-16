@@ -37,7 +37,6 @@ djng_forms_module.directive('djngError', function() {
 	return {
 		restrict: 'A',
 		require: '?^form',
-		priority: 10,
 		link: function(scope, element, attrs, formCtrl) {
 			var boundField;
 			if (!formCtrl || angular.isUndefined(attrs.name) || attrs.djngError !== 'bound-field')
