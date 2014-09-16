@@ -20,7 +20,6 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a href="/" class="navbar-brand" style="width: 100px; font-size: 20px; padding-top: 4px;">Django<br/>Angular</a>
 			</div>
 			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
 				<ul class="nav navbar-nav">
@@ -34,7 +33,7 @@
 						<a href="{% url 'djng_model_scope' %}">Model Scope</a>
 					</li>
 					<li class="{% active request 'djng_combined_validation' %}">
-						<a href="{% url 'djng_combined_validation' %}">Combined<br/>Validation</a>
+						<a href="{% url 'djng_combined_validation' %}">Combined Validation</a>
 					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
