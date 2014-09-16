@@ -14,6 +14,7 @@ class NgModelFormMixin(NgFormBaseMixin):
     If form validation fails, the ErrorDict is rewritten in a way, so that the Angular controller
     can access the error strings using the same key values as for its models.
     """
+    add_djng_error = False
 
     def __init__(self, data=None, *args, **kwargs):
         self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))

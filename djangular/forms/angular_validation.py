@@ -11,6 +11,8 @@ class NgFormValidationMixin(NgFormBaseMixin):
     Add this NgFormValidationMixin to every class derived from forms.Form, which shall be
     auto validated using the Angular's validation mechanism.
     """
+    add_djng_error = True
+
     def __init__(self, *args, **kwargs):
         super(NgFormValidationMixin, self).__init__(*args, **kwargs)
         for name, field in self.fields.items():
@@ -42,7 +44,7 @@ class NgFormValidationMixin(NgFormBaseMixin):
         attrs = super(NgFormValidationMixin, self).get_widget_attrs(bound_field)
         # transfer error state from bound field to AngularJS validation
         errors = [e for e in bound_field.errors if e[3] == '$pristine']
-        if errors:
+        if errors and self.add_djng_error:
             attrs.update({'djng-error': 'bound-field'})
         # some fields require special directives to work with AngularJS
         try:
