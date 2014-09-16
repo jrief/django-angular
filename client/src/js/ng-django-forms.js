@@ -138,24 +138,28 @@ djng_forms_module.directive('ngModel', function() {
 
 
 djng_forms_module.directive('validateMultipleCheckbox', function() {
-	var formCtrl, checkboxElems = [];
-
-	function validate() {
-		var valid = false;
-		angular.forEach(checkboxElems, function(checkbox) {
-			valid = valid || checkbox.checked;
-		});
-		formCtrl.$setValidity('required', valid);
-	}
-
 	return {
 		restrict: 'A',
 		require: '^?form',
 		link: function(scope, element, attrs, controller) {
-			var subFields = attrs.validateMultipleCheckbox.split(',');
+			var formCtrl, subFields, checkboxElems = [];
+
+			function validate(event) {
+				var valid = false;
+				angular.forEach(checkboxElems, function(checkbox) {
+					valid = valid || checkbox.checked;
+				});
+				formCtrl.$setValidity('required', valid);
+				if (event && subFields.length === 1) {
+					formCtrl[subFields[0]].$dirty = true;
+					formCtrl[subFields[0]].$pristine = false;
+				}
+			}
+
 			if (!controller)
 				return;
 			formCtrl = controller;
+			subFields = attrs.validateMultipleCheckbox.split(',');
 			angular.forEach(element.find('input'), function(elem) {
 				if (subFields.indexOf(elem.name) >= 0) {
 					checkboxElems.push(elem);
