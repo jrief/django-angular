@@ -6,10 +6,22 @@ from django.utils.encoding import force_text
 from django.forms.util import flatatt
 from django.forms import widgets
 from djangular.forms.widgets import (
-    CheckboxChoiceInput as DjngCheckboxChoiceInput,
-    CheckboxFieldRenderer as DjngCheckboxFieldRenderer,
-    CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
-    RadioFieldRenderer as DjngRadioFieldRenderer, RadioSelect as DjngRadioSelect)
+    ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
+    CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
+    RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
+
+
+class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
+    def render(self):
+        """
+        Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
+        """
+        start_tag = format_html('<div {0}>', mark_safe(' '.join(self.field_attrs)))
+        output = [start_tag]
+        for widget in self:
+            output.append(force_text(widget))
+        output.append('</div>')
+        return mark_safe('\n'.join(output))
 
 
 class CheckboxInput(widgets.CheckboxInput):
@@ -35,19 +47,8 @@ class CheckboxChoiceInput(DjngCheckboxChoiceInput):
         return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
 
 
-class CheckboxFieldRenderer(DjngCheckboxFieldRenderer):
+class CheckboxFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
     choice_input_class = CheckboxChoiceInput
-
-    def render(self):
-        """
-        Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
-        """
-        start_tag = format_html('<div {0}>', mark_safe(' '.join(self.field_attrs)))
-        output = [start_tag]
-        for widget in self:
-            output.append(force_text(widget))
-        output.append('</div>')
-        return mark_safe('\n'.join(output))
 
 
 class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
@@ -74,7 +75,7 @@ class RadioChoiceInput(widgets.RadioChoiceInput):
         return format_html('<input{0} />', flatatt(tag_attrs))
 
 
-class RadioFieldRenderer(DjngRadioFieldRenderer):
+class RadioFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
     choice_input_class = RadioChoiceInput
 
 
