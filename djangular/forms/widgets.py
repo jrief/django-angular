@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import json
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html
 from django.forms.util import flatatt
 
 
@@ -38,8 +39,8 @@ class CheckboxFieldRendererMixin(object):
         attrs.pop('djng-error', None)
         self.field_attrs = [format_html('ng-form="{0}"', name)]
         if attrs.pop('multiple_checkbox_required', False):
-            self.field_attrs.append(format_html('validate-multiple-checkbox="{0}"',
-                format_html_join(',', '{0}.{1}', ((name, choice) for choice, dummy in choices))))
+            field_names = [format_html('{0}.{1}', name, choice) for choice, dummy in choices]
+            self.field_attrs.append(format_html('validate-multiple-fields="{0}"', json.dumps(field_names)))
         super(CheckboxFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 
@@ -82,7 +83,7 @@ class RadioFieldRendererMixin(object):
         attrs.pop('djng-error', None)
         self.field_attrs = []
         if attrs.pop('radio_select_required', False):
-            self.field_attrs.append(format_html('validate-multiple-checkbox="{0}"', name))
+            self.field_attrs.append(format_html('validate-multiple-fields="{0}"', name))
         super(RadioFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 

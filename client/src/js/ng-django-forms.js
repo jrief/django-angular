@@ -137,7 +137,7 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-djng_forms_module.directive('validateMultipleCheckbox', function() {
+djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
 		require: '^?form',
@@ -150,16 +150,20 @@ djng_forms_module.directive('validateMultipleCheckbox', function() {
 					valid = valid || checkbox.checked;
 				});
 				formCtrl.$setValidity('required', valid);
-				if (event && subFields.length === 1) {
-					formCtrl[subFields[0]].$dirty = true;
-					formCtrl[subFields[0]].$pristine = false;
+				if (event && angular.isString(subFields)) {
+					formCtrl[subFields].$dirty = true;
+					formCtrl[subFields].$pristine = false;
 				}
 			}
 
 			if (!controller)
 				return;
 			formCtrl = controller;
-			subFields = attrs.validateMultipleCheckbox.split(',');
+			try {
+				subFields = angular.fromJson(attrs.validateMultipleFields);
+			} catch (SyntaxError) {
+				subFields = attrs.validateMultipleFields;
+			}
 			angular.forEach(element.find('input'), function(elem) {
 				if (subFields.indexOf(elem.name) >= 0) {
 					checkboxElems.push(elem);
