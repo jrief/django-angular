@@ -12,7 +12,10 @@
 		<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Submit via Post</button><span>&nbsp;</span>
 		<button type="button" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</button>
 	</p>
-	<p><small>Test submission of invalid POST data:</small><br/><button type="submit" class="btn btn-warning btn-xs">Force Form Submission</button></p>
+	<p><small>Test submission of invalid Form data:</small><br/>
+		<button type="submit" class="btn btn-warning btn-xs">Force Submission via Post</button>&nbsp;
+		<button type="button"  ng-click="submit()" class="btn btn-warning btn-xs">Force Submission via Ajax</button>
+	</p>
 {% endblock %}
 
 {% block tutorial_intro %}
