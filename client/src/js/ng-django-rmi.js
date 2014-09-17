@@ -1,6 +1,9 @@
 (function(angular, undefined) {
 'use strict';
 
+// module: ng.django.rmi
+var djng_rmi_module = angular.module('ng.django.rmi', []);
+
 // A simple wrapper to extend the $httpProvider for executing remote methods on the server side
 // for Django Views derived from JSONResponseMixin.
 // It can be used to invoke GET and POST requests. The return value is the same promise as returned
@@ -9,7 +12,7 @@
 // djangoRMI.name.method(data).success(...).error(...)
 // @param data (optional): If set and @allowd_action was auto, then the call is performed as method
 //     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
-djng_forms_module.provider('djangoRMI', function() {
+djng_rmi_module.provider('djangoRMI', function() {
 	var remote_methods, http;
 
 	this.configure = function(conf) {
