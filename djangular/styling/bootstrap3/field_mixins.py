@@ -50,25 +50,3 @@ class MultipleChoiceFieldMixin(field_mixins.MultipleChoiceFieldMixin):
                 new_widget = bs3widgets.CheckboxSelectMultiple()
                 new_widget.__dict__ = self.widget.__dict__
                 return new_widget
-
-
-#             if isinstance(field.widget, widgets.CheckboxSelectMultiple):
-#                 if not isinstance(field.widget, bs3widgets.CheckboxSelectMultiple):
-#                     field.widget = bs3widgets.CheckboxSelectMultiple()
-#                     field.widget.__dict__ = fw_dict
-#                 if isinstance(data, QueryDict):
-#                     data = field.widget.implode_multi_values(name, data.copy())
-#                 setattr(field, 'widget_css_classes', None)
-#             elif isinstance(field.widget, widgets.CheckboxInput):
-#                 if not isinstance(field.widget, bs3widgets.CheckboxInput):
-#                     field.widget = bs3widgets.CheckboxInput()
-#                     field.widget.__dict__ = fw_dict
-#                     # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-#                     field.widget.choice_label = force_text(field.label)
-#                     field.label = ''
-#                 setattr(field, 'widget_css_classes', None)
-#             elif isinstance(field.widget, widgets.RadioSelect):
-#                 if not isinstance(field.widget, bs3widgets.RadioSelect):
-#                     field.widget = bs3widgets.RadioSelect()
-#                     field.widget.__dict__ = fw_dict
-#                 setattr(field, 'widget_css_classes', None)
