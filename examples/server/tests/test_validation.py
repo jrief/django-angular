@@ -1,18 +1,22 @@
 # -*- coding: utf-8 -*-
+import six
+from base64 import b64encode
 import django
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
-from server.forms import SubscriptionFormWithNgValidation, SubscriptionFormWithNgValidationAndModel
+from server.forms.client_validation import SubscribeForm as ClientValidatedForm
+from server.forms.combined_validation import SubscribeForm as CombinedValidatedForm
 from djangular.forms.angular_base import NgBoundField
 
 
 class NgFormValidationMixinTest(TestCase):
     def setUp(self):
-        self.subscription_form = SubscriptionFormWithNgValidation()
+        self.subscription_form = ClientValidatedForm()
         self.dom = PyQuery(str(self.subscription_form))
+        self.form_name = b64encode(six.b(self.subscription_form.__class__.__name__)).rstrip(six.b('='))
 
     def test_form(self):
-        self.assertEqual(self.subscription_form.form_name, 'valid_form')
+        self.assertEqual(self.subscription_form.form_name, self.form_name)
 
     def test_ng_length(self):
         first_name = self.dom('input[name=first_name]')
@@ -28,9 +32,9 @@ class NgFormValidationMixinTest(TestCase):
         else:
             self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
-        self.assertDictContainsSubset({'ng-show': 'valid_form.first_name.$valid'}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.required'}, attrib)
         attrib = dict(lis[1].attrib.items())
-        self.assertDictContainsSubset({'ng-show': 'valid_form.first_name.$error.required'}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.minlength'}, attrib)
 
     def test_type(self):
         email_field = self.dom('input[name=email]')
@@ -52,11 +56,12 @@ class NgFormValidationMixinTest(TestCase):
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
         html = ''.join((
-            '<ul class="djng-field-errors djng-form-control-feedback" ng-show="valid_form.email.$dirty" ng-cloak>',
-              '<li ng-show="valid_form.email.$valid" class="valid"></li>',
-              '<li ng-show="valid_form.email.$error.required" class="invalid">This field is required.</li>',
-              '<li ng-show="valid_form.email.$error.email" class="invalid">Enter a valid email address.</li>',
-            '</ul>'))
+            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>',
+            '</ul>',
+            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'))
         self.assertHTMLEqual(bf.errors.as_ul(), html)
 
     def test_field_as_text(self):
@@ -68,7 +73,7 @@ class NgFormValidationMixinTest(TestCase):
 
 class NgFormValidationWithModelMixinTest(TestCase):
     def setUp(self):
-        subscription_form = SubscriptionFormWithNgValidationAndModel(scope_prefix='subscribe_data')
+        subscription_form = CombinedValidatedForm(scope_prefix='subscribe_data')
         self.dom = PyQuery(str(subscription_form))
 
     def test_ng_model(self):

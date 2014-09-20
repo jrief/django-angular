@@ -106,7 +106,7 @@ module.exports = function(grunt) {
 	// Test tasks.
 	grunt.registerTask('test', ['jshint', 'karma:test']);
 	grunt.registerTask('test-all', ['jshint', 'karma:test-all']);
-	grunt.registerTask('travis-ci', ['jshint', 'karma:travis-ci']);
+	grunt.registerTask('travis-ci', ['karma:travis-ci']);
 
 	// Build task.
 	grunt.registerTask('build', ['ngmin', 'concat', 'uglify']);
