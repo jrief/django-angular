@@ -32,9 +32,9 @@ class NgFormValidationMixinTest(TestCase):
         else:
             self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
-        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.required'}, attrib)
+        self.assertDictContainsSubset({'ng-show': str(self.form_name) + '.first_name.$error.required'}, attrib)
         attrib = dict(lis[1].attrib.items())
-        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.minlength'}, attrib)
+        self.assertDictContainsSubset({'ng-show': str(self.form_name) + '.first_name.$error.minlength'}, attrib)
 
     def test_type(self):
         email_field = self.dom('input[name=email]')
