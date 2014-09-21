@@ -56,22 +56,13 @@ class NgFormValidationMixinTest(TestCase):
 
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
-        if six.PY2:
-            html = ''.join((
-                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
-                '</ul>',
-                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'))
-        else:
-            html = ''.join((
-                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>',
-                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
-                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
-                '</ul>'))
+        html = ''.join((
+            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
+            '</ul>',
+            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'))
         self.assertHTMLEqual(bf.errors.as_ul(), html)
 
     def test_field_as_text(self):
