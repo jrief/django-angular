@@ -5,14 +5,12 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-Upcoming 0.7.7
+New in 0.7.7
 --------------
-In the next few days, I will release version 0.7.7. Get your preview release here: https://github.com/jrief/django-angular/tree/0.7.7
-
-New Features:
--------------
-* Huge refactoring of the code base. It now is much easier to understand the code and to add custom Fields and Widgets.
-* Fixed the behaviour of all Widgets offered by Django. They now all validate independently of the method (Post or Ajax) used to submit data to the server.
+* Huge refactoring of the code base. It now is much easier to understand the code and to add custom
+  Fields and Widgets.
+* Fixed the behaviour of all Widgets offered by Django. They now all validate independently of the
+  method (Post or Ajax) used to submit data to the server.
 
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
