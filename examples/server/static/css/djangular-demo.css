@@ -2,7 +2,7 @@ body{
 	position:relative;
 }
 table.subscribe ul.errorlist,
-table.subscribe ul.djng-form-errors {
+table.subscribe ul.djng-field-errors {
 	display: inline-block;
 	list-style-type: none;
 	position: absolute;
@@ -12,14 +12,14 @@ table.subscribe ul.djng-form-errors {
 table.subscribe ul.errorlist li {
 	color: #e9322d;
 }
-table.subscribe ul.djng-form-errors li.invalid {
+table.subscribe ul.djng-field-errors li.invalid {
 	color: #e9322d;
 }
 table.subscribe ul.errorlist li:before,
-table.subscribe ul.djng-form-errors li.invalid:before {
+table.subscribe ul.djng-field-errors li.invalid:before {
 	content: "\2716\20";
 }
-table.subscribe ul.djng-form-errors li.valid:before {
+table.subscribe ul.djng-field-errors li.valid:before {
 	color: #00c900;
 	content: "\2714";
 }
