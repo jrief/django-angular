@@ -14,6 +14,7 @@ class NgFormValidationMixinTest(TestCase):
         self.subscription_form = ClientValidatedForm()
         self.dom = PyQuery(str(self.subscription_form))
         self.form_name = b64encode(six.b(self.subscription_form.__class__.__name__)).rstrip(six.b('='))
+        self.maxDiff = None
 
     def test_form(self):
         self.assertEqual(self.subscription_form.form_name, self.form_name)
