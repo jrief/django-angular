@@ -13,11 +13,11 @@ class NgFormValidationMixinTest(TestCase):
     def setUp(self):
         self.subscription_form = ClientValidatedForm()
         self.dom = PyQuery(str(self.subscription_form))
-        self.form_name = b64encode(six.b(self.subscription_form.__class__.__name__)).rstrip(six.b('='))
+        self.form_name = b64encode(six.b(self.subscription_form.__class__.__name__)).rstrip(six.b('=')).decode("utf-8")
         self.maxDiff = None
 
     def test_form(self):
-        self.assertEqual(self.subscription_form.form_name, self.form_name)
+        self.assertEqual(self.subscription_form.form_name, six.b(self.form_name))
 
     def test_ng_length(self):
         first_name = self.dom('input[name=first_name]')
@@ -33,9 +33,9 @@ class NgFormValidationMixinTest(TestCase):
         else:
             self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
-        self.assertDictContainsSubset({'ng-show': str(self.form_name) + '.first_name.$error.required'}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.required'}, attrib)
         attrib = dict(lis[1].attrib.items())
-        self.assertDictContainsSubset({'ng-show': str(self.form_name) + '.first_name.$error.minlength'}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + six.u('.first_name.$error.minlength')}, attrib)
 
     def test_type(self):
         email_field = self.dom('input[name=email]')
@@ -56,13 +56,22 @@ class NgFormValidationMixinTest(TestCase):
 
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
-        html = ''.join((
-            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>',
-            '</ul>',
-            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'))
+        if six.PY2:
+            html = ''.join((
+                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
+                '</ul>',
+                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'))
+        else:
+            html = ''.join((
+                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>',
+                '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
+                '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
+                '</ul>'))
         self.assertHTMLEqual(bf.errors.as_ul(), html)
 
     def test_field_as_text(self):
