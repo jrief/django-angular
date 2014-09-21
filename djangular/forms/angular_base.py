@@ -110,7 +110,7 @@ class NgFormBaseMixin(object):
     def __new__(cls, **kwargs):
         field_mixins_module = import_module(cls.field_mixins_module)
         field_mixins_fallback_module = import_module(cls.field_mixins_fallback_module)
-        new_cls = super(NgFormBaseMixin, cls).__new__(cls, **kwargs)
+        new_cls = super(NgFormBaseMixin, cls).__new__(cls)
         # add additional methods to django.form.fields at runtime
         for field in new_cls.base_fields.values():
             FieldMixinName = field.__class__.__name__ + 'Mixin'

@@ -25,10 +25,14 @@ class DefaultFieldMixin(object):
 
     def get_min_max_length_errors(self):
         errors = []
-        if hasattr(self, 'min_length') and self.min_length > 0:
+        try:
             self.widget.attrs['ng-minlength'] = self.min_length
-        if hasattr(self, 'max_length') and self.max_length > 0:
+        except AttributeError:
+            pass
+        try:
             self.widget.attrs['ng-maxlength'] = self.max_length
+        except AttributeError:
+            pass
         for item in self.validators:
             if getattr(item, 'code', None) == 'min_length':
                 message = ungettext_lazy(
