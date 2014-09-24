@@ -2,7 +2,7 @@
     angular.module('djangular-demo', ['ng.django.forms']);
 </script>
 
-<form method="post" action="." novalidate>
+<form name="{{ form.form_name }}" method="post" action="." novalidate>
     {% csrf_token %}
     {{ form.as_div }}
     <button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
