@@ -2,7 +2,7 @@ import os
 from setuptools import setup, find_packages
 from djangular import __version__
 
-DESCRIPTION = 'Reusable mixins classes and utility functions which help to integrate AngularJS with Django.'
+DESCRIPTION = 'Let Django play well with AngularJS'
 
 CLASSIFIERS = [
     'Environment :: Web Environment',
