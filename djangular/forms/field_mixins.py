@@ -26,11 +26,13 @@ class DefaultFieldMixin(object):
     def get_min_max_length_errors(self):
         errors = []
         try:
-            self.widget.attrs['ng-minlength'] = self.min_length
+            if self.min_length is not None:
+                self.widget.attrs['ng-minlength'] = self.min_length
         except AttributeError:
             pass
         try:
-            self.widget.attrs['ng-maxlength'] = self.max_length
+            if self.max_length is not None:
+                self.widget.attrs['ng-maxlength'] = self.max_length
         except AttributeError:
             pass
         for item in self.validators:
