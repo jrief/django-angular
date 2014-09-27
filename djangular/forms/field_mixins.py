@@ -33,12 +33,14 @@ class DefaultFieldMixin(object):
             if getattr(item, 'code', None) == 'min_length':
                 message = ungettext_lazy(
                     'Ensure this value has at least %(limit_value)d character',
-                    'Ensure this value has at least %(limit_value)d characters')
+                    'Ensure this value has at least %(limit_value)d characters',
+                    'limit_value')
                 errors.append(('$error.minlength', message % {'limit_value': self.min_length}))
             if getattr(item, 'code', None) == 'max_length':
                 message = ungettext_lazy(
                     'Ensure this value has at most %(limit_value)d character',
-                    'Ensure this value has at most %(limit_value)d characters')
+                    'Ensure this value has at most %(limit_value)d characters',
+                    'limit_value')
                 errors.append(('$error.maxlength', message % {'limit_value': self.max_length}))
         return errors
 
