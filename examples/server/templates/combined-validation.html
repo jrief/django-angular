@@ -1,0 +1,39 @@
+{% extends "model-scope.html" %}
+{% load tutorial_tags %}
+
+{% block form_title %}Validated Model-Form Demo{% endblock %}
+
+{% block form_header %}Combine client-side Form validation with two-way data-binding{% endblock %}
+
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl"{% endblock %}
+
+{% block form_submission %}
+	<p>
+		<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Submit via Post</button><span>&nbsp;</span>
+		<button type="button" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</button>
+	</p>
+	<p><small>Test submission of invalid Form data:</small><br/>
+		<button type="submit" class="btn btn-warning btn-xs">Force Submission via Post</button>&nbsp;
+		<button type="button"  ng-click="submit()" class="btn btn-warning btn-xs">Force Submission via Ajax</button>
+	</p>
+{% endblock %}
+
+{% block tutorial_intro %}
+<p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">In this example,
+client-side Form validation is combined with two-way data-binding.</p>
+<p>If a Form inherits from both mixin classes <code>NgModelFormMixin</code> and
+<code>NgFormValidationMixin</code>, then <strong>django-angular</strong> combines
+<a href="{% url 'djng_form_validation' %}">client-side validation</a> with AngularJS's
+<a href="{% url 'djng_model_scope' %}">model scope</a>.</p>
+<p>Refer to the previous examples for a detailed explanation.</p>
+{% endblock tutorial_intro %}
+
+{% block tutorial_code %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/combined_validation.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/combined_validation.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/combined-validation.html" %}</div>
+<div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
+<p class="bg-info">This configuration is the most flexible one. Use it on productive web-sites.<br/>
+<strong>Note: </strong>The submit buttons are disabled, until the client-side Form validation has
+validated all the fields.</p>
+{% endblock tutorial_code %}

@@ -4,7 +4,8 @@ import os
 
 DEBUG = True
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir, os.pardir))
+PROJECT_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.abspath(os.path.join(PROJECT_DIR, os.pardir, os.pardir))
 
 DATABASES = {
     'default': {
@@ -42,6 +43,11 @@ LANGUAGES = (
     ('ru', 'Русский'),
 )
 
+MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware'
+)
+
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 MEDIA_ROOT = ''
@@ -72,6 +78,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
+    'server.context_processors.global_context',
 )
 
 # List of callables that know how to import templates from various sources.
@@ -85,6 +92,8 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
+
+TEMPLATE_DEBUG = DEBUG
 
 TIME_ZONE = 'Europe/Berlin'
 
@@ -106,7 +115,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },

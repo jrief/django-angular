@@ -16,12 +16,10 @@ function hashCode(s) {
 
 // This directive adds a dummy binding to input fields without attribute ng-model, so that AngularJS
 // form validation gets notified whenever the fields content changes.
-djng_forms_module.directive('input', function($compile) {
+djng_forms_module.directive('input', ['$compile', function($compile) {
 	return {
 		restrict: 'E',
 		require: '?^form',
-		//priority: 9999,
-		//terminal: true,
 		link: function(scope, element, attr, formCtrl) {
 			var modelName;
 			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
@@ -31,8 +29,28 @@ djng_forms_module.directive('input', function($compile) {
 			$compile(element, null, 9999)(scope);
 		}
 	};
-});
+}]);
 
+// Bound fields with invalid input data, shall be marked as ng-invalid-bound, so that
+// the input field visibly contains invalid data, even if pristine
+djng_forms_module.directive('djngError', function() {
+	return {
+		restrict: 'A',
+		require: '?^form',
+		link: function(scope, element, attrs, formCtrl) {
+			var boundField;
+			if (!formCtrl || angular.isUndefined(attrs.name) || attrs.djngError !== 'bound-field')
+				return;
+			boundField = formCtrl[attrs.name];
+			boundField.$setValidity('bound', false);
+			boundField.$parsers.push(function(value) {
+				// set bound field into valid state after changing value
+				boundField.$setValidity('bound', true);
+				element.removeAttr('djng-error');
+			});
+		}
+	};
+});
 
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
@@ -98,11 +116,6 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
-			// transfer error state from Django's bound field to AngularJS validation
-			if (attrs.djngError) {
-				modelCtrl.$setValidity(attrs.djngError, false);
-				element.removeAttr('djng-error');
-			}
 			switch (field.tagName) {
 			case 'INPUT':
 				restoreInputField(modelCtrl, field);
@@ -113,9 +126,51 @@ djng_forms_module.directive('ngModel', function() {
 			case 'TEXTAREA':
 				restoreTextArea(modelCtrl, field);
 				break;
+			default:
+				console.log('Unknown field type');
+				break;
 			}
 			// restore the form's pristine state
 			formCtrl.$setPristine();
+		}
+	};
+});
+
+
+djng_forms_module.directive('validateMultipleFields', function() {
+	return {
+		restrict: 'A',
+		require: '^?form',
+		link: function(scope, element, attrs, controller) {
+			var formCtrl, subFields, checkboxElems = [];
+
+			function validate(event) {
+				var valid = false;
+				angular.forEach(checkboxElems, function(checkbox) {
+					valid = valid || checkbox.checked;
+				});
+				formCtrl.$setValidity('required', valid);
+				if (event && angular.isString(subFields)) {
+					formCtrl[subFields].$dirty = true;
+					formCtrl[subFields].$pristine = false;
+				}
+			}
+
+			if (!controller)
+				return;
+			formCtrl = controller;
+			try {
+				subFields = angular.fromJson(attrs.validateMultipleFields);
+			} catch (SyntaxError) {
+				subFields = attrs.validateMultipleFields;
+			}
+			angular.forEach(element.find('input'), function(elem) {
+				if (subFields.indexOf(elem.name) >= 0) {
+					checkboxElems.push(elem);
+				}
+			});
+			element.on('change', validate);
+			validate();
 		}
 	};
 });
@@ -185,6 +240,15 @@ djng_forms_module.factory('djangoForm', function() {
 		return false;
 	}
 
+	function resetFieldValidity(field) {
+		field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
+			// changing the field the server complained about, resets the form into valid state
+			field.$setValidity('rejected', true);
+			field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
+			delete field.rejectedListenerPos;
+		}) - 1;
+	}
+
 	return {
 		// setErrors takes care of updating prepared placeholder fields for displaying form errors
 		// deteced by an AJAX submission. Returns true if errors have been added to the form.
@@ -217,72 +281,22 @@ djng_forms_module.factory('djangoForm', function() {
 						field.$message = errors[0];
 						field.$setValidity('rejected', false);
 						field.$setPristine();
-						field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
-							// changing the field the server complained about, resets the form into valid state
-							field.$setValidity('rejected', true);
-							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-							delete field.rejectedListenerPos;
-						}) - 1;
+						if (angular.isArray(field.$viewChangeListeners)) {
+							resetFieldValidity(field);
+						} else {
+							// this field is a composite of input elements
+							angular.forEach(field, function(subField, subKey) {
+								if (angular.isArray(subField.$viewChangeListeners)) {
+									resetFieldValidity(subField);
+								}
+							});
+						}
 					}
 				}
 			});
 			return isNotEmpty(errors);
 		}
 	};
-});
-
-
-// A simple wrapper to extend the $httpProvider for executing remote methods on the server side
-// for Django Views derived from JSONResponseMixin.
-// It can be used to invoke GET and POST requests. The return value is the same promise as returned
-// by $http.get() and $http.post().
-// Usage:
-// djangoRMI.name.method(data).success(...).error(...)
-// @param data (optional): If set and @allowd_action was auto, then the call is performed as method
-//     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
-djng_forms_module.provider('djangoRMI', function() {
-	var remote_methods, http;
-
-	this.configure = function(conf) {
-		remote_methods = conf;
-		convert_configuration(remote_methods);
-	};
-
-	function convert_configuration(obj) {
-		angular.forEach(obj, function(val, key) {
-			if (!angular.isObject(val))
-				throw new Error('djangoRMI.configure got invalid data');
-			if (val.hasOwnProperty('url')) {
-				// convert config object into function
-				val.headers['X-Requested-With'] = 'XMLHttpRequest';
-				obj[key] = function(data) {
-					var config = angular.copy(val);
-					if (config.method === 'POST') {
-						if (data === undefined)
-							throw new Error('Calling remote method '+ key +' without data object');
-						config.data = data;
-					} else if (config.method === 'auto') {
-						if (data === undefined) {
-							config.method = 'GET';
-						} else {
-							// TODO: distinguish between POST and PUT
-							config.method = 'POST';
-							config.data = data;
-						}
-					}
-					return http(config);
-				};
-			} else {
-				// continue to examine the values recursively
-				convert_configuration(val);
-			}
-		});
-	}
-
-	this.$get = ['$http', function($http) {
-		http = $http;
-		return remote_methods;
-	}];
 });
 
 })(window.angular);

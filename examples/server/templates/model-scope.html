@@ -1,0 +1,72 @@
+{% extends "subscribe-form.html" %}
+{% load djangular_tags tutorial_tags %}
+
+{% block form_title %}Django Form Model as Scope{% endblock %}
+
+{% block form_header %}Django Form's two-way data-binding with an AngularJS controller{% endblock %}
+
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." validate ng-controller="MyFormCtrl"{% endblock %}
+
+{% block form_submission %}
+	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>
+	<button type="button" class="btn btn-primary" ng-click="submit()">Submit via Ajax</button>
+{% endblock %}
+
+{% block form_foot %}
+	{% verbatim %}
+		<h5><code>MyFormCtrl</code>'s scope:</h5>
+		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+	{% endverbatim %}
+{% endblock form_foot %}
+
+{% block scripts %}
+	{{ block.super }}
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
+	my_app.config(function($httpProvider) {
+		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+	});
+	</script>
+	<script src="{{ STATIC_URL }}js/model-scope.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
+{% endblock scripts %}
+
+{% block tutorial_intro %}
+<p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">This example shows how to
+reflect Django's form data into a AngularJS controller.</p>
+
+<p>When working with Django Forms and AngularJS, it is a common use case to access the form's model
+from within an Angular controller. If the directive <code>ng-model</code> is added to an input
+field, then the controller's <code>$scope</code> object, always contains the actual field's content
+for further disposal.</p>
+<p>If a form inherits from the mixin class <code>NgModelFormMixin</code>, then Django renders each
+Field with the directive <code>ng-model="<em>fieldname</em>"</code>. To prevent the pollution
+of the scope's namespace, it is common practice to encapsulate all the form fields into a separate
+JavaScript object. The name of this encapsulating object can be set during the form definition,
+using the class member <code>scope_prefix</code>. Furthermore, set the class member
+<code>form_name</code> to a different name. Otherwise the mixin class will invent a unique form
+name for you. The <code>form_name</code> must be different from <code>scope_prefix</code>, because
+AngularJS's internal form controller adds its own object to the scope, using the form's name and
+this <em>must</em> be different from the scope's content.</p>
+<p>In this example, an additional server-side validations has been added to the form: The method
+method <code>clean()</code> rejects the combination of “John” and “Doe” for the first- and last name
+respectively. Errors for a failed form validation are send back to the client and displayed on top
+of the form.</p>
+<p>Form data submitted by Ajax, is validated by the server using the same functionality. Errors
+detected during such a validation, are sent back to the client using a JSON object. In JavaScript,
+the controller submitting the form, shall use the returned data and pass it to the special function
+<code>djangoForm.setErrors()</code>, so that all validation errors can be displayed as usual.
+{% endblock tutorial_intro %}
+
+{% block tutorial_code %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/model_scope.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/model_scope.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/model-scope.html" %}</div>
+<div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
+{% verbatim %}
+<p class="bg-info"><strong>Note: </strong>The AngularJS app is configured inside Django's HTML
+template code, since template tags, such as <code>{%&nbsp;csrf_value&nbsp;%}</code> can't be expanded in pure
+JavaScript.</p>
+{% endverbatim %}
+{% endblock tutorial_code %}

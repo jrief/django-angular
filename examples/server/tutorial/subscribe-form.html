@@ -1,0 +1,9 @@
+<script type="text/javascript">
+    angular.module('djangular-demo', ['ng.django.forms']);
+</script>
+
+<form method="post" action="." validate>
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button type="submit" class="btn btn-primary">Subscribe</button>
+</form>

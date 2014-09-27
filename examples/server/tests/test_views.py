@@ -98,20 +98,6 @@ class JSONResponseMixinTest(TestCase):
         self.assertEqual(response.status_code, 403)
         self.assertEqual(response.content.decode('utf-8'), "Method 'JSONResponseView.method_forbidden' has no decorator '@allow_remote_invocation'")
 
-    def test_post_deprecated_action(self):
-        with warnings.catch_warnings(record=True) as w:
-            data = {'foo': 'bar', 'action': 'deprecated_action'}
-            request = self.factory.post('/dummy.json',
-                data=json.dumps(data, cls=DjangoJSONEncoder),
-                content_type='application/json; charset=utf-8;',
-                HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-            response = JSONResponseView().post(request)
-            self.assertIsInstance(response, HttpResponse)
-            self.assertEqual(response.status_code, 200)
-            out_data = json.loads(response.content.decode('utf-8'))
-            self.assertTrue(out_data['success'])
-            self.assertEqual(str(w[0].message), "Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'")
-
     def test_get_method_forbidden_ok(self):
         request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
         response = JSONResponseView().get(request, invoke_method='method_forbidden')
@@ -119,16 +105,6 @@ class JSONResponseMixinTest(TestCase):
         self.assertEqual(response.status_code, 200)
         out_data = json.loads(response.content.decode('utf-8'))
         self.assertTrue(out_data['success'])
-
-    def test_get_deprecated_action(self):
-        with warnings.catch_warnings(record=True) as w:
-            request = self.factory.get('/dummy.json', HTTP_X_REQUESTED_WITH='XMLHttpRequest')
-            response = JSONResponseView().get(request, action='method_forbidden')
-            self.assertIsInstance(response, HttpResponse)
-            self.assertEqual(response.status_code, 200)
-            out_data = json.loads(response.content.decode('utf-8'))
-            self.assertTrue(out_data['success'])
-            self.assertEqual(str(w[0].message), "Using the keyword 'action' in URLresolvers is deprecated. Please use 'invoke_method' instead")
 
     def test_get_method_forbidden_fail(self):
         request = self.factory.get('/dummy.json',

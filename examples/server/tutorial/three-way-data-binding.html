@@ -1,0 +1,10 @@
+<script type="text/javascript">
+    angular.module('djangular-demo', ['ng.django.websocket']).config(function(djangoWebsocketProvider) {
+        djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
+        djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});
+    });
+</script>
+
+<form ng-controller="MyWebsocketCtrl">
+    {{ form.as_div }}
+</form>

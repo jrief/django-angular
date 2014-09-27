@@ -5,7 +5,7 @@ Integrate a Django form with an AngularJS model
 ===============================================
 
 When deriving from Django's ``forms.Form`` class in an AngularJS environment, it can be useful to
-augment the rendered form output with an AngularJS HTML tag, such as::
+enrich the rendered form output with an AngularJS HTML tag, such as::
 
 	ng-model="model_name"
 
