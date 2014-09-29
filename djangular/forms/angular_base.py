@@ -8,7 +8,16 @@ from django.utils.importlib import import_module
 from django.utils.html import format_html
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeData
+from django.core.exceptions import ValidationError
 
+def force_error_text(error):
+    if isinstance(error, ValidationError):
+        messages = error.messages
+        if len(messages) > 1:
+            return [force_text(x) for x in messages]
+        else:
+            return force_text(messages[0])
+    return force_text(error)
 
 class SafeTuple(SafeData, tuple):
     """
@@ -38,7 +47,7 @@ class TupleErrorList(list):
         return self.as_ul()
 
     def __repr__(self):
-        return repr([force_text(e[5]) for e in self])
+        return repr([force_error_text(e[5]) for e in self])
 
     def as_ul(self):
         if not self:
@@ -46,7 +55,7 @@ class TupleErrorList(list):
         error_lists = {'$pristine': [], '$dirty': []}
         for e in self:
             li_format = e[5] == '$message' and self.li_format_bind or self.li_format
-            err_tuple = (e[0], e[3], e[4], force_text(e[5]))
+            err_tuple = (e[0], e[3], e[4], force_error_text(e[5]))
             error_lists[e[2]].append(format_html(li_format, *err_tuple))
         # renders and combine both of these lists
         first = self[0]
@@ -56,7 +65,7 @@ class TupleErrorList(list):
     def as_text(self):
         if not self:
             return ''
-        return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+        return '\n'.join(['* %s' % force_error_text(e[5]) for e in self if bool(e[5])])
 
 
 class NgBoundField(forms.BoundField):
