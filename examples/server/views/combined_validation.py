@@ -6,14 +6,7 @@ from django.http import HttpResponse
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import FormView
 from django.utils.encoding import force_text
-from django.core.exceptions import ValidationError
-
-def prepare_form_errors(form):
-    # form.errors is not JSON serilizable in Django 1.7
-    rv = {}
-    for x, y in form.errors.items():
-        rv[x] = [force_text(z.message) if isinstance(z, ValidationError) else z for z in y]
-    return rv
+from djangular.views.responses import JSONResponse
 
 class SubscribeView(FormView):
     template_name = 'combined-validation.html'
@@ -27,5 +20,5 @@ class SubscribeView(FormView):
 
     def ajax(self, request):
         form = self.form_class(data=json.loads(request.body))
-        response_data = {'errors': prepare_form_errors(form), 'success_url': force_text(self.success_url)}
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        response_data = {'errors': form.errors, 'success_url': force_text(self.success_url)}
+        return JSONResponse(response_data)
