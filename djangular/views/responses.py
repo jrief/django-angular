@@ -12,7 +12,7 @@ class FormErrorJSONEncoder(DjangoJSONEncoder):
         if isinstance(o, ValidationError):
             messages = o.messages
             if len(messages) > 1:
-                return [force_text(x) for x in o.messages]
+                return [force_text(x) for x in messages]
             else:
                 return force_text(messages[0])
         else:
