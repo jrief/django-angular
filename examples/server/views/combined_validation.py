@@ -10,10 +10,10 @@ from django.core.exceptions import ValidationError
 
 def prepare_form_errors(form):
     # form.errors is not JSON serilizable in Django 1.7
-    return {x : [
-            force_text(z.message) if isinstance(z, ValidationError) else z for z in y
-        ] for x,y in form.errors.items()
-    }
+    rv = {}
+    for x, y in form.errors.items():
+        rv[x] = [force_text(z.message) if isinstance(z, ValidationError) else z for z in y]
+    return rv
 
 class SubscribeView(FormView):
     template_name = 'combined-validation.html'
