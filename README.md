@@ -12,7 +12,7 @@ New in 0.7.8
 
 0.7.7
 -----
-* Tested with Django-1.7, Django-1.6 and Django-1.5
+* Tested with Django-1.6 and Django-1.5. There is still a minor issue with Django-1.7.
 * Tested on Python 2.7 and Python 3.3
 * Huge refactoring of the code base. It now is much easier to understand the code and to add custom
   Fields and Widgets.
