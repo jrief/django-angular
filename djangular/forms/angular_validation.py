@@ -34,7 +34,8 @@ class NgFormValidationMixin(NgFormBaseMixin):
         errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
         if not isinstance(bound_field.field.widget, widgets.PasswordInput):
-            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))  # for valid fields
+            # all valid fields shall display OK tick after changed into dirty state
+            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))
             if bound_field.value():
                 # valid bound fields shall display OK tick, even in pristine state
                 errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
