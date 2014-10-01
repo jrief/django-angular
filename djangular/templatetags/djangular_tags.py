@@ -43,7 +43,7 @@ def djng_current_rmi(context):
     @allow_remote_invocation decorator. The return string can be used directly to initialize
     the AngularJS provider, such as ``djangoRMIProvider.configure({­% djng_current_rmi %­});``
     """
-    return mark_safe(json.dumps(get_current_remote_methods(context['view'])))
+    return mark_safe(json.dumps(get_current_remote_methods(context.get('view'))))
 
 
 @register.simple_tag(name='load_djng_urls')
