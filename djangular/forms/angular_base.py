@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import six
+import json
 from base64 import b64encode
+
+try:
+    from collections import UserList
+except ImportError:  # Python 2
+    from UserList import UserList
+
 from django.forms import forms
 from django.http import QueryDict
 from django.utils.importlib import import_module
-from django.utils.html import format_html, format_html_join
+from django.utils.html import format_html, format_html_join, escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeText, SafeData
+from django.core.exceptions import ValidationError
 
 
 class SafeTuple(SafeData, tuple):
@@ -18,7 +26,7 @@ class SafeTuple(SafeData, tuple):
 
 
 @python_2_unicode_compatible
-class TupleErrorList(list):
+class TupleErrorList(UserList, list):
     """
     A list of errors, which in contrast to Django's ErrorList, can contain a tuple for each item.
     If this TupleErrorList is initialized with a Python list, it behaves like Django's built-in
@@ -37,25 +45,33 @@ class TupleErrorList(list):
     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
     li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
-    def __str__(self):
-        return self.as_ul()
+    def as_data(self):
+        return ValidationError(self.data).error_list
 
-    def __repr__(self):
-        if self and isinstance(self[0], tuple):
-            return repr([force_text(e[5]) for e in self])
-        return repr([force_text(e) for e in self])
+    def get_json_data(self, escape_html=False):
+        errors = []
+        for error in self.as_data():
+            message = list(error)[0]
+            errors.append({
+                'message': escape(message) if escape_html else message,
+                'code': error.code or '',
+            })
+        return errors
+
+    def as_json(self, escape_html=False):
+        return json.dumps(self.get_json_data(escape_html))
 
     def as_ul(self):
         if not self:
             return SafeText()
-        if isinstance(self[0], tuple):
+        first = self[0]
+        if isinstance(first, tuple):
             error_lists = {'$pristine': [], '$dirty': []}
             for e in self:
                 li_format = e[5] == '$message' and self.li_format_bind or self.li_format
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
                 error_lists[e[2]].append(format_html(li_format, *err_tuple))
             # renders and combine both of these lists
-            first = self[0]
             return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
                         mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
         return format_html('<ul class="errorlist">{0}</ul>',
@@ -67,6 +83,33 @@ class TupleErrorList(list):
         if isinstance(self[0], tuple):
             return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
         return '\n'.join(['* %s' % force_text(e) for e in self])
+
+    def __str__(self):
+        return self.as_ul()
+
+    def __repr__(self):
+        if self and isinstance(self[0], tuple):
+            return repr([force_text(e[5]) for e in self])
+        return repr([force_text(e) for e in self])
+
+    def __contains__(self, item):
+        return item in list(self)
+
+    def __eq__(self, other):
+        return list(self) == other
+
+    def __ne__(self, other):
+        return list(self) != other
+
+    def __getitem__(self, i):
+        error = self.data[i]
+        if isinstance(error, tuple):
+            if isinstance(error[5], ValidationError):
+                error[5] = list(error[5])[0]
+            return error
+        if isinstance(error, ValidationError):
+            return list(error)[0]
+        return force_text(error)
 
 
 class NgBoundField(forms.BoundField):
