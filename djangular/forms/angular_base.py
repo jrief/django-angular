@@ -5,9 +5,9 @@ from base64 import b64encode
 from django.forms import forms
 from django.http import QueryDict
 from django.utils.importlib import import_module
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.encoding import python_2_unicode_compatible, force_text
-from django.utils.safestring import mark_safe, SafeData
+from django.utils.safestring import mark_safe, SafeText, SafeData
 
 
 class SafeTuple(SafeData, tuple):
@@ -20,8 +20,11 @@ class SafeTuple(SafeData, tuple):
 @python_2_unicode_compatible
 class TupleErrorList(list):
     """
-    A list of errors, which in contrast to Django's ErrorList, contains a tuple for each item.
-    This tuple consists of the following fields:
+    A list of errors, which in contrast to Django's ErrorList, can contain a tuple for each item.
+    If this TupleErrorList is initialized with a Python list, it behaves like Django's built-in
+    ErrorList.
+    If this TupleErrorList is initialized with a list of tuples, it behaves differently, suitable
+    for AngularJS form validation. Then the tuple of each list item consist of the following fields:
     0: identifier: This is the model name of the field.
     1: The CSS class added to the embedding <ul>-element.
     2: property: '$pristine', '$dirty' or None used by ng-show on the wrapping <ul>-element.
@@ -38,25 +41,32 @@ class TupleErrorList(list):
         return self.as_ul()
 
     def __repr__(self):
-        return repr([force_text(e[5]) for e in self])
+        if self and isinstance(self[0], tuple):
+            return repr([force_text(e[5]) for e in self])
+        return repr([force_text(e) for e in self])
 
     def as_ul(self):
         if not self:
-            return ''
-        error_lists = {'$pristine': [], '$dirty': []}
-        for e in self:
-            li_format = e[5] == '$message' and self.li_format_bind or self.li_format
-            err_tuple = (e[0], e[3], e[4], force_text(e[5]))
-            error_lists[e[2]].append(format_html(li_format, *err_tuple))
-        # renders and combine both of these lists
-        first = self[0]
-        return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
-                    mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+            return SafeText()
+        if isinstance(self[0], tuple):
+            error_lists = {'$pristine': [], '$dirty': []}
+            for e in self:
+                li_format = e[5] == '$message' and self.li_format_bind or self.li_format
+                err_tuple = (e[0], e[3], e[4], force_text(e[5]))
+                error_lists[e[2]].append(format_html(li_format, *err_tuple))
+            # renders and combine both of these lists
+            first = self[0]
+            return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
+                        mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+        return format_html('<ul class="errorlist">{0}</ul>',
+            format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
 
     def as_text(self):
         if not self:
             return ''
-        return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+        if isinstance(self[0], tuple):
+            return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+        return '\n'.join(['* %s' % force_text(e) for e in self])
 
 
 class NgBoundField(forms.BoundField):
