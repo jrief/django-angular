@@ -80,7 +80,7 @@ class NgBoundField(forms.BoundField):
         extra_classes.update(getattr(self.form, 'field_css_classes', '').split())
         return super(NgBoundField, self).css_classes(extra_classes)
 
-    def as_widget(self, widget=None, attrs=None, **kwargs):
+    def as_widget(self, widget=None, attrs=None, only_initial=False):
         """
         Renders the field.
         """
@@ -92,7 +92,7 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
+        return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
         attrs = attrs or {}
