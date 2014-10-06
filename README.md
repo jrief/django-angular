@@ -5,10 +5,9 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-New in 0.7.8
+New in 0.7.9
 ------------
-* Fixed: ng-minlength and ng-maxlength are not set to ``None`` if unset.
-* Fixed: Concatenated latest version of django-angular.js.
+* Full support for Django-1.7.
 
 0.7.7
 -----
