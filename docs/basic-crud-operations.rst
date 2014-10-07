@@ -56,7 +56,7 @@ Set up Angular service using ``$resource``:
 .. note:: Since there is a known bug with $resource not respecting trailing slash, the urls in Django urlconf used by $resource
           must either not have trailing slash or it should be optional (preferred) - e.g. ``url/?``. Adding the trailing slash
           to the $resource configuration regardless (``/crud/mymodel/``) ensures future compatibility in case the bug gets fixed and
-          will then follow Django's trailing slash convention.
+          will then follow Django's trailing slash convention. This has been fixed in AngularJS 1.3. More information here `trailingSlashBugFix`_
 
 Another quick change is required to Angular app config, without this ``DELETE`` requests fail ``CSRF`` test:
 
@@ -151,3 +151,4 @@ Usage example
 .. _ngRoute module: http://docs.angularjs.org/api/ngRoute
 .. _$route: http://docs.angularjs.org/api/ngRoute/service/$route
 .. _$routeParams: http://docs.angularjs.org/api/ngRoute/service/$routeParams
+.. _trailingSlashBugFix: https://github.com/kwk/docker-registry-frontend/commit/d2b34b79c669d68bb1c587aab819b48157a790e7
