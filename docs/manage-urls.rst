@@ -4,6 +4,9 @@
 Manage Django URL's for AngularJS
 =================================
 
+.. deprecated::
+   There is a proper way to provide reverse URLs for AngularJS, see the :ref:`updated docs <reverse-urls>`.
+
 You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
 your application. Do not enter into temptation to hard code such a URL into the client side
 controller code. Nor enter into temptation to create Javascript dynamically using a template
