@@ -11,7 +11,14 @@ To run the demos, change into the directory ``examples`` and start the developme
 
 .. code-block:: bash
 
+	pip install -r requirements.txt
 	./manage.py runserver
+
+You can also run unit tests:
+
+.. code-block:: bash
+
+	./manage.py test
 
 Now, point a browser onto one of
 
