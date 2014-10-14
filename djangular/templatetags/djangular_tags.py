@@ -51,6 +51,18 @@ def djng_urls():
     return mark_safe(json.dumps(get_urls()))
 
 
+@register.simple_tag(name='load_djng_namespace_urls', takes_context=True)
+def djng_namespace_urls(context, namespaces=None):
+    if namespaces == '':
+        filter_namespaces = ['']
+    elif namespaces:
+        filter_namespaces = [n.strip() for n in namespaces.split(',')]
+    else:
+        request = context['request']
+        filter_namespaces = [request.resolver_match.namespace]
+    return mark_safe(json.dumps(get_urls(filter_namespaces)))
+
+
 class AngularJsNode(Node):
     def __init__(self, django_nodelist, angular_nodelist, variable):
         self.django_nodelist = django_nodelist
