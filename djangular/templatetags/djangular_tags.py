@@ -46,21 +46,20 @@ def djng_current_rmi(context):
     return mark_safe(json.dumps(get_current_remote_methods(context.get('view'))))
 
 
-@register.simple_tag(name='load_djng_urls')
-def djng_urls():
-    return mark_safe(json.dumps(get_urls()))
+@register.simple_tag(name='load_djng_urls', takes_context=True)
+def djng_urls(context, *namespaces):
+    def _replace_namespace(n):
+        if n == 'SELF':
+            request = context.get('request')
+            if not request:
+                raise ImproperlyConfigured("'SELF' was used in 'load_djng_urls' for request namespace "
+                                           "lookup, but there is no RequestContext.")
+            return request.resolver_match.namespace
+        elif n == '':
+            return None
+        return n
 
-
-@register.simple_tag(name='load_djng_namespace_urls', takes_context=True)
-def djng_namespace_urls(context, namespaces=None):
-    if namespaces == '':
-        filter_namespaces = ['']
-    elif namespaces:
-        filter_namespaces = [n.strip() for n in namespaces.split(',')]
-    else:
-        request = context['request']
-        filter_namespaces = [request.resolver_match.namespace]
-    return mark_safe(json.dumps(get_urls(filter_namespaces)))
+    return mark_safe(json.dumps(get_urls(map(_replace_namespace, namespaces))))
 
 
 class AngularJsNode(Node):

@@ -36,6 +36,14 @@ Now, you have to include ``django-angular.js`` and add data about your django ur
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
     <script>angular.module('ng.django.urls').constant('patterns', {% load_djng_urls %});</script>
 
+By default, ``load_djng_urls`` loads all available URLs from the root configuration. Optionally, this can be narrowed
+down to a set of namespaces, by adding them as arguments, e.g. ``{% load_djng_urls 'app_namespace' %}``. Using
+``'SELF'`` adds all URLs that are in the same namespace as the current request. The root level of the URL configuration
+can be referred to with an empty string or ``None``.
+
+.. note:: When a namespace is specified, included sub-namespaces are not loaded. If needed, add them
+          separately, for example ``{% load_djng_urls 'main' 'main:sub' %}``.
+
 The ``djangoUrl`` service is then available through `dependency injection`_
 to all directives and controllers.
 

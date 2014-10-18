@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 import warnings
 from inspect import isclass
 
-from django.conf import settings
 from django.utils import six
 from django.utils.module_loading import import_by_path
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
@@ -86,8 +85,8 @@ def get_url_patterns(patterns, namespace=None, parent_regex=None, filter_namespa
     Names also include namespace, e.g. {'accounts:login': '^login/$'}
     """
     matches_namespace = not filter_namespaces or namespace in filter_namespaces
-    matches_name_prefix = not filter_namespaces or not namespace or any(namespace.startswith(fn)
-                                                                        for fn in filter_namespaces)
+    matches_name_prefix = not filter_namespaces or not namespace or any(fn.startswith(namespace)
+                                                                        for fn in filter_namespaces if fn)
     if not (matches_namespace or matches_name_prefix):
         return {}
     pattern_dict = {}
