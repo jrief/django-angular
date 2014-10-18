@@ -59,7 +59,7 @@ def djng_urls(context, *namespaces):
             return None
         return n
 
-    return mark_safe(json.dumps(get_urls(map(_replace_namespace, namespaces))))
+    return mark_safe(json.dumps(get_urls(list(map(_replace_namespace, namespaces)))))
 
 
 class AngularJsNode(Node):
