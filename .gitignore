@@ -4,6 +4,7 @@
 *~
 .tmp*
 .DS_Store
+.idea/
 cdncache/
 dist/
 htmlcov/
