@@ -85,10 +85,7 @@ def get_url_patterns(patterns, namespace=None, parent_regex=None, filter_namespa
     Names also include namespace, e.g. {'accounts:login': '^login/$'}
     """
     matches_namespace = not filter_namespaces or namespace in filter_namespaces
-    matches_name_prefix = not filter_namespaces or not namespace or any(fn.startswith(namespace)
-                                                                        for fn in filter_namespaces if fn)
-    if not (matches_namespace or matches_name_prefix):
-        return {}
+
     pattern_dict = {}
     for pattern in patterns:
 
