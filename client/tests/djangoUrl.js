@@ -1,3 +1,5 @@
+/* global describe,beforeEach,module,it,inject,expect  */
+
 'use strict';
 
 describe('unit tests for module ng.django.url', function () {
@@ -13,7 +15,7 @@ describe('unit tests for module ng.django.url', function () {
         describe('general url reverser tests', function () {
             it('should raise an error when no matching url is found', inject(function (djangoUrl) {
                 expect(function () {
-                    djangoUrl.reverse('home12')
+                    djangoUrl.reverse('home12');
                 }).toThrow();
             }));
         });
@@ -34,19 +36,19 @@ describe('unit tests for module ng.django.url', function () {
             }));
 
             it("should ignore extra arguments", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', [2, 3])).toBe('/api/2/overview/')
+                expect(djangoUrl.reverse('api:overview', [2, 3])).toBe('/api/2/overview/');
             }));
 
             it("should raise an error when there are not enough arguments", inject(function (djangoUrl) {
                 expect(function () {
-                    djangoUrl.reverse('api:overview', [])
+                    djangoUrl.reverse('api:overview', []);
                 }).toThrow();
             }));
 
-            it("should not raise an exception when not given any arguments if none are required",
+            it("should not raise an exception when not given any arguments",
                 inject(function (djangoUrl) {
                     expect(function () {
-                        djangoUrl.reverse('api:overview')
+                        djangoUrl.reverse('api:overview');
                     }).not.toThrow();
                 }));
         });
@@ -72,11 +74,14 @@ describe('unit tests for module ng.django.url', function () {
                     .toBe('/api/2/visitors/:visitor_id/');
             }));
 
-            it("should default to kwargs mode when no args/kwargs are given (parametrized urls)",
-                inject(function (djangoUrl) {
-                        expect(djangoUrl.reverse('api:overview')).toBe('/api/:website_id/overview/');
-                    }
-                ));
+            it("should default to kwargs mode when no args/kwargs are given (parametrized urls)", inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('api:overview')).toBe('/api/:website_id/overview/');
+            }));
+
+            it("should work with optional groups", inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('api:article', {slug: 'my-article'}))
+                    .toBe('/app/:website_id/articles/my-article/123/');
+            }));
         });
     });
 });
