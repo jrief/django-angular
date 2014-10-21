@@ -34,12 +34,12 @@
 
 {% block tutorial_intro %}
 <p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">This example shows,
-how to propagate the the Form's scope to a foreign browser</p>
+how to propagate the Form's scope to a foreign browser</p>
 <p>With <b>django-angular</b> and the additional Django app
 <a href="https://github.com/jrief/django-websocket-redis">django-websocket-redis</a>, one can extend
 two-way data-binding to propagate all changes on a model, back and forward with a corresponding
-object stored on the server. This means, that the server “sees” whenever the model on the client
-changes and can by itself, modify values on the client side at any time, without having the client
+object stored on the server. This means, that the server “sees” whenever the model changes on the client
+and can by itself, modify values on the client side at any time, without having the client
 to poll for new messages.</p>
 <p>This can be useful, when the server wants to inform the clients about asynchronous events such
 as sport results, chat messages or multi-player game events.</p>
