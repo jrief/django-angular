@@ -16,3 +16,7 @@ class DummyModel2(models.Model):
 class SimpleModel(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
+
+
+class M2MModel(models.Model):
+    dummy_models = models.ManyToManyField(DummyModel2)
