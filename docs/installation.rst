@@ -3,7 +3,9 @@
 ============
 Installation
 ============
-Install **Django-Angular**. The latest stable release can be found on PyPI
+Install **Django-Angular**. The latest stable release can be found on PyPI. Django-Angular 
+is meant to be used in conjunction with an existing Django installation. Please follow
+the Django tutorial first if you do not have an existing install.
 
 .. code-block:: bash
 
