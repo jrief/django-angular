@@ -21,7 +21,7 @@ New in 0.7.9
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 
-Detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/).
+Detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/en/latest/).
 
 Please participate at this [survey on naming conventions](https://github.com/jrief/django-angular/issues/35)!
 
