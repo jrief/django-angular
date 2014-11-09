@@ -8,9 +8,9 @@ Manage Django URL's for AngularJS
    There is a proper way to provide reverse URLs for AngularJS, see the :ref:`updated docs <reverse-urls>`.
 
 You may have noticed, that AngularJS controllers sometimes need a URL pointing onto a View of your
-Django application. Don't come into temptation to hard code such a URL in the client's controller code.
-Nor come into temptation to create Javascript dynamically using a template engine. There is a portable
-and simple solution to this problem.
+Django application. Don't be tempted to hard code such a URL in the client's controller code. Nor
+be tempted to create Javascript dynamically using a template engine. There is a portable and simple
+solution to this problem.
 
 It is good practice to add configuration directives to applications as constants to the `AngularJS
 module definition`_. This can be done safely in the template code rendered by Django. And that's the

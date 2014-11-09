@@ -20,4 +20,4 @@ class TemplateRemoteMethods(TestCase):
 
     def test_get_all_remote_methods(self):
         remote_methods = get_all_remote_methods()
-        self.assertDictEqual(remote_methods, {'submethods': {'sub': {'app': {'foo': {'url': '/sub_methods/sub/app/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': '/sub_methods/sub/app/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}}}}, 'straightmethods': {'foo': {'url': '/straight_methods/', 'headers': {'DjNg-Remote-Method': 'foo'}, 'method': 'auto'}, 'bar': {'url': '/straight_methods/', 'headers': {'DjNg-Remote-Method': 'bar'}, 'method': 'auto'}}})
+        self.assertDictEqual(remote_methods, {'urlresolvertags': {'blah': {u'url': '/url_resolvers/', u'headers': {u'DjNg-Remote-Method': 'blah'}, u'method': 'auto'}}, 'submethods': {'sub': {'app': {'foo': {u'url': '/sub_methods/sub/app/', u'headers': {u'DjNg-Remote-Method': 'foo'}, u'method': 'auto'}, 'bar': {u'url': '/sub_methods/sub/app/', u'headers': {u'DjNg-Remote-Method': 'bar'}, u'method': 'auto'}}}}})
