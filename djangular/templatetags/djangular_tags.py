@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from django.template import Library
-from django.template.base import Node, NodeList, TextNode, VariableNode
+from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
@@ -78,7 +78,8 @@ class AngularJsNode(Node):
 @register.tag
 def angularjs(parser, token):
     """
-    Conditionally switch between AngularJS and Django variable expansion.
+    Conditionally switch between AngularJS and Django variable expansion for ``{{`` and ``}}``
+    keeping Django's expansion for ``{%`` and ``%}``
 
     Usage::
 
@@ -102,7 +103,15 @@ def angularjs(parser, token):
         # convert all occurrences of VariableNode into a TextNode using the
         # AngularJS double curly bracket notation
         if isinstance(node, VariableNode):
-            node = TextNode('{{ %s }}' % node.filter_expression.token)
+            # convert Django's array notation into JS array notation
+            tokens = node.filter_expression.token.split('.')
+            token = tokens[0]
+            for part in tokens[1:]:
+                if part.isdigit():
+                    token += '[%s]' % part
+                else:
+                    token += '.%s' % part
+            node = TextNode('{{ %s }}' % token)
         angular_nodelist.append(node)
     parser.delete_first_token()
     return AngularJsNode(django_nodelist, angular_nodelist, values[0])

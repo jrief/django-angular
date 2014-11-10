@@ -51,8 +51,27 @@ sub_patterns = patterns('',
     url(r'^sub/', include(subsub_patterns, namespace='sub')),
 )
 
+
+class TestAngularTagView(View):
+    def get(self, request):
+        tmpl_id = request.GET.get('tmpl_id')
+        switch = bool(request.GET.get('switch'))
+        if tmpl_id == 'expand_object':
+            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme.foo }}{% endangularjs %}')
+            context = {'switch': switch, 'expandme': {'foo': 'bar'}}
+        elif tmpl_id == 'expand_array':
+            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme.1.foo }}{% endangularjs %}')
+            context = {'switch': switch, 'expandme': [{'foo': 'zero'}, {'foo': 'one'}]}
+        else:
+            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme }}{% endangularjs %}')
+            context = {'switch': switch, 'expandme': 'Hello World'}
+        request_context = RequestContext(request, context)
+        return HttpResponse(template.render(request_context))
+
+
 urlpatterns = patterns('',
     url(r'^sub_methods/', include(sub_patterns, namespace='submethods')),
     url(r'^straight_methods/$', TestCSRFValueView.as_view(), name='straightmethods'),
     url(r'^url_resolvers/$', TestUrlResolverTagsView.as_view(), name='urlresolvertags'),
+    url(r'^angular_tag/$', TestAngularTagView.as_view(), name='angulartags'),
 )
