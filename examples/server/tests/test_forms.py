@@ -4,7 +4,7 @@ from django.db import models
 from django import forms
 from django.http import QueryDict
 from django.test import TestCase
-from djangular.forms import NgModelFormMixin
+from djangular.forms import NgModelFormMixin, NgModelForm
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -18,20 +18,20 @@ class SubModel(models.Model):
     first_name = models.CharField(max_length=40, blank=True)
 
 
-class SubForm1(NgModelFormMixin, forms.ModelForm):
+class SubForm1(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
 
 
-class SubForm2(NgModelFormMixin, forms.ModelForm):
+class SubForm2(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
         ng_models = ['select_choices', 'first_name']
 
 
-class InvalidForm(NgModelFormMixin, forms.ModelForm):
+class InvalidForm(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
         ng_models = {}
