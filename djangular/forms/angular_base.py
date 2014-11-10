@@ -155,7 +155,7 @@ class NgBoundField(forms.BoundField):
         return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
 
 
-class NgDeclarativeFieldsMetaclass(forms.DeclarativeFieldsMetaclass):
+class BaseFieldsModifierMetaclass(type):
     """
     Metaclass that reconverts Field attributes from the dictionary 'base_fields' into Fields
     with additional functionality required for AngularJS's Form control and Form validation.
@@ -163,7 +163,7 @@ class NgDeclarativeFieldsMetaclass(forms.DeclarativeFieldsMetaclass):
     field_mixins_module = 'djangular.forms.field_mixins'
 
     def __new__(cls, name, bases, attrs):
-        new_class = super(NgDeclarativeFieldsMetaclass, cls).__new__(cls, name, bases, attrs)
+        new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
         field_mixins_module = import_module(new_class.field_mixins_module)
         field_mixins_fallback_module = import_module(cls.field_mixins_module)
         # add additional methods to django.form.fields at runtime
