@@ -155,17 +155,19 @@ class NgBoundField(forms.BoundField):
         return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
 
 
-class NgFormBaseMixin(object):
-    form_error_css_classes = 'djng-form-errors'
-    field_error_css_classes = 'djng-field-errors'
-    field_mixins_module = field_mixins_fallback_module = 'djangular.forms.field_mixins'
+class NgDeclarativeFieldsMetaclass(forms.DeclarativeFieldsMetaclass):
+    """
+    Metaclass that reconverts Field attributes from the dictionary 'base_fields' into Fields
+    with additional functionality required for AngularJS's Form control and Form validation.
+    """
+    field_mixins_module = 'djangular.forms.field_mixins'
 
-    def __new__(cls, **kwargs):
-        field_mixins_module = import_module(cls.field_mixins_module)
-        field_mixins_fallback_module = import_module(cls.field_mixins_fallback_module)
-        new_cls = super(NgFormBaseMixin, cls).__new__(cls)
+    def __new__(cls, name, bases, attrs):
+        new_class = super(NgDeclarativeFieldsMetaclass, cls).__new__(cls, name, bases, attrs)
+        field_mixins_module = import_module(new_class.field_mixins_module)
+        field_mixins_fallback_module = import_module(cls.field_mixins_module)
         # add additional methods to django.form.fields at runtime
-        for field in new_cls.base_fields.values():
+        for field in new_class.base_fields.values():
             FieldMixinName = field.__class__.__name__ + 'Mixin'
             try:
                 FieldMixin = getattr(field_mixins_module, FieldMixinName)
@@ -175,7 +177,12 @@ class NgFormBaseMixin(object):
                 except AttributeError:
                     FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
             field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
-        return new_cls
+        return new_class
+
+
+class NgFormBaseMixin(object):
+    form_error_css_classes = 'djng-form-errors'
+    field_error_css_classes = 'djng-field-errors'
 
     def __init__(self, data=None, *args, **kwargs):
         try:
