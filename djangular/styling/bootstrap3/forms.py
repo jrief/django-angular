@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from djangular.forms.angular_base import NgFormBaseMixin
+import six
+from django import forms
+from djangular.forms import NgDeclarativeFieldsMetaclass, NgFormBaseMixin
 
 
-class Bootstrap3FormMixin(NgFormBaseMixin):
+class Bootstrap3FormMixin(object):
     field_css_classes = 'form-group has-feedback'
     widget_css_classes = 'form-control'
     form_error_css_classes = 'djng-form-errors'
@@ -23,3 +25,10 @@ class Bootstrap3FormMixin(NgFormBaseMixin):
             help_text_html='<span class="help-block">%s</span>',
             errors_on_separate_row=False)
         return div_element
+
+
+class Bootstrap3Form(six.with_metaclass(NgDeclarativeFieldsMetaclass, Bootstrap3FormMixin, NgFormBaseMixin, forms.BaseForm)):
+    """
+    Convenience class to be used instead of Django's internal ``forms.Form`` when declaring
+    a form to be used with AngularJS and Bootstrap3 styling.
+    """

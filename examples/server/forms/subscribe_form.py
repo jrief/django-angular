@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 from django import forms
 from django.core.exceptions import ValidationError
 from djangular.forms.fields import FloatField
-from djangular.styling.bootstrap3.forms import Bootstrap3FormMixin
+from djangular.styling.bootstrap3.forms import Bootstrap3Form
 
 
 def validate_password(value):
@@ -13,7 +13,7 @@ def validate_password(value):
         raise ValidationError('The password is wrong.')
 
 
-class SubscribeForm(Bootstrap3FormMixin, forms.Form):
+class SubscribeForm(Bootstrap3Form):
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
