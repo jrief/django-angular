@@ -16,17 +16,17 @@ class TemplateTagsTest(TestCase):
     def test_load_all_urls(self):
         client = Client()
         response = client.get('/url_resolvers/')
-        self.assertIn('"submethods:sub:app": "/sub_methods/sub/app/"', response.content)
-        self.assertIn('"straightmethods": "/straight_methods/"', response.content)
+        self.assertIn('"submethods:sub:app": "/sub_methods/sub/app/"', str(response.content))
+        self.assertIn('"straightmethods": "/straight_methods/"', str(response.content))
 
     def test_load_self_urls(self):
         client = Client()
         response = client.get('/sub_methods/sub/app/', {'load': 'self_urls'})
-        self.assertIn('"submethods:sub:app": "/sub_methods/sub/app/"', response.content)
-        self.assertNotIn('"straightmethods": "/straight_methods/"', response.content)
+        self.assertIn('"submethods:sub:app": "/sub_methods/sub/app/"', str(response.content))
+        self.assertNotIn('"straightmethods": "/straight_methods/"', str(response.content))
 
     def test_load_root_urls(self):
         client = Client()
         response = client.get('/url_resolvers/', {'load': 'root_urls'})
-        self.assertNotIn('"submethods:sub:app": "/sub_methods/sub/app/"', response.content)
-        self.assertIn('"straightmethods": "/straight_methods/"', response.content)
+        self.assertNotIn('"submethods:sub:app": "/sub_methods/sub/app/"', str(response.content))
+        self.assertIn('"straightmethods": "/straight_methods/"', str(response.content))
