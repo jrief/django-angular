@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import six
-from django import forms
-from djangular.forms import NgDeclarativeFieldsMetaclass, NgFormBaseMixin
+from django.forms.forms import BaseForm
+from django.forms.models import BaseModelForm
+from django.utils import six
+from djangular.forms import NgDeclarativeFieldsMetaclass, NgModelFormMetaclass, NgFormBaseMixin
 
 
 class Bootstrap3FormMixin(object):

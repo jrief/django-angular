@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import six
 from base64 import b64encode
-import django
+from django import VERSION
+from django.utils import six
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
 from server.forms.client_validation import SubscribeForm as ClientValidatedForm
@@ -27,7 +27,7 @@ class NgFormValidationMixinTest(TestCase):
         self.assertDictContainsSubset({'ng-minlength': '3'}, attrib)
         self.assertDictContainsSubset({'ng-maxlength': '20'}, attrib)
         lis = self.dom('label[for=id_first_name]').closest('th').next('td').children('ul.djng-field-errors > li')
-        if django.VERSION[1] == 5:
+        if VERSION[1] == 5:
             # Django < 1.6 not not know about minlength and maxlength
             self.assertEqual(len(lis), 2)
         else:
@@ -43,7 +43,7 @@ class NgFormValidationMixinTest(TestCase):
         attrib = dict(email_field[0].attrib.items())
         self.assertNotIn('required', attrib)
         self.assertDictContainsSubset({'ng-model': 'email'}, attrib)
-        if django.VERSION[1] == 5:
+        if VERSION[1] == 5:
             self.assertDictContainsSubset({'type': 'text'}, attrib)
         else:
             self.assertDictContainsSubset({'type': 'email'}, attrib)
@@ -88,7 +88,7 @@ class NgFormValidationWithModelMixinTest(TestCase):
         weight = self.dom('input[name=weight]')
         self.assertEqual(len(weight), 1)
         attrib = dict(weight[0].attrib.items())
-        if django.VERSION[1] == 5:
+        if VERSION[1] == 5:
             self.assertDictContainsSubset({'type': 'text'}, attrib)
         else:
             self.assertDictContainsSubset({'type': 'number'}, attrib)
@@ -100,7 +100,7 @@ class NgFormValidationWithModelMixinTest(TestCase):
         height = self.dom('input[name=height]')
         self.assertEqual(len(height), 1)
         attrib = dict(height[0].attrib.items())
-        if django.VERSION[1] == 5:
+        if VERSION[1] == 5:
             self.assertDictContainsSubset({'type': 'text'}, attrib)
         else:
             self.assertDictContainsSubset({'type': 'number'}, attrib)

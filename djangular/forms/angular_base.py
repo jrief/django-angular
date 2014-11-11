@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import six
 import json
 from base64 import b64encode
 
@@ -11,6 +10,7 @@ except ImportError:  # Python 2
 
 from django.forms import forms
 from django.http import QueryDict
+from django.utils import six
 from django.utils.importlib import import_module
 from django.utils.html import format_html, format_html_join, escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
