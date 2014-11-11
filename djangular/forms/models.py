@@ -14,7 +14,7 @@ class PatchedModelFormMetaclass(type):
         formfield_callback = attrs.pop('formfield_callback', None)
         try:
             parents = [b for b in bases if issubclass(b, BaseModelForm)]
-            # fixed bug in django.forms.models:          ^^^^^^^^^^^^^
+            # for Django<=1.6, fix bug in forms.models:  ^^^^^^^^^^^^^
         except NameError:
             # We are defining ModelForm itself.
             parents = None
