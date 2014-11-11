@@ -190,3 +190,9 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         new_widget = DjngCheckboxSelectMultiple()
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
+
+
+class FileFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        errors = []
+        return errors
