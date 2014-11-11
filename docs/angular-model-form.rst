@@ -14,17 +14,45 @@ where *model_name* corresponds to the named field from the declared form class.
 Sample code
 ===========
 
-Assume to have a simple Django form class with a single input field. Augment its functionality
+Assume to have a simple Django form class with a single input field. Enrich its functionality
 by mixing in the **djangular** class ``NgModelFormMixin``
+
+.. note:: Here the names **NgModelForm...** do not interrelate with Django's ``forms.ModelForm``.
+		Instead that name reflects the HTML attribute ``ng-model`` as used in ``<form>``-elements
+		under control of AngularJS.
 
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms.angular_model import NgModelFormMixin
+	from django.utils import six
+	from djangular.forms import NgDeclarativeFieldsMetaclass, NgModelFormMixin
 	
-	class ContactForm(NgModelFormMixin, forms.Form):
+	class ContactForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgModelFormMixin, forms.Form)):
 	    subject = forms.CharField()
 	    # more fields ...
+
+In the majority of cases, the Form is derived from Django's ``forms.Form``, so the above example
+can be rewritten in a simpler way, by using the convenience class ``NgForm`` as a replacement:
+
+.. code-block:: python
+
+	from djangular.forms import NgModelFormMixin, NgForm
+	
+	class MyValidatedForm(NgModelFormMixin, NgForm):
+	    # members as above
+
+If the Form shall inherit from Django's ``forms.ModelForm``, use the convenience class
+``NgModelForm``:
+
+.. code-block:: python
+
+	from djangular.forms import NgModelFormMixin, NgModelForm
+	
+	class MyValidatedForm(NgModelFormMixin, NgModelForm):
+	    class Meta:
+	         model = Article
+	
+	    # fields as usual
 
 Now, each rendered form field gets an additional attribute ``ng-model`` containing the field's name.
 For example, the input field named ``subject`` now will be rendered as:
@@ -81,8 +109,8 @@ and using some Javascript code to define the AngularJS controller:
 
 Note that the ``<form>`` tag does not require any ``method`` or ``action`` attribute, since the
 promise_ ``success`` in the controller's submit function will handle any further action.
-The success handler, for instance could load a new page or complain about missing fields. In fact,
-it is possible to build forms without even using the ``<form>`` tag anymore. All what is needed
+The success handler, for instance could load a new page or complain about missing fields. It now
+it is even possible to build forms without using the ``<form>`` tag anymore. All what's needed
 from now on, is a working AngularJS controller.
 
 As usual, the form view must handle the post data received through the POST (aka Ajax) request.
