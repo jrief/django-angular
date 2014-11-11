@@ -100,6 +100,34 @@ using the mustache syntax. This is to ensure, that unverified content from upstr
 sanitized. We can assert this, since this text content is coming from the database field
 ``description`` and thus is marked as `safe string`_ by Django.
 
+Python List / Javascript Arrays
+-------------------------------
+
+The Django template engine accesses members of Python dictionaries using the *dot* notation. This is
+the same notation as used by JavaScript to access members of objects. When accessing lists in Django
+templates or arrays in JavaScript, this notation is not compatible any more. Therefore as
+convenience, always use the Django template notation, even for JavaScript arrays. Say, in Python
+you have a list of objects:
+
+.. code-block:: python
+
+	somelist = [{'member': 'first'}, {'member': 'second'}, {'member': 'third'},]
+
+To access the third member, Django's template code shall be written as:
+
+.. code-block:: html
+
+	{{ somelist.2.member }}
+
+when this block is resolved for AngularJS template rendering, the above code is expanded to:
+
+.. code-block:: html
+
+	{{ somelist[2].member }}
+
+otherwise it would be impossible to reuse Python lists converted to JavaScript arrays inside the
+same template code.
+
 .. _references onto URLs: https://docs.angularjs.org/api/ng/directive/ngHref
 .. _image sources: https://docs.angularjs.org/api/ng/directive/ngSrc
 .. _ng-bind-html: https://docs.angularjs.org/api/ng/directive/ngBindHtml
