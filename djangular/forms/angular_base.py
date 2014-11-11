@@ -217,7 +217,8 @@ class NgFormBaseMixin(object):
 
     def get_field_errors(self, field):
         """
-        Return server side errors. Shall be overridden by derived forms to add their extra errors for AngularJS.
+        Return server side errors. Shall be overridden by derived forms to add their
+        extra errors for AngularJS.
         """
         identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors = self.errors.get(field.name, [])
