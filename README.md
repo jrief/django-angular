@@ -5,10 +5,8 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-Please help me to test the next upcoming version 0.7.10. Feedback is appreciated.
-
-0.7.10 (release candidate)
---------------------------
+0.7.10
+------
 * Fixed inheritance problem (#122) caused by a metaclass conflicting with Django's
   ``DeclarativeFieldsMetaclass``. This now should fix some issues when using ``forms.ModelForm``.
   Please refer to the documentation, since the API changed slightly.
