@@ -130,7 +130,14 @@ class NgBoundField(forms.BoundField):
         if hasattr(extra_classes, 'split'):
             extra_classes = extra_classes.split()
         extra_classes = set(extra_classes or [])
-        extra_classes.update(getattr(self.form, 'field_css_classes', '').split())
+        field_css_classes = getattr(self.form, 'field_css_classes', None)
+        if isinstance(field_css_classes, six.string_types):
+            extra_classes.update(field_css_classes.split())
+        elif isinstance(field_css_classes, dict):
+            if self.name in field_css_classes:
+                extra_classes.update(field_css_classes[self.name].split())
+            if '*' in field_css_classes:
+                extra_classes.update(field_css_classes['*'].split())
         return super(NgBoundField, self).css_classes(extra_classes)
 
     def as_widget(self, widget=None, attrs=None, only_initial=False):
