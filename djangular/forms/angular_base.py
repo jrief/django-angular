@@ -130,14 +130,19 @@ class NgBoundField(forms.BoundField):
         if hasattr(extra_classes, 'split'):
             extra_classes = extra_classes.split()
         extra_classes = set(extra_classes or [])
+        # field_css_classes is an optional member of a Form optimized for django-angular
         field_css_classes = getattr(self.form, 'field_css_classes', None)
-        if isinstance(field_css_classes, six.string_types):
+        if hasattr(field_css_classes, 'split'):
             extra_classes.update(field_css_classes.split())
+        elif isinstance(field_css_classes, (list, tuple)):
+            extra_classes.update(field_css_classes)
         elif isinstance(field_css_classes, dict):
-            if self.name in field_css_classes:
-                extra_classes.update(field_css_classes[self.name].split())
-            if '*' in field_css_classes:
-                extra_classes.update(field_css_classes['*'].split())
+            for key in (self.name, '*',):
+                extra_field_classes = field_css_classes.get(key)
+                if hasattr(extra_field_classes, 'split'):
+                    extra_field_classes = extra_field_classes.split()
+                extra_field_classes = set(extra_field_classes or [])
+                extra_classes.update(extra_field_classes)
         return super(NgBoundField, self).css_classes(extra_classes)
 
     def as_widget(self, widget=None, attrs=None, only_initial=False):
