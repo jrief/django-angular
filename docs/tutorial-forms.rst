@@ -70,6 +70,31 @@ AngularJS does not take into account the concept of bound Forms. Therefore, inpu
 with preset values, are displayed as empty fields. To circumvent this, the **django-angular**
 Form directive re-enables the rendering of the bound field values.
 
+Dynamically Hiding Form Fields for Bootstrap
+--------------------------------------------
+A common use case is to hide a form field based on the value of another. For example, to hide the
+``phone`` field if the user selects Female within ``SubscriptionForm``, overwrite
+``field_css_classes`` on ``SubscriptionForm``:
+
+.. code-block:: python
+
+    field_css_classes = {
+        '*': 'form-group has-feedback',
+        'phone': "ng-class:{'ng-hide':sex==='f'}",
+    }
+
+``field_css_classes`` adds css classes to the wrapper div surrounding individual fields in bootstrap.
+In the above example, '*' adds the classes to all fields within the form and 'phone' is only added
+for the 'phone' field. Only Angular directives that can be used as css classes are allowed within
+``field_css_classes``.  Additionally, if specified as a string, the string may not contain any
+spaces or double quotes. However, if specified as a list, spaces can then be used, e.g.
+
+.. code-block:: python
+
+    field_css_classes = {
+        '*': 'form-group has-feedback',
+        'phone': ["ng-class: {'ng-hide': sex==='f'};"],
+    }
 
 Client-side Form validation
 ===========================
