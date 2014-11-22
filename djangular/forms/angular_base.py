@@ -162,8 +162,23 @@ class NgBoundField(forms.BoundField):
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
         attrs = attrs or {}
         css_classes = getattr(self.field, 'label_css_classes', None)
+        if hasattr(css_classes, 'split'):
+            css_classes = css_classes.split()
+        css_classes = set(css_classes or [])
+        label_css_classes = getattr(self.form, 'label_css_classes', None)
+        if hasattr(label_css_classes, 'split'):
+            css_classes.update(label_css_classes.split())
+        elif isinstance(label_css_classes, (list, tuple)):
+            css_classes.update(label_css_classes)
+        elif isinstance(label_css_classes, dict):
+            for key in (self.name, '*',):
+                extra_label_classes = label_css_classes.get(key)
+                if hasattr(extra_label_classes, 'split'):
+                    extra_label_classes = extra_label_classes.split()
+                extra_label_classes = set(extra_label_classes or [])
+                css_classes.update(extra_label_classes)
         if css_classes:
-            attrs.update({'class': css_classes})
+            attrs.update({'class': ' '.join(css_classes)})
         return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
 
 

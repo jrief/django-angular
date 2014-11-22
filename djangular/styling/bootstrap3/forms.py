@@ -12,6 +12,7 @@ class Bootstrap3FormMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
     field_mixins_module = 'djangular.styling.bootstrap3.field_mixins'
+    label_css_classes = 'control-label'
 
     def as_div(self):
         """
