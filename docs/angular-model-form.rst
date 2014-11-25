@@ -201,29 +201,3 @@ parsing of all bound form fields, even from the nested forms.
 		use a dot ‘``.``’, since this is the natural separator between Javascript objects.
 
 .. _promise: https://en.wikipedia.org/wiki/Promise_(programming)
-
-MultipleChoiceField
--------------------
-You may use any Field, as made available by the Django's Form framework. Unfortunately there is one
-exception: If ``forms.MultipleChoiceField`` is used in combination with the widget
-``forms.CheckboxSelectMultiple`` AngularJS is not able to bind the scope to the input fields.
-
-To circumvent this, **django-angular** is shipped with a special form field type, which is able
-to handle this issue. Therefore, if you have a form field such as:
-
-.. code-block:: python
-
-	class MyForm(forms.Form):
-	    # other fields
-	    a_field = forms.MultipleChoiceField(choices=..., widget=forms.CheckboxSelectMultiple, ...)
-
-replace it by:
-
-.. code-block:: python
-
-	from djangular.forms.fields import DjngMultipleCheckboxField
-
-	class MyForm(forms.Form):
-	    a_field = DjngMultipleCheckboxField(choices=..., ...)
-
-Now the form's input fields are rendered with slightly different attributes.
