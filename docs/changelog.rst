@@ -4,6 +4,14 @@
 Release History
 ===============
 
+0.7.10
+------
+* Fixed inheritance problem (#122) caused by a metaclass conflicting with Django's
+  ``DeclarativeFieldsMetaclass``. This now should fix some issues when using ``forms.ModelForm``.
+  This fix changed the API slightly.
+* Fixed expansion for templatetag ``{% angularjs %}`` (#117) when using lists in Python / arrays
+  in JavaScript.
+
 0.7.9
 -----
 * ``TupleErrorList`` has been adopted to fully support Django-1.7.
