@@ -33,8 +33,12 @@ class NgMessagesTupleErrorList(TupleErrorList):
 
 
 class NgMessagesMixin(NgFormBaseMixin):
+	
     def __init__(self, data=None, *args, **kwargs):
         kwargs['error_class'] = NgMessagesTupleErrorList
         super(NgMessagesMixin, self).__init__(data, *args, **kwargs)
-        for field in self.fields.itervalues():
-            field.widget.attrs['validate-rejected'] = ""
+
+    def get_widget_attrs(self, bound_field):
+        attrs = super(NgMessagesMixin, self).get_widget_attrs(bound_field)
+        attrs['validate-rejected'] = ""
+        return attrs
