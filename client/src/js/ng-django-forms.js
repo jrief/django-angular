@@ -286,7 +286,9 @@ djng_forms_module.factory('djangoForm', function() {
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
-								if (angular.isArray(subField.$viewChangeListeners)) {
+								//this can occur in 1.3 due to new 'pending' prop being undefined
+								if (angular.isDefined(subField) &&
+									angular.isArray(subField.$viewChangeListeners)) {
 									resetFieldValidity(subField);
 								}
 							});

@@ -35,6 +35,9 @@
 					<li class="{% active request 'djng_combined_validation' %}">
 						<a href="{% url 'djng_combined_validation' %}">Combined Validation</a>
 					</li>
+					<li class="{% active request 'djng_angular_messages' %}">
+						<a href="{% url 'djng_angular_messages' %}">angular-messages</a>
+					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
 						<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>
@@ -48,7 +51,10 @@
 	<div class="container">
 		{% block container %}{% endblock %}
 	</div>
+	<script src="{{ STATIC_URL }}js/lodash.min.js" type="text/javascript"></script>
+	{% block angular_script %}
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.23/angular.min.js" type="text/javascript"></script>
+	{% endblock %}
 	{% block scripts %}{% endblock %}
 	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
 	<a href="https://github.com/jrief/django-angular">
