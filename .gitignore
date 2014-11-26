@@ -12,4 +12,4 @@ docs/_build/
 node_modules/
 bower_components/
 build/
-example/test.sqlite
+examples/test.sqlite
