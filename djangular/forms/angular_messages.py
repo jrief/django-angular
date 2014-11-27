@@ -1,10 +1,14 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from django.utils.html import format_html
-from django.utils.encoding import force_text
+from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeText
 
 from djangular.forms.angular_base import TupleErrorList, SafeTuple, NgFormBaseMixin
 
 
+@python_2_unicode_compatible
 class NgMessagesTupleErrorList(TupleErrorList):
 	
     msgs_format = '<div class="{1}" ng-messages="{0}.$error" ng-show="{0}.$dirty && {0}.$invalid" ng-cloak>{2}</div>'
@@ -12,14 +16,17 @@ class NgMessagesTupleErrorList(TupleErrorList):
     """ span's necessary due to this bug https://github.com/angular/angular.js/issues/8089"""
     msg_format_bind = '<div ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}.{1}"></span></div>'
 
-    def as_ul(self):
+    def __str__(self):
+        return self.as_divs()
+
+    def as_divs(self):
         if not self:
             return SafeText()
         first = self[0]
         if isinstance(first, tuple):
             error_list = []
             for e in self:
-                if e[3] in ('$valid', '$message'):
+                if e[3] == '$valid':
                     continue
                 msg_format = e[5] == '$message' and self.msg_format_bind or self.msg_format
                 msg_type = e[3].split('.')
@@ -41,6 +48,10 @@ class NgMessagesMixin(NgFormBaseMixin):
         errors = super(NgMessagesMixin, self).get_field_errors(field)
         if field.is_hidden:
             return errors
+        #remove error added by NgModelFormMixin
+        for item in errors[:]:
+            if item[2] == '$pristine' and item[5] == '$message':
+                errors.remove(item)
         identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', 'rejected', 'invalid', '$message')))
         return errors
