@@ -19,7 +19,7 @@ class NgMessagesTupleErrorList(TupleErrorList):
         if isinstance(first, tuple):
             error_list = []
             for e in self:
-                if e[3] == '$valid' or e[2] == '$pristine':
+                if e[3] in ('$valid', '$message'):
                     continue
                 msg_format = e[5] == '$message' and self.msg_format_bind or self.msg_format
                 msg_type = e[3].split('.')
