@@ -32,6 +32,7 @@ function validateRejected() {
 				}else{
 					
 					_hasMessage = ngModel.$message !== undefined;
+					
 					if(_hasMessage) {
 					    _value = value;	
 					}
@@ -74,7 +75,12 @@ function djangoMessagesForm() {
 					
 					field = form[key];
 					field.$dirty = true;
-					field.$message = message;
+					
+					if(!angular.isObject(field.$message)) {
+						field.$message = {};
+					}
+
+					field.$message.rejected = message;
 
 					if (angular.isFunction(field.$validate)) {
 						field.$validate();

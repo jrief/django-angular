@@ -10,7 +10,7 @@ class NgMessagesTupleErrorList(TupleErrorList):
     msgs_format = '<div class="{1}" ng-messages="{0}.$error" ng-show="{0}.$dirty && {0}.$invalid" ng-cloak>{2}</div>'
     msg_format = '<div ng-message="{1}" class="{2}">{3}</div>'
     """ span's necessary due to this bug https://github.com/angular/angular.js/issues/8089"""
-    msg_format_bind = '<div ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}"></span></div>'
+    msg_format_bind = '<div ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}.{1}"></span></div>'
 
     def as_ul(self):
         if not self:
