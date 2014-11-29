@@ -75,7 +75,10 @@ djng_forms_module.directive('ngModel', function() {
 			break;
 		default:
 			if (field.defaultValue) {
-				modelCtrl.$setViewValue(field.defaultValue);
+				console.log('field.defaultValue',field.defaultValue)
+				console.log('setting $modelValue');
+				modelCtrl.$modelValue = field.defaultValue;
+				console.log(modelCtrl)
 			}
 			break;
 		}
