@@ -16,7 +16,7 @@ class SubscribeView(FormView):
     def post(self, request, **kwargs):
         if request.is_ajax():
             return self.ajax(request)
-        return super(NgMessagesView, self).post(request, **kwargs)
+        return super(SubscribeView, self).post(request, **kwargs)
 
     def ajax(self, request):
         form = self.form_class(data=json.loads(request.body))
