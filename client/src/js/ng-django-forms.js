@@ -55,7 +55,7 @@ djng_forms_module.directive('djngError', function() {
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
-djng_forms_module.directive('ngModel', function() {
+djng_forms_module.directive('ngModel', function($parse) {
 	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
@@ -101,6 +101,28 @@ djng_forms_module.directive('ngModel', function() {
 		// restore the field's content from the rendered content of bound fields
 		return field.defaultValue;
 	}
+	
+	function processDefaultValue(scope, ngModelName, value) {
+			
+		var parts = ngModelName.split('.'),
+			prop = parts.pop(),
+			modelName = parts.join('.'),
+			fn = $parse(model !== '' ? model : prop),
+			model;
+								
+		if(modelName !== '') {
+				
+			fn = $parse(modelName);
+			model = fn(scope) || {};
+			model[prop] = value;
+			fn.assign(scope, model);
+				
+		}else{
+				
+			fn = $parse(prop);
+			fn.assign(scope, value);
+		}
+	}
 
 	return {
 		restrict: 'A',
@@ -112,7 +134,7 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
-			
+
 			var defaultValue;
 				
 			switch (field.tagName) {
@@ -129,22 +151,14 @@ djng_forms_module.directive('ngModel', function() {
 				console.log('Unknown field type');
 				break;
 			}
-
-			if(angular.isDefined(defaultValue)) {
-				
-				modelCtrl.$setViewValue(defaultValue);
-				
-				if(angular.isObject(modelCtrl.$options) &&
-				   modelCtrl.$options.debounce) {
-					modelCtrl.$commitViewValue();
-				}
-			}
 			
-			// restore the form's pristine state
-			formCtrl.$setPristine();
+			if(angular.isDefined(defaultValue)) {
+				processDefaultValue(scope, attrs.ngModel, defaultValue);
+			}
 		}
 	};
 });
+
 
 
 djng_forms_module.directive('validateMultipleFields', function() {

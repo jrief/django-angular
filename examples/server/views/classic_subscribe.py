@@ -9,3 +9,6 @@ class SubscribeView(FormView):
     template_name = 'subscribe-form.html'
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
+
+    def get_initial(self):
+        return {'first_name': 'james'}
