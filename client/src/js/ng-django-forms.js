@@ -56,35 +56,30 @@ djng_forms_module.directive('djngError', function() {
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
 djng_forms_module.directive('ngModel', function() {
-	function restoreInputField(modelCtrl, field) {
+	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
 		case 'radio':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(field.defaultValue);
+				return field.defaultValue;
 			}
 			break;
 		case 'checkbox':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(true);
+				return true;
 			}
 			break;
 		case 'password':
 			// after an (un)successful submission, reset the password field
-			modelCtrl.$setViewValue(null);
+			return null;
 			break;
 		default:
-			if (field.defaultValue) {
-				console.log('field.defaultValue',field.defaultValue)
-				modelCtrl.$setViewValue(field.defaultValue);
-				modelCtrl.$commitViewValue();
-				console.log(modelCtrl)
-			}
+			return field.defaultValue;
 			break;
 		}
 	}
 
-	function restoreSelectOptions(modelCtrl, field) {
+	function restoreSelectOptions(field) {
 		var multivalues = [];
 		angular.forEach(field.options, function(option) {
 			if (option.defaultSelected) {
@@ -93,20 +88,18 @@ djng_forms_module.directive('ngModel', function() {
 				if (field.multiple) {
 					multivalues.push(option.value);
 				} else {
-					modelCtrl.$setViewValue(option.value);
+					return option.value;
 				}
 			}
 		});
 		if (field.multiple) {
-			modelCtrl.$setViewValue(multivalues);
+			return multivalues;
 		}
 	}
 
-	function restoreTextArea(modelCtrl, field) {
-		if (field.defaultValue) {
-			// restore the field's content from the rendered content of bound fields
-			modelCtrl.$setViewValue(field.defaultValue);
-		}
+	function restoreTextArea(field) {
+		// restore the field's content from the rendered content of bound fields
+		return field.defaultValue;
 	}
 
 	return {
@@ -119,20 +112,34 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
+			
+			var defaultValue;
+				
 			switch (field.tagName) {
 			case 'INPUT':
-				restoreInputField(modelCtrl, field);
+				defaultValue = restoreInputField(field);
 				break;
 			case 'SELECT':
-				restoreSelectOptions(modelCtrl, field);
+				defaultValue = restoreSelectOptions(field);
 				break;
 			case 'TEXTAREA':
-				restoreTextArea(modelCtrl, field);
+				defaultValue = restoreTextArea(field);
 				break;
 			default:
 				console.log('Unknown field type');
 				break;
 			}
+
+			if(angular.isDefined(defaultValue)) {
+				
+				modelCtrl.$setViewValue(defaultValue);
+				
+				if(angular.isObject(modelCtrl.$options) &&
+				   modelCtrl.$options.debounce) {
+					modelCtrl.$commitViewValue();
+				}
+			}
+			
 			// restore the form's pristine state
 			formCtrl.$setPristine();
 		}
