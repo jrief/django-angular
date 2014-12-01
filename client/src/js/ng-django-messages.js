@@ -6,10 +6,75 @@ angular
         'ngMessages'
     ])
 
+    .directive('form', formExtension)
     .directive('validateRejected', validateRejected)
     .factory('djangoMessagesForm', djangoMessagesForm);
 
 
+
+
+/**
+ * An extension to form
+ * 
+ * Adds the following methods and functionality:
+ * 
+ * - setValidFieldsPristine()
+ */
+function formExtension() {
+
+	return {
+		restrict: 'E',
+		require: [
+		    '^?form'
+		],
+		link: {
+			pre: function($scope, $element, $attrs, ctrls) {
+
+	  		    var ctrl = ctrls[0],
+	  		    	controls,
+	  		    	modelName;
+
+	  		    var _superAdd = ctrl.$addControl;
+
+	  		    ctrl.$addControl = function(control) {
+
+	  		    	_superAdd(control)
+
+	  		    	controls = controls || [];
+
+	  		    	if(controls.indexOf(control) === -1) {
+	  		    		controls.push(control);
+	  		    	}
+	  		    }
+
+		  		var _superRemove = ctrl.$removeControl;
+
+		  	    ctrl.$removeControl = function(control) {
+
+		  	    	_superRemove(control)
+
+			    	if(controls && controls.indexOf(control) !== -1) {
+	  		    		controls.splice(controls.indexOf(control), 1);
+	  		    	}
+	  		    }
+
+	  		    ctrl.setValidFieldsPristine = function() {
+
+	    			var i = 0,
+		    		  	len = controls.length,
+		  				control;
+
+		  			for(; i < len; i++) {
+		  				control = controls[i];
+		  				if(control.$valid) {
+		  					control.$setPristine();
+		  				}
+		  			}
+		  		}
+		   	}
+	 	}
+	}
+};
 
 
 function validateRejected() {
@@ -97,7 +162,7 @@ function djangoMessagesForm() {
 				}else{
 					
 					form.$message = message;
-					form.$setPristine();
+					form.setValidFieldsPristine();
 				}
 			}
 		);
