@@ -84,14 +84,14 @@ function validateRejected() {
 		link: function($scope, $element, $attrs, ngModel) {
 
 			var _hasMessage = false,
-				_value;
+				_value = null;
 
 			ngModel.$validators.rejected = function(value) {
-
-				if(_hasMessage && (_value && _value !== value)) {
+                
+				if(_hasMessage && (_value !== value)) {
 					
 					_hasMessage = false;
-					_value = undefined;
+					_value = null;
 					ngModel.$message = undefined;
 					
 				}else{
@@ -146,14 +146,17 @@ function djangoMessagesForm() {
 					}
 
 					field.$message.rejected = message;
-
+					
 					if (angular.isFunction(field.$validate)) {
+						
 						field.$validate();
+						
 					} else {
 						// this field is a composite of input elements
 						angular.forEach(field, function(subField, subKey) {
-							if (angular.isDefined(subField) &&
-								angular.isFunction(subField.$validate)) {
+							if(angular.isDefined(subField) &&
+							   angular.isFunction(subField.$validate)) {
+
 								subField.$validate();
 							}
 						});
