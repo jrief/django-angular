@@ -15,10 +15,10 @@ class NgMessagesFormErrorList(TupleErrorList):
 
 class NgMessagesFieldErrorList(TupleErrorList):
 	
-    ul_format_valid = '<ul class="{1}" ng-show="{0}.$touched && {0}.$valid" ng-cloak>{2}</ul>'
+    ul_format_valid = '<ul class="{1}" ng-show="{0}.$dirty" ng-cloak>{2}</ul>'
     li_format_valid = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
 
-    ul_format = '<ul class="{1}" ng-messages="{0}.$error" ng-show="{0}.$touched && {0}.$invalid" ng-cloak>{2}</ul>'
+    ul_format = '<ul class="{1}" ng-messages="{0}.$error" ng-show="{2}.$submitted || {0}.$dirty" ng-cloak>{3}</ul>'
     li_format = '<li ng-message="{1}" class="{2}">{3}</li>'
     """ span's necessary due to this bug https://github.com/angular/angular.js/issues/8089"""
     li_format_bind = '<li ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}.{1}"></span></li>'
@@ -46,10 +46,16 @@ class NgMessagesFieldErrorList(TupleErrorList):
                 error_list.append(format_html(li_format, *err_tuple))
 
             return mark_safe(format_html(self.ul_format_valid, first[0], first[1], mark_safe(''.join(valid_list)))) \
-                 + mark_safe(format_html(self.ul_format, first[0], first[1], mark_safe(''.join(invalid_list))))
+                 + mark_safe(format_html(self.ul_format, first[0], first[1], self._get_form_name(first[0]), mark_safe(''.join(invalid_list))))
 
         return format_html('<ul class="errorlist">{0}</ul>',
             format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
+
+    def _get_form_name(self, value):
+        parts = value.split('.')
+        parts.pop()
+        return '.'.join(parts)
+	
 
 
 class NgMessagesMixin(NgFormBaseMixin):

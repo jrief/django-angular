@@ -129,42 +129,35 @@ function djangoMessagesForm() {
 	};
 	
 	function _displayErrors(form, errors) {
-		console.log(errors)
-		console.log(form)
+		
+		form.$setSubmitted();
+		
 		angular.forEach(errors,
 			function(error, key) {
 				var field,
 					message = error[0];
 				
-				form.$setSubmitted();
-				//form.$setDirty();
-				
 				if(form.hasOwnProperty(key)) {
 					
 					field = form[key];
-					//
-				//	field.$pristine = false;
-				//	field.$dirty = true;
-					if(field.$name === 'password' || field.$name === 'height')
-						console.log(field)
+					
 					if(!angular.isObject(field.$message)) {
 						field.$message = {};
 					}
-
+					
 					field.$message.rejected = message;
 					
 					if (angular.isFunction(field.$validate)) {
-						
-						field.$setTouched();
+
 						field.$validate();
 						
 					} else {
 						// this field is a composite of input elements
+						field.$setSubmitted();
+						
 						angular.forEach(field, function(subField, subKey) {
 							if(angular.isDefined(subField) &&
-							   angular.isFunction(subField.$validate)) {
-								
-								subField.$setTouched();
+							   angular.isFunction(subField.$validate)) {	
 								subField.$validate();
 							}
 						});
