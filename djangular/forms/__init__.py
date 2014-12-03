@@ -5,9 +5,9 @@ from django.forms.models import BaseModelForm
 from django.utils import six
 from .angular_base import BaseFieldsModifierMetaclass, NgFormBaseMixin
 from .angular_model import NgModelFormMixin
-if VERSION[0] == 1 and VERSION[1] >= 5:
+if VERSION[:2] >= (1, 5):
     from .angular_validation import NgFormValidationMixin
-if VERSION[0] == 1 and VERSION[1] < 7:
+if VERSION[:2] < (1, 7):
     from .models import PatchedModelFormMetaclass as ModelFormMetaclass
 else:
     from django.forms.models import ModelFormMetaclass
