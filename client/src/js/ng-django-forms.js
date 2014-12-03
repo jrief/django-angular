@@ -147,6 +147,7 @@ djng_forms_module.directive('validateMultipleFields', function($timeout) {
 			function validate(event) {
 			//	$timeout(function(){
 				console.log('change')
+				console.log(formCtrl)
 					var valid = false;
 					angular.forEach(checkboxElems, function(checkbox) {
 						console.log(checkbox)
@@ -158,7 +159,7 @@ djng_forms_module.directive('validateMultipleFields', function($timeout) {
 						formCtrl[subFields].$dirty = true;
 						formCtrl[subFields].$pristine = false;
 					}
-			//	})
+				//})
 			}
 			
 			function click(event) {
