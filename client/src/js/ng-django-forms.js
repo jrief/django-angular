@@ -265,6 +265,7 @@ djng_forms_module.factory('djangoForm', function() {
 
 	function resetFieldValidity(field) {
 		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
+			field.$message = '';
 			field.$setValidity('rejected', true);
 			field.$viewChangeListeners.splice(pos - 1, 1);
 			delete field.clearRejected;
@@ -278,11 +279,12 @@ djng_forms_module.factory('djangoForm', function() {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
 			if (form.$error.hasOwnProperty('rejected')) {
-				angular.forEach(form.$error.rejected, function(rejected) {
+				// make copy of rejected before we loop as calling field.$setValidity('rejected', true) modifies the error array
+				var rejected = form.$error.rejected.concat();
+				angular.forEach(rejected, function(rejected) {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						field.$message = '';
 						if(field.clearRejected) {
 							field.clearRejected();
 						}
