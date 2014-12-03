@@ -268,14 +268,13 @@ djng_forms_module.factory('djangoForm', function() {
 		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
 			field.$message = '';
 			field.$setValidity('rejected', true);
-			console.log(field.$viewChangeListeners)
 			field.$viewChangeListeners.splice(pos - 1, 1);
 			delete field.clearRejected;
-			console.log('removing rejected')
-			console.log(field);
-			console.log(field.$viewChangeListeners)
-			console.log('------------------------');
 		})
+	}
+	
+	function isField(field) {
+		return angular.isArray(field.$viewChangeListeners)
 	}
 
 	return {
@@ -295,8 +294,15 @@ djng_forms_module.factory('djangoForm', function() {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						if(field.clearRejected) {
+						if (isField(field) && field.clearRejected) {
 							field.clearRejected();
+						} else {
+							// this field is a composite of input elements
+							angular.forEach(field, function(subField, subKey) {
+								if (subField && isField(subField) && subField.clearRejected) {
+									subField.clearRejected();
+								}
+							});
 						}
 					}
 				});
@@ -313,12 +319,12 @@ djng_forms_module.factory('djangoForm', function() {
 						field.$message = errors[0];
 						field.$setValidity('rejected', false);
 						field.$setPristine();
-						if (angular.isArray(field.$viewChangeListeners)) {
+						if (isField(field)) {
 							resetFieldValidity(field);
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
-								if (subField && angular.isArray(subField.$viewChangeListeners)) {
+								if (subField && isField(subField)) {
 									resetFieldValidity(subField);
 								}
 							});
