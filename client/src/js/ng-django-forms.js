@@ -160,12 +160,21 @@ djng_forms_module.directive('validateMultipleFields', function() {
 						var valid = false;
 						angular.forEach(checkboxElems, function(checkbox) {
 							valid = valid || checkbox.checked;
+							console.log('checkbox', checkbox);
+							console.log('checkbox.clearRejected', checkbox.clearRejected)
+							if(checkbox.clearRejected !== undefined) {
+								checkbox.clearRejected('validateMultipleFields');
+							}
 						});
+						
 						formCtrl.$setValidity('required', valid);
+						//formCtrl.$setValidity('rejected', true);
+						
 						if (trigger && angular.isString(subFields)) {
 							formCtrl[subFields].$dirty = true;
 							formCtrl[subFields].$pristine = false;
 						}
+						console.log(formCtrl)
 					}
 
 					if (!controller)
@@ -255,12 +264,11 @@ djng_forms_module.factory('djangoForm', function() {
 	}
 
 	function resetFieldValidity(field) {
-		field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
-			// changing the field the server complained about, resets the form into valid state
+		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
 			field.$setValidity('rejected', true);
-			field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-			delete field.rejectedListenerPos;
-		}) - 1;
+			field.$viewChangeListeners.splice(pos - 1, 1);
+			delete field.clearRejected;
+		})
 	}
 
 	return {
@@ -275,16 +283,15 @@ djng_forms_module.factory('djangoForm', function() {
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
 						field.$message = '';
-						field.$setValidity('rejected', true);
-						if (field.rejectedListenerPos !== undefined) {
-							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-							delete field.rejectedListenerPos;
+						if(field.clearRejected) {
+							field.clearRejected();
 						}
 					}
 				});
 			}
 			// add the new upstream errors
 			angular.forEach(errors, function(errors, key) {
+				console.log('key', key)
 				var field;
 				if (errors.length > 0) {
 					if (key === NON_FIELD_ERRORS) {
