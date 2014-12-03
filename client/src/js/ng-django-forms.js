@@ -137,60 +137,54 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-djng_forms_module.directive('validateMultipleFields', function($timeout) {
+djng_forms_module.directive('validateMultipleFields', function($compile) {
 	return {
 		restrict: 'A',
 		require: '^?form',
-		link: function(scope, element, attrs, controller) {
-			var formCtrl, subFields, checkboxElems = [];
-
-			function validate(event) {
-			//	$timeout(function(){
-				console.log('change')
-				console.log(formCtrl)
-					var valid = false;
-					angular.forEach(checkboxElems, function(checkbox) {
-						console.log(checkbox)
-						valid = valid || checkbox.checked;
-					});
-					console.log(valid)
-					formCtrl.$setValidity('required', valid);
-					if (event && angular.isString(subFields)) {
-						formCtrl[subFields].$dirty = true;
-						formCtrl[subFields].$pristine = false;
-					}
-				//})
-			}
-			
-			function click(event) {
-				console.log('click')
-				var valid = false;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
-				});
-				console.log(valid)
-			}
-
-			if (!controller)
-				return;
-			formCtrl = controller;
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				subFields = attrs.validateMultipleFields;
-			}
+		compile: function(element, attrs) {
 			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) >= 0) {
-					//elem.on('change', validate)
-					console.log(elem)
-					checkboxElems.push(elem);
-				}
+				elem = angular.element(elem)
+				elem.attr('ng-change', 'changed()');
 			});
-			element.find('input').on('change', validate);
 			
-			//element.on('change', validate);
-			//element.on('click', click);
-			validate();
+			return {
+				
+				post: function(scope, element, attrs, controller) {
+					var formCtrl, subFields, checkboxElems = [];
+
+					scope.changed = function() {
+						validate(true)
+					}
+
+					function validate(trigger) {
+						var valid = false;
+						angular.forEach(checkboxElems, function(checkbox) {
+							valid = valid || checkbox.checked;
+						});
+						formCtrl.$setValidity('required', valid);
+						if (trigger && angular.isString(subFields)) {
+							formCtrl[subFields].$dirty = true;
+							formCtrl[subFields].$pristine = false;
+						}
+					}
+
+					if (!controller)
+						return;
+					formCtrl = controller;
+					try {
+						subFields = angular.fromJson(attrs.validateMultipleFields);
+					} catch (SyntaxError) {
+						subFields = attrs.validateMultipleFields;
+					}
+					angular.forEach(element.find('input'), function(elem) {
+						if (subFields.indexOf(elem.name) >= 0) {
+							checkboxElems.push(elem);
+						}
+					});
+
+					validate();
+				}
+			}
 		}
 	};
 });
