@@ -129,18 +129,24 @@ function djangoMessagesForm() {
 	};
 	
 	function _displayErrors(form, errors) {
+		console.log(errors)
+		console.log(form)
 		angular.forEach(errors,
 			function(error, key) {
 				var field,
 					message = error[0];
 				
-				form.$setDirty();
+				form.$setSubmitted();
+				//form.$setDirty();
 				
 				if(form.hasOwnProperty(key)) {
 					
 					field = form[key];
-					field.$dirty = true;
-					
+					//
+				//	field.$pristine = false;
+				//	field.$dirty = true;
+					if(field.$name === 'password' || field.$name === 'height')
+						console.log(field)
 					if(!angular.isObject(field.$message)) {
 						field.$message = {};
 					}
@@ -149,6 +155,7 @@ function djangoMessagesForm() {
 					
 					if (angular.isFunction(field.$validate)) {
 						
+						field.$setTouched();
 						field.$validate();
 						
 					} else {
@@ -156,7 +163,8 @@ function djangoMessagesForm() {
 						angular.forEach(field, function(subField, subKey) {
 							if(angular.isDefined(subField) &&
 							   angular.isFunction(subField.$validate)) {
-
+								
+								subField.$setTouched();
 								subField.$validate();
 							}
 						});

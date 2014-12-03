@@ -10,15 +10,15 @@ from djangular.forms.angular_base import TupleErrorList, SafeTuple, NgFormBaseMi
 
 
 class NgMessagesFormErrorList(TupleErrorList):
-	ul_format = '<ul class="{1}" ng-show="{0}.$message && {0}.$invalid" ng-cloak>{3}</ul>'
+	ul_format = '<ul class="{1}" ng-show="{0}.$message" ng-cloak>{3}</ul>'
 	
 
 class NgMessagesFieldErrorList(TupleErrorList):
 	
-    ul_format_valid = '<ul class="{1}" ng-show="{0}.$dirty && {0}.$valid" ng-cloak>{2}</ul>'
+    ul_format_valid = '<ul class="{1}" ng-show="{0}.$touched && {0}.$valid" ng-cloak>{2}</ul>'
     li_format_valid = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
 
-    ul_format = '<ul class="{1}" ng-messages="{0}.$error" ng-show="{0}.$dirty && {0}.$invalid" ng-cloak>{2}</ul>'
+    ul_format = '<ul class="{1}" ng-messages="{0}.$error" ng-show="{0}.$touched && {0}.$invalid" ng-cloak>{2}</ul>'
     li_format = '<li ng-message="{1}" class="{2}">{3}</li>'
     """ span's necessary due to this bug https://github.com/angular/angular.js/issues/8089"""
     li_format_bind = '<li ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}.{1}"></span></li>'
