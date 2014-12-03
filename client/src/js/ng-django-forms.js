@@ -137,7 +137,7 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-djng_forms_module.directive('validateMultipleFields', function() {
+djng_forms_module.directive('validateMultipleFields', function($parse) {
 	return {
 		restrict: 'A',
 		require: '^?form',
@@ -150,7 +150,7 @@ djng_forms_module.directive('validateMultipleFields', function() {
 			return {
 				
 				post: function(scope, element, attrs, controller) {
-					var formCtrl, subFields, checkboxElems = [];
+					var formCtrl, subFields, checkboxCtrls = [];
 
 					scope.changed = function() {
 						validate(true)
@@ -158,23 +158,20 @@ djng_forms_module.directive('validateMultipleFields', function() {
 
 					function validate(trigger) {
 						var valid = false;
-						angular.forEach(checkboxElems, function(checkbox) {
-							valid = valid || checkbox.checked;
-							console.log('checkbox', checkbox);
-							console.log('checkbox.clearRejected', checkbox.clearRejected)
-							if(checkbox.clearRejected !== undefined) {
-								checkbox.clearRejected('validateMultipleFields');
+						angular.forEach(checkboxCtrls, function(checkbox) {
+							valid = valid || checkbox.$modelValue;
+							if(checkbox.clearRejected) {
+								checkbox.clearRejected();
 							}
 						});
 						
 						formCtrl.$setValidity('required', valid);
-						//formCtrl.$setValidity('rejected', true);
+						formCtrl.$setValidity('rejected', true);
 						
 						if (trigger && angular.isString(subFields)) {
 							formCtrl[subFields].$dirty = true;
 							formCtrl[subFields].$pristine = false;
 						}
-						console.log(formCtrl)
 					}
 
 					if (!controller)
@@ -187,9 +184,13 @@ djng_forms_module.directive('validateMultipleFields', function() {
 					}
 					angular.forEach(element.find('input'), function(elem) {
 						if (subFields.indexOf(elem.name) >= 0) {
-							checkboxElems.push(elem);
+							checkboxCtrls.push(formCtrl[elem.name]);
 						}
 					});
+					
+					scope.$on('$destroy', function() {
+						
+					})
 
 					validate();
 				}
@@ -267,8 +268,13 @@ djng_forms_module.factory('djangoForm', function() {
 		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
 			field.$message = '';
 			field.$setValidity('rejected', true);
+			console.log(field.$viewChangeListeners)
 			field.$viewChangeListeners.splice(pos - 1, 1);
 			delete field.clearRejected;
+			console.log('removing rejected')
+			console.log(field);
+			console.log(field.$viewChangeListeners)
+			console.log('------------------------');
 		})
 	}
 
@@ -279,7 +285,11 @@ djng_forms_module.factory('djangoForm', function() {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
 			if (form.$error.hasOwnProperty('rejected')) {
-				// make copy of rejected before we loop as calling field.$setValidity('rejected', true) modifies the error array
+				/*
+				 * make copy of rejected before we loop as calling
+				 * field.$setValidity('rejected', true) modifies the error array
+				 * so only every other one was being removed
+				 */
 				var rejected = form.$error.rejected.concat();
 				angular.forEach(rejected, function(rejected) {
 					var field, key = rejected.$name;
@@ -293,7 +303,6 @@ djng_forms_module.factory('djangoForm', function() {
 			}
 			// add the new upstream errors
 			angular.forEach(errors, function(errors, key) {
-				console.log('key', key)
 				var field;
 				if (errors.length > 0) {
 					if (key === NON_FIELD_ERRORS) {
@@ -321,113 +330,6 @@ djng_forms_module.factory('djangoForm', function() {
 		}
 	};
 });
-
-
-djng_forms_module.factory('djangoForm2', function() {
-
-	return {
-
-		setErrors: setErrors
-	}
-
-	/* ============================ */
-
-	function setErrors(form, errors) {
-
-		_clearFormMessage(form);
-		_displayErrors(form, errors);
-		
-		return _isNotEmpty(errors)
-	};
-
-	function _clearFormMessage(form) {
-
-		form.$message = '';
-	};
-
-	function _displayErrors(form, errors) {
-
-		angular.forEach(errors, function(error, key) {
-
-			var field,
-
-			message = error[0];
-
-			if (form.hasOwnProperty(key)) {
-
-				field = form[key];
-				field.$dirty = true;
-				
-				/*
-				 * check to see if the field already has an error.
-				 * 
-				 * If so return, as,
-				 * 
-				 *  - either the field has set its own error. This can occur
-				 *    when a field is 'required' and you submit it with no value.
-				 *
-				 *  - we already have a 'rejected' error in the field
-				 *    and the user has just resubmitted it without changing the
-				 *    field value.
-				 *
-				 *    This also prevents the listener being added multiple times
-				 */
-
-				if(_errorCount(field) > 0)
-					return;
-
-				field.$setValidity('rejected', false);
-				field.$message = message;
-				field.$setPristine();
-
-				if (angular.isArray(field.$viewChangeListeners)) {
-					_addRejectionResetHandler(field);
-				} else {
-					// this field is a composite of input elements
-					angular.forEach(field, function(subField, subKey) {
-						if (subField && angular.isArray(subField.$viewChangeListeners)) {
-							_addRejectionResetHandler(subField);
-						}
-					});
-				}
-
-			} else {
-
-				form.$message = message;
-				form.$setPristine();
-			}
-		});
-	}
-	
-	function _errorCount(field) {
-		var error,
-			count = 0;
-			
-		for(error in field.$error) {
-			count++;
-		}
-		
-		return count;
-	}
-	
-	function _addRejectionResetHandler(field) {
-		var pos = field.$viewChangeListeners.push(function() {
-			//console.log(field)
-			console.log('field')
-			field.$viewChangeListeners.splice(pos - 1, 1);
-			field.$setValidity('rejected', true);
-			field.$message = "";
-		})
-	}
-	
-	function _isNotEmpty(obj) {
-		for (var p in obj) { 
-			if (obj.hasOwnProperty(p))
-				return true;
-		}
-		return false;
-	}
-})
 
 
 })(window.angular);
