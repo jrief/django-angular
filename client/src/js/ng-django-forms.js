@@ -141,6 +141,8 @@ djng_forms_module.directive('validateMultipleFields', function($parse) {
 	return {
 		restrict: 'A',
 		require: '^?form',
+		// create child scope for changed method
+		scope: true,
 		compile: function(element, attrs) {
 			angular.forEach(element.find('input'), function(elem) {
 				elem = angular.element(elem)
@@ -167,6 +169,7 @@ djng_forms_module.directive('validateMultipleFields', function($parse) {
 						
 						formCtrl.$setValidity('required', valid);
 						formCtrl.$setValidity('rejected', true);
+						formCtrl.$message = ''
 						
 						if (trigger && angular.isString(subFields)) {
 							formCtrl[subFields].$dirty = true;
@@ -187,10 +190,6 @@ djng_forms_module.directive('validateMultipleFields', function($parse) {
 							checkboxCtrls.push(formCtrl[elem.name]);
 						}
 					});
-					
-					scope.$on('$destroy', function() {
-						
-					})
 
 					validate();
 				}
@@ -283,7 +282,8 @@ djng_forms_module.factory('djangoForm', function() {
 		setErrors: function(form, errors) {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
-			if (form.$error.hasOwnProperty('rejected')) {
+			if (form.$error.hasOwnProperty('rejected') &&
+				angular.isArray(form.$error.rejected)) {
 				/*
 				 * make copy of rejected before we loop as calling
 				 * field.$setValidity('rejected', true) modifies the error array
@@ -297,6 +297,7 @@ djng_forms_module.factory('djangoForm', function() {
 						if (isField(field) && field.clearRejected) {
 							field.clearRejected();
 						} else {
+							field.$message = '';
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
 								if (subField && isField(subField) && subField.clearRejected) {
