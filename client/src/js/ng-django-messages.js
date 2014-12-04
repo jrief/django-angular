@@ -92,11 +92,14 @@ function validateRejected() {
 					
 					_hasMessage = false;
 					_value = null;
-					ngModel.$message.rejected = undefined;
+					
+					if(ngModel.$message) {
+						ngModel.$message.rejected = undefined;
+					}
 					
 				}else{
 					
-					_hasMessage = ngModel.$message.rejected !== undefined;
+					_hasMessage = ngModel.$message && ngModel.$message.rejected !== undefined;
 					
 					if(_hasMessage) {
 					    _value = value;	
