@@ -137,7 +137,7 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-djng_forms_module.directive('validateMultipleFields', function($parse) {
+djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
 		require: '^?form',
