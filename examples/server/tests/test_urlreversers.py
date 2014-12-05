@@ -42,6 +42,54 @@ class UrlReverserTest(TestCase):
         for name in names:
             self.assertIn(name, self.pattern_dict)
 
+    def test_root_urls_are_found(self):
+        root_pattern_dict = get_url_patterns(urlpatterns, filter_namespaces=[None])
+        names = (
+            'home',
+            'learnmore',
+        )
+        excluded = (
+            'accounts:login',
+            'accounts:profile:edit',
+            'accounts:profile:view'
+        )
+        for name in names:
+            self.assertIn(name, root_pattern_dict)
+        for name in excluded:
+            self.assertNotIn(name, root_pattern_dict)
+
+    def test_accounts_urls_are_found(self):
+        accounts_pattern_dict = get_url_patterns(urlpatterns, filter_namespaces=['accounts'])
+        names = (
+            'accounts:login',
+        )
+        excluded = (
+            'home',
+            'learnmore',
+            'accounts:profile:edit',
+            'accounts:profile:view'
+        )
+        for name in names:
+            self.assertIn(name, accounts_pattern_dict)
+        for name in excluded:
+            self.assertNotIn(name, accounts_pattern_dict)
+
+    def test_combined_urls_are_found(self):
+        combined_pattern_dict = get_url_patterns(urlpatterns, filter_namespaces=['accounts:profile', None])
+        names = (
+            'home',
+            'learnmore',
+            'accounts:profile:edit',
+            'accounts:profile:view'
+        )
+        excluded = (
+            'accounts:login',
+        )
+        for name in names:
+            self.assertIn(name, combined_pattern_dict)
+        for name in excluded:
+            self.assertNotIn(name, combined_pattern_dict)
+
     def test_simple_urls(self):
         self.assertEqual(self.pattern_dict['home'], '/')
         self.assertEqual(self.pattern_dict['learnmore'], '/learnmore/')

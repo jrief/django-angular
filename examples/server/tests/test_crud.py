@@ -6,7 +6,14 @@ from django.test.client import RequestFactory
 
 from djangular.views.crud import NgCRUDView
 from djangular.views.mixins import JSONResponseMixin
-from server.models import DummyModel, DummyModel2, SimpleModel
+from server.models import DummyModel, DummyModel2, SimpleModel, M2MModel
+
+
+class CRUDTestViewWithM2M(JSONResponseMixin, NgCRUDView):
+    """
+    Include JSONResponseMixin to make sure there aren't any problems when using both together
+    """
+    model = M2MModel
 
 
 class CRUDTestViewWithFK(JSONResponseMixin, NgCRUDView):
@@ -48,6 +55,14 @@ class CRUDViewTest(TestCase):
         # SimpleModel / CRUDTestViewWithSlug
         for name, email in zip(self.names, self.emails):
             SimpleModel(name=name, email=email).save()
+
+        # model with m2m relationship
+        dummy_model2 = DummyModel2(name="Mathilde")
+        dummy_model2.save()
+        self.m2m_model = M2MModel()
+        self.m2m_model.save()
+        self.m2m_model.dummy_models.add(dummy_model2)
+        self.m2m_model.save()
 
     def test_ng_query(self):
         # CRUDTestViewWithFK
@@ -162,10 +177,15 @@ class CRUDViewTest(TestCase):
             self.assertTrue(deleted_name != obj['name'])
 
         # CRUDTestViewWithSlug delete is not different from CRUDTestViewWithFK only testing error status codes
-        request5 = self.factory.delete('/crud/?email=Anne@example.com')  # Missing pk
-        response5 = CRUDTestViewWithSlug.as_view()(request5)
-        self.assertEqual(response5.status_code, 400)
+        request3 = self.factory.delete('/crud/?email=Anne@example.com')  # Missing pk
+        response3 = CRUDTestViewWithSlug.as_view()(request3)
+        self.assertEqual(response3.status_code, 400)
 
-        request6 = self.factory.delete('/crud/?pk=100')  # Invalid pk
-        response6 = CRUDTestViewWithSlug.as_view()(request6)
-        self.assertEqual(response6.status_code, 404)
+        request4 = self.factory.delete('/crud/?pk=100')  # Invalid pk
+        response4 = CRUDTestViewWithSlug.as_view()(request4)
+        self.assertEqual(response4.status_code, 404)
+
+        # Testing with m2m relationship
+        request5 = self.factory.delete('/crud/?pk=%s' % self.m2m_model.pk)
+        response5 = CRUDTestViewWithM2M.as_view()(request5)
+        self.assertEqual(response5.status_code, 200)

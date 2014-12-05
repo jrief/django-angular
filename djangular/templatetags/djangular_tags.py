@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import json
 from django.template import Library
-from django.template.base import Node, NodeList, TextNode, VariableNode
+from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
@@ -43,12 +43,24 @@ def djng_current_rmi(context):
     @allow_remote_invocation decorator. The return string can be used directly to initialize
     the AngularJS provider, such as ``djangoRMIProvider.configure({­% djng_current_rmi %­});``
     """
-    return mark_safe(json.dumps(get_current_remote_methods(context['view'])))
+    return mark_safe(json.dumps(get_current_remote_methods(context.get('view'))))
 
 
-@register.simple_tag(name='load_djng_urls')
-def djng_urls():
-    return mark_safe(json.dumps(get_urls()))
+@register.simple_tag(name='load_djng_urls', takes_context=True)
+def djng_urls(context, *namespaces):
+    def _replace_namespace(n):
+        if n == 'SELF':
+            request = context.get('request')
+            if not request:
+                raise ImproperlyConfigured("'SELF' was used in 'load_djng_urls' for request namespace "
+                                           "lookup, but there is no RequestContext.")
+            return request.resolver_match.namespace
+        elif n == '':
+            return None
+        return n
+
+    urls = get_urls([_replace_namespace(x) for x in namespaces])
+    return mark_safe(json.dumps(urls))
 
 
 class AngularJsNode(Node):
@@ -66,7 +78,8 @@ class AngularJsNode(Node):
 @register.tag
 def angularjs(parser, token):
     """
-    Conditionally switch between AngularJS and Django variable expansion.
+    Conditionally switch between AngularJS and Django variable expansion for ``{{`` and ``}}``
+    keeping Django's expansion for ``{%`` and ``%}``
 
     Usage::
 
@@ -90,7 +103,15 @@ def angularjs(parser, token):
         # convert all occurrences of VariableNode into a TextNode using the
         # AngularJS double curly bracket notation
         if isinstance(node, VariableNode):
-            node = TextNode('{{ %s }}' % node.filter_expression.token)
+            # convert Django's array notation into JS array notation
+            tokens = node.filter_expression.token.split('.')
+            token = tokens[0]
+            for part in tokens[1:]:
+                if part.isdigit():
+                    token += '[%s]' % part
+                else:
+                    token += '.%s' % part
+            node = TextNode('{{ %s }}' % token)
         angular_nodelist.append(node)
     parser.delete_first_token()
     return AngularJsNode(django_nodelist, angular_nodelist, values[0])

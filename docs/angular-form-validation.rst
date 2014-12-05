@@ -22,12 +22,36 @@ this can be achieved automatically and on the fly
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgFormValidationMixin
+	from django.utils import six
+	from djangular.forms import NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 	
-	class MyValidatedForm(NgFormValidationMixin, forms.Form):
+	class MyValidatedForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgFormValidationMixin, forms.Form)):
 	    form_name = 'my_valid_form'
 	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
 	    age = forms.DecimalField(min_value=18, max_value=99)
+
+In the majority of cases, the Form is derived from Django's ``forms.Form``, so the above example
+can be rewritten in a simpler way, by using the convenience class ``NgForm`` as a replacement:
+
+.. code-block:: python
+
+	from djangular.forms import NgFormValidationMixin, NgForm
+	
+	class MyValidatedForm(NgFormValidationMixin, NgForm):
+	    # members as above
+
+If the Form shall inherit from Django's ``forms.ModelForm``, use the convenience class
+``NgModelForm``:
+
+.. code-block:: python
+
+	from djangular.forms import NgFormValidationMixin, NgModelForm
+	
+	class MyValidatedForm(NgFormValidationMixin, NgModelForm):
+	    class Meta:
+	         model = Article
+	
+	    # fields as usual
 
 Each page under control of AngularJS requires a unique form name, otherwise the AngularJS's form
 validation engine shows undefined behavior. Therefore you must name each form inheriting from

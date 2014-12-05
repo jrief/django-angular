@@ -18,7 +18,7 @@ or the newest development version from GitHub
 Dependencies
 ------------
 
-* `Django`_ >=1.5
+* `Django`_ >=1.6
 * `AngularJS`_ >=1.2
 
 Configuration

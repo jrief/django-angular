@@ -162,10 +162,14 @@ class NgCRUDView(JSONBaseMixin, FormView):
     def ng_delete(self, request, *args, **kwargs):
         """
         Delete object and return it's data in JSON encoding
+        The response is build before the object is actually deleted
+        so that we can still retrieve a serialization in the response
+        even with a m2m relationship
         """
         if 'pk' not in request.GET:
             raise NgMissingParameterError("Object id is required to delete.")
 
         obj = self.get_object()
+        response = self.build_json_response(obj)
         obj.delete()
-        return self.build_json_response(obj)
+        return response

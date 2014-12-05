@@ -11,7 +11,14 @@ To run the demos, change into the directory ``examples`` and start the developme
 
 .. code-block:: bash
 
+	pip install -r requirements.txt
 	./manage.py runserver
+
+You can also run unit tests:
+
+.. code-block:: bash
+
+	./manage.py test
 
 Now, point a browser onto one of
 
@@ -22,7 +29,7 @@ Now, point a browser onto one of
 
 Form Validation
 ===============
-The *Form Validation* demo shows how to implement a Django form with augmented functionality to
+The *Form Validation* demo shows how to implement a Django form with enriched functionality to
 add AngularJS's form validation in a DRY manner. This demo combines the classes
 ``NgFormValidationMixin`` with Django's ``forms.Form`` . This demo works without an AngularJS
 controller.

@@ -4,6 +4,30 @@
 Release History
 ===============
 
+0.7.10
+------
+* Fixed inheritance problem (#122) caused by a metaclass conflicting with Django's
+  ``DeclarativeFieldsMetaclass``. This now should fix some issues when using ``forms.ModelForm``.
+  This fix changed the API slightly.
+* Fixed expansion for templatetag ``{% angularjs %}`` (#117) when using lists in Python / arrays
+  in JavaScript.
+
+0.7.9
+-----
+* ``TupleErrorList`` has been adopted to fully support Django-1.7.
+
+0.7.8
+-----
+* Fixed: ``ng-minlength`` and ``ng-maxlength`` are not set to ``None`` if unset.
+* Fixed: Concatenated latest version of django-angular.js.
+
+0.7.7
+-----
+* Refactored the code base. It now is much easier to understand the code and to add custom
+  Fields and Widgets.
+* Fixed the behaviour of all Widgets offered by Django. They now all validate independently of the
+  method (Post or Ajax) used to submit data to the server.
+
 0.7.6
 -----
 * Fixed regression when using ``Bootstrap3FormMixin`` in combination with ``widgets.CheckboxSelectMultiple``.

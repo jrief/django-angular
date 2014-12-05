@@ -1,13 +1,21 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import six
+import json
 from base64 import b64encode
+
+try:
+    from collections import UserList
+except ImportError:  # Python 2
+    from UserList import UserList
+
 from django.forms import forms
 from django.http import QueryDict
+from django.utils import six
 from django.utils.importlib import import_module
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join, escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
-from django.utils.safestring import mark_safe, SafeData
+from django.utils.safestring import mark_safe, SafeText, SafeData
+from django.core.exceptions import ValidationError
 
 
 class SafeTuple(SafeData, tuple):
@@ -18,10 +26,13 @@ class SafeTuple(SafeData, tuple):
 
 
 @python_2_unicode_compatible
-class TupleErrorList(list):
+class TupleErrorList(UserList, list):
     """
-    A list of errors, which in contrast to Django's ErrorList, contains a tuple for each item.
-    This tuple consists of the following fields:
+    A list of errors, which in contrast to Django's ErrorList, can contain a tuple for each item.
+    If this TupleErrorList is initialized with a Python list, it behaves like Django's built-in
+    ErrorList.
+    If this TupleErrorList is initialized with a list of tuples, it behaves differently, suitable
+    for AngularJS form validation. Then the tuple of each list item consist of the following fields:
     0: identifier: This is the model name of the field.
     1: The CSS class added to the embedding <ul>-element.
     2: property: '$pristine', '$dirty' or None used by ng-show on the wrapping <ul>-element.
@@ -34,29 +45,71 @@ class TupleErrorList(list):
     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
     li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
-    def __str__(self):
-        return self.as_ul()
+    def as_data(self):
+        return ValidationError(self.data).error_list
 
-    def __repr__(self):
-        return repr([force_text(e[5]) for e in self])
+    def get_json_data(self, escape_html=False):
+        errors = []
+        for error in self.as_data():
+            message = list(error)[0]
+            errors.append({
+                'message': escape(message) if escape_html else message,
+                'code': error.code or '',
+            })
+        return errors
+
+    def as_json(self, escape_html=False):
+        return json.dumps(self.get_json_data(escape_html))
 
     def as_ul(self):
         if not self:
-            return ''
-        error_lists = {'$pristine': [], '$dirty': []}
-        for e in self:
-            li_format = e[5] == '$message' and self.li_format_bind or self.li_format
-            err_tuple = (e[0], e[3], e[4], force_text(e[5]))
-            error_lists[e[2]].append(format_html(li_format, *err_tuple))
-        # renders and combine both of these lists
+            return SafeText()
         first = self[0]
-        return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
-                    mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+        if isinstance(first, tuple):
+            error_lists = {'$pristine': [], '$dirty': []}
+            for e in self:
+                li_format = e[5] == '$message' and self.li_format_bind or self.li_format
+                err_tuple = (e[0], e[3], e[4], force_text(e[5]))
+                error_lists[e[2]].append(format_html(li_format, *err_tuple))
+            # renders and combine both of these lists
+            return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
+                        mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+        return format_html('<ul class="errorlist">{0}</ul>',
+            format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
 
     def as_text(self):
         if not self:
             return ''
-        return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+        if isinstance(self[0], tuple):
+            return '\n'.join(['* %s' % force_text(e[5]) for e in self if bool(e[5])])
+        return '\n'.join(['* %s' % force_text(e) for e in self])
+
+    def __str__(self):
+        return self.as_ul()
+
+    def __repr__(self):
+        if self and isinstance(self[0], tuple):
+            return repr([force_text(e[5]) for e in self])
+        return repr([force_text(e) for e in self])
+
+    def __contains__(self, item):
+        return item in list(self)
+
+    def __eq__(self, other):
+        return list(self) == other
+
+    def __ne__(self, other):
+        return list(self) != other
+
+    def __getitem__(self, i):
+        error = self.data[i]
+        if isinstance(error, tuple):
+            if isinstance(error[5], ValidationError):
+                error[5] = list(error[5])[0]
+            return error
+        if isinstance(error, ValidationError):
+            return list(error)[0]
+        return force_text(error)
 
 
 class NgBoundField(forms.BoundField):
@@ -77,10 +130,22 @@ class NgBoundField(forms.BoundField):
         if hasattr(extra_classes, 'split'):
             extra_classes = extra_classes.split()
         extra_classes = set(extra_classes or [])
-        extra_classes.update(getattr(self.form, 'field_css_classes', '').split())
+        # field_css_classes is an optional member of a Form optimized for django-angular
+        field_css_classes = getattr(self.form, 'field_css_classes', None)
+        if hasattr(field_css_classes, 'split'):
+            extra_classes.update(field_css_classes.split())
+        elif isinstance(field_css_classes, (list, tuple)):
+            extra_classes.update(field_css_classes)
+        elif isinstance(field_css_classes, dict):
+            for key in (self.name, '*',):
+                extra_field_classes = field_css_classes.get(key)
+                if hasattr(extra_field_classes, 'split'):
+                    extra_field_classes = extra_field_classes.split()
+                extra_field_classes = set(extra_field_classes or [])
+                extra_classes.update(extra_field_classes)
         return super(NgBoundField, self).css_classes(extra_classes)
 
-    def as_widget(self, widget=None, attrs=None, **kwargs):
+    def as_widget(self, widget=None, attrs=None, only_initial=False):
         """
         Renders the field.
         """
@@ -92,27 +157,44 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        return super(NgBoundField, self).as_widget(widget, attrs, **kwargs)
+        return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
         attrs = attrs or {}
         css_classes = getattr(self.field, 'label_css_classes', None)
+        if hasattr(css_classes, 'split'):
+            css_classes = css_classes.split()
+        css_classes = set(css_classes or [])
+        label_css_classes = getattr(self.form, 'label_css_classes', None)
+        if hasattr(label_css_classes, 'split'):
+            css_classes.update(label_css_classes.split())
+        elif isinstance(label_css_classes, (list, tuple)):
+            css_classes.update(label_css_classes)
+        elif isinstance(label_css_classes, dict):
+            for key in (self.name, '*',):
+                extra_label_classes = label_css_classes.get(key)
+                if hasattr(extra_label_classes, 'split'):
+                    extra_label_classes = extra_label_classes.split()
+                extra_label_classes = set(extra_label_classes or [])
+                css_classes.update(extra_label_classes)
         if css_classes:
-            attrs.update({'class': css_classes})
+            attrs.update({'class': ' '.join(css_classes)})
         return super(NgBoundField, self).label_tag(contents, attrs, label_suffix='')
 
 
-class NgFormBaseMixin(object):
-    form_error_css_classes = 'djng-form-errors'
-    field_error_css_classes = 'djng-field-errors'
-    field_mixins_module = field_mixins_fallback_module = 'djangular.forms.field_mixins'
+class BaseFieldsModifierMetaclass(type):
+    """
+    Metaclass that reconverts Field attributes from the dictionary 'base_fields' into Fields
+    with additional functionality required for AngularJS's Form control and Form validation.
+    """
+    field_mixins_module = 'djangular.forms.field_mixins'
 
-    def __new__(cls, **kwargs):
-        field_mixins_module = import_module(cls.field_mixins_module)
-        field_mixins_fallback_module = import_module(cls.field_mixins_fallback_module)
-        new_cls = super(NgFormBaseMixin, cls).__new__(cls)
+    def __new__(cls, name, bases, attrs):
+        new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
+        field_mixins_module = import_module(new_class.field_mixins_module)
+        field_mixins_fallback_module = import_module(cls.field_mixins_module)
         # add additional methods to django.form.fields at runtime
-        for field in new_cls.base_fields.values():
+        for field in new_class.base_fields.values():
             FieldMixinName = field.__class__.__name__ + 'Mixin'
             try:
                 FieldMixin = getattr(field_mixins_module, FieldMixinName)
@@ -122,7 +204,12 @@ class NgFormBaseMixin(object):
                 except AttributeError:
                     FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
             field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
-        return new_cls
+        return new_class
+
+
+class NgFormBaseMixin(object):
+    form_error_css_classes = 'djng-form-errors'
+    field_error_css_classes = 'djng-field-errors'
 
     def __init__(self, data=None, *args, **kwargs):
         try:
@@ -157,7 +244,8 @@ class NgFormBaseMixin(object):
 
     def get_field_errors(self, field):
         """
-        Return server side errors. Shall be overridden by derived forms to add their extra errors for AngularJS.
+        Return server side errors. Shall be overridden by derived forms to add their
+        extra errors for AngularJS.
         """
         identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors = self.errors.get(field.name, [])
