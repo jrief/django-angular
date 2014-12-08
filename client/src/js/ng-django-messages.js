@@ -128,7 +128,7 @@ function djangoMessagesForm() {
 	};
 	
 	function _clearFormMessage(form) {
-		form.$message = '';
+		form.$message = undefined;
 	};
 	
 	function _displayErrors(form, errors) {
@@ -160,7 +160,8 @@ function djangoMessagesForm() {
 						
 						angular.forEach(field, function(subField, subKey) {
 							if(angular.isDefined(subField) &&
-							   angular.isFunction(subField.$validate)) {	
+							   angular.isFunction(subField.$validate)) {
+								
 								subField.$validate();
 							}
 						});
