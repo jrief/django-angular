@@ -151,7 +151,7 @@ your page
 
 .. code-block:: html
 
-	<script src="{{ STATIC_URL }}djangular/js/django-angular.min.js" type="text/javascript"></script>
+	<script src="{% static 'djangular/js/django-angular.min.js' %}" type="text/javascript"></script>
 
 and add the module dependency to your application initialization
 
