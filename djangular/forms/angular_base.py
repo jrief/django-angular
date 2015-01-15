@@ -248,7 +248,7 @@ class NgFormBaseMixin(object):
         extra errors for AngularJS.
         """
         identifier = format_html('{0}.{1}', self.form_name, field.name)
-        errors = self.errors.get(field.name, [])
+        errors = self.errors.get(field.html_name, [])
         return self.error_class([SafeTuple(
             (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
