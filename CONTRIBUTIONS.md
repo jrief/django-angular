@@ -12,3 +12,5 @@ Many Thanks to
  - for contributing to CRUD view and server-side form validation.
 * Nate Dudenhoeffer
  - for fixing an issue regarding validation of forms with hidden fields.
+* Juan Miguel Taboada
+ - for fixing form field issues.
