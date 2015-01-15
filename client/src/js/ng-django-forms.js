@@ -243,6 +243,7 @@ djng_forms_module.factory('djangoForm', function() {
 	function resetFieldValidity(field) {
 		field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
 			// changing the field the server complained about, resets the form into valid state
+			field.$message = '';
 			field.$setValidity('rejected', true);
 			field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
 			delete field.rejectedListenerPos;
