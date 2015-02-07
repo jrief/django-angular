@@ -371,7 +371,7 @@
         if (typeof djngUrlConfig === 'string') {
           return config;
         }
-        config.url = 'djangular/url_resolver/';
+        config.url = '/djangular/url_resolver/';
         config.params = config.params || {};
         config.params['djng_url_name'] = djngUrlConfig.name;
         config.params['djng_url_args'] = djngUrlConfig.args || [];
