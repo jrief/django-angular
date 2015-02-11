@@ -4,5 +4,5 @@ from djangular.views.resolvers import UrlResolverView
 
 
 urlpatterns = patterns('',
-    url(r'^url_resolver/$', UrlResolverView.as_view(), name='djng_url_resolver'),
+    url(r'^url/$', UrlResolverView.as_view(), name='djng_url_resolver'),
 )
