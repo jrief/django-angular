@@ -9,17 +9,21 @@ from django.core.urlresolvers import resolve, reverse
 
 class UrlResolverView(View):
 
-    @csrf_exempt
+    def __init__(self, **kwargs):
+        """
+        If djng_url_resolver is set, the DjangularUrlMiddleware will return response immediately and no middlewares
+        will be ran for UrlResolverView.
+        """
+        self.djng_url_resolver = True
+        super(UrlResolverView, self).__init__(**kwargs)
+
     def dispatch(self, request, *args, **kwargs):
         """
         This view reads url name, args, kwargs from GET parameters, reverses the url and resolves view function
         Returns the result of resolved view function, called with provided args and kwargs
-
-        Using the resolver for a csrf_exempt view would still raise CSRF verification error on UrlResolverView,
-        thus the resolver must be csrf_exempt. CSRF/Session/Auth and other middleware checks are done when calling
-        the actual view.
+        No middleware processing is done for UrlResolverView, middlewares are applied to the actual view function.
+        Thus the final result is exactly the same as if the request was for the resolved view.
         """
-
         url_name = request.GET.get('djng_url_name')
         url_args = request.GET.getlist('djng_url_args', None)
         url_kwargs = {}
