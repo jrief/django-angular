@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
 from django.conf import settings
 from django.utils.decorators import decorator_from_middleware
-from django.utils.module_loading import import_string
 from django.views.generic import View
-from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import resolve, reverse
 
 
-class UrlResolverView(View):
+class DjangularUrlResolverView(View):
 
-    def __init__(self, **kwargs):
+    @staticmethod
+    def _import_dotted_path(path):
         """
-        If djng_url_resolver is set, the DjangularUrlMiddleware will return response immediately and no middlewares
-        will be ran for UrlResolverView.
+        Imports dotted path, e.g. django.middleware.common.CommonMiddleware
+        There are some django utils for this (import_string, import_by_path), but only available in 1.6 and 1.7
+        :param path: dotted path
+        :return: imported class
         """
-        self.djng_url_resolver = True
-        super(UrlResolverView, self).__init__(**kwargs)
+        path = path.split('.')
+        package_path = '.'.join(path[:-1])
+        module = path[-1]
+        package = __import__(package_path, fromlist=[module])
+        return getattr(package, module)
 
     def dispatch(self, request, *args, **kwargs):
         """
@@ -28,6 +32,7 @@ class UrlResolverView(View):
         url_args = request.GET.getlist('djng_url_args', None)
         url_kwargs = {}
 
+        # Read kwargs
         for param in request.GET:
             if param.startswith('djng_url_kwarg_'):
                 url_kwargs[param[15:]] = request.GET[param]  # [15:] to remove 'djng_url_kwarg' prefix
@@ -35,6 +40,8 @@ class UrlResolverView(View):
         view, args, kwargs = resolve(reverse(url_name, args=url_args, kwargs=url_kwargs))
 
         # Run through all the middlewares when calling actual view
-        for middleware_path in settings.MIDDLEWARE_CLASSES:
-            view = decorator_from_middleware(import_string(middleware_path))(view)
+        # MIDDLEWARE_CLASSES must be reversed to maintain correct order of middlewares execution
+        # (view function is wrapped with middleware decorators, first one added is executed as last)
+        for middleware_path in reversed(settings.MIDDLEWARE_CLASSES):
+            view = decorator_from_middleware(self._import_dotted_path(middleware_path))(view)
         return view(request, *args, **kwargs)

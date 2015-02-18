@@ -9,7 +9,6 @@ class DjangularUrlMiddleware(object):
     This must be the first middleware in the MIDDLEWARE_CLASSES tuple!
     """
     def process_view(self, request, callback, callback_args, callback_kwargs):
-        is_reverser = getattr(callback, 'djng_url_reverser', False)
-        if is_reverser:
+        if callback.func_name == 'DjangularUrlResolverView':
             return callback(request, *callback_args, **callback_kwargs)
         return None
