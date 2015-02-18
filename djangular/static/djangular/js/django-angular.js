@@ -342,13 +342,20 @@
 }(window.angular));
 (function (angular, undefined) {
   'use strict';
-  // module: ng.django.urls
-  // Provide url reverse resolution functionality for django urls in angular
+  /*
+     module: ng.django.urls
+     Provide url reverse resolution functionality for django urls in angular
+     Usage: djangoUrl.reverse(url_name, args_or_kwargs)
+
+     Examples:
+        - djangoUrl.reverse('home', [user_id: 2]);
+        - djangoUrl.reverse('home', [2]);
+     */
   var djngUrls = angular.module('ng.django.urls', []);
   djngUrls.service('djangoUrl', function () {
     /*
-        Functions from angular.js source, not public available
-        See: https://github.com/angular/angular.js/issues/7429
+         Functions from angular.js source, not public available
+         See: https://github.com/angular/angular.js/issues/7429
          */
     function forEachSorted(obj, iterator, context) {
       var keys = sortedKeys(obj);
@@ -383,18 +390,30 @@
     // Service public interface
     this.reverse = function (url_name, args_or_kwargs) {
       var url = buildUrl('/djangular/url/', { djng_url_name: url_name });
+      /*
+             Django wants arrays in query params encoded the following way: a = [1,2,3] -> ?a=1&a=2$a=3
+             buildUrl function doesn't natively understand lists in params, so in case of a argument array
+             it's called iteratively, adding a single parameter with each call
+
+             url = buildUrl(url, {a:1}) -> returns /url?a=1
+             url = buildUrl(url, {a:2}) -> returns /url?a=1&a=2
+             ...
+             */
       if (Array.isArray(args_or_kwargs)) {
         forEachSorted(args_or_kwargs, function (value) {
           url = buildUrl(url, { 'djng_url_args': value });
         });
         return url;
       }
+      /*
+             If there's a object of keyword arguments, a 'djng_url_kwarg_' prefix is prepended to each member
+             Then we can directly call the buildUrl function
+             */
+      var params = {};
       forEachSorted(args_or_kwargs, function (value, key) {
-        var params = {};
         params['djng_url_kwarg_' + key] = value;
-        url = buildUrl(url, params);
       });
-      return url;
+      return buildUrl(url, params);
     };
   });
 }(window.angular));
