@@ -73,6 +73,14 @@
             forEachSorted(args_or_kwargs, function (value, key) {
                 params['djng_url_kwarg_' + key] = value;
             });
+            /*
+            If params is empty (no kwargs passed) return url immediately
+            Calling buildUrl with empty params object adds & or ? at the end of query string
+            E.g. buldUrl('/url/djng_url_name=home', {}) -> /url/djng_url_name=home&
+             */
+            if (angular.equals(params, {})){ // If params is empty, no kwargs passed.
+                return url;
+            }
             return buildUrl(url, params);
         };
     });
