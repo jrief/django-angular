@@ -6,6 +6,7 @@ from django.core.urlresolvers import resolve, reverse
 
 
 class DjangularUrlResolverView(View):
+    urlconf = None  # urlconf for reverse() and resolve(), overridden in tests
 
     @staticmethod
     def _import_dotted_path(path):
@@ -37,7 +38,8 @@ class DjangularUrlResolverView(View):
             if param.startswith('djng_url_kwarg_'):
                 url_kwargs[param[15:]] = request.GET[param]  # [15:] to remove 'djng_url_kwarg' prefix
 
-        view, args, kwargs = resolve(reverse(url_name, args=url_args, kwargs=url_kwargs))
+        url = reverse(url_name, args=url_args, kwargs=url_kwargs, urlconf=self.urlconf)
+        view, args, kwargs = resolve(url, urlconf=self.urlconf)
 
         # Run through all the middlewares when calling actual view
         # MIDDLEWARE_CLASSES must be reversed to maintain correct order of middlewares execution
