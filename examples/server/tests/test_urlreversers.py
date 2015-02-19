@@ -5,6 +5,10 @@ from django.views.generic import View
 from djangular.core.urlresolvers import get_url_patterns
 
 
+# This is now deprecated way of reversing django urls in angular code, but both old tests and code should be
+# kept to maintain backwards compatibility for now
+
+
 class DummyView(View):
     pass
 
