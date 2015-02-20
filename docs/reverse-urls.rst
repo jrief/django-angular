@@ -1,21 +1,22 @@
 .. _reverse-urls:
 
-=================================
-Manage Django URL's for AngularJS
-=================================
+================================
+Manage Django URLs for AngularJS
+================================
 
 You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
 your application. Do not enter into temptation to hard code such a URL into the client side
 controller code. Nor enter into temptation to create Javascript dynamically using a template
 engine. There is a clean and simple solution to solve this problem.
 
-.. note:: With version 0.8 **django-angular** introduced a new way to handler urls. Documentation for now deprecated
-          approach is available here: :ref:`here <manage-urls>`.
+.. note:: With version 0.8 **django-angular** introduced a new way to handle urls. Documentation for now deprecated
+          approach is available :ref:`here <manage-urls>`.
 
 Installation
 ============
 
-First there is some configuration required on server side.
+Django settings
+---------------
 
 1. Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
 
@@ -26,17 +27,20 @@ First there is some configuration required on server side.
 .. code-block:: python
 
     urlpatterns = patterns('',
-    url(r'^djangular/', include('djangular.urls', namespace='djangular')),
-    # Other urls
+        url(r'^djangular/', include('djangular.urls', namespace='djangular')),
+        # Other urls
     )
 
-To use the ``djangoUrl`` service you first have to include ``django-angular.js``:
+Angular
+-------
+
+1. Include ``django-angular.js``:
 
 .. code-block:: html
 
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
-And add ``ng.django.urls`` as a dependency for you app:
+2. Add ``ng.django.urls`` as a dependency for you app:
 
 .. code-block:: html
 
@@ -44,7 +48,7 @@ And add ``ng.django.urls`` as a dependency for you app:
         var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
     </script>
 
-The ``djangoUrl`` service is then available through `dependency injection`_
+The ``djangoUrl`` service is now available through `dependency injection`_
 to all directives and controllers.
 
 Usage
@@ -65,10 +69,10 @@ Example
 .. code-block:: javascript
 
     my_app.controller('MyCtrl', function($http, djangoUrl) {
-	    $http.post(djangoUrl.reverse('api:articles', [1])));
-	    // or with kwargs
-        $http.post(djangoUrl.reverse('api:articles', {'id': 1})
-	});
+        $http.get(djangoUrl.reverse('api:articles', [1])));
+        // or with kwargs
+        $http.get(djangoUrl.reverse('api:articles', {'id': 1});
+    });
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
