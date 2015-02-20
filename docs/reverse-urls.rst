@@ -18,8 +18,11 @@ Installation
 First there is some configuration required on server side.
 
 1. Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
+
 .. warning:: This must be the first middleware included in ``MIDDLEWARE_CLASSES``
+
 2. Include ``django-angular`` urls into the root url configuration
+
 .. code-block:: python
 
     urlpatterns = patterns('',
@@ -28,11 +31,13 @@ First there is some configuration required on server side.
     )
 
 To use the ``djangoUrl`` service you first have to include ``django-angular.js``:
+
 .. code-block:: html
 
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
 And add ``ng.django.urls`` as a dependency for you app:
+
 .. code-block:: html
 
     <script>
@@ -64,15 +69,6 @@ Example
 	    // or with kwargs
         $http.post(djangoUrl.reverse('api:articles', {'id': 1})
 	});
-
-How does it work?
-=================
-``djangoUrl.reverse`` function always returns a hard-coded url ``/djangular/url/`` and adds encoded url name and parameters
-to query string. ``DjangularUrlResolverView`` then resolves your view and returns it's result. Naively doing so would
-yield an incorrect result due to middlewares processing ``DjangularUrlResolverView`` instead of your view. ``DjangularUrlMiddleware``
-immediately returns if the request is for ``DjangularUrlResolverView`` and thus no middlewares are ran for it.
-Before calling your view, it's decorated with middlewares and final result is exactly the same as if the request came directly for it.
-
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
