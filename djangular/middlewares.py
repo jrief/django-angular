@@ -8,6 +8,7 @@ class DjangularUrlMiddleware(object):
     If the request path is '/djangular/url/' it should be resolved to actual view, otherwise return None and
     continue as usual
     This must be the first middleware in the MIDDLEWARE_CLASSES tuple!
+    Urlconf property is overridden in tests
     """
     urlconf = None
 
