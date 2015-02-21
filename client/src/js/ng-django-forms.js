@@ -141,36 +141,59 @@ djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
 		require: '^?form',
-		link: function(scope, element, attrs, controller) {
-			var formCtrl, subFields, checkboxElems = [];
-
-			function validate(event) {
-				var valid = false;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
-				});
-				formCtrl.$setValidity('required', valid);
-				if (event && angular.isString(subFields)) {
-					formCtrl[subFields].$dirty = true;
-					formCtrl[subFields].$pristine = false;
-				}
-			}
-
-			if (!controller)
-				return;
-			formCtrl = controller;
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				subFields = attrs.validateMultipleFields;
-			}
+		// create child scope for changed method
+		scope: true,
+		compile: function(element, attrs) {
 			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) >= 0) {
-					checkboxElems.push(elem);
-				}
+				elem = angular.element(elem)
+				elem.attr('ng-change', 'changed()');
 			});
-			element.on('change', validate);
-			validate();
+			
+			return {
+				
+				post: function(scope, element, attrs, controller) {
+					var formCtrl, subFields, checkboxCtrls = [];
+
+					scope.changed = function() {
+						validate(true)
+					}
+
+					function validate(trigger) {
+						var valid = false;
+						angular.forEach(checkboxCtrls, function(checkbox) {
+							valid = valid || checkbox.$modelValue;
+							if(checkbox.clearRejected) {
+								checkbox.clearRejected();
+							}
+						});
+						
+						formCtrl.$setValidity('required', valid);
+						formCtrl.$setValidity('rejected', true);
+						formCtrl.$message = ''
+						
+						if (trigger && angular.isString(subFields)) {
+							formCtrl[subFields].$dirty = true;
+							formCtrl[subFields].$pristine = false;
+						}
+					}
+
+					if (!controller)
+						return;
+					formCtrl = controller;
+					try {
+						subFields = angular.fromJson(attrs.validateMultipleFields);
+					} catch (SyntaxError) {
+						subFields = attrs.validateMultipleFields;
+					}
+					angular.forEach(element.find('input'), function(elem) {
+						if (subFields.indexOf(elem.name) >= 0) {
+							checkboxCtrls.push(formCtrl[elem.name]);
+						}
+					});
+
+					validate();
+				}
+			}
 		}
 	};
 });
@@ -241,12 +264,16 @@ djng_forms_module.factory('djangoForm', function() {
 	}
 
 	function resetFieldValidity(field) {
-		field.rejectedListenerPos = field.$viewChangeListeners.push(function() {
-			// changing the field the server complained about, resets the form into valid state
+		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
+			field.$message = '';
 			field.$setValidity('rejected', true);
-			field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-			delete field.rejectedListenerPos;
-		}) - 1;
+			field.$viewChangeListeners.splice(pos - 1, 1);
+			delete field.clearRejected;
+		})
+	}
+	
+	function isField(field) {
+		return angular.isArray(field.$viewChangeListeners)
 	}
 
 	return {
@@ -255,16 +282,28 @@ djng_forms_module.factory('djangoForm', function() {
 		setErrors: function(form, errors) {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
-			if (form.$error.hasOwnProperty('rejected')) {
-				angular.forEach(form.$error.rejected, function(rejected) {
+			if (form.$error.hasOwnProperty('rejected') &&
+				angular.isArray(form.$error.rejected)) {
+				/*
+				 * make copy of rejected before we loop as calling
+				 * field.$setValidity('rejected', true) modifies the error array
+				 * so only every other one was being removed
+				 */
+				var rejected = form.$error.rejected.concat();
+				angular.forEach(rejected, function(rejected) {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						field.$message = '';
-						field.$setValidity('rejected', true);
-						if (field.rejectedListenerPos !== undefined) {
-							field.$viewChangeListeners.splice(field.rejectedListenerPos, 1);
-							delete field.rejectedListenerPos;
+						if (isField(field) && field.clearRejected) {
+							field.clearRejected();
+						} else {
+							field.$message = '';
+							// this field is a composite of input elements
+							angular.forEach(field, function(subField, subKey) {
+								if (subField && isField(subField) && subField.clearRejected) {
+									subField.clearRejected();
+								}
+							});
 						}
 					}
 				});
@@ -281,12 +320,12 @@ djng_forms_module.factory('djangoForm', function() {
 						field.$message = errors[0];
 						field.$setValidity('rejected', false);
 						field.$setPristine();
-						if (angular.isArray(field.$viewChangeListeners)) {
+						if (isField(field)) {
 							resetFieldValidity(field);
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
-								if (angular.isArray(subField.$viewChangeListeners)) {
+								if (subField && isField(subField)) {
 									resetFieldValidity(subField);
 								}
 							});
@@ -298,5 +337,6 @@ djng_forms_module.factory('djangoForm', function() {
 		}
 	};
 });
+
 
 })(window.angular);
