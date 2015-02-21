@@ -18,29 +18,28 @@ Installation
 Django settings
 ---------------
 
-1. Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
-
-.. warning:: This must be the first middleware included in ``MIDDLEWARE_CLASSES``
-
-2. Include ``django-angular`` urls into the root url configuration
+* Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
 
 .. code-block:: python
 
-    urlpatterns = patterns('',
-        url(r'^djangular/', include('djangular.urls', namespace='djangular')),
-        # Other urls
+    MIDDLEWARE_CLASSES = (
+        'djangular.middlewares.DjangularUrlMiddleware',
+        # Other middlewares
     )
+
+.. warning:: This must be the first middleware included in ``MIDDLEWARE_CLASSES``
+
 
 Angular
 -------
 
-1. Include ``django-angular.js``:
+* Include ``django-angular.js``:
 
 .. code-block:: html
 
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
-2. Add ``ng.django.urls`` as a dependency for you app:
+* Add ``ng.django.urls`` as a dependency for you app:
 
 .. code-block:: html
 
