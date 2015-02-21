@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url, include
 from django.test import TestCase, RequestFactory
-from djangular.views.resolvers import DjangularUrlResolverView
-
-test_view = DjangularUrlResolverView.as_view(urlconf='server.tests.test_urlresolver_view')
+from djangular.middlewares import DjangularUrlMiddleware
 
 
 def dummy_view(request, *args, **kwargs):
@@ -40,17 +38,34 @@ class TestUrlResolverView(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        self.middleware = DjangularUrlMiddleware(urlconf='server.tests.test_urlresolver_view')
         self.url_name_arg = 'djng_url_name'
         self.args_prefix = 'djng_url_args'
         self.kwarg_prefix = 'djng_url_kwarg_'
         super(TestUrlResolverView, self).setUp()
+
+    def test_request_path(self):
+        data = {
+            self.url_name_arg: 'home'
+        }
+        request = self.factory.get('/djangular/url/', data=data)
+        response = self.middleware.process_request(request)
+        self.assertEqual(response['request'].path, '/')
+
+    def test_middleware_return_none(self):
+        """
+        If request.path != '/djangular/url/' return None, so request is processed normally
+        """
+        request = self.factory.get('/some/other/url/')
+        response = self.middleware.process_request(request)
+        self.assertEqual(response, None)
 
     def test_resolver_view_resolution(self):
         data = {
             self.url_name_arg: 'home'
         }
         request = self.factory.get('/djangular/url/', data=data)
-        response = test_view(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response['name'], 'DummyView')
 
     def test_view_resolution_include(self):
@@ -58,7 +73,7 @@ class TestUrlResolverView(TestCase):
             self.url_name_arg: 'include1:home2'
         }
         request = self.factory.get('/djangular/url/', data=data)
-        response = test_view(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(response['name'], 'DummyView2')
 
     def test_args(self):
@@ -67,7 +82,7 @@ class TestUrlResolverView(TestCase):
             self.args_prefix: [1, 2, 3]
         }
         request = self.factory.get('/djangular/url/', data=data)
-        response = test_view(request)
+        response = self.middleware.process_request(request)
         self.assertEqual((u'1', u'2', u'3'), response['args'])
 
     def test_kwargs(self):
@@ -79,7 +94,7 @@ class TestUrlResolverView(TestCase):
         }
         expected_view_kwargs = {'id2': u'2', 'id': u'1', 'id3': u'3'}
         request = self.factory.get('/djangular/url/', data=data)
-        response = test_view(request)
+        response = self.middleware.process_request(request)
         self.assertEqual(expected_view_kwargs, response['kwargs'])
 
 
