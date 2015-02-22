@@ -91,7 +91,7 @@ By using the utility function
 
 .. code-block:: python
 
-	from djangular.core.urlsresolvers import urls_by_namespace
+	from djangular.core.urlresolvers import urls_by_namespace
 
 	my_partials = urls_by_namespace('partials')
 
