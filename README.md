@@ -32,10 +32,11 @@ Features
 
 Build status
 ------------
-[![Build Status](https://travis-ci.org/jrief/django-angular.png?branch=master)](https://travis-ci.org/jrief/django-angular)
+[![Build Status](https://travis-ci.org/jrief/django-angular.svg?branch=master)](https://travis-ci.org/jrief/django-angular)
+[![Downloads](http://img.shields.io/pypi/dm/django-angular.svg?style=flat-square)](https://pypi.python.org/pypi/django-angular/)
 
 License
 -------
-Copyright &copy; 2014 Jacob Rief.
+Copyright &copy; 2015 Jacob Rief.
 
 MIT licensed.
