@@ -4,6 +4,11 @@
 Release History
 ===============
 
+0.7.11.dev
+----------
+* Using ``field.html_name`` instead of ``field.name``. Otherwise ``add_prefix()`` function on
+  form objects doesn't work properly.
+
 0.7.10
 ------
 * Fixed inheritance problem (#122) caused by a metaclass conflicting with Django's
