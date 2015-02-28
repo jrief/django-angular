@@ -4,13 +4,14 @@
 Manage Django URLs for AngularJS
 ================================
 
-You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
-your application. Do not enter into temptation to hard code such a URL into the client side
-controller code. Nor enter into temptation to create Javascript dynamically using a template
+AngularJS controllers communicating with the Django application through Ajax, often require URLs, pointing
+to some of the views of your application. Do not enter into temptation to hard code such a URL into the
+client side controller code. Even worse would be to create Javascript dynamically using a template
 engine. There is a clean and simple solution to solve this problem.
 
-.. note:: With version 0.8 **django-angular** introduced a new way to handle urls. Documentation for now deprecated
-          approach is available :ref:`here <manage-urls>`.
+.. note:: With version 0.8 **django-angular** introduced a new way to handle urls. Documentation for now
+          deprecated approach is available :ref:`here <manage-urls>`.
+
 
 Installation
 ============
