@@ -3,80 +3,58 @@
 describe('unit tests for module ng.django.url', function () {
 
     describe('test urls', function () {
+        var base_url = '/djangular/url/';
+        var arg_prefix = 'djng_url_args';
+        var kwarg_prefix = 'djng_url_kwarg_';
+        var url_name_arg = 'djng_url_name';
 
         beforeEach(function () {
-            // ng.django.urls - core module
-            // ng.django.urls - pattern mocks for testing, from mocks/urlmocks.js
-            module('ng.django.urls', 'ng.django.urls.mocks');
+            module('ng.django.urls');
         });
 
         describe('general url reverser tests', function () {
-            it('should raise an error when no matching url is found', inject(function (djangoUrl) {
-                expect(function () {
-                    djangoUrl.reverse('home12')
-                }).toThrow();
+            it('should inject the djangoUrl service without errors', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse).toBeDefined();
+            }));
+            it('should match the base url', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('some:url:name')).toContain(base_url);
             }));
         });
 
-        describe('test url reverser for simple urls without parameters', function () {
-            it('should ignore not-needed parameters', inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('home')).toBe('/');
-                expect(djangoUrl.reverse('home', [2, 3])).toBe('/');
-                expect(djangoUrl.reverse('home', {'some_data': 2})).toBe('/');
+        describe('test building urls, url name', function () {
+            it('should correctly add django\'s url name as query parameter', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home')).toBe(base_url + '?' + url_name_arg + '=home')
+            }));
+            it('should urlencode name if it contains :', inject(function (djangoUrl) {
+                // : urlencoded becomes %3A
+                expect(djangoUrl.reverse('account:profile')).toBe(base_url + '?' + url_name_arg + '=account%3Aprofile')
+            }));
+            it('should encode funny characters in name correctly', inject(function (djangoUrl) {
+                var urlname = '{6;.-$$+/';
+                expect(djangoUrl.reverse(urlname)).toBe(base_url + '?' + url_name_arg + '=' + encodeURIComponent(urlname));
             }));
         });
 
-        describe("test url reverser for patterns that require arguments", function () {
-
-            it("should fill arguments correctly", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', [2])).toBe('/api/2/overview/');
-                expect(djangoUrl.reverse('api:visitors', [3, 4])).toBe('/api/3/visitors/4/');
+        describe('test building urls with arguments', function () {
+            it('should add single argument as query param with arg_prefix', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home', [1])).toBe(base_url + '?' + url_name_arg + '=home&' + arg_prefix + '=1');
             }));
-
-            it("should ignore extra arguments", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', [2, 3])).toBe('/api/2/overview/')
+            it('should add multiple arguments in correct order', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home', [1, 2, 3]))
+                    .toBe(base_url + '?' + url_name_arg + '=home&' + arg_prefix + '=1&' + arg_prefix + '=2&' + arg_prefix + '=3');
             }));
-
-            it("should raise an error when there are not enough arguments", inject(function (djangoUrl) {
-                expect(function () {
-                    djangoUrl.reverse('api:overview', [])
-                }).toThrow();
-            }));
-
-            it("should not raise an exception when not given any arguments if none are required",
-                inject(function (djangoUrl) {
-                    expect(function () {
-                        djangoUrl.reverse('api:overview')
-                    }).not.toThrow();
-                }));
         });
 
-        describe("test url reverser for resolving urls with kwargs", function () {
-
-            it("should fill kwargs correctly", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', {'website_id': 2})).toBe('/api/2/overview/');
-                expect(djangoUrl.reverse('api:visitors', {'website_id': 2, 'visitor_id': 3}))
-                    .toBe('/api/2/visitors/3/');
+        describe('test building urls with keyword arguments', function () {
+            it('should add kwarg as kwarg prefix + kwarg name = kwarg value', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home', {id: '7'}))
+                    .toBe(base_url + '?' + url_name_arg + '=home&' + kwarg_prefix + 'id=7');
             }));
-
-            it("should ignore extra kwargs", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', {'website_id': 2, 'visitor_id': 3}))
-                    .toBe('/api/2/overview/');
+            it('should add multiple kwargs', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home', {id: '7', name: 'john'}))
+                    .toBe(base_url + '?' + url_name_arg + '=home&' + kwarg_prefix + 'id=7&' + kwarg_prefix + 'name=john');
             }));
-
-            it("should return parametrized url template for missing kwargs", inject(function (djangoUrl) {
-                expect(djangoUrl.reverse('api:overview', {})).toBe('/api/:website_id/overview/');
-                expect(djangoUrl.reverse('api:visitors', {'visitor_id': 3}))
-                    .toBe('/api/:website_id/visitors/3/');
-                expect(djangoUrl.reverse('api:visitors', {'website_id': 2}))
-                    .toBe('/api/2/visitors/:visitor_id/');
-            }));
-
-            it("should default to kwargs mode when no args/kwargs are given (parametrized urls)",
-                inject(function (djangoUrl) {
-                        expect(djangoUrl.reverse('api:overview')).toBe('/api/:website_id/overview/');
-                    }
-                ));
         });
+
     });
 });

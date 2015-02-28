@@ -1,55 +1,58 @@
 .. _reverse-urls:
 
-=================================
-Manage Django URL's for AngularJS
-=================================
+================================
+Manage Django URLs for AngularJS
+================================
 
 You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
 your application. Do not enter into temptation to hard code such a URL into the client side
 controller code. Nor enter into temptation to create Javascript dynamically using a template
 engine. There is a clean and simple solution to solve this problem.
 
-It is good practice to add configuration directives to applications as constants to the `AngularJS
-module definition`_. This can safely be done in the template code rendered by Django, where it
-belongs!
-
-.. note:: Documentation for **django-angular's** deprecated way of managing URLs is available
-          :ref:`here <manage-urls>`.
+.. note:: With version 0.8 **django-angular** introduced a new way to handle urls. Documentation for now deprecated
+          approach is available :ref:`here <manage-urls>`.
 
 Installation
 ============
 
-It is assumed that your AngularJS application has already been initialized and that you have loaded
-django-angular tags, ``{% load djangular_tags %}``:
+Django settings
+---------------
 
-.. code-block:: html
+* Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
 
-    {% load djangular_tags %}
-    <script>
-        var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
-    </script>
+.. code-block:: python
 
-Now, you have to include ``django-angular.js`` and add data about your django url configuration:
+    MIDDLEWARE_CLASSES = (
+        'djangular.middlewares.DjangularUrlMiddleware',
+        # Other middlewares
+    )
+
+.. warning:: This must be the first middleware included in ``MIDDLEWARE_CLASSES``
+
+
+Angular
+-------
+
+* Include ``django-angular.js``:
 
 .. code-block:: html
 
     <script src="{% static 'djangular/js/django-angular.js' %}"></script>
-    <script>angular.module('ng.django.urls').constant('patterns', {% load_djng_urls %});</script>
 
-By default, ``load_djng_urls`` loads all available URLs from the root configuration. Optionally, this can be narrowed
-down to a set of namespaces, by adding them as arguments, e.g. ``{% load_djng_urls 'app_namespace' %}``. Using
-``'SELF'`` adds all URLs that are in the same namespace as the current request. The root level of the URL configuration
-can be referred to with an empty string or ``None``.
+* Add ``ng.django.urls`` as a dependency for you app:
 
-.. note:: When a namespace is specified, included sub-namespaces are not loaded. If needed, add them
-          separately, for example ``{% load_djng_urls 'main' 'main:sub' %}``.
+.. code-block:: html
 
-The ``djangoUrl`` service is then available through `dependency injection`_
+    <script>
+        var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
+    </script>
+
+The ``djangoUrl`` service is now available through `dependency injection`_
 to all directives and controllers.
 
 Usage
 =====
-The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves much like the
+The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves exactly like the
 django's url template tag.
 
 Parameters
@@ -64,57 +67,11 @@ Example
 -------
 .. code-block:: javascript
 
-    my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
-     function($scope, $http, djangoUrl) {
-
-	    $http.post(djangoUrl.reverse('api:articles', [1]), {action: 'get_data'})
-	        .success(function (out_data) {
-                $scope.data = out_data;
-        });
-
-        // Or $http.post(djangoUrl.reverse('api:articles', {'id': 1}) ...
-        // djangoUrl.reverse('api:article', {'id': 1}) returns something like '/api/article/1/'
-	}]);
-
-Parametrized URL templates
-------------------------------------------
-djangoUrl's ``reverse()`` method also provides an option to create parametrized URL templates, which can be used with
-Angular's ``$resource``. These templates look something like: ``/api/articles/:id/``, parameters prefixed by ``:`` are
-filled by Angular.
-
-You can create parametrized templates by using ``reverse()`` method in keyword arguments mode. Parameters not present
-in keyword arguments object will be replaced by ``:`` prefixed name from urlpatterns.
-
-.. code-block:: javascript
-
-	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
-	 function($scope, $http, djangoUrl) {
-        // Urlconf
-        // ...
-        // url(r'^api/(?P<type>\w+)/(?P<id>\d+)/$', api.models, name='api'),
-        // ...
-
-        // djangoUrl.reverse('api', {'id': 1, 'type': 'article'}) -> /api/article/1/
-        // djangoUrl.reverse('api', {'id': 1}) -> /api/:type/1/
-        // djangoUrl.reverse('api', {'type': 'article'}) -> /api/article/:id/
-        // djangoUrl.reverse('api', {}) -> /api/:type/:id/
-        // djangoUrl.reverse('api') -> /api/:type/:id/
-        // When nothing is passed as args_or_kwargs argument, reverse() defaults
-        // to keyword arguments mode
-	}]);
-
-So when building a service with ``$resource`` you can use ``djangoUrl.reverse()`` method just to make a parametrized
-URL template, or to partially fill it and have Angular add other arguments.
-
-.. code-block:: javascript
-
-    my_app.controller('MyCtrl', ['$resource', 'djangoUrl', function($resource, djangoUrl) {
-
-        var Article = $resource(djangoUrl.reverse('api'), {'id': '@id', 'type': 'article'});
-        // or
-        var Article = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
-
-	}]);
+    my_app.controller('MyCtrl', function($http, djangoUrl) {
+        $http.get(djangoUrl.reverse('api:articles', [1])));
+        // or with kwargs
+        $http.get(djangoUrl.reverse('api:articles', {'id': 1});
+    });
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
