@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url, include
 from django.test import TestCase, RequestFactory
-from djangular.middlewares import DjangularUrlMiddleware
+from djangular.middleware import DjangularUrlMiddleware
 
 
 def dummy_view(request, *args, **kwargs):

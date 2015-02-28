@@ -24,7 +24,7 @@ Django settings
 .. code-block:: python
 
     MIDDLEWARE_CLASSES = (
-        'djangular.middlewares.DjangularUrlMiddleware',
+        'djangular.middleware.DjangularUrlMiddleware',
         # Other middlewares
     )
 
