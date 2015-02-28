@@ -53,8 +53,9 @@ to all directives and controllers.
 
 Usage
 =====
-The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves exactly like the
-django's url template tag.
+The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves
+exactly like Django's `URL template tag`_.
+
 
 Parameters
 ----------
@@ -76,3 +77,4 @@ Example
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
+.. _URL template tag : https://docs.djangoproject.com/en/dev/ref/templates/builtins/#url
