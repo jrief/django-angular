@@ -1,7 +1,7 @@
 {
 	"name": "django-angular",
-	"description": "Let Django play nice together with AngularJS",
-	"version": "0.7.0",
+	"description": "Let Django play well with AngularJS",
+	"version": "0.7.11",
 	"homepage": "https://github.com/jrief/django-angular",
 	"author": {
 		"name": "Jacob Rief",
@@ -14,10 +14,11 @@
 	"bugs": {
 		"url": "https://github.com/jrief/django-angular/issues"
 	},
-	"licenses": [{
-		"type": "MIT",
-		"url": "https://github.com/jrief/django-angular/LICENSE.txt"
-	}],
+	"keywords": [
+		"Django",
+		"AngularJS"
+	],
+	"license": "MIT",
 	"dependencies": {},
 	"devDependencies": {
 		"karma": "latest",
@@ -30,6 +31,5 @@
 		"grunt-contrib-uglify": "latest",
 		"grunt-ngmin": "latest",
 		"grunt-karma": "latest"
-	},
-	"keywords": ["Django", "AngularJS", "djangular"]
+	}
 }
