@@ -23,9 +23,9 @@ include1 = patterns('',
 )
 
 urlpatterns = patterns('',
-   url(r'^$', DummyView.as_view(), name='home'),
-   url(r'^learnmore/$', DummyView.as_view(), name='learnmore'),
-   url(r'accounts/', include(include1, namespace='accounts')),
+    url(r'^$', DummyView.as_view(), name='home'),
+    url(r'^learnmore/$', DummyView.as_view(), name='learnmore'),
+    url(r'accounts/', include(include1, namespace='accounts')),
 )
 
 

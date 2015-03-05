@@ -26,10 +26,10 @@ include1 = patterns('',
 )
 
 urlpatterns = patterns('',
-   url(r'^$', dummy_view, name='home'),
-   url(r'^(\d)/(\d)/(\d)/$', dummy_view, name='home_args'),
-   url(r'^(?P<id>\d)/(?P<id2>\d)/(?P<id3>\d)$', dummy_view, name='home_kwargs'),
-   url(r'^include/', include(include1, namespace='include1'))
+    url(r'^$', dummy_view, name='home'),
+    url(r'^(\d)/(\d)/(\d)/$', dummy_view, name='home_args'),
+    url(r'^(?P<id>\d)/(?P<id2>\d)/(?P<id3>\d)$', dummy_view, name='home_kwargs'),
+    url(r'^include/', include(include1, namespace='include1'))
 )
 
 
@@ -96,6 +96,3 @@ class TestUrlResolverView(TestCase):
         request = self.factory.get('/djangular/url/', data=data)
         response = self.middleware.process_request(request)
         self.assertEqual(expected_view_kwargs, response['kwargs'])
-
-
-
