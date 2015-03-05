@@ -48,13 +48,13 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: 'home'
         }
-        request = self.factory.get('/djangular/url/', data=data)
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         response = self.middleware.process_request(request)
         self.assertEqual(response['request'].path, '/')
 
     def test_middleware_return_none(self):
         """
-        If request.path != '/djangular/url/' return None, so request is processed normally
+        If request.path != <DjangularUrlMiddleware.ANGULAR_REVERSE> return None, so request is processed normally
         """
         request = self.factory.get('/some/other/url/')
         response = self.middleware.process_request(request)
@@ -64,7 +64,7 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: 'home'
         }
-        request = self.factory.get('/djangular/url/', data=data)
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         response = self.middleware.process_request(request)
         self.assertEqual(response['name'], 'DummyView')
 
@@ -72,7 +72,7 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: 'include1:home2'
         }
-        request = self.factory.get('/djangular/url/', data=data)
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         response = self.middleware.process_request(request)
         self.assertEqual(response['name'], 'DummyView2')
 
@@ -81,7 +81,7 @@ class TestUrlResolverView(TestCase):
             self.url_name_arg: 'home_args',
             self.args_prefix: [1, 2, 3]
         }
-        request = self.factory.get('/djangular/url/', data=data)
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         response = self.middleware.process_request(request)
         self.assertEqual((u'1', u'2', u'3'), response['args'])
 
@@ -93,6 +93,6 @@ class TestUrlResolverView(TestCase):
             self.kwarg_prefix + 'id3': 3
         }
         expected_view_kwargs = {'id2': u'2', 'id': u'1', 'id3': u'3'}
-        request = self.factory.get('/djangular/url/', data=data)
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         response = self.middleware.process_request(request)
         self.assertEqual(expected_view_kwargs, response['kwargs'])

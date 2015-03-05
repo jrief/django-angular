@@ -5,11 +5,12 @@ from django.utils.decorators import decorator_from_middleware
 
 class DjangularUrlMiddleware(object):
     """
-    If the request path is '/djangular/url/' it should be resolved to actual view, otherwise return None and
-    continue as usual
+    If the request path is <ANGULAR_REVERSE> it should be resolved to actual view, otherwise return
+    ``None`` and continue as usual.
     This must be the first middleware in the MIDDLEWARE_CLASSES tuple!
     Urlconf property is overridden in tests
     """
+    ANGULAR_REVERSE = '/angular/reverse/'
     urlconf = None
 
     def __init__(self, urlconf=None):
@@ -38,7 +39,7 @@ class DjangularUrlMiddleware(object):
         be added manually
         The final result is exactly the same as if the request was for the resolved view.
         """
-        if request.path == '/djangular/url/':
+        if request.path == self.ANGULAR_REVERSE:
             url_name = request.GET.get('djng_url_name')
             url_args = request.GET.getlist('djng_url_args', None)
             url_kwargs = {}

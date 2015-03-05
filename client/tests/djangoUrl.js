@@ -3,7 +3,7 @@
 describe('unit tests for module ng.django.url', function () {
 
     describe('test urls', function () {
-        var base_url = '/djangular/url/';
+        var base_url = '/angular/reverse/';
         var arg_prefix = 'djng_url_args';
         var kwarg_prefix = 'djng_url_kwarg_';
         var url_name_arg = 'djng_url_name';
