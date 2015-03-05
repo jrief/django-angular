@@ -1,7 +1,10 @@
-from django.core.urlresolvers import resolve, reverse
+from django.core.urlresolvers import reverse
 from django.conf.urls import patterns, url
+from django.http.response import HttpResponsePermanentRedirect
+from django.views.decorators.http import require_GET
 
 
+@require_GET
 def angular_reverse(request, *args, **kwargs):
     url_name = request.GET.get('djng_url_name')
     url_args = request.GET.getlist('djng_url_args', None)
@@ -13,11 +16,9 @@ def angular_reverse(request, *args, **kwargs):
             url_kwargs[param[len(prefix):]] = request.GET[param]
 
     url = reverse(url_name, args=url_args, kwargs=url_kwargs)
-    view, args, kwargs = resolve(url)
-    response = view(request, *args, **kwargs)
-    return response
+    return HttpResponsePermanentRedirect(url)
 
 
 urlpatterns = patterns('',
-    url(r'^(.*)', angular_reverse),
+    url(r'^reverse/$', angular_reverse),
 )
