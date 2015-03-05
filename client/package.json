@@ -19,8 +19,7 @@
 		"AngularJS"
 	],
 	"license": "MIT",
-	"dependencies": {},
-	"devDependencies": {
+	"dependencies": {
 		"karma": "latest",
 		"karma-firefox-launcher": "latest",
 		"karma-chrome-launcher": "latest",

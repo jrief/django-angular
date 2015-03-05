@@ -9,7 +9,7 @@ module.exports = function(config) {
 			var cachename = 'cdncache/' + item;
 			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.2.15/' + item);
 		});
-		return files.concat(['src/js/*.js', 'tests/*.js', 'mocks/*.js']);
+		return files.concat(['src/js/*.js', 'tests/*.js']);
 	}
 
 	config.set({
