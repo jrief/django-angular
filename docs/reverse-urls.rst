@@ -4,32 +4,32 @@
 Manage Django URLs for AngularJS
 ================================
 
-AngularJS controllers communicating with the Django application through Ajax, often require URLs, pointing
-to some of the views of your application. Do not enter into temptation to hard code such a URL into the
-client side controller code. Even worse would be to create Javascript dynamically using a template
-engine. There is a clean and simple solution to solve this problem.
+AngularJS controllers communicating with the Django application through Ajax, often require URLs,
+pointing to some of the views of your application. Don't fall into temptation to hard code such a
+URL into the client side controller code. Even worse would be to create Javascript dynamically using
+a template engine. There is a clean and simple solution to solve this problem.
 
-.. note:: With version 0.8 **django-angular** introduced a new way to handle urls. Documentation for now
-          deprecated approach is available :ref:`here <manage-urls>`.
+.. note:: Until version 0.7 **django-angular** reversed all existing URLs of a project and created
+	an object exposing them to Javascript. Documentation for now deprecated approach is available
+	:ref:`here <manage-urls>`.
+	
+	Starting with version 0.8, **django-angular** provides a new way to handle URLs, which offers
+	the reversing functionality directly to AngularJS modules.
+
+This service is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves
+exactly like Django's `URL template tag`_.
+
+
+Basic operation principle
+=========================
+
+**django-angular** encodes the parameters passed to ``djangoUrl.reverse()`` into a special URL
+starting with ``/angular/reverse/...``. This URL is used as a new entry point for the real HTTP
+invocation.
 
 
 Installation
 ============
-
-Django settings
----------------
-
-* Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in django settings
-
-.. code-block:: python
-
-    MIDDLEWARE_CLASSES = (
-        'djangular.middleware.DjangularUrlMiddleware',
-        # Other middlewares
-    )
-
-.. warning:: This must be the first middleware included in ``MIDDLEWARE_CLASSES``
-
 
 Angular
 -------
@@ -38,42 +38,116 @@ Angular
 
 .. code-block:: html
 
-    <script src="{% static 'djangular/js/django-angular.js' %}"></script>
+	<script src="{% static 'djangular/js/django-angular.js' %}"></script>
 
 * Add ``ng.django.urls`` as a dependency for you app:
 
 .. code-block:: html
 
-    <script>
-        var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
-    </script>
+	<script>
+	    var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
+	</script>
 
-The ``djangoUrl`` service is now available through `dependency injection`_
-to all directives and controllers.
+The ``djangoUrl`` service is now available through `dependency injection`_ to all directives and
+controllers.
+
+
+Setting via Django Middleware
+-----------------------------
+
+* Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
+``settings.py`` file:
+
+.. code-block:: python
+
+	MIDDLEWARE_CLASSES = (
+	    'djangular.middleware.DjangularUrlMiddleware',
+	    # Other middlewares
+	)
+
+.. warning:: This must be the **first** middleware included in ``MIDDLEWARE_CLASSES``
+
+Using this approach adds some magicness to your URL routing, because the ``DjangularUrlMiddleware``
+class bypasses the HTTP request from normal URL resolving and calls the corresponding view function
+directly.
+
+
+Alternative settings via Django urlconfig
+-----------------------------------------
+
+* Add ``url(r'^angular/', include('djangular.urls'))`` to your main ``urls.py`` file:
+
+.. code-block:: python
+
+	urlpatterns = patterns('',
+	    ...
+	    url(r'^angular/', include('djangular.urls')),
+	    ...
+	)
+
+Using this approach adds another layer of redirection, because Ajax requests first are resolved
+into the real URL sent back to the client using a HTTP permanent redirect response.
+This second (redirected) request, then is send as the real URL, which is resolved by Django in the
+usual manner.
+
+.. warning:: Either use the setting via middleware or via urlconfig, but never both.
+
 
 Usage
 =====
-The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves
-exactly like Django's `URL template tag`_.
+
+The reversing functionality is provided by:
+
+.. code-block:: javascript
+
+	djangoUrl.reverse(name, args_or_kwargs)
+	
+This method behaves exactly like Django's `URL template tag`_ ``{% url 'named:resource' %}``.
 
 
 Parameters
 ----------
-name
-    The url name you wish to reverse, exactly the same as what you would use in ``{% url %}`` template tag.
-args_or_kwargs (optional)
-    An array of arguments, e.g. ``['article', 4]`` or an object of keyword arguments,
-    such as ``{'type': 'article', 'id': 4}``.
 
-Example
--------
+* ``name``: The URL name you wish to reverse, exactly the same as what you would use in
+  ``{% url %}`` template tag.
+* ``args_or_kwargs`` (optional): An array of arguments, e.g. ``['article', 4]`` or an object of
+  keyword arguments, such as ``{'type': 'article', 'id': 4}``.
+
+
+Examples
+--------
+
+A typical Angular Controller would use the service ``djangoUrl`` such as:
+
 .. code-block:: javascript
 
-    my_app.controller('MyCtrl', function($http, djangoUrl) {
-        $http.get(djangoUrl.reverse('api:articles', [1])));
-        // or with kwargs
-        $http.get(djangoUrl.reverse('api:articles', {'id': 1});
-    });
+	var myApp = angular.module('MyApp', ['ng.django.urls']);
+	
+	myApp.controller('RemoteItemCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
+	
+	    $scope.loadItem = function() {
+	        var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
+	        $http.get(fetchItemURL).success(function(item) {
+	            console.log('Fetched item: ' + item);
+	        }).error(function(msg) {
+	            console.error('Unable to fetch item. Reason: ' + msg);
+	        });
+	    }
+	
+	}]);
+
+and with args:
+
+.. code-block:: javascript
+
+	$http.get(djangoUrl.reverse('api:articles', [1]))
+
+or with kwargs:
+
+.. code-block:: javascript
+
+	$http.get(djangoUrl.reverse('api:articles', {'id': 1}))
+
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
