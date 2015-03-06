@@ -4,8 +4,8 @@
 Release History
 ===============
 
-0.7.11.dev
-----------
+0.7.11
+------
 * Using ``field.html_name`` instead of ``field.name``. Otherwise ``add_prefix()`` function on
   form objects doesn't work properly.
 * Fixed Firefox checkbox change sync issue caused by ``click```and ``change```firing in
@@ -14,6 +14,8 @@ Release History
   removed from anywhere that has access to the field.
 * Fixed issue in rejected error clean up loop.
 * Added missing subfield cleanup to rejected error cleanup loop.
+* Added AngularJS service ``djangoUrl`` to resolve URLs on the client in the same way as on
+  the server.
 
 0.7.10
 ------
