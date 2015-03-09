@@ -1,10 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.conf.urls import patterns, url
 from django.http.response import HttpResponsePermanentRedirect
-from django.views.decorators.http import require_GET
 
 
-@require_GET
 def angular_reverse(request, *args, **kwargs):
     url_name = request.GET.get('djng_url_name')
     url_args = request.GET.getlist('djng_url_args', None)
