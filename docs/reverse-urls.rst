@@ -72,27 +72,6 @@ class bypasses the HTTP request from normal URL resolving and calls the correspo
 directly.
 
 
-Alternative settings via Django urlconfig
------------------------------------------
-
-* Add ``url(r'^angular/', include('djangular.urls'))`` to your main ``urls.py`` file:
-
-.. code-block:: python
-
-	urlpatterns = patterns('',
-	    ...
-	    url(r'^angular/', include('djangular.urls')),
-	    ...
-	)
-
-Using this approach adds another layer of redirection, because Ajax requests first are resolved
-into the real URL sent back to the client using a HTTP permanent redirect response.
-This second (redirected) request, then is send as the real URL, which is resolved by Django in the
-usual manner.
-
-.. warning:: Either use the setting via middleware or via urlconfig, but never both.
-
-
 Usage
 =====
 
