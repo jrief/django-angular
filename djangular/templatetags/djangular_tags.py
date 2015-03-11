@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+import warnings
 from django.template import Library
 from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
 from django.core.exceptions import ImproperlyConfigured
@@ -48,6 +49,10 @@ def djng_current_rmi(context):
 
 @register.simple_tag(name='load_djng_urls', takes_context=True)
 def djng_urls(context, *namespaces):
+    warnings.warn("load_djng_urls templatetag is deprecated. The new method of resolving django urls doesn't require "
+                  "loading url patterns anymore. djangoUrl service kept the same interface, refer to documentation for "
+                  "details.",
+                  DeprecationWarning)
     def _replace_namespace(n):
         if n == 'SELF':
             request = context.get('request')

@@ -4,92 +4,110 @@
 Manage Django URL's for AngularJS
 =================================
 
-.. deprecated::
-   There is a proper way to provide reverse URLs for AngularJS, see the :ref:`updated docs <reverse-urls>`.
+.. warning::
+   This is now a deprecated way of handling Django urls for AngularJS. For current
+   approach see :ref:`updated docs <reverse-urls>`.
 
-You may have noticed, that AngularJS controllers sometimes need a URL pointing onto a View of your
-Django application. Don't be tempted to hard code such a URL in the client's controller code. Nor
-be tempted to create Javascript dynamically using a template engine. There is a portable and simple
-solution to this problem.
+You may have noticed, that AngularJS controllers sometimes need a URL pointing to a Django view of
+your application. Do not enter into temptation to hard code such a URL into the client side
+controller code. Nor enter into temptation to create Javascript dynamically using a template
+engine. There is a clean and simple solution to solve this problem.
 
 It is good practice to add configuration directives to applications as constants to the `AngularJS
-module definition`_. This can be done safely in the template code rendered by Django. And that's the
-only place where it belongs to!
+module definition`_. This can safely be done in the template code rendered by Django, where it
+belongs!
 
-It is assumed that your AngularJS application has already been initialized with something
-similar to:
+Installation
+============
+
+It is assumed that your AngularJS application has already been initialized and that you have loaded
+django-angular tags, ``{% load djangular_tags %}``:
 
 .. code-block:: html
 
-	<script>
-	    var my_app = angular.module('MyApp', [/* application dependencies */]);
-	</script>
+    {% load djangular_tags %}
+    <script>
+        var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
+    </script>
 
-Now, add configuration constants to the template code rendered by Django:
+Now, you have to include ``django-angular.js`` and add data about your django url configuration:
 
+.. code-block:: html
+
+    <script src="{% static 'djangular/js/django-angular.js' %}"></script>
+    <script>angular.module('ng.django.urls').constant('patterns', {% load_djng_urls %});</script>
+
+The ``djangoUrl`` service is then available through `dependency injection`_
+to all directives and controllers.
+
+Usage
+=====
+The reversing functionality is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves much like the
+django's url template tag.
+
+Parameters
+----------
+name
+    The url name you wish to reverse, exactly the same as what you would use in ``{% url %}`` template tag.
+args_or_kwargs (optional)
+    An array of arguments, e.g. ``['article', 4]`` or an object of keyword arguments,
+    such as ``{'type': 'article', 'id': 4}``.
+
+Example
+-------
 .. code-block:: javascript
 
-	my_app.constant('urls', {
-	    this_view_url: "{% url 'this_view' %}",
-	    that_view_url: "{% url 'that_view' %}",
-	    ...
-	});
+    my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
+     function($scope, $http, djangoUrl) {
 
-This newly generated Javascript object named ``urls`` is available through `dependency injection`_
-to all directives and controllers which are part of your AngularJS module ``my_app``.
-It separates the concern of configuring different settings, depending in which environment the
-Javascript code is executed. This becomes really beneficial when writing pure client side unit
-tests, using tools such as Jasmine_.
+	    $http.post(djangoUrl.reverse('api:articles', [1]), {action: 'get_data'})
+	        .success(function (out_data) {
+                $scope.data = out_data;
+        });
 
-The remaining task which has to be performed, is to inject this Javascript object into AngularJS
-controllers, which require URL's to, for instance, invoke Ajax requests on the server side.
-Now, the controller example from :ref:`NgModelFormMixin <angular-model-form>` then can be rewritten as:
+        // Or $http.post(djangoUrl.reverse('api:articles', {'id': 1}) ...
+        // djangoUrl.reverse('api:article', {'id': 1}) returns something like '/api/article/1/'
+	}]);
 
-.. code-block:: javascript
-
-	my_app.controller('MyFormCtrl', function($scope, $http, urls) {
-	    $scope.submit = function() {
-	        var in_data = { subject: $scope.subject };
-	        $http.post(urls.this_view_url, in_data)
-	            .success(function(out_data) {
-	                // do something
-	            });
-	    }
-	});
-
-
-List all URLs which belong to a namespace
+Parametrized URL templates
 ------------------------------------------
-To avoid the repetitive work of adding all the URL's to this constant Javascript object, a utility
-function named ``urls_by_namespace`` is available, which returns a Python dictionary with all URL's
-belonging to a certain namespace
+djangoUrl's ``reverse()`` method also provides an option to create parametrized URL templates, which can be used with
+Angular's ``$resource``. These templates look something like: ``/api/articles/:id/``, parameters prefixed by ``:`` are
+filled by Angular.
 
-.. code-block:: python
+You can create parametrized templates by using ``reverse()`` method in keyword arguments mode. Parameters not present
+in keyword arguments object will be replaced by ``:`` prefixed name from urlpatterns.
 
-	import json
-	from django.views.generic import View
-	from django.utils.safestring import mark_safe
-	from djangular.core.urlresolvers import urls_by_namespace
+.. code-block:: javascript
 
-	class MyView(View):
-	    def get_context_data(self, **kwargs):
-	        context = super(MyView, self).get_context_data(**kwargs)
-	        my_urls = json.dumps(urls_by_namespace('my_url_namespace'))
-	        context.update(my_urls=mark_safe(my_urls))
-	        return context
+	my_app.controller('MyCtrl', ['$scope', '$http', 'djangoUrl',
+	 function($scope, $http, djangoUrl) {
+        // Urlconf
+        // ...
+        // url(r'^api/(?P<type>\w+)/(?P<id>\d+)/$', api.models, name='api'),
+        // ...
 
-This dictionary then can be used to fill the constant Javascript object to be injected into
-AngularJS directives and controllers:
+        // djangoUrl.reverse('api', {'id': 1, 'type': 'article'}) -> /api/article/1/
+        // djangoUrl.reverse('api', {'id': 1}) -> /api/:type/1/
+        // djangoUrl.reverse('api', {'type': 'article'}) -> /api/article/:id/
+        // djangoUrl.reverse('api', {}) -> /api/:type/:id/
+        // djangoUrl.reverse('api') -> /api/:type/:id/
+        // When nothing is passed as args_or_kwargs argument, reverse() defaults
+        // to keyword arguments mode
+	}]);
 
-.. code-block:: html
+So when building a service with ``$resource`` you can use ``djangoUrl.reverse()`` method just to make a parametrized
+URL template, or to partially fill it and have Angular add other arguments.
 
-	<script>
-	my_app.constant('urls', {{ my_urls }});
-	</script>
+.. code-block:: javascript
 
-.. warning:: This function is still experimental, so be prepared for API changes.
+    my_app.controller('MyCtrl', ['$resource', 'djangoUrl', function($resource, djangoUrl) {
+
+        var Article = $resource(djangoUrl.reverse('api'), {'id': '@id', 'type': 'article'});
+        // or
+        var Article = $resource(djangoUrl.reverse('api', {'type': 'article'}), {id: '@id'});
+
+	}]);
 
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
-.. _AngularJS html partial: http://docs.angularjs.org/tutorial/step_07#template
 .. _dependency injection: http://docs.angularjs.org/guide/di
-.. _Jasmine: http://pivotal.github.io/jasmine/

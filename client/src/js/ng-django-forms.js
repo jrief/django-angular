@@ -74,7 +74,9 @@ djng_forms_module.directive('ngModel', function($parse) {
 			return null;
 			break;
 		default:
-			return field.defaultValue;
+			if(field.defaultValue) {
+				return field.defaultValue;
+			}
 			break;
 		}
 	}
@@ -99,11 +101,17 @@ djng_forms_module.directive('ngModel', function($parse) {
 
 	function restoreTextArea(field) {
 		// restore the field's content from the rendered content of bound fields
-		return field.defaultValue;
+		if(field.defaultValue) {
+			return field.defaultValue;
+		}
 	}
 	
 	function processDefaultValue(scope, ngModelName, value) {
-			
+		
+		if(!angular.isDefined(value)) {
+			return;
+		}
+		
 		var parts = ngModelName.split('.'),
 			prop = parts.pop(),
 			modelName = parts.join('.'),
@@ -152,9 +160,7 @@ djng_forms_module.directive('ngModel', function($parse) {
 				break;
 			}
 			
-			if(angular.isDefined(defaultValue)) {
-				processDefaultValue(scope, attrs.ngModel, defaultValue);
-			}
+			processDefaultValue(scope, attrs.ngModel, defaultValue);
 		}
 	};
 });
