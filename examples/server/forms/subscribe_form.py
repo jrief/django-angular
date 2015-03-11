@@ -54,8 +54,3 @@ class SubscribeForm(Bootstrap3Form):
         help_text='The password is "secret"')
     confirmation_key = forms.CharField(max_length=40, required=True, widget=forms.HiddenInput(),
         initial='hidden value')
-
-    def get_widget_attrs(self, bound_field):
-        attrs = super(SubscribeForm, self).get_widget_attrs(bound_field)
-        attrs['ng-model-options'] = "{ debounce : { 'default' : 500, blur : 0 } }"
-        return attrs

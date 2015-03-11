@@ -13,9 +13,6 @@ class SubscribeView(FormView):
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
 
-    def get_initial(self):
-        return {'first_name': 'james'}
-
     def post(self, request, **kwargs):
         if request.is_ajax():
             return self.ajax(request)
