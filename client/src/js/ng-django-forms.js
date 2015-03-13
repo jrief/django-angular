@@ -273,12 +273,12 @@ djng_forms_module.factory('djangoForm', function() {
 	}
 	
 	function isField(field) {
-		return angular.isArray(field.$viewChangeListeners)
+		return angular.isArray(field.$viewChangeListeners);
 	}
 
 	return {
 		// setErrors takes care of updating prepared placeholder fields for displaying form errors
-		// deteced by an AJAX submission. Returns true if errors have been added to the form.
+		// detected by an AJAX submission. Returns true if errors have been added to the form.
 		setErrors: function(form, errors) {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';

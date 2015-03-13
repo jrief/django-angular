@@ -6,7 +6,8 @@ angular
         'ngMessages'
     ])
 
-    .directive('form', formExtension)
+    .directive('form', formDirectiveFactory())
+	.directive('ngForm', formDirectiveFactory(true))
     .directive('validateRejected', validateRejected)
     .factory('djangoMessagesForm', djangoMessagesForm);
 
@@ -20,15 +21,18 @@ angular
  * 
  * - setValidFieldsPristine()
  */
-function formExtension() {
+
+function formDirectiveFactory(isNgForm) {
+	
+return function() {
 
 	return {
-		restrict: 'E',
+		restrict: isNgForm ? 'EAC' : 'E',
 		require: [
 		    '^?form'
 		],
 		link: {
-			pre: function($scope, $element, $attrs, ctrls) {
+			pre: function(scope, element, attrs, ctrls) {
 
 	  		    var ctrl = ctrls[0],
 	  		    	controls,
@@ -74,14 +78,16 @@ function formExtension() {
 		   	}
 	 	}
 	}
-};
+}
+
+}
 
 
 function validateRejected() {
 
 	return {
 		require: 'ngModel',
-		link: function($scope, $element, $attrs, ngModel) {
+		link: function(scope, element, attrs, ngModel) {
 
 			var _hasMessage = false,
 				_value = null;
@@ -99,7 +105,7 @@ function validateRejected() {
 					
 				}else{
 					
-					_hasMessage = ngModel.$message && ngModel.$message.rejected !== undefined;
+					_hasMessage = !!(ngModel.$message && ngModel.$message.rejected !== undefined);
 					
 					if(_hasMessage) {
 					    _value = value;	
@@ -133,13 +139,11 @@ function djangoMessagesForm() {
 	
 	function _displayErrors(form, errors) {
 		
-		form.$setSubmitted();
-		
 		angular.forEach(errors,
 			function(error, key) {
 				var field,
 					message = error[0];
-				
+
 				if(form.hasOwnProperty(key)) {
 					
 					field = form[key];
@@ -170,6 +174,16 @@ function djangoMessagesForm() {
 				}else{
 					
 					form.$message = message;
+					/*
+					 * Only set current valid fields to pristine
+					 *
+					 * Any field that's been submitted with an error should
+					 * still display its error
+					 *
+					 * Any field that was valid when the form was submitted,
+					 * may have caused the NON_FIELD_ERRORS, so should be set
+					 * to pristine to prevent it's valid state being displayed
+					 */
 					form.setValidFieldsPristine();
 				}
 			}

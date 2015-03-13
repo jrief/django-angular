@@ -5,9 +5,9 @@ module.exports = function(config) {
 	function getFiles() {
 		var fs = require('fs'); 
 		var files = [];
-		['angular.js', 'angular-mocks.js'].forEach(function(item) {
+		['angular.js', 'angular-mocks.js', 'angular-messages.js'].forEach(function(item) {
 			var cachename = 'cdncache/' + item;
-			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.2.15/' + item);
+			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.3.0/' + item);
 		});
 		return files.concat(['src/js/*.js', 'tests/*.js', 'mocks/*.js']);
 	}
@@ -20,7 +20,7 @@ module.exports = function(config) {
 		files: getFiles(),
 
 		// list of files to exclude
-		exclude: ['tests/djangoNgMessagesSpec.js'],
+		exclude: [],
 
 		// test results reporter to use
 		// possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
