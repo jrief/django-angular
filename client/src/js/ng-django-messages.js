@@ -8,7 +8,8 @@ angular
 
     .directive('form', formDirectiveFactory())
 	.directive('ngForm', formDirectiveFactory(true))
-    .directive('validateRejected', validateRejected)
+	.directive('djngError', djngError)
+    .directive('djngValidateRejected', validateRejected)
     .factory('djangoMessagesForm', djangoMessagesForm);
 
 
@@ -83,12 +84,40 @@ return function() {
 }
 
 
+function djngError($timeout) {
+	
+	return {
+		restrict: 'A',
+		require: '?^form',
+		link: function(scope, element, attrs, formCtrl) {
+			var boundField;
+			if(!formCtrl || attrs.djngError === 'bound-field')
+				return;
+			element.removeAttr('djng-error');
+			
+			$timeout(function(){
+				formCtrl.$setSubmitted();
+				boundField = formCtrl[attrs.name];
+				
+				if(boundField) {
+					boundField.$message = {rejected: attrs.djngError};
+					boundField.$validate();
+				}
+			});
+		}
+	}
+}
+
+
 function validateRejected() {
 
 	return {
-		require: 'ngModel',
+		restrict: 'A',
+		require: '?ngModel',
 		link: function(scope, element, attrs, ngModel) {
-
+			
+			if(!ngModel) return;
+			
 			var _hasMessage = false,
 				_value = null;
 
@@ -138,6 +167,8 @@ function djangoMessagesForm() {
 	};
 	
 	function _displayErrors(form, errors) {
+		
+		form.$setSubmitted();
 		
 		angular.forEach(errors,
 			function(error, key) {

@@ -5,7 +5,17 @@ describe('unit tests for module ng.django.messages', function() {
 	function compileForm($compile, scope, replace_value) {
 		var template =
 			'<form name="valid_form" action=".">' +
-			'<input name="email_field" ng-model="model.email" type="email" validate-rejected {value} />' +
+			'<input name="email_field" ng-model="model.email" type="email" djng-validate-rejected {value} />' +
+			'</form>';
+		var form = angular.element(template.replace('{value}', replace_value));
+		$compile(form)(scope);
+		scope.$digest();
+	}
+	
+	function compileFormWithBoundError($compile, scope, replace_value) {
+		var template =
+			'<form name="valid_form" action=".">' +
+			'<input name="email_field" ng-model="model.email" type="email" djng-error="valid email required" djng-validate-rejected  {value} />' +
 			'</form>';
 		var form = angular.element(template.replace('{value}', replace_value));
 		$compile(form)(scope);
@@ -47,6 +57,33 @@ describe('unit tests for module ng.django.messages', function() {
 		});
 		
 	});
+	
+	
+	ddescribe('bound form error handling', function() {
+		
+		var scope, form, field, $timeout;
+
+		beforeEach(inject(function($rootScope, $compile, _$timeout_) {
+			scope = $rootScope.$new();
+			compileFormWithBoundError($compile, scope, 'value="barry"');
+			form = scope.valid_form;
+			field = scope.valid_form.email_field;
+			$timeout = _$timeout_;
+		}));
+		
+		it('should invalidate field when djng-error exists', function() {
+			$timeout.flush();
+			expect(field.$valid).toBe(false);
+			expect(field.$error.rejected).toBe(true);
+			expect(field.$message.rejected).toBe('valid email required');
+		});
+		
+		it('should set form to $submitted', function() {
+			$timeout.flush();
+			expect(form.$submitted).toBe(true);
+		});
+	});
+	
 	
 	describe('rejected validation directive', function() {
 		

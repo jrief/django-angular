@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.utils.html import format_html
+from django.utils.html import format_html, format_html_join
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeText
 
@@ -20,7 +20,7 @@ class NgMessagesFieldErrorList(TupleErrorList):
 
     ul_format = '<ul class="{1}" ng-messages="{0}.$error" ng-show="{2}.$submitted || {0}.$dirty" ng-cloak>{3}</ul>'
     li_format = '<li ng-message="{1}" class="{2}">{3}</li>'
-    """ span's necessary due to this bug https://github.com/angular/angular.js/issues/8089"""
+    """ a span is necessary due to this bug https://github.com/angular/angular.js/issues/8089 """
     li_format_bind = '<li ng-message="{1}" class="{2}"><span ng-bind="{0}.{3}.{1}"></span></li>'
 
     def as_ul(self):
@@ -31,6 +31,9 @@ class NgMessagesFieldErrorList(TupleErrorList):
             valid_list = []
             invalid_list = []
             for e in self:
+                if e[2] == '$pristine':
+                    continue
+
                 if e[3] == '$valid':
                     li_format = self.li_format_valid
                     error_list = valid_list
@@ -70,7 +73,6 @@ class NgMessagesMixin(NgFormBaseMixin):
         errors = super(NgMessagesMixin, self).get_field_errors(field)
         if field.is_hidden:
             return errors
-        self._remove_ng_model_form_mixin_rejected_error(errors)
         identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', 'rejected', 'invalid', '$message')))
         return errors
@@ -81,11 +83,12 @@ class NgMessagesMixin(NgFormBaseMixin):
 
     def get_widget_attrs(self, bound_field):
         attrs = super(NgMessagesMixin, self).get_widget_attrs(bound_field)
-        attrs['validate-rejected'] = ""
+        attrs.update({'djng-validate-rejected': ''})
+        if self.is_bound:
+            self._apply_bound_error(bound_field, attrs)
         return attrs
 
-    def _remove_ng_model_form_mixin_rejected_error(self, errors):
-        for item in errors:
-            if item[2] == '$pristine' and item[5] == '$message':
-                errors.remove(item)
-                return
+    def _apply_bound_error(self, bound_field, attrs):
+        for error in bound_field.errors:
+            if error[3] == '$pristine':
+                attrs.update({'djng-error': error[5]})
