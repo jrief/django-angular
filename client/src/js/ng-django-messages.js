@@ -10,7 +10,7 @@ angular
 	.directive('ngForm', formDirectiveFactory(true))
 	.directive('djngError', djngError)
     .directive('djngValidateRejected', validateRejected)
-    .factory('djangoMessagesForm', djangoMessagesForm);
+    .factory('djngMessagesForm', djngMessagesForm);
 
 
 
@@ -148,7 +148,7 @@ function validateRejected() {
 }
 
 
-function djangoMessagesForm() {
+function djngMessagesForm() {
 	
 	return {
 		setErrors: setErrors

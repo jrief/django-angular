@@ -31,6 +31,7 @@ class NgMessagesFieldErrorList(TupleErrorList):
             valid_list = []
             invalid_list = []
             for e in self:
+                """ Ignore $pristine errors, as they relate to the original rejected error handling or djng-error bound-field"""
                 if e[2] == '$pristine':
                     continue
 

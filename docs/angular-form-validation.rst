@@ -127,7 +127,7 @@ rendered in templates using a special field tag. Say, the form contains
 	from djangular.forms import NgFormValidationMixin
 	
 	class MyValidatedForm(NgFormValidationMixin, forms.Form):
-	    email = forms.EmailField(label='Email')
+		email = forms.EmailField(label='Email')
 
 then access the potential validation errors in templates using ``{{ form.email.errors }}``. This
 renders the form with an unsorted list of potential errors, which may occur during client side

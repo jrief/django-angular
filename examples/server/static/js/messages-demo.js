@@ -1,8 +1,8 @@
-angular.module('djangular-demo').controller('MyFormCtrl', function($scope, $http, $window, djangoMessagesForm) {
+angular.module('djangular-demo').controller('MyFormCtrl', function($scope, $http, $window, djngMessagesForm) {
     $scope.submit = function() {
         if ($scope.subscribe_data) {
             $http.post(".", $scope.subscribe_data).success(function(out_data) {
-                if (!djangoMessagesForm.setErrors($scope.my_form, out_data.errors)) {
+                if (!djngMessagesForm.setErrors($scope.my_form, out_data.errors)) {
                     // on successful post, redirect onto success page
                     $window.location.href = out_data.success_url;
                 }
