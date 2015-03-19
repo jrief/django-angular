@@ -137,12 +137,18 @@ class NgBoundField(forms.BoundField):
         elif isinstance(field_css_classes, (list, tuple)):
             extra_classes.update(field_css_classes)
         elif isinstance(field_css_classes, dict):
-            for key in (self.name, '*',):
-                extra_field_classes = field_css_classes.get(key)
-                if hasattr(extra_field_classes, 'split'):
-                    extra_field_classes = extra_field_classes.split()
-                extra_field_classes = set(extra_field_classes or [])
-                extra_classes.update(extra_field_classes)
+            extra_field_classes = []
+            for key in ('*', self.name):
+                css_classes = field_css_classes.get(key)
+                if hasattr(css_classes, 'split'):
+                    extra_field_classes = css_classes.split()
+                elif isinstance(css_classes, (list, tuple)):
+                    if '__default__' in css_classes:
+                        css_classes.remove('__default__')
+                        extra_field_classes.extend(css_classes)
+                    else:
+                        extra_field_classes = css_classes
+            extra_classes.update(extra_field_classes)
         return super(NgBoundField, self).css_classes(extra_classes)
 
     def as_widget(self, widget=None, attrs=None, only_initial=False):
