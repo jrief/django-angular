@@ -100,6 +100,7 @@ using the mustache syntax. This is to ensure, that unverified content from upstr
 sanitized. We can assert this, since this text content is coming from the database field
 ``description`` and thus is marked as `safe string`_ by Django.
 
+
 Python List / Javascript Arrays
 -------------------------------
 
@@ -127,6 +128,25 @@ when this block is resolved for AngularJS template rendering, the above code is 
 
 otherwise it would be impossible to reuse Python lists converted to JavaScript arrays inside the
 same template code.
+
+
+Conditionally bind scope variables to an element with ``djng-bind-if``
+----------------------------------------------------------------------
+
+Sometimes it makes sense to bind the scope variable to an element if it exists. Otherwise render
+the same variable from Django's context. Example:
+
+.. code-block:: html
+
+	<span djng-bind-if="some_prefix.value">{{ some_prefix.value }}</span>
+
+functionally, this is equivalent to:
+
+	<span ng-if="some_prefix.value">{% verbatim %}{{ some_prefix.value }}{% endverbatim %}</span>
+	<span ng-if="!some_prefix.value">{{ some_prefix.value }}</span>
+
+but less verbose and easier to read.
+
 
 .. _references onto URLs: https://docs.angularjs.org/api/ng/directive/ngHref
 .. _image sources: https://docs.angularjs.org/api/ng/directive/ngSrc
