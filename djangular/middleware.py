@@ -1,6 +1,9 @@
+import json
+
 from django.conf import settings
 from django.core.urlresolvers import reverse, resolve
 from django.utils.decorators import decorator_from_middleware
+from django.contrib import messages
 
 
 class DjangularUrlMiddleware(object):
@@ -62,3 +65,39 @@ class DjangularUrlMiddleware(object):
             for middleware_path in reversed(settings.MIDDLEWARE_CLASSES):
                 view = decorator_from_middleware(self._import_dotted_path(middleware_path))(view)
             return view(request, *args, **kwargs)
+
+			
+
+""" 
+adapted from this post
+http://hunterford.me/django-messaging-for-ajax-calls-using-jquery/
+"""
+class AjaxDjangoMessagesMiddleWare(object):
+
+	def process_response(self, request, response):
+        if request.is_ajax():
+            if self._contentTypeIsJson(response):
+                try:
+                    content = json.loads(response.content)
+                except ValueError:
+                    return response
+
+                django_messages = []
+
+                for message in messages.get_messages(request):
+                    django_messages.append({
+                        "level": message.level,
+                        "message": message.message,
+                        "extra_tags": message.tags,
+                })
+
+                if len(django_messages) > 0:
+                    content = {u'data': content,
+                               u'django_messages': django_messages}
+
+                    response.content = json.dumps(content)
+
+        return response
+
+    def _contentTypeIsJson(self, response):
+        return response['Content-Type'] == "application/json"
