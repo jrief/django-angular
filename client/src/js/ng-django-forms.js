@@ -137,67 +137,137 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
+djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
+	
+	var vm = this,
+		formCtrl,
+		inputCtrls = [],
+		subFields;
+	
+	vm.setFormCtrl = setFormCtrl;
+	vm.setSubFields = setSubFields;
+	vm.addInputCtrl = addInputCtrl;
+	vm.validate = validate;
+		
+	/* ----------------- */
+	
+	function setFormCtrl(value) {
+		formCtrl = value;
+		
+		if(angular.isString(subFields))
+			formCtrl = formCtrl[subFields];
+	}
+	
+	function setSubFields(value) {
+		subFields = value;
+	}
+	
+	function addInputCtrl(ctrl) {
+		if(_isValidSubField(ctrl.$name))
+			return;
+		inputCtrls.push(ctrl);
+		ctrl.$viewChangeListeners.push(function() {
+			validate(true);
+		});
+	}
+	
+	function validate(trigger) {
+		if(!_hasSubFields())
+			return;
+		var valid = false;
+		angular.forEach(inputCtrls, function(input) {
+			valid = !!(valid || input.$modelValue);
+			if(input.clearRejected) {
+				input.clearRejected();
+			}
+		});
+		
+		formCtrl.$setValidity('required', valid);
+		formCtrl.$setValidity('rejected', true);
+		formCtrl.$message = ''
+		
+		if (trigger) {
+			formCtrl.$dirty = true;
+			formCtrl.$pristine = false;
+		}
+	}
+	
+	function _isValidSubField(name) {
+		return !!(!_hasSubFields() || subFields.indexOf(name) == -1);
+	}
+	
+	function _hasSubFields() {
+		return !!subFields;
+	}
+});
+
+
 djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
-		require: '^?form',
-		// create child scope for changed method
-		scope: true,
-		compile: function(element, attrs) {
-			angular.forEach(element.find('input'), function(elem) {
-				elem = angular.element(elem)
-				elem.attr('ng-change', 'changed()');
-			});
+		require: [
+			'validateMultipleFields',
+			'^?form'
+		],
+		controller: 'ValidateMultipleFieldsCtrl',
+		link: {
 			
-			return {
+			pre: function(scope, element, attrs, ctrls) {
+			
+				var ctrl = ctrls[0],
+					formCtrl = ctrls[1],
+					subFields;
 				
-				post: function(scope, element, attrs, controller) {
-					var formCtrl, subFields, checkboxCtrls = [];
-
-					scope.changed = function() {
-						validate(true)
-					}
-
-					function validate(trigger) {
-						var valid = false;
-						angular.forEach(checkboxCtrls, function(checkbox) {
-							valid = valid || checkbox.$modelValue;
-							if(checkbox.clearRejected) {
-								checkbox.clearRejected();
-							}
-						});
-						
-						formCtrl.$setValidity('required', valid);
-						formCtrl.$setValidity('rejected', true);
-						formCtrl.$message = ''
-						
-						if (trigger && angular.isString(subFields)) {
-							formCtrl[subFields].$dirty = true;
-							formCtrl[subFields].$pristine = false;
-						}
-					}
-
-					if (!controller)
+				if(!formCtrl)
+					return;
+			
+				try {
+					subFields = angular.fromJson(attrs.validateMultipleFields);
+				} catch (SyntaxError) {
+					if (!angular.isString(attrs.validateMultipleFields))
 						return;
-					formCtrl = controller;
-					try {
-						subFields = angular.fromJson(attrs.validateMultipleFields);
-					} catch (SyntaxError) {
-						subFields = attrs.validateMultipleFields;
-					}
-					angular.forEach(element.find('input'), function(elem) {
-						if (subFields.indexOf(elem.name) >= 0) {
-							checkboxCtrls.push(formCtrl[elem.name]);
-						}
-					});
-
-					validate();
+					subFields = attrs.validateMultipleFields;
 				}
+			
+				ctrl.setSubFields(subFields);
+			},
+		
+			post: function(scope, element, attrs, ctrls) {
+			
+				var ctrl = ctrls[0],
+					formCtrl = ctrls[1];
+				
+				if(!formCtrl)
+					return;
+				
+				ctrl.setFormCtrl(formCtrl);
+				ctrl.validate();
 			}
 		}
 	};
 });
 
+
+djng_forms_module.directive('input', function() {
+	return {
+		restrict:'E',
+		require: [
+			'?^form',
+			'?^validateMultipleFields',
+			'?ngModel'
+		],
+		link: function(scope, element, attrs, ctrls) {
+			var formCtrl = ctrls[0],
+				vmfCtrl = ctrls[1],
+				ngModel = ctrls[2];
+				
+			if(!formCtrl || !vmfCtrl || !ngModel)
+				return;
+				
+			vmfCtrl.addInputCtrl(ngModel);
+		}
+	}
+});
 
 // This directive can be added to an input field which shall validate inserted dates, for example:
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
