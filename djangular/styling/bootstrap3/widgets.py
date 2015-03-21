@@ -37,6 +37,12 @@ class CheckboxInput(widgets.CheckboxInput):
 
 class CheckboxChoiceInput(DjngCheckboxChoiceInput):
     def render(self, name=None, value=None, attrs=None, choices=()):
+        label_tag = super(CheckboxChoiceInput, self).render(name, value, attrs, choices)
+        return format_html('<div class="checkbox">{}</div>', label_tag)
+
+
+class CheckboxInlineChoiceInput(CheckboxChoiceInput):
+    def render(self, name=None, value=None, attrs=None, choices=()):
         name = name or self.name
         value = value or self.value
         attrs = attrs or self.attrs
@@ -51,8 +57,12 @@ class CheckboxFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
     choice_input_class = CheckboxChoiceInput
 
 
+class CheckboxInlineFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
+    choice_input_class = CheckboxInlineChoiceInput
+
+
 class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
-    renderer = CheckboxFieldRenderer
+    renderer = CheckboxInlineFieldRenderer
 
 
 class RadioChoiceInput(widgets.RadioChoiceInput):
@@ -90,4 +100,4 @@ class RadioInlineFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
 
 
 class RadioSelect(DjngRadioSelect):
-    renderer = RadioInlineFieldRenderer
+    renderer = RadioFieldRenderer
