@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load djangular_tags tutorial_tags %}
+
+{% block container %}
+<h1>Django Messages</h1>
+<div class="row">
+	<div class="col-md-12">
+		<p class="lead">Ajax Django messages for AngularJS</p>
+	</div>
+</div>
+
+
+{% endblock container %}
+
+{% block scripts %}
+	<script src="{{ STATIC_URL }}js/ng-django-messages.js" type="text/javascript"></script>
+	<script type="text/javascript">
+	var my_app = angular.module('djangular-demo', ['ng.django.messages']);
+	my_app.config(function($httpProvider) {
+		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+	});
+	</script>
+	<script src="{{ STATIC_URL }}js/django-messages.js" type="text/javascript"></script>
+{% endblock %}
