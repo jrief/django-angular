@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django.test.client import RequestFactory
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
-from server.tests.urls import RemoteMethodsView
+from .urls import RemoteMethodsView
 
 
 class TemplateRemoteMethods(TestCase):

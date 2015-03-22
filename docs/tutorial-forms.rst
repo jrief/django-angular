@@ -84,10 +84,11 @@ A common use case is to hide a form field based on the value of another. For exa
     }
 
 ``field_css_classes`` adds css classes to the wrapper div surrounding individual fields in bootstrap.
-In the above example, '*' adds the classes to all fields within the form and 'phone' is only added
-for the 'phone' field. Only Angular directives that can be used as css classes are allowed within
-``field_css_classes``.  Additionally, if specified as a string, the string may not contain any
-spaces or double quotes. However, if specified as a list, spaces can then be used, e.g.
+In the above example, ``'*'`` adds the classes ``form-group has-feedback`` to all fields within the
+form and ``'ng-class:{"ng-hide":sex==="f"}'`` is added only to the ``phone`` field. Only Angular
+directives that can be used as CSS classes are allowed within ``field_css_classes``.  Additionally,
+if specified as a string, the string may not contain any spaces or double quotes. However, if
+specified as a list, spaces can be used, and the above example can be rewritten as:
 
 .. code-block:: python
 
@@ -95,6 +96,10 @@ spaces or double quotes. However, if specified as a list, spaces can then be use
         '*': 'form-group has-feedback',
         'phone': ["ng-class: {'ng-hide': sex==='f'};"],
     }
+
+By adding the keyword ``'__default__'`` to this list, the CSS classes for the default entry,
+ie. ``'*'``, are merged with the CSS classes for the current field.
+
 
 Client-side Form validation
 ===========================

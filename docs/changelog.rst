@@ -4,19 +4,37 @@
 Release History
 ===============
 
-0.8.0
-----------
-* Fixed Firefox checkbox change sync issue caused by ``click```and ``change```firing in
-opposite order to other browsers. Switched to ``ng-change`` to normalise behaviour
-* Moved rejected error cleanup logic into ``field.clearRejected`` method, so that it can be
-removed from anywhere that has access to the field
-* Fixed issue in rejected error clean up loop
-* Added missing subfield cleanup to rejected error cleanup loop
 
-0.7.11.dev
-----------
+0.7.13-dev
+------
+* Change for Forms inheriting from ``NgFormBaseMixin`` using ``field_css_classes`` as dict:
+  CSS classes specified as default now must explicitly be added the fields defining their own
+  CSS classes. Before this was implicit.
+* Added AngularJS directive ``djng-bind-if``. See docs for details.
+* Reverted fix for FireFox checkbox change sync issue (135) since it manipulated the DOM. Instead
+  added ``scope.$apply()`` which fixes the issue on FF.
+* In BS3 styling, added ``CheckboxFieldRenderer`` to ``CheckboxInlineFieldRenderer`` (the default),
+  so that forms with multiple checkbox input fields can be rendered as block items instead of
+  inlines.
+* In BS3 styling, added ``RadioFieldRenderer`` to ``RadioInlineFieldRenderer`` (the default), so
+  that forms with multiple radio input fields can be rendered as block items instead of inlines.
+
+0.7.12
+------
+* No functional changes.
+
+0.7.11
+------
 * Using ``field.html_name`` instead of ``field.name``. Otherwise ``add_prefix()`` function on
   form objects doesn't work properly.
+* Fixed Firefox checkbox change sync issue caused by ``click```and ``change```firing in
+  opposite order to other browsers. Switched to ``ng-change`` to normalise behaviour.
+* Moved rejected error cleanup logic into ``field.clearRejected`` method, so that it can be
+  removed from anywhere that has access to the field.
+* Fixed issue in rejected error clean up loop.
+* Added missing subfield cleanup to rejected error cleanup loop.
+* Added AngularJS service ``djangoUrl`` to resolve URLs on the client in the same way as on
+  the server.
 
 0.7.10
 ------
