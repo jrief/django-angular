@@ -163,7 +163,7 @@ djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
 	}
 	
 	function addInputCtrl(ctrl) {
-		if(_isValidSubField(ctrl.$name))
+		if(_isNotValidSubField(ctrl.$name))
 			return;
 		inputCtrls.push(ctrl);
 		ctrl.$viewChangeListeners.push(function() {
@@ -172,12 +172,10 @@ djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
 	}
 	
 	function validate(trigger) {
-		if(!_hasSubFields())
-			return;
 		var valid = false;
 		angular.forEach(inputCtrls, function(input) {
 			valid = !!(valid || input.$modelValue);
-			if(input.clearRejected) {
+			if(_hasClearRejectedMethod(input)) {
 				input.clearRejected();
 			}
 		});
@@ -192,12 +190,12 @@ djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
 		}
 	}
 	
-	function _isValidSubField(name) {
-		return !!(!_hasSubFields() || subFields.indexOf(name) == -1);
+	function _isNotValidSubField(name) {
+		return !!subFields && subFields.indexOf(name) == -1;
 	}
 	
-	function _hasSubFields() {
-		return !!subFields;
+	function _hasClearRejectedMethod(obj) {
+		return typeof obj.clearRejected === 'function';
 	}
 });
 
