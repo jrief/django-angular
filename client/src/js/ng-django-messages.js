@@ -3,24 +3,24 @@
 
 angular
 	.module('ng.django.messages', [])
-	.constant('djangoMessagesEvents', djangoMessagesEvents())
-	.factory('djangoMessagesSignal', djangoMessagesSignal)
-	.factory('djangoMessagesInterceptor', djangoMessagesInterceptor)
-	.factory('djangoMessages', djangoMessages);
+	.constant('djngMessagesEvents', djngMessagesEvents())
+	.factory('djngMessagesSignal', djngMessagesSignal)
+	.factory('djngMessagesInterceptor', djngMessagesInterceptor)
+	.factory('djngMessagesModel', djngMessagesModel);
 
 
 
-function djangoMessagesEvents() {
+function djngMessagesEvents() {
 	
 	return Object.freeze({
 		
-		MESSAGES_UPDATED: 'djangoMessagesEvents.MESSAGES_UPDATED',
-		MESSAGES_CLEARED: 'djangoMessagesEvents.MESSAGES_CLEARED'
+		MESSAGES_UPDATED: 'djngMessagesEvents.MESSAGES_UPDATED',
+		MESSAGES_CLEARED: 'djngMessagesEvents.MESSAGES_CLEARED'
 	});
 }
 
 
-function djangoMessagesSignal($rootScope, djangoMessagesEvents) {
+function djngMessagesSignal($rootScope, djngMessagesEvents) {
 	
 	return {
 		
@@ -34,31 +34,31 @@ function djangoMessagesSignal($rootScope, djangoMessagesEvents) {
 	
 	function messagesUpdated(model) {
 		
-		$rootScope.$broadcast(djangoMessagesEvents.MESSAGES_UPDATED, model);
+		$rootScope.$broadcast(djngMessagesEvents.MESSAGES_UPDATED, model);
 	}
 	
 	function onMessagesUpdated(scope, handler) {
 		
-		scope.$on(djangoMessagesEvents.MESSAGES_UPDATED, function (event, model) {
+		scope.$on(djngMessagesEvents.MESSAGES_UPDATED, function (event, model) {
             handler(model);
         });
 	}
 	
 	function messagesCleared() {
 		
-		$rootScope.$broadcast(djangoMessagesEvents.MESSAGES_CLEARED);
+		$rootScope.$broadcast(djngMessagesEvents.MESSAGES_CLEARED);
 	}
 	
 	function onMessagesCleared(scope, handler) {
 		
-		scope.$on(djangoMessagesEvents.MESSAGES_CLEARED, function (event) {
+		scope.$on(djngMessagesEvents.MESSAGES_CLEARED, function (event) {
             handler();
         });
 	}
 }
 
 
-function djangoMessagesInterceptor(djangoMessages) {
+function djngMessagesInterceptor(djngMessagesModel) {
 	
 	return {
 		response: response
@@ -68,16 +68,16 @@ function djangoMessagesInterceptor(djangoMessages) {
 	
 	function response(response) {
 
-		if(containsDjangoMessages(response)) {
+		if(containsMessages(response)) {
 			
-			djangoMessages.addMessages(response.data.django_messages);
+			djngMessagesModel.addMessages(response.data.django_messages);
 			response.data = response.data.data;
 		}
 		
 		return response;
 	}
 	
-	function containsDjangoMessages(response) {
+	function containsMessages(response) {
 		
 		return !!(contentTypeIsJson(response) &&
 				  isNotArray(response.data) &&
@@ -94,7 +94,7 @@ function djangoMessagesInterceptor(djangoMessages) {
 }
 
 
-function djangoMessages(djangoMessagesSignal) {
+function djngMessagesModel(djngMessagesSignal) {
 	
 	var _api,
 		_messages;
@@ -115,7 +115,7 @@ function djangoMessages(djangoMessagesSignal) {
 
 		_api.count = _messages.length;
 		
-		djangoMessagesSignal.messagesUpdated(_api);
+		djngMessagesSignal.messagesUpdated(_api);
 	}
 	
 	function getMessages(clear) {
@@ -129,7 +129,7 @@ function djangoMessages(djangoMessagesSignal) {
 			_messages = [];
 			_api.count = 0;
 			
-			djangoMessagesSignal.messagesCleared();
+			djngMessagesSignal.messagesCleared();
 			
 			return msgs;
 		}

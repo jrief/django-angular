@@ -1,21 +1,52 @@
 
-angular.module('djangular-demo').controller('MyFormCtrl', function($scope, $http) {
-    $scope.submit = function(data, form) {
-		console.log(data);
-		console.log(form);
-		/*
-        if ($scope.subscribe_data) {
-            
-			$http.post(".", $scope.subscribe_data).success(function(out_data) {
-                if (!djangoForm.setErrors($scope.my_form, out_data.errors)) {
-                    // on successful post, redirect onto success page
-                    $window.location.href = out_data.success_url;
-                }
-            }).error(function() {
-                console.error('An error occured during submission');
-            });
-        }
-        return false;
-		*/
-    };
-});
+angular
+	.module('djangular-demo')
+	.config(toastrConfiguration)
+	.controller('MyFormCtrl', MyFormCtrl);
+	
+	
+/*
+ * change styling to bootstrap
+ */
+function toastrConfiguration(toastrConfig) {
+
+	angular.extend(toastrConfig, {
+	    toastClass: 'alert',
+	    iconClasses: {
+	        error: 'alert-danger',
+	        info: 'alert-info',
+	        success: 'alert-success',
+	        warning: 'alert-warning'
+	    }
+	});
+}
+
+
+function MyFormCtrl($scope, $http, djangoForm, djngMessagesModel, toastr) {
+	
+	$scope.submit = function(data, form) {
+		$http.post(".", data)
+			.success(function(response) {
+				djangoForm.setErrors(form, response.errors)
+			});
+	};
+	
+	$scope.$watch(function(){
+		return djngMessagesModel.count;
+	},_handleCountChange);
+	
+	function _handleCountChange(newValue, oldValue) {
+		if(newValue != oldValue && newValue > 0) {
+			var messages = djngMessagesModel.getMessages(),
+				i = 0,
+				len = messages.length,
+				message;
+			
+			for(; i < len; i++) {
+				message = messages[i];
+				console.log(message);
+				toastr[message.type](message.message, message.type.charAt(0).toUpperCase() + message.type.slice(1));
+			}
+		}
+	}
+}
