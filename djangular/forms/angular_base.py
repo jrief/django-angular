@@ -20,9 +20,9 @@ from django.core.exceptions import ValidationError
 
 class SafeTuple(SafeData, tuple):
     """
-    Used to bypass escaping of TupleErrorList by the ``conditional_escape`` function in Django's form rendering.
+    Used to bypass escaping of TupleErrorList by the ``conditional_escape`` function in Django's
+    form rendering.
     """
-    pass
 
 
 @python_2_unicode_compatible
