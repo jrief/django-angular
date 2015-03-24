@@ -14,6 +14,7 @@ EXEMPT = list(DJANGULAR_MESSAGES_EXCLUDE_URLS)
 
 
 
+
 class DjangularUrlMiddleware(object):
     """
     If the request path is <ANGULAR_REVERSE> it should be resolved to actual view, otherwise return
@@ -112,11 +113,8 @@ class AjaxDjangoMessagesMiddleware(object):
 
     def _is_exempt(self, path):
         is_match = False
-        try:
-        	match = resolve(path)
-        except Resolver404:
-            return is_match
-        
+        match = resolve(path)
+
         if "({0})".format(match.app_name) in EXEMPT:
             is_match = True
 
