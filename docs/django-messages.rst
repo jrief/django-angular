@@ -10,23 +10,19 @@ Some introduction text that i'm yet to think of...
 Enabling views to return Django Messages
 ========================================
 
-You must first enable_ the Django Messages framework within your project. If you're 
-not intending on rendering messages in server side templates, the context processors 
-aren't necessary.
+You must first enable_ the Django Messages framework for your project.
 
 .. _enable: https://docs.djangoproject.com/en/1.7/ref/contrib/messages/#enabling-messages
 
+.. note:: Context processors
 
-Adding messages to a views response
+    You only need to add these if you're also intending on rendering messages in server side templates.
+
+
+Adding messages to a Views response
 ===================================
 
-There are two criteria that must be meet in order for a view to add Django Messages
-to its response:
-
-1. The request must be ajax
-2. The response ``content-type`` must be ``application/json``
-
-And there are two methods to achieve this.
+There are two ways to enable this functionality.
 
 AjaxDjangoMessagesMiddleware
 ----------------------------
@@ -73,7 +69,7 @@ Using the Decorator
 If you only wish to affect a specific view, you can use the ``djangular.core.decorators.add_messages_to_response``
 decorator.
 
-**Class Based View**:
+**Class Based View example**:
 
 .. code-block:: python
     
@@ -95,7 +91,7 @@ For more information on this technique, please see here_.
 .. _here: https://docs.djangoproject.com/en/1.5/topics/class-based-views/intro/#decorating-the-class 
 
 
-**Function Based View**:
+**Function Based View example**:
 
 .. code-block:: python
 
@@ -108,12 +104,18 @@ For more information on this technique, please see here_.
         return HttpResponse(json.dumps({'data': 'my response data'}),
 		                    status=200,
 		                    content_type='application/json')
-    
 
-**Result**:
+The Result
+----------		
+		
+Using either of these methods, there are two criteria that must be meet in order for 
+a view to add Django Messages to its response:
 
-Using either of these methods, if a views request/response meet the 2 criteria listed and messages exist,
-they'll be added to the response content in the following format:
+1. The request must be ajax
+2. The response ``content-type`` must be ``application/json``
+
+If both these criteria are meet and messages exist, they'll be added to the response 
+content in the following format:
 
 Original response content:
 
@@ -127,9 +129,16 @@ Converted response content with messages added:
 
     {
         'data': {'data': 'my response data'},
-        'django_messages': [ ...list of messages... ]
+        'django_messages': [ 
+            {
+                message: "this is a message",
+                tags: "info",
+                type: "info",
+                level: 20
+            },
+            ...
+        ]
     }
-
 
 
 Handling Django Messages in Angular
@@ -141,8 +150,11 @@ First include the messages module.
 
     var app = angular.module('myApp', ['ng.django.messages']);
 
-Then the easiest way to handle the messages in your Angular client, is through the 
-``djngMessagesInterceptor``.
+
+Handling messages
+-----------------
+
+The easiest way to handle messages in your Angular client, is through the ``djngMessagesInterceptor``.
 
 .. code-block:: javascript
 
@@ -155,18 +167,12 @@ property. If it exists, it's stripped and the response data is reverted back to 
 form. The remaining response data then continues and the ``django_messages`` are passed to the 
 ``djngMessagesModel``.
 
-.. code-block:: javascript
 
-    {
-        message: "this is my message",
-        tags: "info",
-        type: "info",
-        level: 20
-    }
+Responding to Model updates
+---------------------------
 
 There are two ways to monitor the ``djngMessagesModel`` for change. You can either add a handler to
-the ``djngMessagesSignal`` to be notified when the ``djngMessagesModel`` has been updated or watch 
-``djngMessagesModel.count`` for change.
+the ``djngMessagesSignal`` to be notified when the ``djngMessagesModel`` has been updated:
 
 .. code-block:: javascript
     
@@ -181,7 +187,7 @@ the ``djngMessagesSignal`` to be notified when the ``djngMessagesModel`` has bee
         }
     });
 
-Or
+or you can watch ``djngMessagesModel.count`` for change:
 
 .. code-block:: javascript
     
