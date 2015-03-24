@@ -32,7 +32,7 @@ Now, point a browser onto one of
 
 Classic Form
 ============
-Classics Subscribe Form with no data validation.
+Classic Subscribe Form with no data validation.
 
 
 Form Validation
