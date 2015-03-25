@@ -137,53 +137,63 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-// This directive is added automatically by django-angular for widgets of type RadioSelect and
-// CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
-// which forms a group for one `django.forms.Field`.
 djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
 		require: '^?form',
-		link: function(scope, element, attrs, formCtrl) {
-			var subFields, checkboxElems = [];
-
-			function validate(event) {
-				var valid = false;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
-				});
-				formCtrl.$setValidity('required', valid);
-				if (event) {
-					formCtrl.$dirty = true;
-					formCtrl.$pristine = false;
-					scope.$apply();
-				}
-			}
-
-			if (!formCtrl)
-				return;
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				if (!angular.isString(attrs.validateMultipleFields))
-					return;
-				subFields = [attrs.validateMultipleFields];
-				formCtrl = formCtrl[subFields];
-			}
+		// create child scope for changed method
+		scope: true,
+		compile: function(element, attrs) {
 			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) >= 0) {
-					checkboxElems.push(elem);
-					angular.element(elem).on('change', validate);
-				}
+				elem = angular.element(elem)
+				elem.attr('ng-change', 'changed()');
 			});
+			
+			return {
+				
+				post: function(scope, element, attrs, controller) {
+					var formCtrl, subFields, checkboxCtrls = [];
 
-			// remove "change" event handlers from each input field
-			element.on('$destroy', function() {
-				angular.forEach(element.find('input'), function(elem) {
-					angular.element(elem).off('change');
-				});
-			});
-			validate();
+					scope.changed = function() {
+						validate(true)
+					}
+
+					function validate(trigger) {
+						var valid = false;
+						angular.forEach(checkboxCtrls, function(checkbox) {
+							valid = valid || checkbox.$modelValue;
+							if(checkbox.clearRejected) {
+								checkbox.clearRejected();
+							}
+						});
+						
+						formCtrl.$setValidity('required', valid);
+						formCtrl.$setValidity('rejected', true);
+						formCtrl.$message = ''
+						
+						if (trigger && angular.isString(subFields)) {
+							formCtrl[subFields].$dirty = true;
+							formCtrl[subFields].$pristine = false;
+						}
+					}
+
+					if (!controller)
+						return;
+					formCtrl = controller;
+					try {
+						subFields = angular.fromJson(attrs.validateMultipleFields);
+					} catch (SyntaxError) {
+						subFields = attrs.validateMultipleFields;
+					}
+					angular.forEach(element.find('input'), function(elem) {
+						if (subFields.indexOf(elem.name) >= 0) {
+							checkboxCtrls.push(formCtrl[elem.name]);
+						}
+					});
+
+					validate();
+				}
+			}
 		}
 	};
 });
@@ -330,28 +340,5 @@ djng_forms_module.factory('djangoForm', function() {
 	};
 });
 
-
-// This directive behaves similar to `ng-bind` but leaves the elements content as is, if the
-// value to bind is undefined. This allows to set a default value in case the scope variables
-// are not ready yet.
-djng_forms_module.directive('djngBindIf', function() {
-	return {
-		restrict: 'A',
-		compile: function(templateElement) {
-			templateElement.addClass('ng-binding');
-			return function(scope, element, attr) {
-				element.data('$binding', attr.ngBind);
-				scope.$watch(attr.djngBindIf, function ngBindWatchAction(value) {
-					// We are purposefully using == here rather than === because we want to
-					// catch when value is "null or undefined"
-					// jshint -W041
-					if (value == undefined)
-						return;
-					element.text(value);
-				});
-			};
-		}
-	};
-});
 
 })(window.angular);

@@ -91,6 +91,7 @@ function djngError($timeout) {
 		require: '?^form',
 		link: function(scope, element, attrs, formCtrl) {
 			var boundField;
+				
 			if(!formCtrl || attrs.djngError === 'bound-field')
 				return;
 			element.removeAttr('djng-error');
@@ -98,7 +99,7 @@ function djngError($timeout) {
 			$timeout(function(){
 				formCtrl.$setSubmitted();
 				boundField = formCtrl[attrs.name];
-				
+
 				if(boundField) {
 					boundField.$message = {rejected: attrs.djngError};
 					boundField.$validate();
