@@ -9,3 +9,4 @@ class SubscribeForm(NgFormValidationMixin, subscribe_form.SubscribeForm):
     # Apart from an additional mixin class, the Form declaration from the
     # 'Classic Subscription' view, has been reused here.
     pass
+    
