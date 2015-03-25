@@ -1,6 +1,6 @@
 'use strict';
 
-describe('unit tests for module ng.django.messages', function() {
+describe('unit tests for module ng.django.angular.messages', function() {
 	
 	function compileForm($compile, scope, replace_value) {
 		var template =
@@ -23,7 +23,7 @@ describe('unit tests for module ng.django.messages', function() {
 	}
 	
 	beforeEach(function() {
-		module('ng.django.messages');
+		module('ng.django.angular.messages');
 	});
 	
 	
@@ -131,40 +131,40 @@ describe('unit tests for module ng.django.messages', function() {
 	
 	describe('form rejected error handling', function() {
 		
-		var scope, form, field, djngMessagesForm,
+		var scope, form, field, djngAngularMessagesForm,
 			formError = {errors: {__all__: ["The email is rejected by the server."]}},
 			fieldError = {errors: {email_field: ["This field is required."]}};
 		
-		beforeEach(inject(function($rootScope, $compile, _djngMessagesForm_){
+		beforeEach(inject(function($rootScope, $compile, _djngAngularMessagesForm_){
 			scope = $rootScope.$new();
 			compileForm($compile, scope, '');
 			form = scope.valid_form;
 			field = scope.valid_form.email_field;
-			djngMessagesForm = _djngMessagesForm_;
+			djngAngularMessagesForm = _djngAngularMessagesForm_;
 		}));
 		
 		it('should return false if no errors listed', function() {
-			expect(djngMessagesForm.setErrors(form, undefined)).toBe(false);
+			expect(djngAngularMessagesForm.setErrors(form, undefined)).toBe(false);
 		});
 		
 		it('should return true if non field errors listed', function() {
-			expect(djngMessagesForm.setErrors(form, formError.errors)).toBe(true);
+			expect(djngAngularMessagesForm.setErrors(form, formError.errors)).toBe(true);
 		});
 		
 		it('should return true if field errors listed', function() {
-			expect(djngMessagesForm.setErrors(form, fieldError.errors)).toBe(true);
+			expect(djngAngularMessagesForm.setErrors(form, fieldError.errors)).toBe(true);
 		});
 		
 		it('should add rejected non field errors to form.$message and set valid fields pristine', function() {
 			field.$setViewValue('example@example.com');
 			expect(field.$pristine).toBe(false);
-			djngMessagesForm.setErrors(form, formError.errors);
+			djngAngularMessagesForm.setErrors(form, formError.errors);
 			expect(form.$message).toBe('The email is rejected by the server.');
 			expect(field.$pristine).toBe(true);
 		});
 		
 		it('should add rejected error message to field.$message.rejected and validate', function() {
-			djngMessagesForm.setErrors(form, fieldError.errors);
+			djngAngularMessagesForm.setErrors(form, fieldError.errors);
 			expect(field.$message.rejected).toBe('This field is required.');
 			expect(field.$valid).toBe(false);
 		});

@@ -2,7 +2,7 @@
 'use strict';
 
 angular
-    .module('ng.django.messages',[
+    .module('ng.django.angular.messages',[
         'ngMessages'
     ])
 
@@ -10,7 +10,7 @@ angular
 	.directive('ngForm', formDirectiveFactory(true))
 	.directive('djngError', djngError)
     .directive('djngValidateRejected', validateRejected)
-    .factory('djngMessagesForm', djngMessagesForm);
+    .factory('djngAngularMessagesForm', djngAngularMessagesForm);
 
 
 
@@ -148,7 +148,7 @@ function validateRejected() {
 }
 
 
-function djngMessagesForm() {
+function djngAngularMessagesForm() {
 	
 	return {
 		setErrors: setErrors
