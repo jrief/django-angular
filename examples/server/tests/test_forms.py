@@ -22,6 +22,7 @@ class SubForm1(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
+        fields = '__all__'
 
 
 class SubForm2(NgModelFormMixin, NgModelForm):
@@ -29,12 +30,14 @@ class SubForm2(NgModelFormMixin, NgModelForm):
         model = SubModel
         widgets = {'radio_choices': forms.RadioSelect()}
         ng_models = ['select_choices', 'first_name']
+        fields = '__all__'
 
 
 class InvalidForm(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
         ng_models = {}
+        fields = '__all__'
 
 
 class DummyForm(NgModelFormMixin, forms.Form):
