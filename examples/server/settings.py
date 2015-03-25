@@ -48,8 +48,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'djangular.middleware.AjaxDjangoMessagesMiddleware'
+    'django.contrib.messages.middleware.MessageMiddleware'
 )
 
 # Absolute path to the directory that holds media.

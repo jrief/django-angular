@@ -15,7 +15,7 @@ class DjangoMessagesView(FormView):
     template_name = 'django-messages.html'
     form_class = MessagesForm
 
-    #@method_decorator(add_messages_to_response)
+    @method_decorator(add_messages_to_response)
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             try:

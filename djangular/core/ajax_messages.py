@@ -7,7 +7,7 @@ def process_response(request, response):
     if is_not_valid_type(request, response):
         return response
     try:
-        content = json.loads(response.content)
+        content = json.loads(response.content.decode('utf8'))
     except ValueError:
         return response
 
@@ -23,10 +23,10 @@ def process_response(request, response):
 
 
 def is_not_valid_type(request, response):
-	return not request.is_ajax() and not content_type_is_json(response)
+	return not request.is_ajax() and not _content_type_is_json(response)
 
 
-def content_type_is_json(response):
+def _content_type_is_json(response):
     return response['Content-Type'] == "application/json"
 
 
