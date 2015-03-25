@@ -19,7 +19,7 @@ class DjangoMessagesView(FormView):
     def post(self, request, *args, **kwargs):
         if request.is_ajax():
             try:
-                data = json.loads(request.body)
+                data = json.loads(request.body.decode('utf8'))
             except ValueError:
                data = {}
             self.request.POST = data
