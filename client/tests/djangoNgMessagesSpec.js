@@ -15,7 +15,7 @@ describe('unit tests for module ng.django.angular.messages', function() {
 	function compileFormWithBoundError($compile, scope, replace_value) {
 		var template =
 			'<form name="valid_form" action=".">' +
-			'<input name="email_field" ng-model="model.email" type="email" djng-error="valid email required" djng-validate-rejected  {value} />' +
+			'<input name="email_field" ng-model="model.email" type="email" djng-msgs-error="valid email required" djng-validate-rejected  {value} />' +
 			'</form>';
 		var form = angular.element(template.replace('{value}', replace_value));
 		$compile(form)(scope);
@@ -71,7 +71,7 @@ describe('unit tests for module ng.django.angular.messages', function() {
 			$timeout = _$timeout_;
 		}));
 		
-		it('should invalidate field when djng-error exists', function() {
+		it('should invalidate field when djng-msgs-error exists', function() {
 			$timeout.flush();
 			expect(field.$valid).toBe(false);
 			expect(field.$error.rejected).toBe(true);

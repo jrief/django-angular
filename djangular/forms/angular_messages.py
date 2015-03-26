@@ -92,4 +92,4 @@ class NgMessagesMixin(NgFormBaseMixin):
     def _apply_bound_error(self, bound_field, attrs):
         for error in bound_field.errors:
             if error[3] == '$pristine':
-                attrs.update({'djng-error': error[5]})
+                attrs.update({'djng-msgs-error': error[5]})

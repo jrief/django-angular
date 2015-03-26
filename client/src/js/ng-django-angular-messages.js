@@ -8,7 +8,7 @@ angular
 
     .directive('form', formDirectiveFactory())
 	.directive('ngForm', formDirectiveFactory(true))
-	.directive('djngError', djngError)
+	.directive('djngMsgsError', djngMsgsError)
     .directive('djngValidateRejected', validateRejected)
     .factory('djngAngularMessagesForm', djngAngularMessagesForm);
 
@@ -25,84 +25,94 @@ angular
 
 function formDirectiveFactory(isNgForm) {
 	
-return function() {
+	return function() {
 
-	return {
-		restrict: isNgForm ? 'EAC' : 'E',
-		require: [
-		    '^?form'
-		],
-		link: {
-			pre: function(scope, element, attrs, ctrls) {
+		return {
+			restrict: isNgForm ? 'EAC' : 'E',
+			require: 'form',
+			link: {
+				pre: function(scope, element, attrs, formCtrl) {
 
-	  		    var ctrl = ctrls[0],
-	  		    	controls,
-	  		    	modelName;
+		  		    var controls,
+		  		    	modelName;
 
-	  		    var _superAdd = ctrl.$addControl;
+		  		    var _superAdd = formCtrl.$addControl;
 
-	  		    ctrl.$addControl = function(control) {
+		  		    formCtrl.$addControl = function(control) {
 
-	  		    	_superAdd(control)
+		  		    	_superAdd(control)
 
-	  		    	controls = controls || [];
+		  		    	controls = controls || [];
 
-	  		    	if(controls.indexOf(control) === -1) {
-	  		    		controls.push(control);
-	  		    	}
-	  		    }
+		  		    	if(controls.indexOf(control) === -1) {
+		  		    		controls.push(control);
+		  		    	}
+		  		    }
 
-		  		var _superRemove = ctrl.$removeControl;
+			  		var _superRemove = formCtrl.$removeControl;
 
-		  	    ctrl.$removeControl = function(control) {
+			  	    formCtrl.$removeControl = function(control) {
 
-		  	    	_superRemove(control)
+			  	    	_superRemove(control)
 
-			    	if(controls && controls.indexOf(control) !== -1) {
-	  		    		controls.splice(controls.indexOf(control), 1);
-	  		    	}
-	  		    }
+				    	if(controls && controls.indexOf(control) !== -1) {
+		  		    		controls.splice(controls.indexOf(control), 1);
+		  		    	}
+		  		    }
 
-	  		    ctrl.setValidFieldsPristine = function() {
+		  		    formCtrl.setValidFieldsPristine = function() {
 
-	    			var i = 0,
-		    		  	len = controls.length,
-		  				control;
+		    			var i = 0,
+			    		  	len = controls.length,
+			  				control;
 
-		  			for(; i < len; i++) {
-		  				control = controls[i];
-		  				if(control.$valid) {
-		  					control.$setPristine();
-		  				}
-		  			}
-		  		}
-		   	}
-	 	}
+			  			for(; i < len; i++) {
+			  				control = controls[i];
+			  				if(control.$valid) {
+			  					control.$setPristine();
+			  				}
+			  			}
+			  		}
+			   	}
+		 	}
+		}
 	}
-}
 
 }
 
 
-function djngError($timeout) {
+function djngMsgsError($timeout) {
 	
 	return {
 		restrict: 'A',
-		require: '?^form',
-		link: function(scope, element, attrs, formCtrl) {
-			var boundField;
+		require: [
+			'?^form',
+			'?ngModel'
+		],
+		link: function(scope, element, attrs, ctrls) {
+			var boundField,
+				formCtrl = ctrls[0],
+				ngModel = ctrls[1];
+			
+			element.removeAttr('djng-msgs-error');
 				
-			if(!formCtrl || attrs.djngError === 'bound-field')
+			if(!formCtrl || !ngModel)
 				return;
-			element.removeAttr('djng-error');
 			
 			$timeout(function(){
+				
 				formCtrl.$setSubmitted();
-				boundField = formCtrl[attrs.name];
-
-				if(boundField) {
-					boundField.$message = {rejected: attrs.djngError};
-					boundField.$validate();
+				
+				if(ngModel.$name.indexOf(formCtrl.$name) === 0) {
+					
+					formCtrl.$message = {rejected: attrs.djngMsgsError};
+					formCtrl.$setValidity('rejected', false);
+					console.log(formCtrl);
+					
+				}else{
+					
+					ngModel.$message = {rejected: attrs.djngMsgsError};
+					ngModel.$validate();
 				}
 			});
 		}
