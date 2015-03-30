@@ -61,16 +61,18 @@ class NgModelFormMixin(NgFormBaseMixin):
         if field.is_hidden:
             return errors
         identifier = format_html('{0}.{1}', self.form_name, field.html_name)
-        errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$message', 'invalid', '$message')))
+        errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$error.rejected', 'invalid', '$message')))
         return errors
 
     def non_field_errors(self):
         errors = super(NgModelFormMixin, self).non_field_errors()
-        errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$message', 'invalid', '$message')))
+        errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$error.rejected', 'invalid', '$message')))
         return errors
 
     def get_widget_attrs(self, bound_field):
         attrs = super(NgModelFormMixin, self).get_widget_attrs(bound_field)
+        # add rejected error removal directive
+        attrs.update({'djng-rejected': ''})
         identifier = self.add_prefix(bound_field.name)
         ng = {
             'name': bound_field.name,

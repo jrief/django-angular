@@ -245,6 +245,32 @@ djng_forms_module.directive('validateDate', function() {
 });
 
 
+djng_forms_module.directive('djngRejected', function() {
+	return {
+		restrict: 'A',
+		require: '?ngModel',
+		link: function(scope, element, attrs, ctrl) {
+
+			if(!ctrl)
+				return;
+
+			var validator = function(value) {
+
+				if(ctrl.$error.rejected) {
+					ctrl.$message = undefined;
+					ctrl.$setValidity('rejected', true);
+				}
+
+				return value;
+			};
+
+			ctrl.$formatters.push(validator);
+			ctrl.$parsers.push(validator);
+		}
+	}
+});
+
+
 // If forms are validated using Ajax, the server shall return a dictionary of detected errors to the
 // client code. The success-handler of this Ajax call, now can set those error messages on their
 // prepared list-items. The simplest way, is to add this code snippet into the controllers function
@@ -264,13 +290,9 @@ djng_forms_module.factory('djangoForm', function() {
 		return false;
 	}
 
-	function resetFieldValidity(field) {
-		var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
-			field.$message = '';
-			field.$setValidity('rejected', true);
-			field.$viewChangeListeners.splice(pos - 1, 1);
-			delete field.clearRejected;
-		});
+	function clearRejected(field) {
+		field.$message = '';
+		field.$setValidity('rejected', true);
 	}
 	
 	function isField(field) {
@@ -295,14 +317,14 @@ djng_forms_module.factory('djangoForm', function() {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						if (isField(field) && field.clearRejected) {
-							field.clearRejected();
+						if (isField(field)) {
+							clearRejected(field);
 						} else {
 							field.$message = '';
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
 								if (subField && isField(subField) && subField.clearRejected) {
-									subField.clearRejected();
+									clearRejected(subField);
 								}
 							});
 						}
@@ -322,14 +344,12 @@ djng_forms_module.factory('djangoForm', function() {
 						field.$setPristine();
 						if (isField(field)) {
 							field.$setValidity('rejected', false);
-							resetFieldValidity(field);
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
 								if (subField && isField(subField)) {
 									subField.$setValidity('rejected', false);
 									subField.$message = errors[0];
-									resetFieldValidity(subField);
 								}
 							});
 						}
