@@ -156,6 +156,8 @@ djng_forms_module.directive('validateMultipleFields', function() {
 				if (event) {
 					formCtrl.$dirty = true;
 					formCtrl.$pristine = false;
+					// element.on('change', validate) is jQuery and runs outside of Angular's digest cycle.
+					// Therefore Angular does not get the end-of-digest signal and $apply() must be invoked manually.
 					scope.$apply();
 				}
 			}
