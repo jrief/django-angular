@@ -17,9 +17,9 @@ function hashCode(s) {
 // This directive adds a dummy binding to form elements without ng-model attribute,
 // so that AngularJS form validation gets notified whenever the fields content changes
 // http://www.w3schools.com/html/html_form_elements.asp
-var elements = ['input', 'select', 'textarea', 'datalist']
+var form_elements = ['input', 'select', 'textarea', 'datalist'];
 
-angular.forEach(elements, function(element){
+angular.forEach(form_elements, function(element) {
 	djng_forms_module.directive(element, addNgModelDirective());
 });
 
@@ -268,11 +268,11 @@ djng_forms_module.factory('djangoForm', function() {
 			field.$setValidity('rejected', true);
 			field.$viewChangeListeners.splice(pos - 1, 1);
 			delete field.clearRejected;
-		})
+		});
 	}
 	
 	function isField(field) {
-		return angular.isArray(field.$viewChangeListeners)
+		return angular.isArray(field.$viewChangeListeners);
 	}
 
 	return {
@@ -352,7 +352,7 @@ djng_forms_module.directive('djngBindIf', function() {
 					// We are purposefully using == here rather than === because we want to
 					// catch when value is "null or undefined"
 					// jshint -W041
-					if (value == undefined)
+					if (value === undefined)
 						return;
 					element.text(value);
 				});

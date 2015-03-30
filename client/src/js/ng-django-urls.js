@@ -39,13 +39,13 @@
             if (!params) return url;
             var parts = [];
             forEachSorted(params, function (value, key) {
-                if (value == null || value == undefined) return;
+                if (value === null || value === undefined) return;
                 if (angular.isObject(value)) {
                     value = angular.toJson(value);
                 }
                 parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
             });
-            return url + ((url.indexOf('?') == -1) ? '?' : '&') + parts.join('&');
+            return url + ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
         }
 
         // Service public interface
