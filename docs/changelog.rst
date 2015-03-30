@@ -18,6 +18,8 @@ Release History
   inlines.
 * In BS3 styling, added ``RadioFieldRenderer`` to ``RadioInlineFieldRenderer`` (the default), so
   that forms with multiple radio input fields can be rendered as block items instead of inlines.
+* Fixed 'classic form' issue whereby ``ngModel`` was not being added to ``select`` of ``textarea``
+  elements, so returned errors where not displayed.
 
 0.7.12
 ------
