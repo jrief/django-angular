@@ -319,14 +319,16 @@ djng_forms_module.factory('djangoForm', function() {
 					} else if (form.hasOwnProperty(key)) {
 						field = form[key];
 						field.$message = errors[0];
-						field.$setValidity('rejected', false);
 						field.$setPristine();
 						if (isField(field)) {
+							field.$setValidity('rejected', false);
 							resetFieldValidity(field);
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
 								if (subField && isField(subField)) {
+									subField.$setValidity('rejected', false);
+									subField.$message = errors[0];
 									resetFieldValidity(subField);
 								}
 							});
