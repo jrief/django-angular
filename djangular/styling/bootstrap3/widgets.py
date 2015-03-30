@@ -37,6 +37,12 @@ class CheckboxInput(widgets.CheckboxInput):
 
 class CheckboxChoiceInput(DjngCheckboxChoiceInput):
     def render(self, name=None, value=None, attrs=None, choices=()):
+        label_tag = super(CheckboxChoiceInput, self).render(name, value, attrs, choices)
+        return format_html('<div class="checkbox">{}</div>', label_tag)
+
+
+class CheckboxInlineChoiceInput(CheckboxChoiceInput):
+    def render(self, name=None, value=None, attrs=None, choices=()):
         name = name or self.name
         value = value or self.value
         attrs = attrs or self.attrs
@@ -51,11 +57,29 @@ class CheckboxFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
     choice_input_class = CheckboxChoiceInput
 
 
+class CheckboxInlineFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
+    choice_input_class = CheckboxInlineChoiceInput
+
+
 class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
-    renderer = CheckboxFieldRenderer
+    renderer = CheckboxInlineFieldRenderer
 
 
 class RadioChoiceInput(widgets.RadioChoiceInput):
+    def render(self, name=None, value=None, attrs=None, choices=()):
+        label_tag = super(RadioChoiceInput, self).render(name, value, choices)
+        return format_html('<div class="radio">{}</div>', label_tag)
+
+    def tag(self):
+        tag_attrs = dict(self.attrs, type=self.input_type, name=self.name, value=self.choice_value)
+        if 'id' in self.attrs:
+            tag_attrs['id'] = '{0}_{1}'.format(tag_attrs['id'], self.index)
+        if self.is_checked():
+            tag_attrs['checked'] = 'checked'
+        return format_html('<input{} />', flatatt(tag_attrs))
+
+
+class RadioInlineChoiceInput(widgets.RadioChoiceInput):
     def render(self, name=None, value=None, attrs=None, choices=()):
         name = name or self.name
         value = value or self.value
@@ -66,17 +90,13 @@ class RadioChoiceInput(widgets.RadioChoiceInput):
         label_for = mark_safe(' '.join(label_attrs))
         return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
 
-    def tag(self):
-        tag_attrs = dict(self.attrs, type=self.input_type, name=self.name, value=self.choice_value)
-        if 'id' in self.attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(tag_attrs['id'], self.index)
-        if self.is_checked():
-            tag_attrs['checked'] = 'checked'
-        return format_html('<input{0} />', flatatt(tag_attrs))
-
 
 class RadioFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
     choice_input_class = RadioChoiceInput
+
+
+class RadioInlineFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
+    choice_input_class = RadioInlineChoiceInput
 
 
 class RadioSelect(DjngRadioSelect):
