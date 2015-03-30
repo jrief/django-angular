@@ -137,7 +137,7 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
+djng_forms_module.controller('ValidateMultipleFieldsCtrl', function() {
 	
 	var vm = this,
 		formCtrl,
@@ -146,6 +146,7 @@ djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
 	
 	vm.setFormCtrl = setFormCtrl;
 	vm.setSubFields = setSubFields;
+	vm.getSubFields = getSubFields;
 	vm.addInputCtrl = addInputCtrl;
 	vm.validate = validate;
 		
@@ -153,13 +154,14 @@ djng_forms_module.controller('ValidateMultipleFieldsCtrl', function($attrs) {
 	
 	function setFormCtrl(value) {
 		formCtrl = value;
-		
-		if(angular.isString(subFields))
-			formCtrl = formCtrl[subFields];
 	}
 	
 	function setSubFields(value) {
 		subFields = value;
+	}
+	
+	function getSubFields() {
+		return subFields;
 	}
 	
 	function addInputCtrl(ctrl) {
@@ -233,10 +235,16 @@ djng_forms_module.directive('validateMultipleFields', function() {
 			post: function(scope, element, attrs, ctrls) {
 			
 				var ctrl = ctrls[0],
-					formCtrl = ctrls[1];
+					formCtrl = ctrls[1],
+					subFields;
 				
 				if(!formCtrl)
 					return;
+					
+				subFields = ctrl.getSubFields();
+
+				if(angular.isString(subFields))
+					formCtrl = formCtrl[subFields];
 				
 				ctrl.setFormCtrl(formCtrl);
 				ctrl.validate();
@@ -246,9 +254,14 @@ djng_forms_module.directive('validateMultipleFields', function() {
 });
 
 
-djng_forms_module.directive('input', function() {
+djng_forms_module.directive('ngModel', function() {
 	return {
-		restrict:'E',
+		restrict:'A',
+		/*
+		 * ensure that this gets fired after ng.django.forms restore value ngModel
+		 * directive, as if initial/bound value is set, $viewChangeListener is fired
+		 */
+		priority: 2,
 		require: [
 			'?^form',
 			'?^validateMultipleFields',
