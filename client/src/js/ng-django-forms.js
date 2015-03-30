@@ -263,6 +263,17 @@ djng_forms_module.directive('djngRejected', function() {
 
 				return value;
 			};
+			
+			ctrl.djngClearRejected = function() {
+				ctrl.$message = undefined;
+				ctrl.$setValidity('rejected', true);
+			};
+
+			ctrl.djngAddRejected = function(msg) {
+				ctrl.$message = msg;
+				ctrl.$setValidity('rejected', false);
+				ctrl.$setPristine();
+			};
 
 			ctrl.$formatters.push(validator);
 			ctrl.$parsers.push(validator);
@@ -289,11 +300,6 @@ djng_forms_module.factory('djangoForm', function() {
 		}
 		return false;
 	}
-
-	function clearRejected(field) {
-		field.$message = '';
-		field.$setValidity('rejected', true);
-	}
 	
 	function isField(field) {
 		return angular.isArray(field.$viewChangeListeners);
@@ -317,14 +323,14 @@ djng_forms_module.factory('djangoForm', function() {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						if (isField(field)) {
-							clearRejected(field);
+						if (isField(field) && field.djngClearRejected) {
+							field.djngClearRejected();
 						} else {
 							field.$message = '';
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
-								if (subField && isField(subField) && subField.clearRejected) {
-									clearRejected(subField);
+								if (subField && isField(subField) && subField.djngClearRejected) {
+									subField.djngClearRejected();
 								}
 							});
 						}
@@ -340,16 +346,18 @@ djng_forms_module.factory('djangoForm', function() {
 						form.$setPristine();
 					} else if (form.hasOwnProperty(key)) {
 						field = form[key];
-						field.$message = errors[0];
-						field.$setPristine();
+						
 						if (isField(field)) {
-							field.$setValidity('rejected', false);
+							field.djngAddRejected(errors[0]);
 						} else {
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
 								if (subField && isField(subField)) {
-									subField.$setValidity('rejected', false);
-									subField.$message = errors[0];
+									
+									field.$message = errors[0];
+									field.$setPristine();
+									
+									subField.djngAddRejected(errors[0]);
 								}
 							});
 						}
