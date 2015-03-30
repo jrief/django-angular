@@ -5,7 +5,10 @@ Release History
 ===============
 
 
-0.7.13-dev
+0.7.14-dev
+------
+
+0.7.13
 ------
 * Change for Forms inheriting from ``NgFormBaseMixin`` using ``field_css_classes`` as dict:
   CSS classes specified as default now must explicitly be added the fields defining their own
