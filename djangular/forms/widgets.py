@@ -81,9 +81,9 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
 class RadioFieldRendererMixin(object):
     def __init__(self, name, value, attrs, choices):
         attrs.pop('djng-error', None)
-        self.field_attrs = []
+        self.field_attrs = [format_html('ng-form="{0}"', name)]
         if attrs.pop('radio_select_required', False):
-            self.field_attrs.append(format_html('validate-multiple-fields="{0}"', name))
+            attrs.update({'required': ''})
         super(RadioFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 
