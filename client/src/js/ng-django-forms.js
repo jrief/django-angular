@@ -14,22 +14,31 @@ function hashCode(s) {
 	}, 0);
 }
 
-// This directive adds a dummy binding to input fields without attribute ng-model, so that AngularJS
-// form validation gets notified whenever the fields content changes.
-djng_forms_module.directive('input', ['$compile', function($compile) {
-	return {
-		restrict: 'E',
-		require: '?^form',
-		link: function(scope, element, attr, formCtrl) {
-			var modelName;
-			if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
-				return;
-			modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name;
-			attr.$set('ngModel', modelName);
-			$compile(element, null, 9999)(scope);
-		}
-	};
-}]);
+// This directive adds a dummy binding to form elements without ng-model attribute,
+// so that AngularJS form validation gets notified whenever the fields content changes
+// http://www.w3schools.com/html/html_form_elements.asp
+var form_elements = ['input', 'select', 'textarea', 'datalist'];
+
+angular.forEach(form_elements, function(element) {
+	djng_forms_module.directive(element, addNgModelDirective());
+});
+
+function addNgModelDirective() {
+	return ['$compile', function($compile) {
+		return {
+			restrict: 'E',
+			require: '?^form',
+			link: function(scope, element, attr, formCtrl) {
+				var modelName;
+				if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
+					return;
+				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name;
+				attr.$set('ngModel', modelName);
+				$compile(element, null, 9999)(scope);
+			}
+		};
+	}];
+}
 
 // Bound fields with invalid input data, shall be marked as ng-invalid-bound, so that
 // the input field visibly contains invalid data, even if pristine
@@ -261,11 +270,11 @@ djng_forms_module.factory('djangoForm', function() {
 			field.$setValidity('rejected', true);
 			field.$viewChangeListeners.splice(pos - 1, 1);
 			delete field.clearRejected;
-		})
+		});
 	}
 	
 	function isField(field) {
-		return angular.isArray(field.$viewChangeListeners)
+		return angular.isArray(field.$viewChangeListeners);
 	}
 
 	return {
@@ -345,7 +354,7 @@ djng_forms_module.directive('djngBindIf', function() {
 					// We are purposefully using == here rather than === because we want to
 					// catch when value is "null or undefined"
 					// jshint -W041
-					if (value == undefined)
+					if (value === undefined)
 						return;
 					element.text(value);
 				});
