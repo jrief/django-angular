@@ -146,61 +146,118 @@ djng_forms_module.directive('ngModel', function() {
 });
 
 
-// This directive is added automatically by django-angular for widgets of type RadioSelect and
-// CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
-// which forms a group for one `django.forms.Field`.
+// This directive is added automatically by django-angular for widgets of type CheckboxSelectMultiple.
+// This is necessary to adjust the behavior of a collection of input fields, which forms a group for
+// one `django.forms.Field`.
 djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
-		require: '^?form',
-		link: function(scope, element, attrs, formCtrl) {
-			var subFields, checkboxElems = [];
-
-			function validate(event) {
-				var valid = false,
-					ctrl;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
-					ctrl = formCtrl[checkbox.name];
-					if(ctrl && ctrl.djngClearRejected)
-						ctrl.djngClearRejected();
-				});
-				formCtrl.$setValidity('required', valid);
-				if (event) {
-					formCtrl.$dirty = true;
-					formCtrl.$pristine = false;
-					// element.on('change', validate) is jQuery and runs outside of Angular's digest cycle.
-					// Therefore Angular does not get the end-of-digest signal and $apply() must be invoked manually.
-					scope.$apply();
+		require: 'validateMultipleFields',
+		controller: 'ValidateMultipleFieldsCtrl',
+		link: {
+			pre: function(scope, element, attrs, ctrl) {
+				
+				var subFields;
+					
+				try {
+					subFields = angular.fromJson(attrs.validateMultipleFields);
+				} catch (SyntaxError) {
+					if (!angular.isString(attrs.validateMultipleFields))
+						return;
+					subFields = attrs.validateMultipleFields;
 				}
-			}
 
-			if (!formCtrl)
-				return;
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				if (!angular.isString(attrs.validateMultipleFields))
-					return;
-				subFields = [attrs.validateMultipleFields];
-				formCtrl = formCtrl[subFields];
+				ctrl.setSubFields(subFields);
+			},
+			post: function(scope, element, attrs, ctrl) {
+				ctrl.controlStateChange();
 			}
-			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) >= 0) {
-					checkboxElems.push(elem);
-					angular.element(elem).on('change', validate);
-				}
-			});
-
-			// remove "change" event handlers from each input field
-			element.on('$destroy', function() {
-				angular.forEach(element.find('input'), function(elem) {
-					angular.element(elem).off('change');
-				});
-			});
-			validate();
 		}
-	};
+	}
+});
+
+
+djng_forms_module.controller('ValidateMultipleFieldsCtrl', function() {
+	
+	var vm = this,
+		ctrls,
+		subFields;
+	
+	vm.setSubFields = setSubFields;
+	vm.registerCtrl = registerCtrl;
+	vm.controlStateChange = controlStateChange;
+	
+	/* ------------- */
+	
+	function setSubFields(value) {
+		subFields = value;
+	}
+	
+	function registerCtrl(ctrl) {
+		
+		if(_isNotValidSubField(ctrl.$name))
+			return;
+			
+		ctrls = ctrls || [];
+		ctrls.push(ctrl);
+		
+		return true;
+	}
+	
+	function controlStateChange() {
+		
+		var value = false;
+		
+		// get collective value for group
+		angular.forEach(ctrls, function(ctrl) {
+			value = !!(value || ctrl.$modelValue);
+		});
+		
+		/*
+		 * set 'required' validity of all controls depending on value.
+		 * this then automatically sets the 'required' error state of the parent ngForm
+		 */
+		angular.forEach(ctrls, function(ctrl) {
+			ctrl.$setValidity('required', value);
+			if(ctrl.djngClearRejected)
+				ctrl.djngClearRejected();
+		});
+	}
+	
+	function _isNotValidSubField(name) {
+		return !!subFields && subFields.indexOf(name) == -1;
+	}
+});
+
+
+djng_forms_module.directive('ngModel', function() {
+	return {
+		restrict:'A',
+		/*
+		 * ensure that this gets fired after ng.django.forms restore value ngModel
+		 * directive, as if initial/bound value is set, $viewChangeListener is fired
+		 */
+		priority: 2,
+		require: [
+			'?^validateMultipleFields',
+			'?ngModel'
+		],
+		link: function(scope, element, attrs, ctrls) {
+			
+			var vmfCtrl = ctrls[0],
+				ngModel = ctrls[1];
+				
+			if(!vmfCtrl || !ngModel)
+				return;
+			
+			if(vmfCtrl.registerCtrl(ngModel)) {
+				
+				ngModel.$viewChangeListeners.push(function() {
+					vmfCtrl.controlStateChange();
+				});
+			}
+		}
+	}
 });
 
 
@@ -342,27 +399,25 @@ djng_forms_module.factory('djangoForm', function() {
 			// add the new upstream errors
 			angular.forEach(errors, function(errors, key) {
 				var field;
-				if (errors.length > 0) {
-					if (key === NON_FIELD_ERRORS) {
-						form.$message = errors[0];
-						form.$setPristine();
-					} else if (form.hasOwnProperty(key)) {
-						field = form[key];
-						
-						if (isField(field)) {
-							field.djngAddRejected(errors[0]);
-						} else {
-							// this field is a composite of input elements
-							angular.forEach(field, function(subField, subKey) {
-								if (subField && isField(subField)) {
-									
-									field.$message = errors[0];
-									field.$setPristine();
-									
-									subField.djngAddRejected(errors[0]);
-								}
-							});
-						}
+				if (errors.length === 0)
+					return;
+				if (key === NON_FIELD_ERRORS) {
+					form.$message = errors[0];
+					form.$setPristine();
+				} else if (form.hasOwnProperty(key)) {
+					field = form[key];
+					if (isField(field)) {
+						field.djngAddRejected(errors[0]);
+					} else {
+						// this field is a composite of input elements
+						angular.forEach(field, function(subField, subKey) {
+							if (subField && isField(subField)) {
+								// add message to ngForm
+								field.$message = errors[0];
+								field.$setPristine();
+								subField.djngAddRejected(errors[0]);
+							}
+						});
 					}
 				}
 			});
