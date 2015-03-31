@@ -260,7 +260,7 @@ djng_forms_module.directive('djngRejected', function() {
 			
 			var validator = function(value) {
 
-				if(ctrl.$error.rejected) {
+				if(ctrl.$error.rejected)
 					ctrl.djngClearRejected();
 
 				return value;

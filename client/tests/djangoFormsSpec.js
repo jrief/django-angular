@@ -4,7 +4,7 @@ describe('unit tests for module ng.django.forms', function() {
 	function compileForm($compile, scope, replace_value) {
 		var template =
 			'<form name="valid_form" action=".">' +
-			'<input name="email_field" ng-model="model.email" type="text" {value} />' +
+			'<input name="email_field" ng-model="model.email" djng-rejected type="text" {value} />' +
 			'</form>';
 		var form = angular.element(template.replace('{value}', replace_value));
 		$compile(form)(scope);
@@ -59,6 +59,68 @@ describe('unit tests for module ng.django.forms', function() {
 			}));
 		});
 
+	});
+	
+	describe('test directive djngRejected', function() {
+		
+		var scope, form, field;
+	
+		beforeEach(function() {
+			module('ng.django.forms');
+		});
+		
+		beforeEach(inject(function($rootScope, $compile) {
+			scope = $rootScope.$new();
+			compileForm($compile, scope, '');
+			form = scope.valid_form;
+			field = scope.valid_form.email_field;
+		}));
+		
+		it('should add djngAddRejected method to ngModel', function() {
+			expect(typeof field.djngAddRejected).toBe('function');
+		});
+		
+		it('should add djngClearRejected method to ngModel', function() {
+			expect(typeof field.djngClearRejected).toBe('function');
+		});
+		
+		it('should set rejected state on control', function() {
+			field.djngAddRejected('i am rejected');
+			expect(field.$error.rejected).toBe(true);
+			expect(field.$message).toBe('i am rejected');
+			expect(field.$pristine).toBe(true);
+		});
+		
+		it('should remove rejected state from control', function() {
+			field.djngAddRejected('i am rejected');
+			expect(field.$error.rejected).toBe(true);
+			expect(field.$message).toBe('i am rejected');
+			expect(field.$pristine).toBe(true);
+			field.djngClearRejected();
+			expect(field.$error.rejected).toBe(false);
+			expect(field.$message).toBe(undefined);
+		});
+		
+		it('should remove rejected state when model changes', function() {
+			field.djngAddRejected('i am rejected');
+			expect(field.$error.rejected).toBe(true);
+			expect(field.$message).toBe('i am rejected');
+			expect(field.$pristine).toBe(true);
+			scope.model = {email: 'barry@barry.com'};
+			scope.$digest();
+			expect(field.$error.rejected).toBe(false);
+			expect(field.$message).toBe(undefined);
+		});
+		
+		it('should remove rejected state when $viewValue changes', function() {
+			field.djngAddRejected('i am rejected');
+			expect(field.$error.rejected).toBe(true);
+			expect(field.$message).toBe('i am rejected');
+			expect(field.$pristine).toBe(true);
+			field.$setViewValue('barry@barry.com');
+			expect(field.$error.rejected).toBe(false);
+			expect(field.$message).toBe(undefined);
+		});
 	});
 
 	describe('test directive validateDate', function() {
@@ -125,7 +187,7 @@ describe('unit tests for module ng.django.forms', function() {
 			beforeEach(inject(function($compile) {
 				var form = angular.element(
 					'<form name="form" action=".">' +
-					'<input name="email_field" ng-model="model.email" type="text" />' +
+					'<input name="email_field" ng-model="model.email" djng-rejected type="text" />' +
 					'</form>'
 				);
 				$compile(form)(scope);
