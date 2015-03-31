@@ -157,9 +157,13 @@ djng_forms_module.directive('validateMultipleFields', function() {
 			var subFields, checkboxElems = [];
 
 			function validate(event) {
-				var valid = false;
+				var valid = false,
+					ctrl;
 				angular.forEach(checkboxElems, function(checkbox) {
 					valid = valid || checkbox.checked;
+					ctrl = formCtrl[checkbox.name];
+					if(ctrl && ctrl.djngClearRejected)
+						ctrl.djngClearRejected();
 				});
 				formCtrl.$setValidity('required', valid);
 				if (event) {
@@ -251,15 +255,13 @@ djng_forms_module.directive('djngRejected', function() {
 		require: '?ngModel',
 		link: function(scope, element, attrs, ctrl) {
 
-			if(!ctrl)
+			if(!ctrl || attrs.djngRejected !== '')
 				return;
-
+			
 			var validator = function(value) {
 
 				if(ctrl.$error.rejected) {
-					ctrl.$message = undefined;
-					ctrl.$setValidity('rejected', true);
-				}
+					ctrl.djngClearRejected();
 
 				return value;
 			};
