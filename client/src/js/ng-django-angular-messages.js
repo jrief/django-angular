@@ -9,9 +9,8 @@ if(angular.version.minor < 3 ) {
 
 angular
     .module('ng.django.angular.messages',[
-        'ngMessages'
+        'ng.django.forms'
     ])
-
     .directive('form', formDirectiveFactory())
 	.directive('ngForm', formDirectiveFactory(true))
 	.directive('djngError', djngError)

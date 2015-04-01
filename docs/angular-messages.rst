@@ -11,9 +11,8 @@ Render Form field error lists in ngMessages format
 NgMessagesMixin
 ===============
 
-The ``NgMessagesMixin`` mixin can be used in conjunction with other django-angular form mixins (``NgFormValidationMixin``
-and ``NgModelFormMixin``) or on its own, to facilitate the rendering of form field error lists, in the
-correct format for the ngMessages directive.
+The ``NgMessagesMixin`` mixin is used in conjunction with the ``NgFormValidationMixin`` to facilitate 
+the rendering of form field error lists, in the correct format for the ngMessages directive.
 
 .. code-block:: python
 
@@ -32,7 +31,7 @@ Then using ``{{ form.email.errors }}`` would output the following markup:
 		<li ng-message="required" class="invalid">This field is required.</li>
 		<li ng-message="email" class="invalid">Enter a valid email address.</li>
 		<li ng-message="rejected" class="invalid">
-			<span ng-bind="my_form.email.$message.rejected"></span>
+			<span ng-bind="my_form.email.$message"></span>
 		</li>
 	</ul>
 	
@@ -40,17 +39,16 @@ Then using ``{{ form.email.errors }}`` would output the following markup:
 Handling Ajax form errors
 .........................
 	
-The ``NgMessagesMixin`` also adds the ``djng-validate-rejected`` directive attribute to each form ``input``.
-This directive handles the display of server side errors, by adding a ``rejected`` validator to the ``input``'s
-``ngModel.$validators`` array.
+The ``NgMessagesMixin`` adds the ``djng-rejected`` directive attribute to each form ``input``. This directive 
+handles the display and remvoval of server side errors, by adding a ``rejected`` validator to the ``input``'s 
+``ngModel.$validators`` pipeline.
 
 .. code-block:: html
 
-	<input id="id_email" name="email" ng-model="email" type="email" required="required" djng-validate-rejected>
+	<input id="id_email" name="email" ng-model="email" type="email" required djng-rejected>
 	
-The ``djngAngularMessagesForm.setErrors`` method is then used to parse the errors from the server response, apply them
-to the relevant fields ``field.$message.rejected`` property and call the fields ``$validate`` method to trigger
-the rejected validator and display the error message.
+The ``djngAngularMessagesForm.setErrors`` method is used to parse the errors from the server response and apply
+them to the relevant fields. 
 
 .. code-block:: javascript
 
@@ -69,7 +67,7 @@ the rejected validator and display the error message.
 	});
 
 The markup below is a snippet of the ``{{ form.email.errors }}`` shown earlier. It shows the specific part that deals
-with the display of the rejected error message. The ``<span>`` to bind to the value of ``my_form.email.$message.rejected``
+with the display of the rejected error message. The ``<span>`` to bind to the value of ``my_form.email.$message``
 and display the message is necessary due to the following bug/issue_.
 
 .. _bug/issue: https://github.com/angular/angular.js/issues/8089
@@ -77,14 +75,16 @@ and display the message is necessary due to the following bug/issue_.
 .. code-block:: html
 
 	<li ng-message="rejected" class="invalid">
-		<span ng-bind="my_form.email.$message.rejected"> /* rejected error message will be displayed here */ </span>
+		<span ng-bind="my_form.email.$message"> /* rejected error message will be displayed here */ </span>
 	</li>
 
 
 Use with other django-angular form mixins
 ...........................................
 
-When using the ``NgMessagesMixin``, the form class must always inherit from ``NgMessagesMixin`` first.
+The ``NgMessagesMixin`` must always be used in conjunction with the ``NgFormValidationMixin`` and it should also
+be inherited after all other django-angular form mixins.
+
 Valid examples:
 
 .. code-block:: python
@@ -105,7 +105,17 @@ Or
 	class MyNgMessagesForm(NgMessagesMixin, NgModelFormMixin, NgFormValidationMixin, NgForm):
 		# custom form logic
 		
-But not
+Invalid examples:
+
+.. code-block:: python
+
+	from django import forms
+	from djangular.forms import NgForm, NgModelFormMixin, NgMessagesMixin
+
+	class MyNgMessagesForm(NgMessagesMixin, NgModelFormMixin, NgForm):
+		# custom form logic
+		
+Or
 
 .. code-block:: python
 
