@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.forms import fields
 from django.forms import widgets
-from django.utils.encoding import force_text
 from djangular.forms import field_mixins
 from . import widgets as bs3widgets
 
@@ -12,11 +11,9 @@ class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
         if isinstance(self.widget, widgets.CheckboxInput):
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
-                new_widget = bs3widgets.CheckboxInput()
+                new_widget = bs3widgets.CheckboxInput(self.label)
                 new_widget.__dict__ = self.widget.__dict__
-                # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-                new_widget.choice_label = force_text(self.label)
-                self.label = ''
+                self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
                 return new_widget
 
 
@@ -27,11 +24,9 @@ class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
             raise RuntimeError('Should never reach this')
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
-                new_widget = bs3widgets.CheckboxInput()
+                new_widget = bs3widgets.CheckboxInput(self.label)
                 new_widget.__dict__ = self.widget.__dict__
-                # the label shall be rendered by the Widget class rather than using BoundField.label_tag()
-                new_widget.choice_label = force_text(self.label)
-                self.label = ''
+                self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
                 return new_widget
         if isinstance(self.widget, widgets.RadioSelect):
             self.widget_css_classes = None

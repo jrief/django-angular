@@ -16,7 +16,7 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
         """
         Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
         """
-        start_tag = format_html('<div {0}>', mark_safe(' '.join(self.field_attrs)))
+        start_tag = format_html('<div {}>', mark_safe(' '.join(self.field_attrs)))
         output = [start_tag]
         for widget in self:
             output.append(force_text(widget))
@@ -25,11 +25,16 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
 
 
 class CheckboxInput(widgets.CheckboxInput):
+    def __init__(self, label, attrs=None, check_test=None):
+        # the label is rendered by the Widget class rather than by BoundField.label_tag()
+        self.choice_label = force_text(label)
+        super(CheckboxInput, self).__init__(attrs, check_test)
+
     def render(self, name, value, attrs=None):
         attrs = attrs or self.attrs
         label_attrs = ['class="checkbox-inline"']
         if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}"', self.attrs['id']))
+            label_attrs.append(format_html('for="{}"', self.attrs['id']))
         label_for = mark_safe(' '.join(label_attrs))
         tag = super(CheckboxInput, self).render(name, value, attrs)
         return format_html('<label {0}>{1} {2}</label>', label_for, tag, self.choice_label)
