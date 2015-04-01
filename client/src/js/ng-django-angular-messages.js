@@ -3,7 +3,7 @@
 
 
 if(angular.version.minor < 3 ) {
-	throw new Error('The ng.django.angular.messages module requires AngularJS 1.3+');
+	// throw new Error('The ng.django.angular.messages module requires AngularJS 1.3+');
 }
 
 
