@@ -315,7 +315,7 @@ djng_forms_module.directive('djngRejected', function() {
 			if(!ctrl || attrs.djngRejected !== '')
 				return;
 			
-			var validator = function(value) {
+			var clearRejectedError = function(value) {
 
 				if(ctrl.$error.rejected)
 					ctrl.djngClearRejected();
@@ -334,8 +334,8 @@ djng_forms_module.directive('djngRejected', function() {
 				ctrl.$setPristine();
 			};
 
-			ctrl.$formatters.push(validator);
-			ctrl.$parsers.push(validator);
+			ctrl.$formatters.push(clearRejectedError);
+			ctrl.$parsers.push(clearRejectedError);
 		}
 	}
 });
@@ -361,7 +361,7 @@ djng_forms_module.factory('djangoForm', function() {
 	}
 	
 	function isField(field) {
-		return angular.isArray(field.$viewChangeListeners);
+		return !!field && angular.isArray(field.$viewChangeListeners);
 	}
 
 	return {
@@ -388,7 +388,7 @@ djng_forms_module.factory('djangoForm', function() {
 							field.$message = '';
 							// this field is a composite of input elements
 							angular.forEach(field, function(subField, subKey) {
-								if (subField && isField(subField) && subField.djngClearRejected) {
+								if (isField(subField) && subField.djngClearRejected) {
 									subField.djngClearRejected();
 								}
 							});
@@ -411,7 +411,7 @@ djng_forms_module.factory('djangoForm', function() {
 					} else {
 						// this field is a composite of input elements
 						angular.forEach(field, function(subField, subKey) {
-							if (subField && isField(subField)) {
+							if (isField(subField)) {
 								// add message to ngForm
 								field.$message = errors[0];
 								field.$setPristine();
