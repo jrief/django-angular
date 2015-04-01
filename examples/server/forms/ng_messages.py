@@ -7,7 +7,7 @@ from djangular.forms import NgModelFormMixin, NgFormValidationMixin, NgMessagesM
 from . import subscribe_form
 
 
-class SubscribeForm(NgMessagesMixin, NgFormValidationMixin, subscribe_form.SubscribeForm):
+class SubscribeForm(NgMessagesMixin, NgFormValidationMixin, NgModelFormMixin, subscribe_form.SubscribeForm):
     scope_prefix = 'subscribe_data'
     form_name = 'my_form'
 

@@ -1,6 +1,12 @@
 (function(angular, undefined) {
 'use strict';
 
+
+if(angular.version.minor < 3 ) {
+	throw new Error('The ng.django.angular.messages module requires AngularJS 1.3+');
+}
+
+
 angular
     .module('ng.django.angular.messages',[
         'ngMessages'
@@ -8,8 +14,8 @@ angular
 
     .directive('form', formDirectiveFactory())
 	.directive('ngForm', formDirectiveFactory(true))
-	.directive('djngMsgsError', djngMsgsError)
-    .directive('djngValidateRejected', validateRejected)
+	.directive('djngError', djngError)
+    .directive('djngRejected', djngRejected)
     .factory('djngAngularMessagesForm', djngAngularMessagesForm);
 
 
@@ -20,7 +26,7 @@ angular
  * 
  * Adds the following methods and functionality:
  * 
- * - setValidFieldsPristine()
+ * - djngSetValidFieldsPristine()
  */
 
 function formDirectiveFactory(isNgForm) {
@@ -60,7 +66,7 @@ function formDirectiveFactory(isNgForm) {
 		  		    	}
 		  		    }
 
-		  		    formCtrl.setValidFieldsPristine = function() {
+		  		    formCtrl.djngSetValidFieldsPristine = function() {
 
 		    			var i = 0,
 			    		  	len = controls.length,
@@ -81,7 +87,7 @@ function formDirectiveFactory(isNgForm) {
 }
 
 
-function djngMsgsError($timeout) {
+function djngError($timeout) {
 	
 	return {
 		restrict: 'A',
@@ -90,48 +96,42 @@ function djngMsgsError($timeout) {
 			'?ngModel'
 		],
 		link: function(scope, element, attrs, ctrls) {
-			var boundField,
-				formCtrl = ctrls[0],
+			
+			var formCtrl = ctrls[0],
 				ngModel = ctrls[1];
 			
-			element.removeAttr('djng-msgs-error');
-				
-			if(!formCtrl || !ngModel)
+			if (attrs.djngError !== 'bound-msgs-field' || !formCtrl || !ngModel)
 				return;
+			
+			element.removeAttr('djng-error');
+			element.removeAttr('djng-error-msg');
 			
 			$timeout(function(){
 				
+				// TODO: use ngModel.djngAddRejected to set message
+
+				ngModel.$message = attrs.djngErrorMsg;
+				ngModel.$validate();
 				formCtrl.$setSubmitted();
-				
-				if(ngModel.$name.indexOf(formCtrl.$name) === 0) {
-					
-					formCtrl.$message = {rejected: attrs.djngMsgsError};
-					formCtrl.$setValidity('rejected', false);
-					console.log(formCtrl);
-					
-				}else{
-					
-					ngModel.$message = {rejected: attrs.djngMsgsError};
-					ngModel.$validate();
-				}
 			});
 		}
 	}
 }
 
 
-function validateRejected() {
+function djngRejected() {
 
 	return {
 		restrict: 'A',
 		require: '?ngModel',
 		link: function(scope, element, attrs, ngModel) {
 			
-			if(!ngModel) return;
+			if(!ngModel || attrs.djngRejected !== 'validator')
+				return;
 			
 			var _hasMessage = false,
 				_value = null;
-
+			
 			ngModel.$validators.rejected = function(value) {
                 
 				if(_hasMessage && (_value !== value)) {
@@ -139,27 +139,40 @@ function validateRejected() {
 					_hasMessage = false;
 					_value = null;
 					
-					if(ngModel.$message) {
-						ngModel.$message.rejected = undefined;
-					}
+					ngModel.$message = undefined;
 					
 				}else{
 					
-					_hasMessage = !!(ngModel.$message && ngModel.$message.rejected !== undefined);
+					_hasMessage = !!ngModel.$message;
 					
-					if(_hasMessage) {
+					if(_hasMessage)
 					    _value = value;	
-					}
 				}
 
 				return !_hasMessage;
 			}
+			
+			/*
+			ctrl.djngClearRejected = function() {
+				if(!!ctrl.$message) {
+					ctrl.$message = undefined;
+					ctrl.$validate();
+				}
+			};
+
+			ctrl.djngAddRejected = function(msg) {
+				ctrl.$message = msg;
+				ctrl.$validate();
+			};
+			*/
 		}
 	}
 }
 
 
 function djngAngularMessagesForm() {
+	
+	var NON_FIELD_ERRORS = '__all__';
 	
 	return {
 		setErrors: setErrors
@@ -181,55 +194,54 @@ function djngAngularMessagesForm() {
 		
 		form.$setSubmitted();
 		
-		angular.forEach(errors,
-			function(error, key) {
-				var field,
-					message = error[0];
-
-				if(form.hasOwnProperty(key)) {
-					
-					field = form[key];
-					
-					if(!angular.isObject(field.$message)) {
-						field.$message = {};
-					}
-					
-					field.$message.rejected = message;
-					
-					if (angular.isFunction(field.$validate)) {
-
-						field.$validate();
-						
-					} else {
-						// this field is a composite of input elements
-						field.$setSubmitted();
-						
-						angular.forEach(field, function(subField, subKey) {
-							if(angular.isDefined(subField) &&
-							   angular.isFunction(subField.$validate)) {
-								
-								subField.$validate();
-							}
-						});
-					}
+		angular.forEach(errors, function(error, key) {
 			
-				}else{
+			var field,
+				message = error[0];
+				
+			if(key == NON_FIELD_ERRORS) {
+				
+				form.$message = message;
+				/*
+				 * Only set current valid fields to pristine
+				 *
+				 * Any field that's been submitted with an error should
+				 * still display its error
+				 *
+				 * Any field that was valid when the form was submitted,
+				 * may have caused the NON_FIELD_ERRORS, so should be set
+				 * to pristine to prevent it's valid state being displayed
+				 */
+				form.djngSetValidFieldsPristine();
+			
+			}else if(form.hasOwnProperty(key)) {
+				
+				field = form[key];
+				field.$message = message;
+				
+				if (isField(field)) {
+
+					field.$validate();
 					
-					form.$message = message;
-					/*
-					 * Only set current valid fields to pristine
-					 *
-					 * Any field that's been submitted with an error should
-					 * still display its error
-					 *
-					 * Any field that was valid when the form was submitted,
-					 * may have caused the NON_FIELD_ERRORS, so should be set
-					 * to pristine to prevent it's valid state being displayed
-					 */
-					form.setValidFieldsPristine();
+				} else {
+					
+					// this field is a composite of input elements
+					field.$setSubmitted();
+					
+					angular.forEach(field, function(subField, subKey) {
+						
+						if(isField(subField)) {
+							subField.$validate();
+						}
+					});
 				}
+		
 			}
-		);
+		});
+	}
+	
+	function isField(field) {
+		return !!field && angular.isArray(field.$viewChangeListeners);
 	}
 	
 	function _isNotEmpty(obj) {

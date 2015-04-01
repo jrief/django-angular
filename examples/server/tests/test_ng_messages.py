@@ -27,7 +27,7 @@ class NgMessagesMixinTest(TestCase):
         email = self.dom('input[name=email]')
         self.assertEqual(len(email), 1)
         attrib = dict(email[0].attrib.items())
-        self.assertEqual(attrib.get('djng-validate-rejected'), '')
+        self.assertEqual(attrib.get('djng-rejected'), 'validator')
 
     def test_ng_messages_directive_present(self):
         messages = self.dom('ul[ng-messages]')
@@ -44,14 +44,14 @@ class NgMessagesMixinTest(TestCase):
         self.assertEqual(attrib.get('ng-message'), 'rejected')
         span = message.children()
         attrib = dict(span[0].attrib.items())
-        self.assertEqual(attrib.get('ng-bind'), 'messages_form.email.$message.rejected')
+        self.assertEqual(attrib.get('ng-bind'), 'messages_form.email.$message')
 
     def test_form_valid_ul_present(self):
         ul = self.dom('ul')
         self.assertEqual(len(ul), 2)
         attrib = dict(ul[0].attrib.items())
         self.assertEqual(attrib.get('class'), 'djng-field-errors')
-        self.assertEqual(attrib.get('ng-show'), 'messages_form.email.$dirty')
+        self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form.email.$dirty')
         self.assertIsNone(attrib.get('ng-messages'))
 
 
@@ -65,7 +65,7 @@ class NgMessagesMixinWithValidationTest(TestCase):
         email = self.dom('input[name=email]')
         self.assertEqual(len(email), 1)
         attrib = dict(email[0].attrib.items())
-        self.assertEqual(attrib.get('djng-validate-rejected'), '')
+        self.assertEqual(attrib.get('djng-rejected'), 'validator')
         self.assertEqual(attrib.get('ng-required'), 'true')
 
     def test_ng_messages_directive_present(self):
@@ -83,7 +83,7 @@ class NgMessagesMixinWithValidationTest(TestCase):
         self.assertEqual(attrib.get('ng-message'), 'rejected')
         span = message.children()
         attrib = dict(span[0].attrib.items())
-        self.assertEqual(attrib.get('ng-bind'), 'messages_form.email.$message.rejected')
+        self.assertEqual(attrib.get('ng-bind'), 'messages_form.email.$message')
 
     def test_all_correct_message_directives_present(self):
         message = self.dom('ul[ng-messages]').children()
@@ -100,7 +100,7 @@ class NgMessagesMixinWithValidationTest(TestCase):
         self.assertEqual(len(ul), 2)
         attrib = dict(ul[0].attrib.items())
         self.assertEqual(attrib.get('class'), 'djng-field-errors')
-        self.assertEqual(attrib.get('ng-show'), 'messages_form.email.$dirty')
+        self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form.email.$dirty')
         self.assertIsNone(attrib.get('ng-messages'))
 
     def test_form_valid_li_present(self):
@@ -122,5 +122,5 @@ class BoundNgMessagesMixinFormTest(TestCase):
         self.assertEqual(len(email), 1)
         attrib = dict(email[0].attrib.items())
         self.assertEqual(attrib.get('value'), 'james')
-        self.assertEqual(attrib.get('djng-error'), 'Enter a valid email address.')
-
+        self.assertEqual(attrib.get('djng-error'), 'bound-msgs-field')
+        self.assertEqual(attrib.get('djng-error-msg'), 'Enter a valid email address.')
