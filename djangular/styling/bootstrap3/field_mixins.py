@@ -12,7 +12,7 @@ class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
                 new_widget = bs3widgets.CheckboxInput(self.label)
-                new_widget.__dict__ = self.widget.__dict__
+                new_widget.__dict__, new_widget.choice_label = self.widget.__dict__, new_widget.choice_label
                 self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
                 return new_widget
 
@@ -25,7 +25,7 @@ class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.CheckboxInput):
                 new_widget = bs3widgets.CheckboxInput(self.label)
-                new_widget.__dict__ = self.widget.__dict__
+                new_widget.__dict__, new_widget.choice_label = self.widget.__dict__, new_widget.choice_label
                 self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
                 return new_widget
         if isinstance(self.widget, widgets.RadioSelect):
