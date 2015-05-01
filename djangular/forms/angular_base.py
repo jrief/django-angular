@@ -45,6 +45,14 @@ class TupleErrorList(UserList, list):
     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
     li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
+    def __init__(self, initlist=None, error_class=None):
+        super(TupleErrorList, self).__init__(initlist)
+
+        if error_class is None:
+            self.error_class = 'errorlist'
+        else:
+            self.error_class = 'errorlist {}'.format(error_class)
+
     def as_data(self):
         return ValidationError(self.data).error_list
 
