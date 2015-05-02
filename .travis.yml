@@ -33,4 +33,3 @@ before_script:
 script:
  - pushd . && cd client && grunt travis-ci && popd
  - pushd . && cd examples && $MIGRATE && ./manage.py test server && popd
-
