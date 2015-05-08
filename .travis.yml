@@ -8,6 +8,7 @@ env:
   - DJANGO=1.5.10 MIGRATE='true'
   - DJANGO=1.6.10 MIGRATE='true'
   - DJANGO=1.7.7 MIGRATE='./manage.py migrate'
+  - DJANGO=1.8 MIGRATE='./manage.py migrate'
 
 install:
   - pip install -q Django==$DJANGO
@@ -32,4 +33,3 @@ before_script:
 script:
  - pushd . && cd client && grunt travis-ci && popd
  - pushd . && cd examples && $MIGRATE && ./manage.py test server && popd
-

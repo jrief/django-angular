@@ -22,13 +22,14 @@ class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):
 
 
 class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
-    def tag(self):
+    def tag(self, attrs=None):
+        attrs = attrs or self.attrs
         name = '{0}.{1}'.format(self.name, self.choice_value)
-        tag_attrs = dict(self.attrs, type=self.input_type, name=name, value=self.choice_value)
-        if 'id' in self.attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(self.attrs['id'], self.index)
-        if 'ng-model' in self.attrs:
-            tag_attrs['ng-model'] = '{0}.{1}'.format(self.attrs['ng-model'], self.choice_value)
+        tag_attrs = dict(attrs, type=self.input_type, name=name, value=self.choice_value)
+        if 'id' in attrs:
+            tag_attrs['id'] = '{0}_{1}'.format(attrs['id'], self.index)
+        if 'ng-model' in attrs:
+            tag_attrs['ng-model'] = '{0}.{1}'.format(attrs['ng-model'], self.choice_value)
         if self.is_checked():
             tag_attrs['checked'] = 'checked'
         return format_html('<input{0} />', flatatt(tag_attrs))

@@ -23,10 +23,16 @@ You can also run unit tests:
 
 Now, point a browser onto one of
 
+* http://localhost:8000/classic_form/
 * http://localhost:8000/form_validation/
-* http://localhost:8000/model_form/
-* http://localhost:8000/model_form_validation/
+* http://localhost:8000/model_scope/
+* http://localhost:8000/combined_validation/
 * http://localhost:8000/threeway_databinding/
+
+
+Classic Form
+============
+Classic Subscribe Form with no data validation.
 
 
 Form Validation

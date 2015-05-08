@@ -16,7 +16,7 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
         """
         Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
         """
-        start_tag = format_html('<div {0}>', mark_safe(' '.join(self.field_attrs)))
+        start_tag = format_html('<div {}>', mark_safe(' '.join(self.field_attrs)))
         output = [start_tag]
         for widget in self:
             output.append(force_text(widget))
@@ -25,11 +25,16 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
 
 
 class CheckboxInput(widgets.CheckboxInput):
+    def __init__(self, label, attrs=None, check_test=None):
+        # the label is rendered by the Widget class rather than by BoundField.label_tag()
+        self.choice_label = force_text(label)
+        super(CheckboxInput, self).__init__(attrs, check_test)
+
     def render(self, name, value, attrs=None):
         attrs = attrs or self.attrs
         label_attrs = ['class="checkbox-inline"']
         if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}"', self.attrs['id']))
+            label_attrs.append(format_html('for="{}"', self.attrs['id']))
         label_for = mark_safe(' '.join(label_attrs))
         tag = super(CheckboxInput, self).render(name, value, attrs)
         return format_html('<label {0}>{1} {2}</label>', label_for, tag, self.choice_label)
@@ -70,9 +75,10 @@ class RadioChoiceInput(widgets.RadioChoiceInput):
         label_tag = super(RadioChoiceInput, self).render(name, value, choices)
         return format_html('<div class="radio">{}</div>', label_tag)
 
-    def tag(self):
-        tag_attrs = dict(self.attrs, type=self.input_type, name=self.name, value=self.choice_value)
-        if 'id' in self.attrs:
+    def tag(self, attrs=None):
+        attrs = attrs or self.attrs
+        tag_attrs = dict(attrs, type=self.input_type, name=self.name, value=self.choice_value)
+        if 'id' in attrs:
             tag_attrs['id'] = '{0}_{1}'.format(tag_attrs['id'], self.index)
         if self.is_checked():
             tag_attrs['checked'] = 'checked'
