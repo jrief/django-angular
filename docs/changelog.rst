@@ -4,9 +4,12 @@
 Release History
 ===============
 
-
-0.7.14-dev
+0.7.15-dev
 ------
+
+0.7.14
+------
+* Supporting Django-1.8.
 * The widget ``bootstrap3.widgets.CheckboxInput`` got a keyword to set the choice label of a field.
   This allows to style this kind of field individually in a Django ``Form``.
 

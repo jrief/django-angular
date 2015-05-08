@@ -5,21 +5,11 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-0.7.13 (latest)
+0.7.14 (latest)
 ---------------
-* Change for ``Form``s inheriting from ``NgFormBaseMixin`` using ``field_css_classes`` as dict:
-  CSS classes specified as default now must explicitly be added to the fields defining their own
-  CSS classes. Before this was implicit.
-* Added AngularJS directive ``djng-bind-if``. See docs for details.
-* Reverted fix for FireFox checkbox change sync issue (#135) since it manipulated the DOM. Instead
-  added ``scope.$apply()`` which fixes the issue on FF.
-* In BS3 styling, added ``CheckboxFieldRenderer`` to ``CheckboxInlineFieldRenderer`` (the default),
-  so that forms with multiple checkbox input fields can be rendered as block items instead of
-  inlines.
-* In BS3 styling, added ``RadioFieldRenderer`` to ``RadioInlineFieldRenderer`` (the default), so
-  that forms with multiple radio input fields can be rendered as block items instead of inlines.
-* Fixed 'classic form' issue whereby ``ngModel`` was not being added to ``select`` of ``textarea``
-  elements, so returned errors where not displayed.
+* Support for Django-1.8. Many Thanks to AntonOfTheWoods!
+* The widget ``bootstrap3.widgets.CheckboxInput`` got a keyword to set the choice label of a field.
+  This allows to style this kind of field individually in a Django ``Form``.
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 

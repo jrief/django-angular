@@ -351,9 +351,6 @@ djng_forms_module.directive('djngBindIf', function() {
 			return function(scope, element, attr) {
 				element.data('$binding', attr.ngBind);
 				scope.$watch(attr.djngBindIf, function ngBindWatchAction(value) {
-					// We are purposefully using == here rather than === because we want to
-					// catch when value is "null or undefined"
-					// jshint -W041
 					if (value === undefined)
 						return;
 					element.text(value);
