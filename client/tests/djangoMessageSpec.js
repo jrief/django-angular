@@ -132,7 +132,7 @@ describe('unit tests for module ng.django.messages', function() {
 		
 		it('should call individual responder with messages', function() {
 			spyOn(responder, 'addMessages');
-			djngMessagesInterceptor.setResponders(responder);
+			djngMessagesInterceptor.addResponder(responder);
 			djngMessagesInterceptor.response(response_data);
 			expect(responder.addMessages).toHaveBeenCalledWith(messages);
 		});
@@ -140,10 +140,38 @@ describe('unit tests for module ng.django.messages', function() {
 		it('should call multiple responders with messages', function() {
 			spyOn(responder, 'addMessages');
 			spyOn(responder2, 'addMessages');
-			djngMessagesInterceptor.setResponders([responder, responder2]);
+			djngMessagesInterceptor.addResponder([responder, responder2]);
 			djngMessagesInterceptor.response(response_data);
 			expect(responder.addMessages).toHaveBeenCalledWith(messages);
 			expect(responder2.addMessages).toHaveBeenCalledWith(messages);
+		});
+		
+		it('should remove specific responder', function() {
+			spyOn(responder, 'addMessages');
+			spyOn(responder2, 'addMessages');
+			djngMessagesInterceptor.addResponder([responder, responder2]);
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages).toHaveBeenCalledWith(messages);
+			expect(responder2.addMessages).toHaveBeenCalledWith(messages);
+			djngMessagesInterceptor.removeResponder(responder);
+			response_data = angular.extend({}, response)
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages.calls.count()).toBe(1);
+			expect(responder2.addMessages.calls.count()).toBe(2);
+		});
+		
+		iit('should clear all responders', function() {
+			spyOn(responder, 'addMessages');
+			spyOn(responder2, 'addMessages');
+			djngMessagesInterceptor.addResponder([responder, responder2]);
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages).toHaveBeenCalledWith(messages);
+			expect(responder2.addMessages).toHaveBeenCalledWith(messages);
+			djngMessagesInterceptor.clearResponders();
+			response_data = angular.extend({}, response)
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages.calls.count()).toBe(1);
+			expect(responder2.addMessages.calls.count()).toBe(1);
 		});
 	});
 	

@@ -47,15 +47,9 @@ function djngMessagesInterceptor(djngMessagesSignal) {
 	
 	return {
 		response: response,
-		/**
-		 * @param value An object with the following interface
-		 *
-		 * addMessages(value)
-		 */
-		setResponders(value, clear) {
-			_responders = !_responders || clear ? [] : _responders;
-			_responders = _responders.concat(value);
-		}
+		addResponder: addResponder,
+		removeResponder: removeResponder,
+		clearResponders: clearResponders
 	}
 	
 	/* ------------------- */
@@ -73,6 +67,29 @@ function djngMessagesInterceptor(djngMessagesSignal) {
 		}
 		
 		return response;
+	}
+	
+	/**
+	 * @param value An object or array of objects with the following interface
+	 *
+	 * addMessages(value)
+	 */
+	function addResponder(value) {
+		_responders = _responders || [];
+		_responders = _responders.concat(value);
+	}
+	
+	function removeResponder(value) {
+		if(_responders) {
+			var ind = _responders.indexOf(value);
+			if(ind != -1) {
+				_responders.splice(ind, 1);
+			}
+		}
+	}
+	
+	function clearResponders() {
+		_responders = null;
 	}
 	
 	function _hasMessages(response) {

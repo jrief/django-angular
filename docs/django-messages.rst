@@ -213,7 +213,7 @@ or you can add a responder to the ``djngMessagesInterceptor`` to handle new mess
 
     app.run(function(djngMessagesInterceptor, messagesModel) {
 
-        djngMessagesInterceptor.setResponders(messagesModel);
+        djngMessagesInterceptor.addResponder(messagesModel);
     });
 
 
