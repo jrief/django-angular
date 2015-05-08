@@ -164,15 +164,14 @@ The easiest way to handle messages in your Angular client, is through the ``djng
 
 This intercepts the response, checking its data for the existence of the ``django_messages`` 
 property. If it exists, it's stripped and the response data is reverted back to it's original 
-form. The remaining response data then continues and the ``django_messages`` are passed to the 
-``djngMessagesModel``.
+form.
 
 
-Responding to Model updates
----------------------------
+Responding to intercepted messages
+----------------------------------
 
-There are two ways to monitor the ``djngMessagesModel`` for change. You can either add a handler to
-the ``djngMessagesSignal`` to be notified when the ``djngMessagesModel`` has been updated:
+There are two ways to respond to intercepted messages. You can either add a handler to
+the ``djngMessagesSignal`` to be notified when messages are intercepted:
 
 .. code-block:: javascript
     
@@ -182,36 +181,46 @@ the ``djngMessagesSignal`` to be notified when the ``djngMessagesModel`` has bee
 
         djngMessagesSignal.onMessagesUpdated($scope, _messagesUpdated);
 
-        function _messagesUpdated(model) {
-            vm.messages = model.getMessages();
+        function _messagesUpdated(messages) {
+            vm.messages = messages;
         }
     });
 
-or you can watch ``djngMessagesModel.count`` for change:
+or you can add a responder to the ``djngMessagesInterceptor`` to handle new messages:
 
 .. code-block:: javascript
+
+    app.factory('messagesModel', function() {
+
+        var _messages = [];
+
+        return {
+            addMessages: function(messages) {
+                _messages = messages;
+            },
+            get messages() {
+                return _messages;
+            }
+        };
+    });
     
-    app.controller('MyCtrl', function($scope, djngMessagesModel) {
+    app.controller('MyCtrl', function(messagesModel) {
         
         var vm = this;
         
-        vm.messages = [];
-
-        $scope.$watch(function(){
-            return djngMessagesModel.count;
-        }, _messagesUpdated);
-		
-        function _messagesUpdated(newValue, oldValue) {
-            if(newValue != oldValue && newValue > 0) {
-                vm.messages = djngMessagesModel.getMessages();
-            }
-        }
+        vm.model = messagesModel;
     });
+
+    app.run(function(djngMessagesInterceptor, messagesModel) {
+
+        djngMessagesInterceptor.setResponders(messagesModel);
+    });
+
 
 .. code-block:: html
 
     <div controller="MyCtrl as ctrl">
-        <div ng-repeat="message in ctrl.messages">
+        <div ng-repeat="message in ctrl.model.messages">
             <div>{{message.type}}</div>
             <div>{{message.message}}</div>
         </div>

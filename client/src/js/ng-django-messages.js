@@ -6,16 +6,13 @@ angular
 	.constant('djngMessagesEvents', djngMessagesEvents())
 	.factory('djngMessagesSignal', djngMessagesSignal)
 	.factory('djngMessagesInterceptor', djngMessagesInterceptor)
-	.factory('djngMessagesModel', djngMessagesModel);
 
 
 
 function djngMessagesEvents() {
 	
 	return Object.freeze({
-		
-		MESSAGES_UPDATED: 'djngMessagesEvents.MESSAGES_UPDATED',
-		MESSAGES_CLEARED: 'djngMessagesEvents.MESSAGES_CLEARED'
+		MESSAGES_UPDATED: 'djngMessagesEvents.MESSAGES_UPDATED'
 	});
 }
 
@@ -25,116 +22,93 @@ function djngMessagesSignal($rootScope, djngMessagesEvents) {
 	return {
 		
 		messagesUpdated: messagesUpdated,
-		onMessagesUpdated: onMessagesUpdated,
-		messagesCleared: messagesCleared,
-		onMessagesCleared: onMessagesCleared
+		onMessagesUpdated: onMessagesUpdated
 	};
 	
 	/* --------------------- */
 	
-	function messagesUpdated(model) {
+	function messagesUpdated(messages) {
 		
-		$rootScope.$broadcast(djngMessagesEvents.MESSAGES_UPDATED, model);
+		$rootScope.$broadcast(djngMessagesEvents.MESSAGES_UPDATED, messages);
 	}
 	
 	function onMessagesUpdated(scope, handler) {
 		
-		scope.$on(djngMessagesEvents.MESSAGES_UPDATED, function (event, model) {
-            handler(model);
-        });
-	}
-	
-	function messagesCleared() {
-		
-		$rootScope.$broadcast(djngMessagesEvents.MESSAGES_CLEARED);
-	}
-	
-	function onMessagesCleared(scope, handler) {
-		
-		scope.$on(djngMessagesEvents.MESSAGES_CLEARED, function (event) {
-            handler();
+		scope.$on(djngMessagesEvents.MESSAGES_UPDATED, function (event, messages) {
+            handler(messages);
         });
 	}
 }
 
 
-function djngMessagesInterceptor(djngMessagesModel) {
+function djngMessagesInterceptor(djngMessagesSignal) {
+	
+	var _responders;
 	
 	return {
-		response: response
+		response: response,
+		/**
+		 * @param value An object with the following interface
+		 *
+		 * addMessages(value)
+		 */
+		setResponders(value, clear) {
+			_responders = !_responders || clear ? [] : _responders;
+			_responders = _responders.concat(value);
+		}
 	}
 	
 	/* ------------------- */
 	
 	function response(response) {
 
-		if(containsMessages(response)) {
+		if(_hasMessages(response)) {
 			
-			djngMessagesModel.addMessages(response.data.django_messages);
+			var messages = response.data.django_messages;
+			
+			_processResponders(messages);
+			_dispatchSignal(messages);
+			
 			response.data = response.data.data;
 		}
 		
 		return response;
 	}
 	
-	function containsMessages(response) {
+	function _hasMessages(response) {
 		
-		return !!(contentTypeIsJson(response) &&
-				  isNotArray(response.data) &&
-				  !!(response.data.django_messages));
+		return _contentTypeIsJson(response) &&
+			   _dataIsNotArray(response.data) &&
+			   _dataContainsMessages(response.data);
 	}
 	
-	function contentTypeIsJson(response) {
-		return response.headers('content-type') == 'application/json';
+	function _contentTypeIsJson(response) {
+		return response.headers('content-type') === 'application/json';
 	}
 	
-	function isNotArray(obj) {
-		return !(obj.constructor === Array);
+	function _dataIsNotArray(data) {
+		return !angular.isArray(data);
 	}
-}
+	
+	function _dataContainsMessages(data) {
+		return !!data.django_messages;
+	}
+	
+	function _processResponders(messages) {
 
-
-function djngMessagesModel(djngMessagesSignal) {
-	
-	var _api,
-		_messages;
-	
-	return _api = {
+		if(_responders) {
 			
-		addMessages: addMessages,
-		getMessages: getMessages,
-		count: 0	
-	};
-	
-	/* -------------- */
-	
-	function addMessages(arr) {
-		
-		_messages = _messages || [];
-		_messages = _messages.concat(arr);
-
-		_api.count = _messages.length;
-		
-		djngMessagesSignal.messagesUpdated(_api);
-	}
-	
-	function getMessages(clear) {
-		
-		if(!_messages)
-			return [];
-		
-		if(clear || angular.isUndefined(clear)) {
-			
-			var msgs = _messages;
-			_messages = [];
-			_api.count = 0;
-			
-			djngMessagesSignal.messagesCleared();
-			
-			return msgs;
+			var i = 0,
+				len = _responders.length;
+				
+			for(; i < len; i++) {
+				_responders[i].addMessages(messages);
+			}
 		}
-		
-		return _messages.concat();
+	}
+	
+	function _dispatchSignal(messages) {
+		djngMessagesSignal.messagesUpdated(messages);
 	}
 }
 

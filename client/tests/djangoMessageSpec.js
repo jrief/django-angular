@@ -10,48 +10,30 @@ describe('unit tests for module ng.django.messages', function() {
 		
 		var signal,
 			djngMessagesEvents,
-			djngMessagesModel,
-			$rootScope;
+			$rootScope,
+			messages = [{title:'title'}];
 
-		beforeEach(inject(function(_$rootScope_, _djngMessagesSignal_, _djngMessagesEvents_, _djngMessagesModel_) {
+		beforeEach(inject(function(_$rootScope_, _djngMessagesSignal_, _djngMessagesEvents_) {
 			$rootScope = _$rootScope_;
 			signal = _djngMessagesSignal_;
 			djngMessagesEvents = _djngMessagesEvents_;
-			djngMessagesModel = _djngMessagesModel_;
 		}));
 
 		it('should broadcast a signal when messagesUpdated called', function() {
 			spyOn($rootScope, '$broadcast');
-			signal.messagesUpdated(djngMessagesModel);
-			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_UPDATED, djngMessagesModel);
+			signal.messagesUpdated(messages);
+			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_UPDATED, messages);
 		});
 
 		it('should notify any interested scopes on messages update', function() {
 			var scope = $rootScope.$new();
-			var model = null;
-			var handler = function(mdl) {
-				model = mdl;
+			var result = null;
+			var handler = function(msgs) {
+				result = msgs;
 			}
 			signal.onMessagesUpdated(scope, handler);
-			signal.messagesUpdated(djngMessagesModel);
-			expect(model).toBe(djngMessagesModel);
-		});
-		
-		it('should broadcast a signal when messagesCleared called', function() {
-			spyOn($rootScope, '$broadcast');
-			signal.messagesCleared(djngMessagesModel);
-			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_CLEARED);
-		});
-		
-		it('should notify any interested scopes on messages cleared', function() {
-			var scope = $rootScope.$new();
-			var called = false;
-			var handler = function() {
-				called = true;
-			}
-			signal.onMessagesCleared(scope, handler);
-			signal.messagesCleared();
-			expect(called).toBe(true);
+			signal.messagesUpdated(messages);
+			expect(result).toBe(messages);
 		});
 	
 	});
@@ -122,167 +104,78 @@ describe('unit tests for module ng.django.messages', function() {
 	});
 	
 	
-	describe('django messages model', function() {
+	describe('django messages interceptor responders', function(){
 		
-		var djngMessagesModel;
-		
-		beforeEach(inject(function(_djngMessagesModel_) {
-			djngMessagesModel = _djngMessagesModel_;
+		var djngMessagesInterceptor,
+			response_data,
+			messages = [{}],
+			response = {
+				data: {
+					data: {},
+					django_messages: messages
+				},
+				headers: function() {
+					return 'application/json';
+				}
+			},
+			responder = {
+				addMessages: function(messages) {}
+			},
+			responder2 = {
+				addMessages: function(messages) {}
+			};
+
+		beforeEach(inject(function(_djngMessagesInterceptor_) {
+			djngMessagesInterceptor = _djngMessagesInterceptor_;
+			response_data = angular.extend({}, response); // make copy of response so that original can be re
 		}));
 		
-		it('should increase count when messages added', function() {
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect(djngMessagesModel.count).toBe(1);
+		it('should call individual responder with messages', function() {
+			spyOn(responder, 'addMessages');
+			djngMessagesInterceptor.setResponders(responder);
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages).toHaveBeenCalledWith(messages);
 		});
 		
-		it('should increase count when new messages added', function() {
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect(djngMessagesModel.count).toBe(1);
-			djngMessagesModel.addMessages([{message:'two'}]);
-			expect(djngMessagesModel.count).toBe(2);
+		it('should call multiple responders with messages', function() {
+			spyOn(responder, 'addMessages');
+			spyOn(responder2, 'addMessages');
+			djngMessagesInterceptor.setResponders([responder, responder2]);
+			djngMessagesInterceptor.response(response_data);
+			expect(responder.addMessages).toHaveBeenCalledWith(messages);
+			expect(responder2.addMessages).toHaveBeenCalledWith(messages);
 		});
-		
-		it('should clear count when messages retrieved', function() {
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect(djngMessagesModel.count).toBe(1);
-			djngMessagesModel.getMessages();
-			expect(djngMessagesModel.count).toBe(0);
-		});
-		
-		it('should clear count when messages retrieved with true arg', function() {
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect(djngMessagesModel.count).toBe(1);
-			djngMessagesModel.getMessages(true);
-			expect(djngMessagesModel.count).toBe(0);
-		});
-		
-		it('should not clear count when messages retrieved with false arg', function() {
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect(djngMessagesModel.count).toBe(1);
-			djngMessagesModel.getMessages(false);
-			expect(djngMessagesModel.count).toBe(1);
-		});
-		
-		it('should allow a single message object to be added', function() {
-			djngMessagesModel.addMessages({message:'one'});
-			expect(djngMessagesModel.count).toBe(1);
-		});
-		
-		it('should allow multiple messages to be added in an array', function() {
-			djngMessagesModel.addMessages([{message:'one'}, {message:'two'}, {message:'three'}]);
-			expect(djngMessagesModel.count).toBe(3);
-		});
-		
-		it('should allow added messages to be retrived', function() {
-			var msg = {message:'one'};
-			djngMessagesModel.addMessages([msg]);
-			expect(djngMessagesModel.count).toBe(1);
-			var res = djngMessagesModel.getMessages();
-			expect(res[0]).toBe(msg);
-			expect(djngMessagesModel.count).toBe(0);
-		});
-		
-		it('should return multiple messages if they exist', function() {
-			var msg_1 = {message:'one'},
-				msg_2 = {message:'two'};
-				
-			djngMessagesModel.addMessages([msg_1]);
-			expect(djngMessagesModel.count).toBe(1);
-			djngMessagesModel.addMessages([msg_2]);
-			expect(djngMessagesModel.count).toBe(2);
-			var res = djngMessagesModel.getMessages();
-			expect(res[0]).toBe(msg_1);
-			expect(res[1]).toBe(msg_2);
-			expect(djngMessagesModel.count).toBe(0);
-		});
-		
-		it('should allow messages to be retrieved multiple times when not cleared', function() {
-			var msg = {message:'one'};
-			djngMessagesModel.addMessages(msg);
-			expect(djngMessagesModel.count).toBe(1);
-			expect(djngMessagesModel.getMessages(false)[0]).toBe(msg);
-			expect(djngMessagesModel.getMessages(false)[0]).toBe(msg);
-			expect(djngMessagesModel.getMessages(false)[0]).toBe(msg);
-			expect(djngMessagesModel.count).toBe(1);
-		});
-		
 	});
 	
 	
-	describe('django messages model and signal integration', function(){
+	describe('django messages interceptor and signal integration', function(){
 		
 		var signal,
 			djngMessagesEvents,
-			djngMessagesModel,
-			$rootScope;
-
-		beforeEach(inject(function(_$rootScope_, _djngMessagesSignal_, _djngMessagesEvents_, _djngMessagesModel_) {
-			$rootScope = _$rootScope_;
-			signal = _djngMessagesSignal_;
-			djngMessagesEvents = _djngMessagesEvents_;
-			djngMessagesModel = _djngMessagesModel_;
-		}));
-		
-		it('should broadcast an updated event when new messages added', function() {
-			spyOn($rootScope, '$broadcast');
-			djngMessagesModel.addMessages([{message:'one'}]);
-			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_UPDATED, djngMessagesModel);
-		});
-		
-		it('should broadcast a cleared event when messages retrieved and cleared', function() {
-			spyOn($rootScope, '$broadcast');
-			djngMessagesModel.addMessages([{message:'one'}]);
-			djngMessagesModel.getMessages();
-			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_CLEARED);
-			expect(djngMessagesModel.count).toBe(0);
-		});
-		
-		it('should not broadcast a cleared event if no messages exist', function() {
-			spyOn($rootScope, '$broadcast');
-			djngMessagesModel.getMessages();
-			expect($rootScope.$broadcast.calls.count()).toBe(0);
-		});
-		
-		it('should not broadcast a cleared event if retrieval arg false', function() {
-			spyOn($rootScope, '$broadcast');
-			djngMessagesModel.addMessages([{message:'one'}]);
-			djngMessagesModel.getMessages(false);
-			expect($rootScope.$broadcast.calls.count()).toBe(1);
-			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_UPDATED, djngMessagesModel);
-		});
-	});
-	
-	
-	describe('django messages interceptor and django messages model integration', function() {
-		
-		var djngMessagesInterceptor,
-			djngMessagesModel,
-			message = {message: 'one'},
+			djngMessagesInterceptor,
+			$rootScope,
+			messages = [{}],
 			response = {
 				data: {
-					data: { my_data: 'blah' },
-					django_messages: [message]
+					data: {},
+					django_messages: messages
 				},
 				headers: function() {
 					return 'application/json';
 				}
 			};
-		
-		beforeEach(inject(function(_djngMessagesInterceptor_, _djngMessagesModel_) {
+
+		beforeEach(inject(function(_$rootScope_, _djngMessagesSignal_, _djngMessagesEvents_, _djngMessagesInterceptor_) {
+			$rootScope = _$rootScope_;
+			signal = _djngMessagesSignal_;
+			djngMessagesEvents = _djngMessagesEvents_;
 			djngMessagesInterceptor = _djngMessagesInterceptor_;
-			djngMessagesModel = _djngMessagesModel_;
 		}));
 		
-		it('should add message to django messages model', function() {
+		it('should broadcast an updated event when new messages added', function() {
+			spyOn($rootScope, '$broadcast');
 			djngMessagesInterceptor.response(response);
-			expect(djngMessagesModel.count).toBe(1);
-			expect(djngMessagesModel.getMessages()[0]).toBe(message);
-		});
-		
-		it('should not add message to django messages model', function() {
-			response.data = {};
-			djngMessagesInterceptor.response(response);
-			expect(djngMessagesModel.count).toBe(0);
+			expect($rootScope.$broadcast).toHaveBeenCalledWith(djngMessagesEvents.MESSAGES_UPDATED, messages);
 		});
 	});
 

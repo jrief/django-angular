@@ -15,9 +15,9 @@ function MyFormCtrl($scope, $http, djangoForm, djngMessagesSignal, toastr) {
 
     djngMessagesSignal.onMessagesUpdated($scope, _messagesUpdated);
 
-    function _messagesUpdated(model) {
-        var messages = model.getMessages(),
-            i = 0,
+    function _messagesUpdated(messages) {
+	
+        var i = 0,
             len = messages.length,
             message;
 		
