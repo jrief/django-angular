@@ -1,0 +1,52 @@
+#toast-container > div {
+    opacity: 1;
+    -ms-filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  	filter: alpha(opacity=100);
+}
+
+#toast-container > .alert {
+    background-image: none !important;
+}
+
+#toast-container > .alert:before {
+	position: fixed;
+	font-family: FontAwesome;
+	font-size: 24px;
+	/*line-height: 18px;*/
+	float: left;
+	color: #FFF;
+	padding-right: 0.5em;
+	margin: auto 0.5em auto -1.5em;
+}
+
+#toast-container > .alert-info:before {
+	content: "\f05a";
+}
+#toast-container > .alert-info:before,
+#toast-container > .alert-info {
+	color: #31708f;
+}
+
+#toast-container > .alert-success:before {
+	content: "\f00c";
+}
+#toast-container > .alert-success:before,
+#toast-container > .alert-success {
+	color: #3c763d;
+}
+
+#toast-container > .alert-warning:before {
+	content: "\f06a";
+}
+#toast-container > .alert-warning:before,
+#toast-container > .alert-warning {
+	color: #8a6d3b;
+}
+
+#toast-container > .alert-danger:before {
+	content: "\f071";
+}
+#toast-container > .alert-danger:before,
+#toast-container > .alert-danger {
+	color: #a94442;
+}

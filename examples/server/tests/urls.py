@@ -70,7 +70,7 @@ class TestAngularTagView(View):
 
 
 urlpatterns = patterns('',
-    url(r'^sub_methods/', include(sub_patterns, namespace='submethods')),
+    url(r'^sub_methods/', include(sub_patterns, namespace='submethods', app_name='submethods_app')), # app_name added for messages middleware testing 
     url(r'^straight_methods/$', TestCSRFValueView.as_view(), name='straightmethods'),
     url(r'^url_resolvers/$', TestUrlResolverTagsView.as_view(), name='urlresolvertags'),
     url(r'^angular_tag/$', TestAngularTagView.as_view(), name='angulartags'),

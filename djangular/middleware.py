@@ -1,6 +1,18 @@
 from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.utils.decorators import decorator_from_middleware
+
+from djangular.core.ajax_messages import process_response, is_not_valid_type
+
+DJANGULAR_MESSAGES_EXCLUDE_URLS = getattr(
+    settings,
+    "DJANGULAR_MESSAGES_EXCLUDE_URLS",
+    ()
+)
+
+EXEMPT = list(DJANGULAR_MESSAGES_EXCLUDE_URLS)
+
+
 
 
 class DjangularUrlMiddleware(object):
@@ -62,3 +74,58 @@ class DjangularUrlMiddleware(object):
             for middleware_path in reversed(settings.MIDDLEWARE_CLASSES):
                 view = decorator_from_middleware(self._import_dotted_path(middleware_path))(view)
             return view(request, *args, **kwargs)
+
+
+"""
+Exclusion method adapted from
+https://github.com/pydanny/dj-stripe/blob/master/djstripe/middleware.py
+"""
+class AjaxDjangoMessagesMiddleware(object):
+    """
+    Rules:
+
+        * "(app_name)" means everything from this app is exempt
+        * "[namespace]" means everything with this name is exempt
+        * "namespace:name" means this namespaced URL is exempt
+        * "name" means this URL is exempt
+        * If settings.DEBUG is True, then django-debug-toolbar is exempt
+
+    Example::
+
+        DJANGULAR_MESSAGES_EXCLUDE_URLS = (
+            "(myapp)",  # anything in the myapp URLConf
+            "[blogs]",  # Anything in the blogs namespace
+            "accounts:detail",  # An AccountDetail view you wish to exclude
+            "home",  # Site homepage
+        )
+    """
+    def process_response(self, request, response):
+        if is_not_valid_type(request, response):
+            return response
+        if self._is_debug_toolbar(request.path):
+            return response
+        if self._is_exempt(request.path):
+            return response
+        return process_response(request, response)
+
+    def _is_debug_toolbar(self, path):
+        return settings.DEBUG and path.startswith("/__debug__")
+
+    def _is_exempt(self, path):
+        is_match = False
+        match = resolve(path)
+
+        if "({0})".format(match.app_name) in EXEMPT:
+            is_match = True
+
+        if "[{0}]".format(match.namespace) in EXEMPT:
+            is_match = True
+
+        if "{0}:{1}".format(match.namespace, match.url_name) in EXEMPT:
+            is_match = True
+
+        if match.url_name in EXEMPT:
+            is_match = True
+        
+        return is_match
+
