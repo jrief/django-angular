@@ -41,6 +41,9 @@ class DjangularUrlMiddleware(object):
 
             # rebuild the request object with a different environ
             request.environ['PATH_INFO'] = url
-            request.environ['QUERY_STRING'] = ''
+            query = request.GET.copy()
+            query.pop('djng_url_name', None)
+            query.pop('djng_url_args', None)
+            request.environ['QUERY_STRING'] = query.urlencode()
             new_request = WSGIRequest(request.environ)
             request.__dict__ = new_request.__dict__
