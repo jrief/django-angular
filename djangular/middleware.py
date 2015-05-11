@@ -1,6 +1,7 @@
-from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
-from django.utils.decorators import decorator_from_middleware
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from django.core.handlers.wsgi import WSGIRequest
+from django.core.urlresolvers import reverse
 
 
 class DjangularUrlMiddleware(object):
@@ -16,20 +17,6 @@ class DjangularUrlMiddleware(object):
     def __init__(self, urlconf=None):
         self.urlconf = urlconf
         super(DjangularUrlMiddleware, self).__init__()
-
-    @staticmethod
-    def _import_dotted_path(path):
-        """
-        Imports dotted path, e.g. django.middleware.common.CommonMiddleware
-        There are some django utils for this (import_string, import_by_path), but only available in 1.6 and 1.7
-        :param path: dotted path
-        :return: imported class
-        """
-        path = path.split('.')
-        package_path = '.'.join(path[:-1])
-        module = path[-1]
-        package = __import__(package_path, fromlist=[module])
-        return getattr(package, module)
 
     def process_request(self, request):
         """
@@ -50,15 +37,10 @@ class DjangularUrlMiddleware(object):
                     url_kwargs[param[15:]] = request.GET[param]  # [15:] to remove 'djng_url_kwarg' prefix
 
             url = reverse(url_name, args=url_args, kwargs=url_kwargs, urlconf=self.urlconf)
-            view, args, kwargs = resolve(url, urlconf=self.urlconf)
+            assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
-            # Set to real path, otherwise this url resolving will be ran again when calling
-            # teh actual view, resulting in infinite recursion
-            request.path = url
-
-            # Run through all the middlewares when calling actual view
-            # MIDDLEWARE_CLASSES must be reversed to maintain correct order of middlewares execution
-            # (view function is wrapped with middleware decorators, first one added is executed as last)
-            for middleware_path in reversed(settings.MIDDLEWARE_CLASSES):
-                view = decorator_from_middleware(self._import_dotted_path(middleware_path))(view)
-            return view(request, *args, **kwargs)
+            # rebuild the request object with a different environ
+            request.environ['PATH_INFO'] = url
+            request.environ['QUERY_STRING'] = ''
+            new_request = WSGIRequest(request.environ)
+            request.__dict__ = new_request.__dict__
