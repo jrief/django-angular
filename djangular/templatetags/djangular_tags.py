@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 import json
 import warnings
 from django.template import Library
-from django.template.base import Node, NodeList, TextNode, VariableNode, TemplateSyntaxError
+from django.template.base import Node, NodeList, TextNode, VariableNode
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
 from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
@@ -53,6 +53,7 @@ def djng_urls(context, *namespaces):
                   "loading url patterns anymore. djangoUrl service kept the same interface, refer to documentation for "
                   "details.",
                   DeprecationWarning)
+
     def _replace_namespace(n):
         if n == 'SELF':
             request = context.get('request')
