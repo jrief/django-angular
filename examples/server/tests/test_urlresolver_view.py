@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import patterns, url, include
+from django.core.urlresolvers import reverse
+from django.http import QueryDict
 from django.test import TestCase, RequestFactory
 from djangular.middleware import DjangularUrlMiddleware
+
+TEST_URLCONF_PATH = 'server.tests.test_urlresolver_view'
 
 
 def dummy_view(request, *args, **kwargs):
@@ -44,55 +48,59 @@ class TestUrlResolverView(TestCase):
         self.kwarg_prefix = 'djng_url_kwarg_'
         super(TestUrlResolverView, self).setUp()
 
-    def test_request_path(self):
+    def test_resolver_path_resolution(self):
+        url_name = 'home'
         data = {
-            self.url_name_arg: 'home'
+            self.url_name_arg: url_name
         }
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
-        response = self.middleware.process_request(request)
-        self.assertEqual(response['request'].path, '/')
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, reverse('home', urlconf=TEST_URLCONF_PATH))
 
-    def test_middleware_return_none(self):
+    def test_resolver_path_resolution_include(self):
+        url_name = 'include1:home2'
+        data = {
+            self.url_name_arg: url_name
+        }
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, reverse(url_name, urlconf=TEST_URLCONF_PATH))
+
+    def test_middleware_request_not_modified(self):
         """
-        If request.path != <DjangularUrlMiddleware.ANGULAR_REVERSE> return None, so request is processed normally
+        If request.path != <DjangularUrlMiddleware.ANGULAR_REVERSE> request must not be modified
         """
-        request = self.factory.get('/some/other/url/')
-        response = self.middleware.process_request(request)
-        self.assertEqual(response, None)
+        path = '/some/other/url'
+        request = self.factory.get(path)
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, path)
 
-    def test_resolver_view_resolution(self):
-        data = {
-            self.url_name_arg: 'home'
-        }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
-        response = self.middleware.process_request(request)
-        self.assertEqual(response['name'], 'DummyView')
-
-    def test_view_resolution_include(self):
-        data = {
-            self.url_name_arg: 'include1:home2'
-        }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
-        response = self.middleware.process_request(request)
-        self.assertEqual(response['name'], 'DummyView2')
-
-    def test_args(self):
+    def test_get_args(self):
+        """
+        GET parameters for url resolution should be removed, others kept
+        """
+        args = {'test': '123'}
         data = {
             self.url_name_arg: 'home_args',
-            self.args_prefix: [1, 2, 3]
+            self.args_prefix: [1, 2, 3],
         }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
-        response = self.middleware.process_request(request)
-        self.assertEqual((u'1', u'2', u'3'), response['args'])
+        data.update(args)
+        query_dict = QueryDict('', mutable=True)
+        query_dict.update(args)
 
-    def test_kwargs(self):
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.GET, query_dict)
+
+    def test_kwargs_resolution(self):
         data = {
             self.url_name_arg: 'home_kwargs',
             self.kwarg_prefix + 'id': 1,
             self.kwarg_prefix + 'id2': 2,
             self.kwarg_prefix + 'id3': 3
         }
-        expected_view_kwargs = {'id2': u'2', 'id': u'1', 'id3': u'3'}
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
-        response = self.middleware.process_request(request)
-        self.assertEqual(expected_view_kwargs, response['kwargs'])
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, reverse('home_kwargs',
+                                               kwargs={'id': 1, 'id2': 2, 'id3': 3},
+                                               urlconf=TEST_URLCONF_PATH))
