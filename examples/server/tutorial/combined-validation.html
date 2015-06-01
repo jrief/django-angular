@@ -8,6 +8,6 @@
 <form name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl">
     {% csrf_token %}
     {{ form.as_div }}
-    <button type="submit" class="btn btn-primary">Submit via Post</button>
-    <button type="button" class="btn btn-primary" ng-click="submit()">Submit via Ajax</button>
+    <button type="submit" ng-disabled="{{ form.form_name }}.$invalid" class="btn btn-primary">Submit via Post</button>
+    <button type="button" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()" class="btn btn-primary">Submit via Ajax</button>
 </form>

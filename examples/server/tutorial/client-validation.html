@@ -5,5 +5,5 @@
 <form name="{{ form.form_name }}" method="post" action="." novalidate>
     {% csrf_token %}
     {{ form.as_div }}
-    <button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe</button>
+    <button type="submit" ng-disabled="{{ form.form_name }}.$invalid" class="btn btn-primary">Subscribe</button>
 </form>
