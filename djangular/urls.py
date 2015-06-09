@@ -1,6 +1,11 @@
+import warnings
 from django.core.urlresolvers import reverse
 from django.conf.urls import patterns, url
 from django.http.response import HttpResponsePermanentRedirect
+
+
+warnings.warn("Reversing URL's using urlpatterns is deprecated. Please use the middleware instead",
+    DeprecationWarning)
 
 
 def angular_reverse(request, *args, **kwargs):
