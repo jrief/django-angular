@@ -117,7 +117,7 @@ class NgModelFormMixinTest(TestCase):
                 if identifier == 'sub2.radio_choices':
                     self.assertFalse(input_field.attrib.get('ng-model'))
                 elif identifier == 'check_multi':
-                    model = '%s.%s' % (self.unbound_form.scope_prefix, input_field.name)
+                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, input_field.name)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 else:
                     model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, identifier)
