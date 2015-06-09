@@ -10,13 +10,14 @@
         - djangoUrl.reverse('home', [2]);
      */
     var djngUrls = angular.module('ng.django.urls', []);
-    var reverseUrl = '/angular/reverse/';
 
     djngUrls.service('djangoUrl', function () {
         /*
          Functions from angular.js source, not public available
          See: https://github.com/angular/angular.js/issues/7429
          */
+        
+        this.reverseUrl = '/angular/reverse/';
         function forEachSorted(obj, iterator, context) {
             var keys = sortedKeys(obj);
             for (var i = 0; i < keys.length; i++) {
@@ -50,7 +51,7 @@
 
         // Service public interface
         this.reverse = function (url_name, args_or_kwargs) {
-            var url = buildUrl(reverseUrl, {djng_url_name: url_name});
+            var url = buildUrl(this.reverseUrl, {djng_url_name: url_name});
             /*
              Django wants arrays in query params encoded the following way: a = [1,2,3] -> ?a=1&a=2$a=3
              buildUrl function doesn't natively understand lists in params, so in case of a argument array
