@@ -75,7 +75,7 @@ class NgModelFormMixin(NgFormBaseMixin):
         ng = {
             'name': bound_field.name,
             'identifier': identifier,
-            'model': self.scope_prefix and ('%s.%s' % (self.scope_prefix, identifier)) or identifier
+            'model': self.scope_prefix and ('%s[\'%s\']' % (self.scope_prefix, identifier)) or identifier
         }
         if hasattr(self, 'Meta') and bound_field.name in getattr(self.Meta, 'ng_models', []):
             attrs['ng-model'] = ng['model']
