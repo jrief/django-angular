@@ -82,7 +82,7 @@ class NgFormValidationWithModelMixinTest(TestCase):
         first_name = self.dom('input[name=first_name]')
         self.assertEqual(len(first_name), 1)
         attrib = dict(first_name[0].attrib.items())
-        self.assertDictContainsSubset({'ng-model': 'subscribe_data.first_name'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'subscribe_data[\'first_name\']'}, attrib)
 
     def test_decimal_field(self):
         weight = self.dom('input[name=weight]')
@@ -94,7 +94,7 @@ class NgFormValidationWithModelMixinTest(TestCase):
             self.assertDictContainsSubset({'type': 'number'}, attrib)
         self.assertDictContainsSubset({'min': '42'}, attrib)
         self.assertDictContainsSubset({'max': '95'}, attrib)
-        self.assertDictContainsSubset({'ng-model': 'subscribe_data.weight'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'subscribe_data[\'weight\']'}, attrib)
 
     def test_float_field(self):
         height = self.dom('input[name=height]')
@@ -106,4 +106,4 @@ class NgFormValidationWithModelMixinTest(TestCase):
             self.assertDictContainsSubset({'type': 'number'}, attrib)
             self.assertDictContainsSubset({'min': '1.48'}, attrib)
             self.assertDictContainsSubset({'max': '1.95'}, attrib)
-        self.assertDictContainsSubset({'ng-model': 'subscribe_data.height'}, attrib)
+        self.assertDictContainsSubset({'ng-model': 'subscribe_data[\'height\']'}, attrib)

@@ -120,7 +120,7 @@ class NgModelFormMixinTest(TestCase):
                     model = '%s.%s' % (self.unbound_form.scope_prefix, input_field.name)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 else:
-                    model = '%s.%s' % (self.unbound_form.scope_prefix, identifier)
+                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement):
                     if input_field.type == 'radio':
