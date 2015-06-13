@@ -6,17 +6,31 @@
      Usage: djangoUrl.reverse(url_name, args_or_kwargs)
 
      Examples:
-        - djangoUrl.reverse('home', [user_id: 2]);
-        - djangoUrl.reverse('home', [2]);
+     - djangoUrl.reverse('home', [user_id: 2]);
+     - djangoUrl.reverse('home', [2]);
      */
     var djngUrls = angular.module('ng.django.urls', []);
-    var reverseUrl = '/angular/reverse/';
 
-    djngUrls.service('djangoUrl', function () {
+    djngUrls.provider('djangoUrl', function djangoUrlProvider() {
+            var reverseUrl = '/angular/reverse/';
+
+            this.setReverseUrl = function (url) {
+                reverseUrl = url;
+            };
+
+            this.$get = function () {
+                return new djangoUrl(reverseUrl);
+            }
+        }
+    );
+
+    var djangoUrl = function (reverseUrl) {
         /*
-         Functions from angular.js source, not public available
-         See: https://github.com/angular/angular.js/issues/7429
+         Url-reversing service
          */
+
+        //Functions from angular.js source, not public available
+        //See: https://github.com/angular/angular.js/issues/7429
         function forEachSorted(obj, iterator, context) {
             var keys = sortedKeys(obj);
             for (var i = 0; i < keys.length; i++) {
@@ -75,16 +89,16 @@
                 params['djng_url_kwarg_' + key] = value;
             });
             /*
-            If params is empty (no kwargs passed) return url immediately
-            Calling buildUrl with empty params object adds & or ? at the end of query string
-            E.g. buldUrl('/url/djng_url_name=home', {}) -> /url/djng_url_name=home&
+             If params is empty (no kwargs passed) return url immediately
+             Calling buildUrl with empty params object adds & or ? at the end of query string
+             E.g. buldUrl('/url/djng_url_name=home', {}) -> /url/djng_url_name=home&
              */
-            if (angular.equals(params, {})){ // If params is empty, no kwargs passed.
+            if (angular.equals(params, {})) { // If params is empty, no kwargs passed.
                 return url;
             }
             return buildUrl(url, params);
         };
-    });
+    };
 
 }(window.angular));
 

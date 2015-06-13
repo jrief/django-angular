@@ -1,12 +1,44 @@
 'use strict';
 
 describe('unit tests for module ng.django.url', function () {
+    var base_url = '/angular/reverse/';
+    var arg_prefix = 'djng_url_args';
+    var kwarg_prefix = 'djng_url_kwarg_';
+    var url_name_arg = 'djng_url_name';
 
-    describe('test urls', function () {
-        var base_url = '/angular/reverse/';
-        var arg_prefix = 'djng_url_args';
-        var kwarg_prefix = 'djng_url_kwarg_';
-        var url_name_arg = 'djng_url_name';
+    describe("test djangoUrlProvider", function () {
+        var custom_url = 'example.com/test/';
+        var provider;
+
+        beforeEach(function () {
+
+            var fakeModule = angular.module('ng.django.urls.config', function () {
+            });
+            fakeModule.config(function (djangoUrlProvider) {
+                provider = djangoUrlProvider;
+            });
+
+            module('ng.django.urls', 'ng.django.urls.config');
+
+            // Kickstart the injectors previously registered
+            // with calls to angular.mock.module
+            inject(function () {
+            });
+        });
+        describe("Test provider custom url config", function () {
+            it('tests the providers internal function', function () {
+
+                expect(provider).not.toBeUndefined();
+                provider.setReverseUrl(custom_url);
+
+                var reverser = provider.$get();
+                expect(reverser.reverse('home')).toBe(custom_url + '?' + url_name_arg + '=home');
+
+            });
+        });
+    });
+
+    describe('test djangoUrl url resolving', function () {
 
         beforeEach(function () {
             module('ng.django.urls');
