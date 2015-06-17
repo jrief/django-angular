@@ -6,6 +6,7 @@ Release History
 
 0.7.15-dev
 ------
+* Simplified middleware for reversing the URL.
 
 0.7.14
 ------
