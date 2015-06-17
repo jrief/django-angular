@@ -128,6 +128,21 @@ or with kwargs:
 	$http.get(djangoUrl.reverse('api:articles', {'id': 1}))
 
 
+Additional notes
+----------------
+
+If you want to override reverse url, e.g. if django app isn't on top level or you want to call another server
+it can be set in ``.config()`` stage:
+
+.. code-block:: javascript
+
+	myApp.config(function(djangoUrlProvider) {
+	  djangoUrlProvider.setReverseUrl('custom.com/angular/reverse/');
+	});
+
+.. warning:: The path of request you want to reverse must still remain ``/angular/reverse/`` on django server,
+			 so that middleware knows it should be reversed.
+
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
 .. _URL template tag : https://docs.djangoproject.com/en/dev/ref/templates/builtins/#url
