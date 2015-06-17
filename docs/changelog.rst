@@ -4,7 +4,7 @@
 Release History
 ===============
 
-0.7.15-dev
+0.7.15
 ------
 * Simplified middleware for reversing the URL.
 * Reversing url in ``djangoUrl`` service can now be overriden.
