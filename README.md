@@ -5,11 +5,10 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-0.7.14 (latest)
+0.7.15 (latest)
 ---------------
-* Support for Django-1.8. Many Thanks to AntonOfTheWoods!
-* The widget ``bootstrap3.widgets.CheckboxInput`` got a keyword to set the choice label of a field.
-  This allows to style this kind of field individually in a Django ``Form``.
+* Simplified middleware for reversing the URL.
+* Reversing url in djangoUrl service can now be overriden.
 
 [Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 
