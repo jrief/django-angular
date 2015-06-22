@@ -55,7 +55,7 @@ controllers.
 Setting via Django Middleware
 -----------------------------
 
-* Add ``'djangular.middlewares.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
+* Add ``'djangular.middleware.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
 ``settings.py`` file:
 
 .. code-block:: python
