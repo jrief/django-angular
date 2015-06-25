@@ -87,6 +87,16 @@ between `get` and `query`) override the ``get_fields()`` method instead.
 With ``None`` (default), all model fields are returned. The object identifier (``pk``) is always
 provided, regardless of the selection.
 
+
+``form_class``
+^^^^^^^^^^^^^^
+
+Set this to a specific form for your model to perform custom validation with it.
+Alternatively, if it may vary you can override the ``get_form_class()`` method instead.
+
+With ``None`` (default), a modelForm including all fields will be generated and used.
+
+
 ``slug_field``
 ^^^^^^^^^^^^^^
 
