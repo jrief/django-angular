@@ -24,6 +24,7 @@ class NgCRUDView(JSONBaseMixin, FormView):
     """
     model = None
     fields = None
+    form_class = None
     slug_field = 'slug'
     serializer_name = 'python'
     serialize_natural_keys = False
@@ -63,7 +64,7 @@ class NgCRUDView(JSONBaseMixin, FormView):
         """
         Build ModelForm from model
         """
-        return modelform_factory(self.model, exclude=[])
+        return self.form_class or modelform_factory(self.model, exclude=[])
 
     def build_json_response(self, data, **kwargs):
         return self.json_response(self.serialize_queryset(data), separators=(',', ':'), **kwargs)
