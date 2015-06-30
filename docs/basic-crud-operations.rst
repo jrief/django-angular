@@ -131,10 +131,10 @@ the ``ng_delete`` method.
 If you need to prevent any method, you can overrride the ``allowed_methods`` attributes. Alternatively, you can use the ``exclude_methods`` attributes.
 
 
-``exclude_attributes``
-^^^^^^^^^^^^^^^^^^^^^^
+``exclude_methods``
+^^^^^^^^^^^^^^^^^^^
 
-To allow all methods by default, ``exclude_attributes`` is set as an empty list.
+To allow all methods by default, ``exclude_methods`` is set as an empty list.
 To exclude any method, you can override this attribute to exclude the ``'GET'``, ``'POST'`` or  ``'DELETE'``.
 See ``allowed_methods`` for more informations.
 
