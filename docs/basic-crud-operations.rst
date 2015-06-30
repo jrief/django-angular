@@ -118,7 +118,25 @@ parameter from the client. For example, if it is set to ``'name'``, perform a qu
 
         Also note that you still need to pass the object identifier ``pk`` on update and delete
         operations. Whereas for save operations, the check on ``pk`` makes the distinction between
-        an update and a create operation, this restriction on deletes is only for safety purposes. 
+        an update and a create operation, this restriction on deletes is only for safety purposes.
+
+
+``allowed_methods``
+^^^^^^^^^^^^^^^^^^^
+
+By default, ``NgCRUDView`` maps the request to the corresponding django-angular method, e.g. a ``DELETE`` request would call
+the ``ng_delete`` method.
+
+``allowed_methods`` is set by default to ``['GET', 'POST', 'DELETE']``.
+If you need to prevent any method, you can overrride the ``allowed_methods`` attributes. Alternatively, you can use the ``exclude_methods`` attributes.
+
+
+``exclude_attributes``
+^^^^^^^^^^^^^^^^^^^^^^
+
+To allow all methods by default, ``exclude_attributes`` is set as an empty list.
+To exclude any method, you can override this attribute to exclude the ``'GET'``, ``'POST'`` or  ``'DELETE'``.
+See ``allowed_methods`` for more informations.
 
 
 Usage example

@@ -39,6 +39,15 @@ class CRUDTestViewWithSlug(NgCRUDView):
     slug_field = 'email'
 
 
+class CRUDTestViewWithFewAllowedMethod(NgCRUDView):
+    """
+    Only allows POST method. Use of allowed_methods and exclude_method to check they work well both together
+    """
+    model = DummyModel2
+    allowed_methods = ['GET', 'POST']
+    exclude_methods = ['GET']
+
+
 class CRUDViewTest(TestCase):
     names = ['John', 'Anne', 'Chris', 'Beatrice', 'Matt']
     emails = ["@".join((name, "example.com")) for name in names]
@@ -63,6 +72,13 @@ class CRUDViewTest(TestCase):
         self.m2m_model.save()
         self.m2m_model.dummy_models.add(dummy_model2)
         self.m2m_model.save()
+
+    def test_get_allowed_methods(self):
+        allowed_methods = CRUDTestView().get_allowed_methods()
+        self.assertEqual(allowed_methods, ['GET', 'POST', 'DELETE'])
+
+        allowed_methods = CRUDTestViewWithFewAllowedMethod().get_allowed_methods()
+        self.assertEqual(allowed_methods, ['POST'])
 
     def test_ng_query(self):
         # CRUDTestViewWithFK
@@ -189,3 +205,15 @@ class CRUDViewTest(TestCase):
         request5 = self.factory.delete('/crud/?pk=%s' % self.m2m_model.pk)
         response5 = CRUDTestViewWithM2M.as_view()(request5)
         self.assertEqual(response5.status_code, 200)
+
+    def test_method_not_supported(self):
+        # CRUDTestViewWithFewAllowedMethod
+        request = self.factory.get('/crud/')
+        response = CRUDTestViewWithFewAllowedMethod.as_view()(request)
+        self.assertEqual(response.status_code, 405)
+
+        request = self.factory.post('/crud/',
+                                    data=json.dumps({'name': 'Leonard'}),
+                                    content_type='application/json')
+        response = CRUDTestViewWithFewAllowedMethod.as_view()(request)
+        self.assertEqual(response.status_code, 200)

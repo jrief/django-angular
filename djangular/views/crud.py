@@ -29,6 +29,12 @@ class NgCRUDView(JSONBaseMixin, FormView):
     serializer_name = 'python'
     serialize_natural_keys = False
 
+    allowed_methods = ['GET', 'POST', 'DELETE']
+    exclude_methods = []
+
+    def get_allowed_methods(self):
+        return [method for method in self.allowed_methods if method not in self.exclude_methods]
+
     def dispatch(self, request, *args, **kwargs):
         """
         Override dispatch to call appropriate methods:
@@ -37,14 +43,15 @@ class NgCRUDView(JSONBaseMixin, FormView):
         * $save - ng_save
         * $delete and $remove - ng_delete
         """
+        allowed_methods = self.get_allowed_methods()
         try:
-            if request.method == 'GET':
+            if request.method == 'GET' and 'GET' in allowed_methods:
                 if 'pk' in request.GET or self.slug_field in request.GET:
                     return self.ng_get(request, *args, **kwargs)
                 return self.ng_query(request, *args, **kwargs)
-            elif request.method == 'POST':
+            elif request.method == 'POST' and 'POST' in allowed_methods:
                 return self.ng_save(request, *args, **kwargs)
-            elif request.method == 'DELETE':
+            elif request.method == 'DELETE' and 'DELETE' in allowed_methods:
                 return self.ng_delete(request, *args, **kwargs)
         except self.model.DoesNotExist as e:
             return self.error_json_response(e.args[0], 404)
