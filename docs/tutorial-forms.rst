@@ -22,8 +22,10 @@ AngularJS and Bootstrap.
 
 .. _crispy-forms: http://django-crispy-forms.readthedocs.org/
 
+
 Basic Form Submission
 =====================
+
 Lets start with a very basic example, a functioning demo is available here: http://djangular.aws.awesto.com/base_form/
 
 Say, we have a simple but rather long Form definition, to subscribe a person wanting to visit us:
@@ -48,32 +50,36 @@ In this example, the whole form is rendered in one pass including all HTML eleme
 ``<label>``, ``<select>``, ``<option>`` and ``<input>``. Additionally, bound forms are rendered with
 their preset values and a list of errors, if the previous Form validation did not succeed.
 
-The Django Form framework comes with three different rendering methods: ``as_p``, ``as_ul`` and
-``as_table`` (the default). Unfortunately, these three rendering methods are not suitable for
+The Django Form framework comes with three different rendering methods: ``as_p()``, ``as_ul()`` and
+``as_table()`` (the default). Unfortunately, these three rendering methods are not suitable for
 nowadays needs, such as Bootstrap styling and Ajax based Form validation.
 
-In order to be more flexible without having to abandon the “DRY” way of working, the above
+In order to be more flexible without having to abandon the “DRY” principle, the above
 ``SubscriptionForm`` has been enriched by the Mixin class ``Bootstrap3FormMixin``. This class adds
-an additional method ``as_div``, which is responsible for rendering the Form suitable for Bootstrap
+an additional method ``as_div()``, which is responsible for rendering the Form suitable for Bootstrap
 styling.
 
 Additionally, this Mixin class wraps the list of validation errors occurred during the last Form
 validation into the AngularJS directive ``ng-show``, so that error messages disappear after the
-user starts typing and thus puts the Form into a “dirty”, or say non-pristine, state.
+user starts typing, and thus puts the Form into a “dirty”, or in other words “non-pristine”, state.
 
 You can test this yourself, by leaving out some fields or entering invalid values and submitting
 the Form.
 
+
 Bound Form in AngularJS
 -----------------------
+
 AngularJS does not take into account the concept of bound Forms. Therefore, input fields rendered
 with preset values, are displayed as empty fields. To circumvent this, the **django-angular**
 Form directive re-enables the rendering of the bound field values.
 
+
 Dynamically Hiding Form Fields for Bootstrap
 --------------------------------------------
+
 A common use case is to hide a form field based on the value of another. For example, to hide the
-``phone`` field if the user selects Female within ``SubscriptionForm``, overwrite
+``phone`` field if the user selects *Female* within ``SubscriptionForm``, overwrite
 ``field_css_classes`` on ``SubscriptionForm``:
 
 .. code-block:: python
@@ -101,8 +107,15 @@ By adding the keyword ``'__default__'`` to this list, the CSS classes for the de
 ie. ``'*'``, are merged with the CSS classes for the current field.
 
 
+Adding addtional attributes
+---------------------------
+
+
+
+
 Client-side Form validation
 ===========================
+
 To enable client-side Form validation, simply add the mixin class ``NgFormValidationMixin`` to
 the ``SubscriptionForm`` class:
 
