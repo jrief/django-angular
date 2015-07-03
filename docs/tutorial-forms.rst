@@ -107,8 +107,8 @@ By adding the keyword ``'__default__'`` to this list, the CSS classes for the de
 ie. ``'*'``, are merged with the CSS classes for the current field.
 
 
-Adding addtional attributes
----------------------------
+Adding Additional Attributes
+----------------------------
 
 
 
