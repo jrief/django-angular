@@ -255,20 +255,6 @@ error list renderer, renders two ``<ul>``-elements for each input field, one to 
 *pristine* forms and one to be shown for *dirty* forms.
 
 
-Adding form validation to customized fields
--------------------------------------------
-Django's form validation is not 1:1 compatible with AngularJS's validation. Therefore **djangular**
-is shipped with a mapping module, which translate Django's form validation to AngularJS. This module
-is located in ``djangular.forms.patched_fields``.
-
-If you need to add or to replace any of these mappings, create a Python module which implements an
-alternative mapping to the module shipped with **djangular**. Refer to an alternative module in your
-``settings.py`` with the configuration directive ``DJANGULAR_VALIDATION_MAPPING_MODULE``.
-
-For further information about how to use form validation with AngularJS, please refer to the
-:ref:`demo pages<demos>`.
-
-
 Adding an AngularJS directive for validating form fields
 --------------------------------------------------------
 Sometimes it can be useful to add a generic field validator on the client side, which can be
