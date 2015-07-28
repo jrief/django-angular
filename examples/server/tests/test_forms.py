@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import copy
-from django.contrib.auth.forms import AuthenticationForm
 from django.db import models
 from django import forms
 from django.http import QueryDict
