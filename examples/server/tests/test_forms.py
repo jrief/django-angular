@@ -84,13 +84,8 @@ class CustomArgsForm(forms.Form):
         super(CustomArgsForm, self).__init__(*args, **kwargs)
 
 
-class NgCustomArgsForm(NgFormValidationMixin, six.with_metaclass(NgDeclarativeFieldsMetaclass, CustomArgsForm)):
+class NgCustomArgsForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgFormValidationMixin, CustomArgsForm)):
     pass
-
-    # def __init__(self, custom_arg1=None, custom_arg2=None, *args, **kwargs):
-    #     self.custom_arg1 = custom_arg1
-    #     self.custom_arg2 = custom_arg2
-    #     super(NgCustomArgsForm, self).__init__(*args, **kwargs)
 
 
 class NgModelFormMixinTest(TestCase):
@@ -119,18 +114,26 @@ class NgModelFormMixinTest(TestCase):
         self.dom = PyQuery(htmlsource)
         self.elements = self.dom('input') + self.dom('select')
 
-    def test_lost_form_request_data(self):
+    def test_form_with_custom_args(self):
         form_post_data = {'field1': 'value1', 'field2': 'value2'}
 
         custom_args_form = CustomArgsForm(data=form_post_data, custom_arg1=1, custom_arg2=2)
-        self.assertEqual(form_post_data, custom_args_form.data, 'lost request data')
-        self.assertEqual(1, custom_args_form.custom_arg1, 'lost arg1')
-        self.assertEqual(2, custom_args_form.custom_arg2, 'lost arg2')
+        custom_args_form.full_clean()
+
+        self.assertEqual(form_post_data, custom_args_form.data, 'lost data')
+        self.assertEqual(custom_args_form.cleaned_data.get('field1'), 'value1', 'lost field1 value')
+        self.assertEqual(custom_args_form.cleaned_data.get('field2'), 'value2', 'lost field2 value')
+        self.assertEqual(1, custom_args_form.custom_arg1, 'lost custom arg1')
+        self.assertEqual(2, custom_args_form.custom_arg2, 'lost custom arg2')
 
         ng_custom_args_form = NgCustomArgsForm(data=form_post_data, custom_arg1=1, custom_arg2=2)
-        self.assertEqual(form_post_data, ng_custom_args_form.data, 'lost request data')
-        self.assertEqual(1, ng_custom_args_form.custom_arg1, 'lost arg1')
-        self.assertEqual(2, ng_custom_args_form.custom_arg2, 'lost arg2')
+        ng_custom_args_form.full_clean()
+
+        self.assertEqual(form_post_data, ng_custom_args_form.data, 'lost data')
+        self.assertEqual(ng_custom_args_form.cleaned_data.get('field1'), 'value1', 'lost field1 value')
+        self.assertEqual(ng_custom_args_form.cleaned_data.get('field2'), 'value2', 'lost field2 value')
+        self.assertEqual(1, ng_custom_args_form.custom_arg1, 'lost custom arg1')
+        self.assertEqual(2, ng_custom_args_form.custom_arg2, 'lost custom arg2')
 
     def test_unbound_form(self):
         """Check if Angular attributes are added to the unbound form"""
