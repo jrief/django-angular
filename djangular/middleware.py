@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.urlresolvers import reverse
+from django.utils.http import unquote
 
 
 class DjangularUrlMiddleware(object):
@@ -36,7 +37,7 @@ class DjangularUrlMiddleware(object):
                 if param.startswith('djng_url_kwarg_'):
                     url_kwargs[param[15:]] = request.GET[param]  # [15:] to remove 'djng_url_kwarg' prefix
 
-            url = reverse(url_name, args=url_args, kwargs=url_kwargs, urlconf=self.urlconf)
+            url = unquote(reverse(url_name, args=url_args, kwargs=url_kwargs, urlconf=self.urlconf))
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
