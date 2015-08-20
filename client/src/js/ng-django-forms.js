@@ -48,14 +48,18 @@ djng_forms_module.directive('djngError', function() {
 		require: '?^form',
 		link: function(scope, element, attrs, formCtrl) {
 			var boundField;
-			if (!formCtrl || angular.isUndefined(attrs.name) || attrs.djngError !== 'bound-field')
+			var field = angular.isElement(element) ? element[0] : null;
+			if (!field || !formCtrl || angular.isUndefined(attrs.name) || attrs.djngError !== 'bound-field')
 				return;
 			boundField = formCtrl[attrs.name];
 			boundField.$setValidity('bound', false);
 			boundField.$parsers.push(function(value) {
-				// set bound field into valid state after changing value
-				boundField.$setValidity('bound', true);
-				element.removeAttr('djng-error');
+				if (value !== field.defaultValue) {
+					// set bound field into valid state after changing value
+					boundField.$setValidity('bound', true);
+					element.removeAttr('djng-error');
+				}
+				return value;
 			});
 		}
 	};
