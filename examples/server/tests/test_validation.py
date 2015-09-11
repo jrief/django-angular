@@ -33,9 +33,9 @@ class NgFormValidationMixinTest(TestCase):
         else:
             self.assertEqual(len(lis), 4)
         attrib = dict(lis[0].attrib.items())
-        self.assertDictContainsSubset({'ng-show': self.form_name + '.first_name.$error.required'}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + '[\'first_name\'].$error.required'}, attrib)
         attrib = dict(lis[1].attrib.items())
-        self.assertDictContainsSubset({'ng-show': self.form_name + six.u('.first_name.$error.minlength')}, attrib)
+        self.assertDictContainsSubset({'ng-show': self.form_name + six.u('[\'first_name\'].$error.minlength')}, attrib)
 
     def test_type(self):
         email_field = self.dom('input[name=email]')
@@ -57,13 +57,13 @@ class NgFormValidationMixinTest(TestCase):
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
         ul_dirty = ''.join((
-            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$dirty" ng-cloak>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.required" class="invalid">This field is required.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$error.email" class="invalid">Enter a valid email address.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ.email.$valid" class="valid"></li>'
+            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$dirty" ng-cloak>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$error.required" class="invalid">This field is required.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$error.email" class="invalid">Enter a valid email address.</li>',
+            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$valid" class="valid"></li>'
             '</ul>'))
         self.assertTrue(ul_dirty in bf.errors.as_ul())
-        ul_pristine = '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ.email.$pristine" ng-cloak></ul>'
+        ul_pristine = '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$pristine" ng-cloak></ul>'
         self.assertTrue(ul_pristine in bf.errors.as_ul())
 
     def test_field_as_text(self):

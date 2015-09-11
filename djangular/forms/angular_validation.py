@@ -29,7 +29,7 @@ class NgFormValidationMixin(NgFormBaseMixin):
         errors = super(NgFormValidationMixin, self).get_field_errors(bound_field)
         if bound_field.is_hidden:
             return errors
-        identifier = format_html('{0}.{1}', self.form_name, self.add_prefix(bound_field.name))
+        identifier = format_html('{0}[\'{1}\']', self.form_name, self.add_prefix(bound_field.name))
         potential_errors = bound_field.field.get_potential_errors()
         errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
