@@ -4,7 +4,10 @@ import warnings
 from inspect import isclass
 
 from django.utils import six
-from django.utils.module_loading import import_by_path
+try:
+    from django.utils.module_loading import import_string
+except ImportError:
+    from django.utils.module_loading import import_by_path as import_string
 from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
     get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
 from django.core.exceptions import ImproperlyConfigured
@@ -146,7 +149,7 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
         try:
             url = reverse(ns_prefix + name)
             resmgr = resolve(url)
-            ViewClass = import_by_path('{0}.{1}'.format(resmgr.func.__module__, resmgr.func.__name__))
+            ViewClass = import_string('{0}.{1}'.format(resmgr.func.__module__, resmgr.func.__name__))
             if isclass(ViewClass) and issubclass(ViewClass, JSONResponseMixin):
                 result[name] = _get_remote_methods_for(ViewClass, url)
         except (NoReverseMatch, ImproperlyConfigured):
