@@ -1,123 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import warnings
 from inspect import isclass
 
 from django.utils import six
+from django.core.urlresolvers import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
+from django.core.exceptions import ImproperlyConfigured
+
 try:
     from django.utils.module_loading import import_string
 except ImportError:
     from django.utils.module_loading import import_by_path as import_string
-from django.core.urlresolvers import (get_resolver, get_urlconf, get_script_prefix,
-    get_ns_resolver, iri_to_uri, resolve, reverse, NoReverseMatch, RegexURLResolver, RegexURLPattern)
-from django.core.exceptions import ImproperlyConfigured
 
 from djangular.views.mixins import JSONResponseMixin
-
-
-def urls_by_namespace(namespace, urlconf=None, args=None, kwargs=None, prefix=None, current_app=None):
-    """
-    Return a dictionary containing the name together with the URL of all configured
-    URLs specified for this namespace.
-    """
-    warnings.warn("urls_by_namespace is deprecated. Please view django-angular documentation for new way to manage URLs",
-                  DeprecationWarning)
-
-    if urlconf is None:
-        urlconf = get_urlconf()
-    resolver = get_resolver(urlconf)
-    args = args or []
-    kwargs = kwargs or {}
-
-    if prefix is None:
-        prefix = get_script_prefix()
-
-    if not namespace or not isinstance(namespace, six.string_types):
-        raise AttributeError('Attribute namespace must be of type string')
-    path = namespace.split(':')
-    path.reverse()
-    resolved_path = []
-    ns_pattern = ''
-    while path:
-        ns = path.pop()
-
-        # Lookup the name to see if it could be an app identifier
-        try:
-            app_list = resolver.app_dict[ns]
-            # Yes! Path part matches an app in the current Resolver
-            if current_app and current_app in app_list:
-                # If we are reversing for a particular app,
-                # use that namespace
-                ns = current_app
-            elif ns not in app_list:
-                # The name isn't shared by one of the instances
-                # (i.e., the default) so just pick the first instance
-                # as the default.
-                ns = app_list[0]
-        except KeyError:
-            pass
-
-        try:
-            extra, resolver = resolver.namespace_dict[ns]
-            resolved_path.append(ns)
-            ns_pattern = ns_pattern + extra
-        except KeyError as key:
-            if resolved_path:
-                raise NoReverseMatch("%s is not a registered namespace inside '%s'" %
-                    (key, ':'.join(resolved_path)))
-            else:
-                raise NoReverseMatch("%s is not a registered namespace" % key)
-    resolver = get_ns_resolver(ns_pattern, resolver)
-    return dict((name, iri_to_uri(resolver._reverse_with_prefix(name, prefix, *args, **kwargs)))
-                for name in resolver.reverse_dict.keys() if isinstance(name, six.string_types))
-
-
-def regex_pattern_to_url(pattern):
-    """
-    Take a url regex pattern from urlconf and return a url that matches it
-    """
-    url = pattern.replace('^', '').rstrip('$')
-    if not url.startswith('/'):
-        return '/' + url
-    return url
-
-
-def get_url_patterns(patterns, namespace=None, parent_regex=None, filter_namespaces=None):
-    """
-    Build a dictionary with url_name:regex_pattern pairs
-    Names also include namespace, e.g. {'accounts:login': '^login/$'}
-    """
-    matches_namespace = not filter_namespaces or namespace in filter_namespaces
-
-    pattern_dict = {}
-    for pattern in patterns:
-
-        if isinstance(pattern, RegexURLResolver):  # included namespace
-            # Recursively call self with parent namespace name and parent regex
-            include_namespace = ":".join(filter(None, [namespace, pattern.namespace]))
-            include_regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
-            included_patterns = get_url_patterns(pattern.url_patterns,
-                                                 namespace=include_namespace,
-                                                 parent_regex=include_regex,
-                                                 filter_namespaces=filter_namespaces)
-            pattern_dict.update(included_patterns)
-
-        elif isinstance(pattern, RegexURLPattern) and matches_namespace:  # url pattern
-            # Join own name with parent namespace name, if one is passed as namespace keyword argument
-            # Join own regex with parent regex, if one is passed as parent_regex keyword argument
-            name = ":".join(filter(None, [namespace, pattern.name]))
-            regex = "".join(filter(None, [parent_regex, pattern.regex.pattern]))
-            pattern_dict[name] = regex_pattern_to_url(regex)
-
-    return pattern_dict
-
-
-def get_urls(namespaces=None):
-    """
-    Load urlconf from settings.ROOT_URLCONF attribute
-    """
-    root_resolver = get_resolver(None)
-    return get_url_patterns(root_resolver.url_patterns, filter_namespaces=namespaces)
 
 
 def _get_remote_methods_for(view_object, url):
@@ -164,4 +58,3 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
 def get_current_remote_methods(view):
     if isinstance(view, JSONResponseMixin):
         return _get_remote_methods_for(view, view.request.path_info)
-
