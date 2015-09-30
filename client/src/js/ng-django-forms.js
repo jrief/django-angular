@@ -340,9 +340,9 @@ djng_forms_module.factory('djangoForm', function() {
 });
 
 
-// This directive behaves similar to `ng-bind` but leaves the elements content as is, if the
-// value to bind is undefined. This allows to set a default value in case the scope variables
-// are not ready yet.
+// Directive <ANY djng-bind-if="any_variable"> behaves similar to `ng-bind` but leaves the elements
+// content as is, if the value to bind is undefined. This allows to set a default value in case the
+// scope variables are not ready yet.
 djng_forms_module.directive('djngBindIf', function() {
 	return {
 		restrict: 'A',
@@ -351,7 +351,7 @@ djng_forms_module.directive('djngBindIf', function() {
 			return function(scope, element, attr) {
 				element.data('$binding', attr.ngBind);
 				scope.$watch(attr.djngBindIf, function ngBindWatchAction(value) {
-					if (value === undefined)
+					if (value === undefined || value === null)
 						return;
 					element.text(value);
 				});
