@@ -5,7 +5,10 @@ from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import format_html
-from django.forms.util import flatatt
+try:
+    from django.forms.utils import flatatt
+except ImportError:
+    from django.forms.util import flatatt
 
 
 class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):

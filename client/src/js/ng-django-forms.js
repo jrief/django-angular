@@ -32,7 +32,7 @@ function addNgModelDirective() {
 				var modelName;
 				if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
 					return;
-				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name;
+				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");;
 				attr.$set('ngModel', modelName);
 				$compile(element, null, 9999)(scope);
 			}

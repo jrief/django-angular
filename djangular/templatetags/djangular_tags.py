@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
+
 import warnings
 from django.template import Library
 from django.template.base import Node, NodeList, TextNode, VariableNode
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
-from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods, get_urls
+from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
 
 register = Library()
 
@@ -49,24 +50,9 @@ def djng_current_rmi(context):
 
 @register.simple_tag(name='load_djng_urls', takes_context=True)
 def djng_urls(context, *namespaces):
-    warnings.warn("load_djng_urls templatetag is deprecated. The new method of resolving django urls doesn't require "
-                  "loading url patterns anymore. djangoUrl service kept the same interface, refer to documentation for "
-                  "details.",
-                  DeprecationWarning)
-
-    def _replace_namespace(n):
-        if n == 'SELF':
-            request = context.get('request')
-            if not request:
-                raise ImproperlyConfigured("'SELF' was used in 'load_djng_urls' for request namespace "
-                                           "lookup, but there is no RequestContext.")
-            return request.resolver_match.namespace
-        elif n == '':
-            return None
-        return n
-
-    urls = get_urls([_replace_namespace(x) for x in namespaces])
-    return mark_safe(json.dumps(urls))
+    raise DeprecationWarning(
+        "load_djng_urls templatetag is deprecated and has been removed from this version of django-angular."
+        "Please refer to documentation for updated way to manage django urls in angular.")
 
 
 class AngularJsNode(Node):
