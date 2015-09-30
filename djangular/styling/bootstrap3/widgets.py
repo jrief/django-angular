@@ -27,7 +27,7 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
 class CheckboxInput(widgets.CheckboxInput):
     def __init__(self, label, attrs=None, check_test=None):
         # the label is rendered by the Widget class rather than by BoundField.label_tag()
-        self.choice_label = force_text(label)
+        self.choice_label = label
         super(CheckboxInput, self).__init__(attrs, check_test)
 
     def render(self, name, value, attrs=None):
