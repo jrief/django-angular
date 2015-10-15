@@ -33,7 +33,10 @@ class NgModelFormMixin(NgFormBaseMixin):
             self.ng_directives['ng-model'] = '%(model)s'
         self.prefix = kwargs.get('prefix')
         if self.prefix and data:
-		data = dict((name, value) for (name, value) in data.items() if self.prefix in name)
+            if data.get(self.prefix):
+                data = dict((self.add_prefix(name), value) for (name, value) in data.get(self.prefix).items())
+            else:
+                data = dict((name, value) for (name, value) in data.items() if self.prefix in name)
         super(NgModelFormMixin, self).__init__(data, *args, **kwargs)
         if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
