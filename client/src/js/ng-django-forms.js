@@ -32,7 +32,7 @@ function addNgModelDirective() {
 				var modelName;
 				if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
 					return;
-				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");;
+				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");
 				attr.$set('ngModel', modelName);
 				$compile(element, null, 9999)(scope);
 			}
@@ -64,7 +64,7 @@ djng_forms_module.directive('djngError', function() {
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
-djng_forms_module.directive('ngModel', function() {
+djng_forms_module.directive('ngModel', ['$log', function ($log) {
 	function restoreInputField(modelCtrl, field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
@@ -136,14 +136,14 @@ djng_forms_module.directive('ngModel', function() {
 				restoreTextArea(modelCtrl, field);
 				break;
 			default:
-				console.log('Unknown field type');
+				$log.log('Unknown field type');
 				break;
 			}
 			// restore the form's pristine state
 			formCtrl.$setPristine();
 		}
 	};
-});
+}]);
 
 
 // This directive is added automatically by django-angular for widgets of type RadioSelect and
@@ -216,7 +216,7 @@ djng_forms_module.directive('validateDate', function() {
 			return false;
 		if (validDatePattern) {
 			matched = validDatePattern.exec(date);
-			return matched && parseInt(matched[2]) === dateobj.getMonth() + 1;
+			return matched && parseInt(matched[2], 10) === dateobj.getMonth() + 1;
 		}
 		return true;
 	}
@@ -257,7 +257,7 @@ djng_forms_module.factory('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
 	function isNotEmpty(obj) {
-		for (var p in obj) { 
+		for (var p in obj) {
 			if (obj.hasOwnProperty(p))
 				return true;
 		}
@@ -272,7 +272,7 @@ djng_forms_module.factory('djangoForm', function() {
 			delete field.clearRejected;
 		});
 	}
-	
+
 	function isField(field) {
 		return angular.isArray(field.$viewChangeListeners);
 	}
