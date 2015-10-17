@@ -111,6 +111,23 @@ Adding Additional Attributes
 ----------------------------
 
 
+Add Red Required Asterisk
+-------------------------
+This can be accomplished by using native Django and CSS.  To do this, add this attribute to 
+the *Django Form*, which is also shown here in the `Django Docs <https://docs.djangoproject.com/en/1.8/ref/forms/api/#django.forms.Form.required_css_class>`_:
+
+.. code-block:: python
+
+    required_css_class = 'required'
+
+Next, add the *CSS*:
+
+.. code-block:: css
+
+    label.required::after {
+        content: "*";
+        color: red;
+    }
 
 
 Client-side Form validation
