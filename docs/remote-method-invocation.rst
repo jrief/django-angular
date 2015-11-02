@@ -55,13 +55,17 @@ client side, such as:
 	{­% load djangular_tags %­}
 	…
 	<script type="text/javascript">
+	var tags = {­% djng_all_rmi %­};
 	my_app.config(function(djangoRMIProvider) {
-	    djangoRMIProvider.configure({­% djng_all_rmi %­});
+	    djangoRMIProvider.configure(tags);
 	});
 	</script>
 
 This makes available *all* methods allowed for remote invocation, from *all* View classes of your
 Django project.
+
+.. note:: In order to have your methods working, the associated urls need to be named.
+
 
 Template Tag ``djng_current_rmi``
 ---------------------------------
@@ -73,13 +77,16 @@ initialization of the client side, such as:
 	{­% load djangular_tags %­}
 	…
 	<script type="text/javascript">
+	var tags = {­% djng_current_rmi %­};
 	my_app.config(function(djangoRMIProvider) {
-	    djangoRMIProvider.configure({­% djng_current_rmi %­});
+	    djangoRMIProvider.configure(tags);
 	});
 	</script>
 
 This makes available *all* methods allowed for remote invocation, from the current View class,
 ie. the one rendering the current page.
+
+.. note:: In order to have your methods working, the associated urls need to be named.
 
 
 Let the client invoke an allowed method from a Django View
