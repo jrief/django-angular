@@ -25,6 +25,7 @@ def dummy_view2(request, *args, **kwargs):
         'kwargs': kwargs
     }
 
+
 include1 = patterns('',
     url(r'^home2/$', dummy_view2, name='home2')
 )
@@ -39,10 +40,11 @@ urlpatterns = patterns('',
 
 class TestUrlResolverView(TestCase):
     pattern_dict = None
+    urls = 'server.tests.test_urlresolver_view'
 
     def setUp(self):
         self.factory = RequestFactory()
-        self.middleware = DjangularUrlMiddleware(urlconf='server.tests.test_urlresolver_view')
+        self.middleware = DjangularUrlMiddleware()
         self.url_name_arg = 'djng_url_name'
         self.args_prefix = 'djng_url_args'
         self.kwarg_prefix = 'djng_url_kwarg_'
@@ -55,7 +57,7 @@ class TestUrlResolverView(TestCase):
         }
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
-        self.assertEqual(request.path, reverse('home', urlconf=TEST_URLCONF_PATH))
+        self.assertEqual(request.path, reverse('home'))
 
     def test_resolver_path_resolution_include(self):
         url_name = 'include1:home2'
@@ -64,7 +66,7 @@ class TestUrlResolverView(TestCase):
         }
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
-        self.assertEqual(request.path, reverse(url_name, urlconf=TEST_URLCONF_PATH))
+        self.assertEqual(request.path, reverse(url_name))
 
     def test_middleware_request_not_modified(self):
         """
@@ -101,6 +103,4 @@ class TestUrlResolverView(TestCase):
         }
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
-        self.assertEqual(request.path, reverse('home_kwargs',
-                                               kwargs={'id': 1, 'id2': 2, 'id3': 3},
-                                               urlconf=TEST_URLCONF_PATH))
+        self.assertEqual(request.path, reverse('home_kwargs', kwargs={'id': 1, 'id2': 2, 'id3': 3}))

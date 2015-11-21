@@ -13,11 +13,6 @@ class DjangularUrlMiddleware(object):
     Urlconf property is overridden in tests
     """
     ANGULAR_REVERSE = '/angular/reverse/'
-    urlconf = None
-
-    def __init__(self, urlconf=None):
-        self.urlconf = urlconf
-        super(DjangularUrlMiddleware, self).__init__()
 
     def process_request(self, request):
         """
@@ -37,7 +32,7 @@ class DjangularUrlMiddleware(object):
                 if param.startswith('djng_url_kwarg_'):
                     url_kwargs[param[15:]] = request.GET[param]  # [15:] to remove 'djng_url_kwarg' prefix
 
-            url = unquote(reverse(url_name, args=url_args, kwargs=url_kwargs, urlconf=self.urlconf))
+            url = unquote(reverse(url_name, args=url_args, kwargs=url_kwargs))
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
