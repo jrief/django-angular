@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import url, patterns, include
+from django.conf.urls import url, include
 from django.views.generic import View
 from django.http import HttpResponse
 from django.template import RequestContext, Template
@@ -43,13 +43,13 @@ class RemoteMethodsView(JSONResponseMixin, View):
         return HttpResponse(template.render(context))
 
 
-subsub_patterns = patterns('',
+subsub_patterns = [
     url(r'^app/$', RemoteMethodsView.as_view(), name='app'),
-)
+]
 
-sub_patterns = patterns('',
+sub_patterns = [
     url(r'^sub/', include(subsub_patterns, namespace='sub')),
-)
+]
 
 
 class TestAngularTagView(View):
@@ -69,9 +69,9 @@ class TestAngularTagView(View):
         return HttpResponse(template.render(request_context))
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^sub_methods/', include(sub_patterns, namespace='submethods')),
     url(r'^straight_methods/$', TestCSRFValueView.as_view(), name='straightmethods'),
     url(r'^url_resolvers/$', TestUrlResolverTagsView.as_view(), name='urlresolvertags'),
     url(r'^angular_tag/$', TestAngularTagView.as_view(), name='angulartags'),
-)
+]
