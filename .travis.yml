@@ -6,7 +6,6 @@ python:
   - 3.4
 
 env:
-  - DJANGO=1.5.10 MIGRATE='true'
   - DJANGO=1.6.10 MIGRATE='true'
   - DJANGO=1.7.7 MIGRATE='./manage.py migrate'
   - DJANGO=1.8 MIGRATE='./manage.py migrate'
@@ -26,10 +25,6 @@ branches:
 
 matrix:
   exclude:
-  - python: 3.3
-    env: DJANGO=1.5.10 MIGRATE='true'
-  - python: 3.4
-    env: DJANGO=1.5.10 MIGRATE='true'
   - python: 3.3
     env: DJANGO=1.9 MIGRATE='./manage.py migrate'
 
