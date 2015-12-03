@@ -64,33 +64,33 @@ djng_forms_module.directive('djngError', function() {
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
-djng_forms_module.directive('ngModel', function() {
-	function restoreInputField(modelCtrl, field) {
+djng_forms_module.directive('ngModel', function($parse) {
+	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
 		case 'radio':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(field.defaultValue);
+				return field.defaultValue;
 			}
 			break;
 		case 'checkbox':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(true);
+				return true;
 			}
 			break;
 		case 'password':
 			// after an (un)successful submission, reset the password field
-			modelCtrl.$setViewValue(null);
+			return null;
 			break;
 		default:
-			if (field.defaultValue) {
-				modelCtrl.$setViewValue(field.defaultValue);
+			if(field.defaultValue) {
+				return field.defaultValue;
 			}
 			break;
 		}
 	}
 
-	function restoreSelectOptions(modelCtrl, field) {
+	function restoreSelectOptions(field) {
 		var multivalues = [];
 		angular.forEach(field.options, function(option) {
 			if (option.defaultSelected) {
@@ -99,19 +99,70 @@ djng_forms_module.directive('ngModel', function() {
 				if (field.multiple) {
 					multivalues.push(option.value);
 				} else {
-					modelCtrl.$setViewValue(option.value);
+					return option.value;
 				}
 			}
 		});
 		if (field.multiple) {
-			modelCtrl.$setViewValue(multivalues);
+			return multivalues;
 		}
 	}
 
-	function restoreTextArea(modelCtrl, field) {
-		if (field.defaultValue) {
-			// restore the field's content from the rendered content of bound fields
-			modelCtrl.$setViewValue(field.defaultValue);
+	function restoreTextArea(field) {
+		// restore the field's content from the rendered content of bound fields
+		if(field.defaultValue) {
+			return field.defaultValue;
+		}
+	}
+	
+	/**
+	 * @private
+	 *
+	 * If a default value for an input exists (either set as an initial or bound value by django),
+     * then the value assigned to the <code>ng-model</code> attibute, is used to set that default
+     * model value on scope.
+	 * 
+	 * <input type="text" value="barry" ng-model="data.first_name">
+	 *
+	 * var parts = ['data', 'first_name'],
+	 *     prop = 'first_name',
+	 *     modelName = 'data', \\ this could be a multi namespaced object or nothing if the prop is set direct on scope
+	 *     fn = [ Function ],
+	 *     model;
+     *
+	 * @param {object} scope The scope of the ngModel
+	 * @param {string} ngModelName The value assigned to the ng-model attribute. Not ngModel.$name
+	 * @param {object} value The initial value of the input 
+	 */
+	function processDefaultValue(scope, ngModelName, value) {
+		
+		if(!angular.isDefined(value))
+			return;
+		
+		var parts = ngModelName.split('.'),
+			prop = parts.pop(),
+			modelName = parts.join('.'),
+			fn = $parse(model !== '' ? model : prop),
+			model;
+		
+		/*
+		 * We have a namespace for the model i.e 'data'
+		 */
+		if(modelName !== '') {
+				
+			fn = $parse(modelName); // generate safe function to retrieve model from scope
+			model = fn(scope) || {}; // if model already exists (default or previous values may have been set on scope) then use it. If not, create a new object
+			model[prop] = value; // apply the default value to the model
+			fn.assign(scope, model); // set the model back on scope
+		
+		/*
+		 * the property is being assigned directly to scope, not 'hung' off another
+		 * namespace object. No need to retrieve as we can overwrite any existing value.
+		 */
+		}else{
+				
+			fn = $parse(prop);
+			fn.assign(scope, value);
 		}
 	}
 
@@ -125,22 +176,25 @@ djng_forms_module.directive('ngModel', function() {
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
 			if (!field || !formCtrl)
 				return;
+
+			var defaultValue;
+				
 			switch (field.tagName) {
 			case 'INPUT':
-				restoreInputField(modelCtrl, field);
+				defaultValue = restoreInputField(field);
 				break;
 			case 'SELECT':
-				restoreSelectOptions(modelCtrl, field);
+				defaultValue = restoreSelectOptions(field);
 				break;
 			case 'TEXTAREA':
-				restoreTextArea(modelCtrl, field);
+				defaultValue = restoreTextArea(field);
 				break;
 			default:
 				console.log('Unknown field type');
 				break;
 			}
-			// restore the form's pristine state
-			formCtrl.$setPristine();
+			
+			processDefaultValue(scope, attrs.ngModel, defaultValue);
 		}
 	};
 });
