@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase, RequestFactory
@@ -26,16 +26,16 @@ def dummy_view2(request, *args, **kwargs):
     }
 
 
-include1 = patterns('',
-    url(r'^home2/$', dummy_view2, name='home2')
-)
+include1 = [
+    url(r'^home2/$', dummy_view2, name='home2'),
+]
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', dummy_view, name='home'),
     url(r'^(\d)/(\d)/(\d)/$', dummy_view, name='home_args'),
     url(r'^(?P<id>\d)/(?P<id2>\d)/(?P<id3>\d)$', dummy_view, name='home_kwargs'),
-    url(r'^include/', include(include1, namespace='include1'))
-)
+    url(r'^include/', include(include1, namespace='include1')),
+]
 
 
 class TestUrlResolverView(TestCase):
