@@ -1,6 +1,6 @@
 import warnings
 from django.core.urlresolvers import reverse
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.http.response import HttpResponsePermanentRedirect
 
 
@@ -22,6 +22,6 @@ def angular_reverse(request, *args, **kwargs):
     return HttpResponsePermanentRedirect(url)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^reverse/$', angular_reverse),
-)
+]
