@@ -40,6 +40,6 @@ class DjangularUrlMiddleware(object):
             query = request.GET.copy()
             query.pop('djng_url_name', None)
             query.pop('djng_url_args', None)
-            request.environ['QUERY_STRING'] = query.urlencode()
+            request.environ['QUERY_STRING'] = query.urlencode().encode('utf-8')
             new_request = WSGIRequest(request.environ)
             request.__dict__ = new_request.__dict__
