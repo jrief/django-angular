@@ -4,6 +4,10 @@
 Release History
 ===============
 
+0.7.16
+------
+* Fixed: Non-ascii characters were not being processed correctly by ``django.http.request.QueryDict.init``.
+
 0.7.15
 ------
 * Simplified middleware for reversing the URL.
