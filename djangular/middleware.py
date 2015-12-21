@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+import six
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.urlresolvers import reverse
 from django.utils.http import unquote
@@ -40,6 +41,10 @@ class DjangularUrlMiddleware(object):
             query = request.GET.copy()
             query.pop('djng_url_name', None)
             query.pop('djng_url_args', None)
-            request.environ['QUERY_STRING'] = query.urlencode()
+            query_string = query.urlencode()
+            if six.PY3:
+                request.environ['QUERY_STRING'] = query_string
+            else:
+                request.environ['QUERY_STRING'] = query_string.encode('utf-8')
             new_request = WSGIRequest(request.environ)
             request.__dict__ = new_request.__dict__
