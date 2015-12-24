@@ -12,6 +12,9 @@ class Bootstrap3FormMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
     field_mixins_module = 'djangular.styling.bootstrap3.field_mixins'
+    # Adding attribute to create horizontal form
+    # horizontal_container_classes = 'col-xs-12 col-sm-12 col-md-12 col-lg-12'
+    horizontal_container_classes = None
     label_css_classes = 'control-label'
 
     def as_div(self):
@@ -20,8 +23,12 @@ class Bootstrap3FormMixin(object):
         """
         # wrap non-field-errors into <div>-element to prevent re-boxing
         error_row = '<div class="djng-line-spreader">%s</div>'
+        #
+        field_html = '%(field)s%(help_text)s%(errors)s'
+        if(self.horizontal_container_classes is not None):
+            field_html = '<div class="{0}">{1}</div>'.format(self.horizontal_container_classes, field_html)
         div_element = self._html_output(
-            normal_row='<div%(html_class_attr)s>%(label)s%(field)s%(help_text)s%(errors)s</div>',
+            normal_row='<div%(html_class_attr)s>%(label)s{0}</div>'.format(field_html),
             error_row=error_row,
             row_ender='</div>',
             help_text_html='<span class="help-block">%s</span>',
