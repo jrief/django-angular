@@ -102,12 +102,12 @@ A typical Angular Controller would use the service ``djangoUrl`` such as:
 
 	var myApp = angular.module('MyApp', ['ng.django.urls']);
 	
-	myApp.controller('RemoteItemCtrl', ['$scope', '$http', 'djangoUrl', function($scope, $http, djangoUrl) {
+	myApp.controller('RemoteItemCtrl', ['$scope', '$http', '$log', 'djangoUrl', function($scope, $http, $log, djangoUrl) {
 	
 	    $scope.loadItem = function() {
 	        var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
 	        $http.get(fetchItemURL).success(function(item) {
-	            console.log('Fetched item: ' + item);
+	            $log.info('Fetched item: ' + item);
 	        }).error(function(msg) {
 	            console.error('Unable to fetch item. Reason: ' + msg);
 	        });

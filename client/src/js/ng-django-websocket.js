@@ -27,6 +27,7 @@ djng_ws_module.service('$websocket', function() {
 djng_ws_module.provider('djangoWebsocket', function() {
 	var _console = { log: noop, warn: noop, error: noop };
 	var websocket_uri, heartbeat_msg = null;
+	var $log =  angular.injector(['ng']).get('$log');
 
 	// Set prefix for the Websocket's URI.
 	// This URI must be set during initialization using
@@ -48,16 +49,16 @@ djng_ws_module.provider('djangoWebsocket', function() {
 	this.setLogLevel = function(logLevel) {
 		switch (logLevel) {
 		case 'debug':
-			_console = console;
+			_console = $log;
 			break;
 		case 'log':
-			_console.log = console.log;
+			_console.log = $log.log;
 			/* falls through */
 		case 'warn':
-			_console.warn = console.warn;
+			_console.warn = $log.warn;
 			/* falls through */
 		case 'error':
-			_console.error = console.error;
+			_console.error = $log.error;
 			/* falls through */
 		default:
 			break;
