@@ -7,7 +7,7 @@ module.exports = function(config) {
 		var files = [];
 		['angular.js', 'angular-mocks.js'].forEach(function(item) {
 			var cachename = 'cdncache/' + item;
-			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.2.15/' + item);
+			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.3.20/' + item);
 		});
 		return files.concat(['src/js/*.js', 'tests/*.js']);
 	}

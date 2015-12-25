@@ -13,7 +13,7 @@ Release History
 * Use square brackets to access scope members, which otherwise won't support fields containing ``-``.
 * templatetag ``load_djng_urls`` has been removed.
 * For CRUD, check if request method is allowed.
-
+* Fixed djngError directive, when using AngularJS-1.3.
 
 0.7.15
 ------
