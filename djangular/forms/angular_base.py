@@ -242,7 +242,7 @@ class NgFormBaseMixin(object):
             data = self.rectify_multipart_form_data(data.copy())
         elif isinstance(data, dict):
             data = self.rectify_ajax_form_data(data.copy())
-        super(NgFormBaseMixin, self).__init__(data, *args, **kwargs)
+        super(NgFormBaseMixin, self).__init__(data=data, *args, **kwargs)
 
     def __getitem__(self, name):
         "Returns a NgBoundField with the given name."
