@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import json
-
-import warnings
 from django.template import Library
 from django.template.base import Node, NodeList, TextNode, VariableNode
 from django.core.exceptions import ImproperlyConfigured
