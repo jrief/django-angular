@@ -6,7 +6,14 @@ Release History
 
 0.7.16
 ------
+* Ready for Django-1.9.
 * Fixed: Non-ascii characters were not being processed correctly by ``django.http.request.QueryDict.init``.
+* In JavaScript, replaced ``console.log`` by ``$log.log``.
+* Use decimal base on invocation of ``parseInt``.
+* Use square brackets to access scope members, which otherwise won't support fields containing ``-``.
+* templatetag ``load_djng_urls`` has been removed.
+* For CRUD, check if request method is allowed.
+
 
 0.7.15
 ------
