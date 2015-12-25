@@ -146,59 +146,148 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 }]);
 
 
-// This directive is added automatically by django-angular for widgets of type RadioSelect and
-// CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
-// which forms a group for one `django.forms.Field`.
+djng_forms_module.controller('ValidateMultipleFieldsCtrl', function() {
+	
+	var vm = this,
+		formCtrl,
+		inputCtrls = [],
+		subFields;
+	
+	vm.setFormCtrl = setFormCtrl;
+	vm.setSubFields = setSubFields;
+	vm.getSubFields = getSubFields;
+	vm.addInputCtrl = addInputCtrl;
+	vm.validate = validate;
+		
+	/* ----------------- */
+	
+	function setFormCtrl(value) {
+		formCtrl = value;
+	}
+	
+	function setSubFields(value) {
+		subFields = value;
+	}
+	
+	function getSubFields() {
+		return subFields;
+	}
+	
+	function addInputCtrl(ctrl) {
+		if(_isNotValidSubField(ctrl.$name))
+			return;
+		inputCtrls.push(ctrl);
+		ctrl.$viewChangeListeners.push(function() {
+			validate(true);
+		});
+	}
+	
+	function validate(trigger) {
+		var valid = false;
+		angular.forEach(inputCtrls, function(input) {
+			valid = !!(valid || input.$modelValue);
+			if(_hasClearRejectedMethod(input)) {
+				input.clearRejected();
+			}
+		});
+		
+		formCtrl.$setValidity('required', valid);
+		formCtrl.$setValidity('rejected', true);
+		formCtrl.$message = ''
+		
+		if (trigger) {
+			formCtrl.$dirty = true;
+			formCtrl.$pristine = false;
+		}
+	}
+	
+	function _isNotValidSubField(name) {
+		return !!subFields && subFields.indexOf(name) == -1;
+	}
+	
+	function _hasClearRejectedMethod(obj) {
+		return typeof obj.clearRejected === 'function';
+	}
+});
+
+
 djng_forms_module.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
-		require: '^?form',
-		link: function(scope, element, attrs, formCtrl) {
-			var subFields, checkboxElems = [];
-
-			function validate(event) {
-				var valid = false;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
-				});
-				formCtrl.$setValidity('required', valid);
-				if (event) {
-					formCtrl.$dirty = true;
-					formCtrl.$pristine = false;
-					// element.on('change', validate) is jQuery and runs outside of Angular's digest cycle.
-					// Therefore Angular does not get the end-of-digest signal and $apply() must be invoked manually.
-					scope.$apply();
-				}
-			}
-
-			if (!formCtrl)
-				return;
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				if (!angular.isString(attrs.validateMultipleFields))
+		require: [
+			'validateMultipleFields',
+			'^?form'
+		],
+		controller: 'ValidateMultipleFieldsCtrl',
+		link: {
+			
+			pre: function(scope, element, attrs, ctrls) {
+			
+				var ctrl = ctrls[0],
+					formCtrl = ctrls[1],
+					subFields;
+				
+				if(!formCtrl)
 					return;
-				subFields = [attrs.validateMultipleFields];
-				formCtrl = formCtrl[subFields];
-			}
-			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) >= 0) {
-					checkboxElems.push(elem);
-					angular.element(elem).on('change', validate);
+			
+				try {
+					subFields = angular.fromJson(attrs.validateMultipleFields);
+				} catch (SyntaxError) {
+					if (!angular.isString(attrs.validateMultipleFields))
+						return;
+					subFields = attrs.validateMultipleFields;
 				}
-			});
+			
+				ctrl.setSubFields(subFields);
+			},
+		
+			post: function(scope, element, attrs, ctrls) {
+			
+				var ctrl = ctrls[0],
+					formCtrl = ctrls[1],
+					subFields;
+				
+				if(!formCtrl)
+					return;
+					
+				subFields = ctrl.getSubFields();
 
-			// remove "change" event handlers from each input field
-			element.on('$destroy', function() {
-				angular.forEach(element.find('input'), function(elem) {
-					angular.element(elem).off('change');
-				});
-			});
-			validate();
+				if(angular.isString(subFields))
+					formCtrl = formCtrl[subFields];
+				
+				ctrl.setFormCtrl(formCtrl);
+				ctrl.validate();
+			}
 		}
 	};
 });
 
+
+djng_forms_module.directive('ngModel', function() {
+	return {
+		restrict:'A',
+		/*
+		 * ensure that this gets fired after ng.django.forms restore value ngModel
+		 * directive, as if initial/bound value is set, $viewChangeListener is fired
+		 */
+		priority: 2,
+		require: [
+			'?^form',
+			'?^validateMultipleFields',
+			'?ngModel'
+		],
+		link: function(scope, element, attrs, ctrls) {
+			var formCtrl = ctrls[0],
+				vmfCtrl = ctrls[1],
+				ngModel = ctrls[2];
+				
+			if(!formCtrl || !vmfCtrl || !ngModel)
+				return;
+				
+			vmfCtrl.addInputCtrl(ngModel);
+		}
+	}
+});
 
 // This directive can be added to an input field which shall validate inserted dates, for example:
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
@@ -279,7 +368,7 @@ djng_forms_module.factory('djangoForm', function() {
 
 	return {
 		// setErrors takes care of updating prepared placeholder fields for displaying form errors
-		// detected by an AJAX submission. Returns true if errors have been added to the form.
+		// deteced by an AJAX submission. Returns true if errors have been added to the form.
 		setErrors: function(form, errors) {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
