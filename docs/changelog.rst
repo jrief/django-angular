@@ -14,6 +14,7 @@ Release History
 * templatetag ``load_djng_urls`` has been removed.
 * For CRUD, check if request method is allowed.
 * Fixed djngError directive, when using AngularJS-1.3.
+* Added support for ``ngMessages``, as available with AngularJS-1.3.
 
 0.7.15
 ------
