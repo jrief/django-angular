@@ -6,19 +6,16 @@ from djangular.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
 
 
 class MessagesForm(NgMessagesMixin, NgForm):
-	form_name = 'messages_form'
-	email = forms.EmailField(label='E-Mail', required=True)
+    form_name = 'messages_form'
+    email = forms.EmailField(label='E-Mail', required=True)
 
-	
+
 class MessagesValidationForm(NgMessagesMixin, NgFormValidationMixin, NgForm):
-	form_name = 'messages_form'
-	email = forms.EmailField(label='E-Mail', required=True)
-
-
+    form_name = 'messages_form'
+    email = forms.EmailField(label='E-Mail', required=True)
 
 
 class NgMessagesMixinTest(TestCase):
-	
     def setUp(self):
         self.form = MessagesForm()
         self.dom = PyQuery(str(self.form))
@@ -56,7 +53,6 @@ class NgMessagesMixinTest(TestCase):
 
 
 class NgMessagesMixinWithValidationTest(TestCase):
-
     def setUp(self):
         self.form = MessagesValidationForm()
         self.dom = PyQuery(str(self.form))
@@ -73,8 +69,9 @@ class NgMessagesMixinWithValidationTest(TestCase):
         self.assertEqual(len(messages), 1)
         attrib = dict(messages[0].attrib.items())
         self.assertEqual(attrib.get('class'), 'djng-field-errors')
-        self.assertEqual(attrib.get('ng-messages'), 'messages_form.email.$error')
-        self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form.email.$dirty')
+        self.assertEqual(attrib.get('ng-messages'), 'messages_form[\'email\'].$error')
+        # ask jRobb: self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form[\'email\'].$dirty')
+        self.assertEqual(attrib.get('ng-show'), '.$submitted || messages_form[\'email\'].$dirty')
 
     def test_rejected_message_direcive_present(self):
         message = self.dom('ul[ng-messages]').children('li[ng-message=rejected]')
@@ -100,7 +97,8 @@ class NgMessagesMixinWithValidationTest(TestCase):
         self.assertEqual(len(ul), 2)
         attrib = dict(ul[0].attrib.items())
         self.assertEqual(attrib.get('class'), 'djng-field-errors')
-        self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form.email.$dirty')
+        # ask jRobb: self.assertEqual(attrib.get('ng-show'), 'messages_form.$submitted || messages_form[\'email\'].$dirty')
+        self.assertEqual(attrib.get('ng-show'), '.$submitted || messages_form[\'email\'].$dirty')
         self.assertIsNone(attrib.get('ng-messages'))
 
     def test_form_valid_li_present(self):
@@ -108,11 +106,10 @@ class NgMessagesMixinWithValidationTest(TestCase):
         li = ul.children()
         self.assertEqual(len(li), 1)
         attrib = dict(li[0].attrib.items())
-        self.assertEqual(attrib.get('ng-show'), 'messages_form.email.$valid')
+        self.assertEqual(attrib.get('ng-show'), 'messages_form[\'email\'].$valid')
 
 
 class BoundNgMessagesMixinFormTest(TestCase):
-
     def setUp(self):
         self.form = MessagesForm(data={'email': 'james'})
         self.dom = PyQuery(str(self.form))
