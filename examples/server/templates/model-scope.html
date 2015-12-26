@@ -19,18 +19,18 @@
 	{% endverbatim %}
 {% endblock form_foot %}
 
-{% block scripts %}
+{% block ng_module_definition %}
 	{{ block.super }}
-	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
 	my_app.config(function($httpProvider) {
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
 	});
-	</script>
+{% endblock %}
+
+{% block demo_scripts %}
+	{{ block.super }}
 	<script src="{{ STATIC_URL }}js/model-scope.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
-{% endblock scripts %}
+{% endblock %}
 
 {% block tutorial_intro %}
 <p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">This example shows how to

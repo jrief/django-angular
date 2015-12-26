@@ -1,0 +1,14 @@
+<script type="text/javascript">
+angular.module('djangular-demo', ['ng.django.forms', 'ng.django.angular.messages'])
+	.config(function($httpProvider) {
+		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+	});
+</script>
+
+<form name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl">
+	{% csrf_token %}
+	{{ form.as_div }}
+	<button type="submit" class="btn btn-primary">Submit via Post</button>
+	<button type="button" class="btn btn-primary" ng-click="submit()">Submit via Ajax</button>
+</form>

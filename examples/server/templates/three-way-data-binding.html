@@ -19,18 +19,26 @@
 {% block scripts %}
 	{{ block.super }}
 	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.websocket']);
+{% endblock scripts %}
 
+{% block ng_module_dependencies %}['ng.django.websocket']{% endblock %}
+
+{% block ng_module_definition %}
+	{{ block.super }}
 	my_app.config(['djangoWebsocketProvider', function(djangoWebsocketProvider) {
 		djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
 		djangoWebsocketProvider.setLogLevel('debug');
 		djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});
 	}]);
-	</script>
+{% endblock %}
+
+{% block demo_scripts %}
 	<script src="{{ STATIC_URL }}js/three-way-data-binding.js" type="text/javascript"></script>
-	<script src="{{ STATIC_URL }}js/djng-tutorial.js" type="text/javascript"></script>
-{% endblock scripts %}
+	{{ block.super }}
+{% endblock %}
+
+
+
 
 {% block tutorial_intro %}
 <p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead">This example shows,
