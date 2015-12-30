@@ -173,12 +173,6 @@ class NgBoundField(forms.BoundField):
         else:
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
-            if isinstance(css_classes, dict):
-                extra_css_classes = ''
-                for key in ('*', self.name):
-                    new_class = css_classes.get(key or None)
-                    extra_css_classes = new_class if new_class else extra_css_classes
-                css_classes = extra_css_classes
             attrs.update({'class': css_classes})
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
