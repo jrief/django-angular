@@ -10,7 +10,7 @@ Let Django play well with AngularJS
 * Simplified middleware for reversing the URL.
 * Reversing url in djangoUrl service can now be overriden.
 
-[Demo](http://djangular.aws.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
+[Demo](http://django-angular.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 
 Detailed documentation on [ReadTheDocs](http://django-angular.readthedocs.org/en/latest/).
 

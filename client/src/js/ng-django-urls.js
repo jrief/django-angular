@@ -20,7 +20,7 @@
 
             this.$get = function () {
                 return new djangoUrl(reverseUrl);
-            }
+            };
         }
     );
 

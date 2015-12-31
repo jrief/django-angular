@@ -74,7 +74,7 @@ soon as the user changes that field.<br/>In this setting, AngularJS adds a dummy
 
 {% block scripts %}
 	<script src="{{ STATIC_URL }}js/ng-django-forms.js" type="text/javascript"></script>
-	<script type="text/javascript">
-	var my_app = angular.module('djangular-demo', ['ng.django.forms']);
-	</script>
 {% endblock %}
+
+{% block ng_module_dependencies %}['ng.django.forms']{% endblock %}
+

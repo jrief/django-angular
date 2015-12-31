@@ -4,6 +4,18 @@
 Release History
 ===============
 
+0.7.16
+------
+* Ready for Django-1.9.
+* Fixed: Non-ascii characters were not being processed correctly by ``django.http.request.QueryDict.init``.
+* In JavaScript, replaced ``console.log`` by ``$log.log``.
+* Use decimal base on invocation of ``parseInt``.
+* Use square brackets to access scope members, which otherwise won't support fields containing ``-``.
+* templatetag ``load_djng_urls`` has been removed.
+* For CRUD, check if request method is allowed.
+* Fixed djngError directive, when using AngularJS-1.3.
+* Added support for ``ngMessages``, as available with AngularJS-1.3.
+
 0.7.15
 ------
 * Simplified middleware for reversing the URL.
@@ -39,7 +51,7 @@ Release History
 ------
 * Using ``field.html_name`` instead of ``field.name``. Otherwise ``add_prefix()`` function on
   form objects doesn't work properly.
-* Fixed Firefox checkbox change sync issue caused by ``click```and ``change```firing in
+* Fixed Firefox checkbox change sync issue caused by ``click`` and ``change`` firing in
   opposite order to other browsers. Switched to ``ng-change`` to normalise behaviour.
 * Moved rejected error cleanup logic into ``field.clearRejected`` method, so that it can be
   removed from anywhere that has access to the field.
