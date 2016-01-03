@@ -36,6 +36,10 @@ class DjangularUrlMiddleware(object):
             url = unquote(reverse(url_name, args=url_args, kwargs=url_kwargs))
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
+            # attributes
+            session = request.session
+            user = request.user
+
             # rebuild the request object with a different environ
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
@@ -48,3 +52,5 @@ class DjangularUrlMiddleware(object):
                 request.environ['QUERY_STRING'] = query_string.encode('utf-8')
             new_request = WSGIRequest(request.environ)
             request.__dict__ = new_request.__dict__
+            request.user = user
+            request.session = session
