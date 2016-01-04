@@ -37,14 +37,22 @@ class DjangularUrlMiddleware(object):
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
+            request.path = url
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
-            query.pop('djng_url_name', None)
-            query.pop('djng_url_args', None)
-            query_string = query.urlencode()
+            for key in request.GET:
+                if key.startswith('djng_url'):
+                    query.pop(key, None)
             if six.PY3:
-                request.environ['QUERY_STRING'] = query_string
+                request.environ['QUERY_STRING'] = query.urlencode()
             else:
-                request.environ['QUERY_STRING'] = query_string.encode('utf-8')
-            new_request = WSGIRequest(request.environ)
-            request.__dict__ = new_request.__dict__
+                request.environ['QUERY_STRING'] = query.urlencode().encode('utf-8')
+            # Reconstruct GET QueryList using WSGIRequest.GET function
+            # ...
+            # @cached_property
+            # def GET(self):
+            #     raw_query_string = get_bytes_from_wsgi(self.environ, 'QUERY_STRING', '')
+            #     return http.QueryDict(raw_query_string, encoding=self._encoding)
+            # ...
+            # Since it's cached the actual function can be accessed as WSGIRequest.GET.func
+            request.GET = WSGIRequest.GET.func(request)

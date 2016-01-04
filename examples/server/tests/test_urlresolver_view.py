@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import six
 from django.conf.urls import url, include
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase, RequestFactory
@@ -45,6 +46,7 @@ class TestUrlResolverView(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        self.user = User.objects.create_user('test', 'test@example.com', 'password')
         self.middleware = DjangularUrlMiddleware()
         self.url_name_arg = 'djng_url_name'
         self.args_prefix = 'djng_url_args'
@@ -78,7 +80,20 @@ class TestUrlResolverView(TestCase):
         self.middleware.process_request(request)
         self.assertEqual(request.path, path)
 
-    def test_get_args(self):
+    def test_request_attributes_retention(self):
+        """
+        Request attributes, such as .user or .session must not be modified
+        """
+        url_name = 'include1:home2'
+        data = {
+            self.url_name_arg: url_name
+        }
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request.user = self.user
+        self.middleware.process_request(request)
+        self.assertEqual(request.user, self.user)
+
+    def test_get_args_removal(self):
         """
         GET parameters for url resolution should be removed, others kept
         """
@@ -106,6 +121,25 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: 'home_args',
             self.args_prefix: [1, 2, 3],
+        }
+        data.update(args)
+        query_dict = QueryDict('', mutable=True)
+        query_dict.update(args)
+
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.GET, query_dict)
+
+    def test_get_kwargs_removal(self):
+        """
+        GET kwarg parameters for url resolution should be removed, others kept
+        """
+        args = {'test': '123'}
+        data = {
+            self.url_name_arg: 'home_kwargs',
+            self.kwarg_prefix + 'id': 1,
+            self.kwarg_prefix + 'id2': 2,
+            self.kwarg_prefix + 'id3': 3
         }
         data.update(args)
         query_dict = QueryDict('', mutable=True)
