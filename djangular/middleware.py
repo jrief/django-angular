@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import six
+from django import http
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.urlresolvers import reverse
 from django.utils.http import unquote
@@ -47,12 +48,6 @@ class DjangularUrlMiddleware(object):
                 request.environ['QUERY_STRING'] = query.urlencode()
             else:
                 request.environ['QUERY_STRING'] = query.urlencode().encode('utf-8')
-            # Reconstruct GET QueryList using WSGIRequest.GET function
-            # ...
-            # @cached_property
-            # def GET(self):
-            #     raw_query_string = get_bytes_from_wsgi(self.environ, 'QUERY_STRING', '')
-            #     return http.QueryDict(raw_query_string, encoding=self._encoding)
-            # ...
-            # Since it's cached the actual function can be accessed as WSGIRequest.GET.func
-            request.GET = WSGIRequest.GET.func(request)
+
+            # Reconstruct GET QueryList in the same way WSGIRequest.GET function works
+            request.GET = http.QueryDict(request.environ['QUERY_STRING'])
