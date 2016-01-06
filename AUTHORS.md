@@ -4,7 +4,7 @@ This work is the result of the effort of many people around the world.
 Contributors are listed in alphabetical order by GitHub login.
 
 
-* [Adrien Brunet (adrienbrunet)](https://github.com/adrienbrunet) — [17+](https://github.com/jrief/django-angular/commits?author=adrienbrunet)/[18+](https://github.com/jrief/django-angular/issues?q=author%3Aadrienbrunet)
+* [Adrien Brunet (adrienbrunet)](https://github.com/adrienbrunet) — [17+](https://github.com/jrief/django-angular/commits?author=adrienbrunet)/[19+](https://github.com/jrief/django-angular/issues?q=author%3Aadrienbrunet) — _collaborator_
 * [Nate Dudenhoeffer (AgDude)](https://github.com/AgDude) — [27+](https://github.com/jrief/django-angular/commits?author=AgDude)/[12+](https://github.com/jrief/django-angular/issues?q=author%3AAgDude)
 * [Aleck Landgraf (alecklandgraf)](https://github.com/alecklandgraf) — [2+](https://github.com/jrief/django-angular/commits?author=alecklandgraf)/[1+](https://github.com/jrief/django-angular/issues?q=author%3Aalecklandgraf)
 * [andrey-oparin](https://github.com/andrey-oparin) — [1+](https://github.com/jrief/django-angular/commits?author=andrey-oparin)/[3+](https://github.com/jrief/django-angular/issues?q=author%3Aandrey-oparin)
