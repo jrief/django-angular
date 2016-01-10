@@ -39,6 +39,7 @@ class DjangularUrlMiddleware(object):
 
             # rebuild the request object with a different environ
             request.path = url
+            request.path_info = url
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
             for key in request.GET:
