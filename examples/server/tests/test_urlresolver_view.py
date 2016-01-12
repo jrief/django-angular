@@ -6,6 +6,7 @@ from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase, RequestFactory
 from djangular.middleware import DjangularUrlMiddleware
+from django.core.urlresolvers import resolve
 
 TEST_URLCONF_PATH = 'server.tests.test_urlresolver_view'
 
@@ -54,6 +55,9 @@ class TestUrlResolverView(TestCase):
         super(TestUrlResolverView, self).setUp()
 
     def test_resolver_path_resolution(self):
+        """
+        Both request.path and request.path_info should be updated to correct url
+        """
         url_name = 'home'
         data = {
             self.url_name_arg: url_name
@@ -61,6 +65,8 @@ class TestUrlResolverView(TestCase):
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse('home'))
+        self.assertEqual(request.path_info, reverse('home'))
+        self.assertEqual(request.get_full_path(), reverse('home'))
 
     def test_resolver_path_resolution_include(self):
         url_name = 'include1:home2'

@@ -38,7 +38,7 @@ class DjangularUrlMiddleware(object):
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
-            request.path = url
+            request.path = request.path_info = url
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
             for key in request.GET:
