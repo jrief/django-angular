@@ -28,10 +28,12 @@ in the correct format for the <a href="https://docs.angularjs.org/api/ngMessages
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}
+{% autoescape off %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/ng_messages.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/ng_messages.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/ng-messages.html" %}</div>
 <div ng-show="activeTab==='JavaScript'">{% pygments "static/js/ng-messages.js" %}</div>
+{% endautoescape %}
 <p class="bg-info">Use this mixin if you want your field error lists to be managed by the ng-messages directive.<br/>
 <strong>Note: </strong>An advantage over the standard field error list handling/display, is up to a 30% reduction in watchers.</p>
 {% endblock tutorial_code %}

@@ -58,10 +58,12 @@ environment!</p>
 		<a ng-click="setTab(tab)" ng-bind="tab"></a>
 	</li>
 </ul>
-	{% block tutorial_code %}
+{% block tutorial_code %}
+{% autoescape off %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/subscribe_form.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/classic_subscribe.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/subscribe-form.html" %}</div>
+{% endautoescape %}
 <p class="bg-info">Use this setting, if you want your forms behave the way intended by Django.
 Here the only exception is, that errors from a previous and failed form validation disappear, as
 soon as the user changes that field.<br/>In this setting, AngularJS adds a dummy
