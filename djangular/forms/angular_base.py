@@ -174,6 +174,12 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
+        widget_classes = self.form.fields[self.name].widget.attrs.get('class', None)
+        if widget_classes:
+            if attrs.get('class', None):
+                attrs['class'] += ' ' + widget_classes
+            else:
+                attrs.update({'class': widget_classes})
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):

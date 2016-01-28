@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 import six
 from django.conf.urls import url, include
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase, RequestFactory
 from djangular.middleware import DjangularUrlMiddleware
+from django.core.urlresolvers import resolve
 
 TEST_URLCONF_PATH = 'server.tests.test_urlresolver_view'
 
@@ -45,6 +47,7 @@ class TestUrlResolverView(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
+        self.user = User.objects.create_user('test', 'test@example.com', 'password')
         self.middleware = DjangularUrlMiddleware()
         self.url_name_arg = 'djng_url_name'
         self.args_prefix = 'djng_url_args'
@@ -52,6 +55,9 @@ class TestUrlResolverView(TestCase):
         super(TestUrlResolverView, self).setUp()
 
     def test_resolver_path_resolution(self):
+        """
+        Both request.path and request.path_info should be updated to correct url
+        """
         url_name = 'home'
         data = {
             self.url_name_arg: url_name
@@ -59,6 +65,8 @@ class TestUrlResolverView(TestCase):
         request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse('home'))
+        self.assertEqual(request.path_info, reverse('home'))
+        self.assertEqual(request.get_full_path(), reverse('home'))
 
     def test_resolver_path_resolution_include(self):
         url_name = 'include1:home2'
@@ -78,7 +86,20 @@ class TestUrlResolverView(TestCase):
         self.middleware.process_request(request)
         self.assertEqual(request.path, path)
 
-    def test_get_args(self):
+    def test_request_attributes_retention(self):
+        """
+        Request attributes, such as .user or .session must not be modified
+        """
+        url_name = 'include1:home2'
+        data = {
+            self.url_name_arg: url_name
+        }
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request.user = self.user
+        self.middleware.process_request(request)
+        self.assertEqual(request.user, self.user)
+
+    def test_get_args_removal(self):
         """
         GET parameters for url resolution should be removed, others kept
         """
@@ -106,6 +127,25 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: 'home_args',
             self.args_prefix: [1, 2, 3],
+        }
+        data.update(args)
+        query_dict = QueryDict('', mutable=True)
+        query_dict.update(args)
+
+        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.GET, query_dict)
+
+    def test_get_kwargs_removal(self):
+        """
+        GET kwarg parameters for url resolution should be removed, others kept
+        """
+        args = {'test': '123'}
+        data = {
+            self.url_name_arg: 'home_kwargs',
+            self.kwarg_prefix + 'id': 1,
+            self.kwarg_prefix + 'id2': 2,
+            self.kwarg_prefix + 'id3': 3
         }
         data.update(args)
         query_dict = QueryDict('', mutable=True)

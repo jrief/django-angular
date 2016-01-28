@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 import six
+from django import http
 from django.core.handlers.wsgi import WSGIRequest
 from django.core.urlresolvers import reverse
 from django.utils.http import unquote
@@ -37,14 +38,16 @@ class DjangularUrlMiddleware(object):
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
+            request.path = request.path_info = url
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
-            query.pop('djng_url_name', None)
-            query.pop('djng_url_args', None)
-            query_string = query.urlencode()
+            for key in request.GET:
+                if key.startswith('djng_url'):
+                    query.pop(key, None)
             if six.PY3:
-                request.environ['QUERY_STRING'] = query_string
+                request.environ['QUERY_STRING'] = query.urlencode()
             else:
-                request.environ['QUERY_STRING'] = query_string.encode('utf-8')
-            new_request = WSGIRequest(request.environ)
-            request.__dict__ = new_request.__dict__
+                request.environ['QUERY_STRING'] = query.urlencode().encode('utf-8')
+
+            # Reconstruct GET QueryList in the same way WSGIRequest.GET function works
+            request.GET = http.QueryDict(request.environ['QUERY_STRING'])
