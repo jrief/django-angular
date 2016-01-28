@@ -110,21 +110,23 @@ ie. ``'*'``, are merged with the CSS classes for the current field.
 Adding an asterisk for required fields
 --------------------------------------
 
-An asterisk is often added after labels on required fields (like with django-crispy-forms for example). This can be accomplished by using native Django and CSS. To do this, set the ``required_css_class attribute`` on ``SubscriptionForm`` (see `Django documentation`_).
+An asterisk is often added after labels on required fields (like with django-crispy-forms for
+example). This can be accomplished by using native Django and CSS. To do this, set the
+``required_css_class attribute`` on ``SubscriptionForm`` (see `Django documentation`_).
 
-.. _Django documentation: https://docs.djangoproject.com/en/1.8/ref/forms/api/#django.forms.Form.required_css_class
+.. _Django documentation: https://docs.djangoproject.com/en/stable/ref/forms/api/#django.forms.Form.required_css_class
 
 .. code-block:: python
 
-    required_css_class = 'required'
+	required_css_class = 'djng-field-required'
 
 Next, add the *CSS*:
 
 .. code-block:: css
 
-    label.required::after {
-        content: "*";
-    }
+	label.djng-field-required::after {
+	    content: "\00a0*";
+	}
 
 
 Client-side Form validation

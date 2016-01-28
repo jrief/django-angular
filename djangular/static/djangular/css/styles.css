@@ -13,7 +13,9 @@ form .ng-invalid-bound.ng-pristine:focus,
 form .ng-invalid.ng-dirty:focus {
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 6px #ce8483;
 }
-
+label.djng-field-required::after {
+	content: "\00a0*";
+}
 ul.djng-form-errors, ul.djng-field-errors {
 	display: inline-block;
 	list-style-type: none;
