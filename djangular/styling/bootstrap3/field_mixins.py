@@ -20,14 +20,6 @@ class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
 class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
     def get_converted_widget(self):
         assert(isinstance(self, fields.ChoiceField))
-        if isinstance(self.widget, widgets.CheckboxInput):
-            raise RuntimeError('Should never reach this')
-            self.widget_css_classes = None
-            if not isinstance(self.widget, bs3widgets.CheckboxInput):
-                new_widget = bs3widgets.CheckboxInput(self.label)
-                new_widget.__dict__, new_widget.choice_label = self.widget.__dict__, new_widget.choice_label
-                self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
-                return new_widget
         if isinstance(self.widget, widgets.RadioSelect):
             self.widget_css_classes = None
             if not isinstance(self.widget, bs3widgets.RadioSelect):
