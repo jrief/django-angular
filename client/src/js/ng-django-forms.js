@@ -134,9 +134,6 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 				restoreInputField(modelCtrl, field);
 				break;
 			case 'SELECT':
-				modelCtrl.$formatters.push(function (val) {
-					return '' + val;
-				});
 				restoreSelectOptions(modelCtrl, field);
 				break;
 			case 'TEXTAREA':
