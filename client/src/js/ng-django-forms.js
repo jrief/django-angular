@@ -69,32 +69,32 @@ djng_forms_module.directive('djngError', function() {
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
 djng_forms_module.directive('ngModel', ['$log', function ($log) {
-	function restoreInputField(modelCtrl, field) {
+	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
 		case 'radio':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(field.defaultValue);
+				return field.defaultValue;
 			}
 			break;
 		case 'checkbox':
 			if (field.defaultChecked) {
-				modelCtrl.$setViewValue(true);
+				return true;
 			}
 			break;
 		case 'password':
 			// after an (un)successful submission, reset the password field
-			modelCtrl.$setViewValue(null);
+			return null;
 			break;
 		default:
-			if (field.defaultValue) {
-				modelCtrl.$setViewValue(field.defaultValue);
+			if(field.defaultValue) {
+				return field.defaultValue;
 			}
 			break;
 		}
 	}
 
-	function restoreSelectOptions(modelCtrl, field) {
+	function restoreSelectOptions(field) {
 		var multivalues = [];
 		angular.forEach(field.options, function(option) {
 			if (option.defaultSelected) {
@@ -103,19 +103,28 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 				if (field.multiple) {
 					multivalues.push(option.value);
 				} else {
-					modelCtrl.$setViewValue(option.value);
+					return option.value;
 				}
 			}
 		});
 		if (field.multiple) {
-			modelCtrl.$setViewValue(multivalues);
+			return multivalues;
 		}
 	}
 
-	function restoreTextArea(modelCtrl, field) {
-		if (field.defaultValue) {
-			// restore the field's content from the rendered content of bound fields
-			modelCtrl.$setViewValue(field.defaultValue);
+	function restoreTextArea(field) {
+		// restore the field's content from the rendered content of bound fields
+		if(field.defaultValue) {
+			return field.defaultValue;
+		}
+	}
+
+	function setDefaultValue(modelCtrl, value) {
+		if(angular.isDefined(value)) {
+			modelCtrl.$setViewValue(value);
+			if(angular.isObject(modelCtrl.$options)) {
+				modelCtrl.$commitViewValue();
+			}
 		}
 	}
 
@@ -127,22 +136,25 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 		link: function(scope, element, attrs, ctrls) {
 			var field = angular.isElement(element) ? element[0] : null;
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
+
 			if (!field || !formCtrl)
 				return;
+
 			switch (field.tagName) {
 			case 'INPUT':
-				restoreInputField(modelCtrl, field);
+				setDefaultValue(modelCtrl, restoreInputField(field));
 				break;
 			case 'SELECT':
-				restoreSelectOptions(modelCtrl, field);
+				setDefaultValue(modelCtrl, restoreSelectOptions(field));
 				break;
 			case 'TEXTAREA':
-				restoreTextArea(modelCtrl, field);
+				setDefaultValue(modelCtrl, restoreTextArea(field));
 				break;
 			default:
 				$log.log('Unknown field type');
 				break;
 			}
+
 			// restore the form's pristine state
 			formCtrl.$setPristine();
 		}
