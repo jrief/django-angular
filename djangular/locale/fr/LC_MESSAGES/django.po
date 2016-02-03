@@ -1,0 +1,37 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-02-03 17:45+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms/field_mixins.py:35
+#, python-format
+msgid "Ensure this value has at least %(limit_value)d character"
+msgid_plural "Ensure this value has at least %(limit_value)d characters"
+msgstr[0] "Assurez vous que cette valeur comporte au minimum %(limit_value)d caractère"
+msgstr[1] "Assurez vous que cette valeur comporte au minimum %(limit_value)d caractères"
+
+#: forms/field_mixins.py:41
+#, python-format
+msgid "Ensure this value has at most %(limit_value)d character"
+msgid_plural "Ensure this value has at most %(limit_value)d characters"
+msgstr[0] "Assurez vous que cette valeur comporte au maximum %(limit_value)d caractère"
+msgstr[1] "Assurez vous que cette valeur comporte au maximum %(limit_value)d caractères"
+
+#: forms/field_mixins.py:79
+msgid "This input self does not contain valid data."
+msgstr "Ce champs ne contient pas de données valides"
