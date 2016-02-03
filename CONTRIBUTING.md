@@ -19,6 +19,7 @@ If you'd like to submit new translations, please use:
 
 
 `cd django-angular/djangular`
+
 `django-admin.py makemessages --locale=fr` (e.g. for french translation)
 
 
@@ -29,5 +30,5 @@ Code of Conduct
 ===============
 
 As a contributor, you can help us keep the community open and inclusive.
-Please read and follow at least the django `Code of Conduct <https://www.djangoproject.com/conduct/>`_.
+Please read and follow at least the django [Code of Conduct](https://www.djangoproject.com/conduct/).
 
