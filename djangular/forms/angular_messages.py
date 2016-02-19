@@ -2,19 +2,16 @@
 from __future__ import unicode_literals
 
 from django.utils.html import format_html, format_html_join
-from django.utils.encoding import python_2_unicode_compatible, force_text
+from django.utils.encoding import force_text
 from django.utils.safestring import mark_safe, SafeText
-
 from djangular.forms.angular_base import TupleErrorList, SafeTuple, NgFormBaseMixin
 
 
-
 class NgMessagesFormErrorList(TupleErrorList):
-	ul_format = '<ul class="{1}" ng-show="{0}.$message" ng-cloak>{3}</ul>'
-	
+    ul_format = '<ul class="{1}" ng-show="{0}.$message" ng-cloak>{3}</ul>'
+
 
 class NgMessagesFieldErrorList(TupleErrorList):
-	
     ul_format_valid = '<ul class="{1}" ng-show="{2}.$submitted || {0}.$dirty" ng-cloak>{3}</ul>'
     li_format_valid = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
 
