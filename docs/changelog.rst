@@ -4,6 +4,9 @@
 Release History
 ===============
 
+0.7.17.dev0
+-----------
+
 0.7.16
 ------
 * Ready for Django-1.9.
