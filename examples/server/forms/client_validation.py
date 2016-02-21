@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 # start tutorial
-from djangular.forms import NgFormValidationMixin
+from djng.forms import NgFormValidationMixin
 from . import subscribe_form
 
 

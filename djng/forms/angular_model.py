@@ -5,7 +5,7 @@ try:
 except ImportError:
     from django.forms.util import ErrorDict
 from django.utils.html import format_html
-from djangular.forms.angular_base import NgFormBaseMixin, SafeTuple
+from djng.forms.angular_base import NgFormBaseMixin, SafeTuple
 
 
 class NgModelFormMixin(NgFormBaseMixin):

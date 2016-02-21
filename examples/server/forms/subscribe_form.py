@@ -3,8 +3,8 @@ from __future__ import unicode_literals
 # start tutorial
 from django import forms
 from django.core.exceptions import ValidationError
-from djangular.forms.fields import FloatField
-from djangular.styling.bootstrap3.forms import Bootstrap3Form
+from djng.forms.fields import FloatField
+from djng.styling.bootstrap3.forms import Bootstrap3Form
 
 
 def validate_password(value):

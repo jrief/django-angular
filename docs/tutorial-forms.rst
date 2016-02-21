@@ -26,7 +26,7 @@ AngularJS and Bootstrap.
 Basic Form Submission
 =====================
 
-Lets start with a very basic example, a functioning demo is available here: http://djangular.aws.awesto.com/classic_form/
+Lets start with a very basic example, a functioning demo is available here: http://django-angular.awesto.com/classic_form/
 
 Say, we have a simple but rather long Form definition, to subscribe a person wanting to visit us:
 

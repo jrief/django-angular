@@ -4,8 +4,8 @@ import json
 from django.test import TestCase
 from django.test.client import RequestFactory
 
-from djangular.views.crud import NgCRUDView
-from djangular.views.mixins import JSONResponseMixin
+from djng.views.crud import NgCRUDView
+from djng.views.mixins import JSONResponseMixin
 from server.models import DummyModel, DummyModel2, SimpleModel, M2MModel
 
 

@@ -3,12 +3,12 @@ from django.conf.urls import url, include
 from django.views.generic import View
 from django.http import HttpResponse
 from django.template import RequestContext, Template
-from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation
+from djng.views.mixins import JSONResponseMixin, allow_remote_invocation
 
 
 class TestCSRFValueView(View):
     def get(self, request):
-        template = Template('{% load djangular_tags %}<script>var x="{% csrf_value %}";</script>')
+        template = Template('{% load djng_tags %}<script>var x="{% csrf_value %}";</script>')
         context = RequestContext(request, {})
         return HttpResponse(template.render(context))
 
@@ -21,9 +21,9 @@ class TestUrlResolverTagsView(JSONResponseMixin, View):
     def get(self, request):
         load = request.GET.get('load')
         if load == 'root_urls':
-            template = Template("{% load djangular_tags %}{% load_djng_urls None '' %}")
+            template = Template("{% load djng_tags %}{% load_djng_urls None '' %}")
         else:
-            template = Template("{% load djangular_tags %}{% load_djng_urls %}")
+            template = Template("{% load djng_tags %}{% load_djng_urls %}")
         context = RequestContext(request, {})
         return HttpResponse(template.render(context))
 
@@ -38,7 +38,7 @@ class RemoteMethodsView(JSONResponseMixin, View):
         return {'bar': 'abc'}
 
     def get(self, request):
-        template = Template("{% load djangular_tags %}{% load_djng_urls 'SELF' %}")
+        template = Template("{% load djng_tags %}{% load_djng_urls 'SELF' %}")
         context = RequestContext(request, {})
         return HttpResponse(template.render(context))
 
@@ -57,13 +57,13 @@ class TestAngularTagView(View):
         tmpl_id = request.GET.get('tmpl_id')
         switch = bool(request.GET.get('switch'))
         if tmpl_id == 'expand_object':
-            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme.foo }}{% endangularjs %}')
+            template = Template('{% load djng_tags %}{% angularjs switch %}{{ expandme.foo }}{% endangularjs %}')
             context = {'switch': switch, 'expandme': {'foo': 'bar'}}
         elif tmpl_id == 'expand_array':
-            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme.1.foo }}{% endangularjs %}')
+            template = Template('{% load djng_tags %}{% angularjs switch %}{{ expandme.1.foo }}{% endangularjs %}')
             context = {'switch': switch, 'expandme': [{'foo': 'zero'}, {'foo': 'one'}]}
         else:
-            template = Template('{% load djangular_tags %}{% angularjs switch %}{{ expandme }}{% endangularjs %}')
+            template = Template('{% load djng_tags %}{% angularjs switch %}{{ expandme }}{% endangularjs %}')
             context = {'switch': switch, 'expandme': 'Hello World'}
         request_context = RequestContext(request, context)
         return HttpResponse(template.render(request_context))

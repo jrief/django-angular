@@ -23,7 +23,7 @@ this can be achieved automatically and on the fly
 
 	from django import forms
 	from django.utils import six
-	from djangular.forms import NgDeclarativeFieldsMetaclass, NgFormValidationMixin
+	from djng.forms import NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 	
 	class MyValidatedForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgFormValidationMixin, forms.Form)):
 	    form_name = 'my_valid_form'
@@ -35,7 +35,7 @@ can be rewritten in a simpler way, by using the convenience class ``NgForm`` as 
 
 .. code-block:: python
 
-	from djangular.forms import NgFormValidationMixin, NgForm
+	from djng.forms import NgFormValidationMixin, NgForm
 	
 	class MyValidatedForm(NgFormValidationMixin, NgForm):
 	    # members as above
@@ -45,7 +45,7 @@ If the Form shall inherit from Django's ``forms.ModelForm``, use the convenience
 
 .. code-block:: python
 
-	from djangular.forms import NgFormValidationMixin, NgModelForm
+	from djng.forms import NgFormValidationMixin, NgModelForm
 	
 	class MyValidatedForm(NgFormValidationMixin, NgModelForm):
 	    class Meta:
@@ -124,7 +124,7 @@ rendered in templates using a special field tag. Say, the form contains
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgFormValidationMixin
+	from djng.forms import NgFormValidationMixin
 	
 	class MyValidatedForm(NgFormValidationMixin, forms.Form):
 		email = forms.EmailField(label='Email')
@@ -168,7 +168,7 @@ On class declaration inherit first from ``NgModelFormMixin`` and *afterward* fro
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgFormValidationMixin, NgModelFormMixin
+	from djng.forms import NgFormValidationMixin, NgModelFormMixin
 	
 	class MyValidatedForm(NgModelFormMixin, NgFormValidationMixin, forms.Form):
 	    # custom form fields

@@ -4,8 +4,14 @@
 Release History
 ===============
 
-0.7.17.dev0
------------
+0.8.0
+-----
+From a functional point of view, nothing changed between 0.7.16 and 0.8.0 with one *big* exception:
+**djangular has been renamed to djng**. This was required by many users since it a) caused a
+naming conflict with another django app named djangular and b) the identifier "djangular" by many
+users was declared as a bad choice. Please read https://github.com/jrief/django-angular/issues/35
+for the preceded discussion on this topic.
+
 
 0.7.16
 ------

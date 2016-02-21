@@ -66,7 +66,7 @@ Now, the included template can be written as:
 
 .. code-block:: html
 
-	{% load djangular_tags %}
+	{% load djng_tags %}
 	{% angularjs ng %}
 	<div{% if ng %} ng-repeat="item in items"{% endif %}>
 	    <h4><a ng-href="{{ item.absolute_url }}"{% if not ng %} href="{{ item.absolute_url }}"{% endif %}>{{ item.name }}</a></h4>

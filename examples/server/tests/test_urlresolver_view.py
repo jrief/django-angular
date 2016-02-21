@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
 from django.test import TestCase, RequestFactory
-from djangular.middleware import DjangularUrlMiddleware
+from djng.middleware import AngularUrlMiddleware
 from django.core.urlresolvers import resolve
 
 TEST_URLCONF_PATH = 'server.tests.test_urlresolver_view'
@@ -48,7 +48,7 @@ class TestUrlResolverView(TestCase):
     def setUp(self):
         self.factory = RequestFactory()
         self.user = User.objects.create_user('test', 'test@example.com', 'password')
-        self.middleware = DjangularUrlMiddleware()
+        self.middleware = AngularUrlMiddleware()
         self.url_name_arg = 'djng_url_name'
         self.args_prefix = 'djng_url_args'
         self.kwarg_prefix = 'djng_url_kwarg_'
@@ -62,7 +62,7 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: url_name
         }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse('home'))
         self.assertEqual(request.path_info, reverse('home'))
@@ -73,13 +73,13 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: url_name
         }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse(url_name))
 
     def test_middleware_request_not_modified(self):
         """
-        If request.path != <DjangularUrlMiddleware.ANGULAR_REVERSE> request must not be modified
+        If request.path != <AngularUrlMiddleware.ANGULAR_REVERSE> request must not be modified
         """
         path = '/some/other/url'
         request = self.factory.get(path)
@@ -94,7 +94,7 @@ class TestUrlResolverView(TestCase):
         data = {
             self.url_name_arg: url_name
         }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         request.user = self.user
         self.middleware.process_request(request)
         self.assertEqual(request.user, self.user)
@@ -112,7 +112,7 @@ class TestUrlResolverView(TestCase):
         query_dict = QueryDict('', mutable=True)
         query_dict.update(args)
 
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.GET, query_dict)
 
@@ -132,7 +132,7 @@ class TestUrlResolverView(TestCase):
         query_dict = QueryDict('', mutable=True)
         query_dict.update(args)
 
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.GET, query_dict)
 
@@ -151,7 +151,7 @@ class TestUrlResolverView(TestCase):
         query_dict = QueryDict('', mutable=True)
         query_dict.update(args)
 
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.GET, query_dict)
 
@@ -162,6 +162,6 @@ class TestUrlResolverView(TestCase):
             self.kwarg_prefix + 'id2': 2,
             self.kwarg_prefix + 'id3': 3
         }
-        request = self.factory.get(DjangularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse('home_kwargs', kwargs={'id': 1, 'id2': 2, 'id3': 3}))

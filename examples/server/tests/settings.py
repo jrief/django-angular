@@ -24,7 +24,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.staticfiles',
-    'djangular',
+    'djng',
     'server',
 )
 

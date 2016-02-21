@@ -16,7 +16,7 @@ When using Angular's `$resource`_ to build services, each service comes with fre
 	  'delete': {method:'DELETE'}
 	};
 
-Of course this need support on the server side. This can easily be done with **djangular**
+Of course this need support on the server side. This can easily be done with **django-angular**'s
 ``NgCRUDView``.
 
 .. note:: ``remove()`` and ``delete()`` do exactly the same thing. Usage of ``remove()`` is
@@ -29,7 +29,7 @@ Subclass ``NgCRUDView`` and override model attribute:
 
 .. code-block:: python
 
-	from djangular.views.crud import NgCRUDView
+	from djng.views.crud import NgCRUDView
 	
 	class MyCRUDView(NgCRUDView):
 	    model = MyModel

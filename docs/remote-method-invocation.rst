@@ -26,7 +26,7 @@ View's class additionally inherit from JSONResponseMixin:
 .. code-block:: python
 
 	from django.views.generic import View
-	from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation
+	from djng.views.mixins import JSONResponseMixin, allow_remote_invocation
 	
 	class MyJSONView(JSONResponseMixin, View):
 	    # other view methods
@@ -52,7 +52,7 @@ client side, such as:
 
 .. code-block:: javascript
 
-	{­% load djangular_tags %­}
+	{­% load djng_tags %­}
 	…
 	<script type="text/javascript">
 	var tags = {­% djng_all_rmi %­};
@@ -74,7 +74,7 @@ initialization of the client side, such as:
 
 .. code-block:: javascript
 
-	{­% load djangular_tags %­}
+	{­% load djng_tags %­}
 	…
 	<script type="text/javascript">
 	var tags = {­% djng_current_rmi %­};

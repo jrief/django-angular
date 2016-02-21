@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.forms import fields
 from django.forms import widgets
-from djangular.forms import field_mixins
+from djng.forms import field_mixins
 from . import widgets as bs3widgets
 
 

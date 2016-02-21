@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 # start tutorial
 from django.core.exceptions import ValidationError
-from djangular.forms import NgModelFormMixin, NgFormValidationMixin
+from djng.forms import NgModelFormMixin, NgFormValidationMixin
 from . import subscribe_form
 
 

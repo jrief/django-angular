@@ -21,11 +21,11 @@ Installation
 ============
 
 It is assumed that your AngularJS application has already been initialized and that you have loaded
-django-angular tags, ``{% load djangular_tags %}``:
+django-angular tags, ``{% load djng_tags %}``:
 
 .. code-block:: html
 
-    {% load djangular_tags %}
+    {% load djng_tags %}
     <script>
         var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
     </script>
@@ -34,7 +34,7 @@ Now, you have to include ``django-angular.js`` and add data about your django ur
 
 .. code-block:: html
 
-    <script src="{% static 'djangular/js/django-angular.js' %}"></script>
+    <script src="{% static 'djng/js/django-angular.js' %}"></script>
     <script>angular.module('ng.django.urls').constant('patterns', {% load_djng_urls %});</script>
 
 The ``djangoUrl`` service is then available through `dependency injection`_

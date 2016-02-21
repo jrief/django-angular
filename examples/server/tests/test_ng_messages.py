@@ -2,7 +2,7 @@
 from django.test import TestCase
 from django import forms
 from pyquery.pyquery import PyQuery
-from djangular.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
+from djng.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
 
 
 class MessagesForm(NgMessagesMixin, NgForm):
