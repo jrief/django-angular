@@ -56,11 +56,9 @@ class NgMessagesFieldErrorList(TupleErrorList):
         parts = value.split('.')
         parts.pop()
         return '.'.join(parts)
-	
 
 
 class NgMessagesMixin(NgFormBaseMixin):
-	
     def __init__(self, data=None, *args, **kwargs):
         self.form_error_class = kwargs.pop('form_error_class', NgMessagesFormErrorList)
         error_class = kwargs.pop('error_class', NgMessagesFieldErrorList)
