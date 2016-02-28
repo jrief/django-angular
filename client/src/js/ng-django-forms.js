@@ -299,8 +299,7 @@ djng_forms_module.factory('djangoForm', function() {
 		setErrors: function(form, errors) {
 			// remove errors from this form, which may have been rejected by an earlier validation
 			form.$message = '';
-			if (form.$error.hasOwnProperty('rejected') &&
-				angular.isArray(form.$error.rejected)) {
+			if (form.hasOwnProperty('$error') && angular.isArray(form.$error.rejected)) {
 				/*
 				 * make copy of rejected before we loop as calling
 				 * field.$setValidity('rejected', true) modifies the error array
