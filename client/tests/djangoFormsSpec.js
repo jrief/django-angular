@@ -37,7 +37,7 @@ describe('unit tests for module ng.django.forms', function() {
 		var scope;
 	
 		beforeEach(function() {
-			// djangular's 'form' directive, overrides the behavior of the view value.
+			// djng's 'form' directive, overrides the behavior of the view value.
 			module('ng.django.forms');
 		});
 
@@ -65,7 +65,7 @@ describe('unit tests for module ng.django.forms', function() {
 		var scope, form;
 	
 		beforeEach(function() {
-			// djangular's 'form' directive, overrides the behavior of the view value.
+			// djng's 'form' directive, overrides the behavior of the view value.
 			module('ng.django.forms');
 		});
 

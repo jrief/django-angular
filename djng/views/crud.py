@@ -6,7 +6,7 @@ from django.core import serializers
 from django.forms.models import modelform_factory
 from django.views.generic import FormView
 
-from djangular.views.mixins import JSONBaseMixin, JSONResponseException
+from djng.views.mixins import JSONBaseMixin, JSONResponseException
 
 
 class NgMissingParameterError(ValueError):

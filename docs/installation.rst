@@ -24,13 +24,13 @@ Dependencies
 Configuration
 =============
 
-Add ``'djangular'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file
+Add ``'djng'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py`` file
 
 .. code-block:: python
 
 	INSTALLED_APPS = (
 	    ...
-	    'djangular',
+	    'djng',
 	    ...
 	)
 

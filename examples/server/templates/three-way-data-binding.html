@@ -59,10 +59,12 @@ equally named data bucket inside the remote Redis datastore.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}
+{% autoescape off %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/subscribe_form.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/threeway_databinding.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/three-way-data-binding.html" %}</div>
 <div ng-show="activeTab==='JavaScript'">{% pygments "static/js/three-way-data-binding.js" %}</div>
+{% endautoescape %}
 <p class="bg-info">Note that AngularJS directives are configured inside HTML, since only Django
 templates can expand server variables.</p>
 {% endblock tutorial_code %}

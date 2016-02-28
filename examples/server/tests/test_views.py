@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
-import warnings
 from django.test import TestCase
 from django.test.client import RequestFactory
 from django.core.serializers.json import DjangoJSONEncoder
 from django.http import HttpResponse
 from django.views.generic import View
-from djangular.views.mixins import JSONResponseMixin, allow_remote_invocation, allowed_action
+from djng.views.mixins import JSONResponseMixin, allow_remote_invocation, allowed_action
 
 
 class JSONResponseView(JSONResponseMixin, View):

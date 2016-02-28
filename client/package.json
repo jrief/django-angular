@@ -1,7 +1,7 @@
 {
 	"name": "django-angular",
 	"description": "Let Django play well with AngularJS",
-	"version": "0.7.15",
+	"version": "0.7.16",
 	"homepage": "https://github.com/jrief/django-angular",
 	"author": {
 		"name": "Jacob Rief",

@@ -11,7 +11,7 @@ try:
 except ImportError:
     from django.utils.module_loading import import_by_path as import_string
 
-from djangular.views.mixins import JSONResponseMixin
+from djng.views.mixins import JSONResponseMixin
 
 
 def _get_remote_methods_for(view_object, url):

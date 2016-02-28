@@ -5,10 +5,31 @@ django-angular
 Let Django play well with AngularJS
 ===================================
 
-0.7.15 (latest)
+Please help us testing the upcoming release 0.8.0.
+
+From a functional point of view, nothing changed between 0.7.16 and 0.8.0 with one *big* exception:
+
+**djangular has been renamed to djng**. This was requested by many users since it 
+
+a) caused a naming conflict with another Django app named the same and 
+
+b) the identifier "djangular" by many users was seen as a bad choice for this Django app.
+
+Please read https://github.com/jrief/django-angular/issues/35 for the preceded discussion
+on this topic.
+
+
+0.7.16 (latest)
 ---------------
-* Simplified middleware for reversing the URL.
-* Reversing url in djangoUrl service can now be overriden.
+* Ready for Django-1.9.
+* Fixed: Non-ascii characters were not being processed correctly by ``django.http.request.QueryDict.init``.
+* In JavaScript, replaced ``console.log`` by ``$log.log``.
+* Use decimal base on invocation of ``parseInt``.
+* Use square brackets to access scope members, which otherwise won't support fields containing ``-``.
+* templatetag ``load_djng_urls`` has been removed.
+* For CRUD, check if request method is allowed.
+* Fixed djngError directive, when using AngularJS-1.3.
+* Added support for ``ngMessages``, as available with AngularJS-1.3.
 
 [Demo](http://django-angular.awesto.com/form_validation/) on how to combine Django with Angular's form validation.
 

@@ -8,7 +8,7 @@ One of AngularJS biggest selling propositions is its `two-way data-binding`_. Tw
 is an automatic way of updating the view whenever the model changes, as well as updating the model
 whenever the view changes.
 
-With **djangular** and the additional module django-websocket-redis_, one can extend this feature
+With **djng** and the additional module django-websocket-redis_, one can extend this feature
 to reflect all changes to a model, back and forward with a corresponding object stored on the
 server. This means that the server “sees” whenever the model on the client changes and can by
 itself, modify values on the client side at any time, without having the client to poll for new
@@ -45,7 +45,7 @@ Refer to the Javascript file ``django-angular.js`` somewhere on your page:
 
 .. code-block:: html
 
-	<script src="{{ STATIC_URL }}djangular/js/django-angular.min.js" type="text/javascript"></script>
+	<script src="{{ STATIC_URL }}djng/js/django-angular.min.js" type="text/javascript"></script>
 
 add the module dependency to your application initialization:
 

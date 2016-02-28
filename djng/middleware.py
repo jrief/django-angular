@@ -2,12 +2,11 @@
 from __future__ import unicode_literals
 import six
 from django import http
-from django.core.handlers.wsgi import WSGIRequest
 from django.core.urlresolvers import reverse
 from django.utils.http import unquote
 
 
-class DjangularUrlMiddleware(object):
+class AngularUrlMiddleware(object):
     """
     If the request path is <ANGULAR_REVERSE> it should be resolved to actual view, otherwise return
     ``None`` and continue as usual.
@@ -38,8 +37,7 @@ class DjangularUrlMiddleware(object):
             assert not url.startswith(self.ANGULAR_REVERSE), "Prevent recursive requests"
 
             # rebuild the request object with a different environ
-            request.path = url
-            request.path_info = url
+            request.path = request.path_info = url
             request.environ['PATH_INFO'] = url
             query = request.GET.copy()
             for key in request.GET:

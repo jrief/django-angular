@@ -1,2 +1,6 @@
-# -*- coding: utf-8 -*-
-__version__ = '0.7.16'
+import warnings
+
+warnings.warn(
+    "The module `djangular` has been renamed to `djng`."
+)
+from djng import *

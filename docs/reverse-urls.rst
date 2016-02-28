@@ -38,7 +38,7 @@ Angular
 
 .. code-block:: html
 
-	<script src="{% static 'djangular/js/django-angular.js' %}"></script>
+	<script src="{% static 'djng/js/django-angular.js' %}"></script>
 
 * Add ``ng.django.urls`` as a dependency for you app:
 
@@ -55,19 +55,19 @@ controllers.
 Setting via Django Middleware
 -----------------------------
 
-* Add ``'djangular.middleware.DjangularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
+* Add ``'djng.middleware.AngularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
 ``settings.py`` file:
 
 .. code-block:: python
 
 	MIDDLEWARE_CLASSES = (
-	    'djangular.middleware.DjangularUrlMiddleware',
+	    'djng.middleware.AngularUrlMiddleware',
 	    # Other middlewares
 	)
 
 .. warning:: This must be the **first** middleware included in ``MIDDLEWARE_CLASSES``
 
-Using this approach adds some magicness to your URL routing, because the ``DjangularUrlMiddleware``
+Using this approach adds some magicness to your URL routing, because the ``AngularUrlMiddleware``
 class bypasses the HTTP request from normal URL resolving and calls the corresponding view function
 directly.
 

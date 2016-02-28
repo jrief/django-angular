@@ -210,7 +210,7 @@ class BaseFieldsModifierMetaclass(type):
     Metaclass that reconverts Field attributes from the dictionary 'base_fields' into Fields
     with additional functionality required for AngularJS's Form control and Form validation.
     """
-    field_mixins_module = 'djangular.forms.field_mixins'
+    field_mixins_module = 'djng.forms.field_mixins'
 
     def __new__(cls, name, bases, attrs):
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)

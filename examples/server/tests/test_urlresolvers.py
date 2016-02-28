@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.test import TestCase
 from django.test.client import RequestFactory
-from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
+from djng.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
 from .urls import RemoteMethodsView
 
 

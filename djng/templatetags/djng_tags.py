@@ -5,7 +5,7 @@ from django.template import Library
 from django.template.base import Node, NodeList, TextNode, VariableNode
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
-from djangular.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
+from djng.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
 
 register = Library()
 

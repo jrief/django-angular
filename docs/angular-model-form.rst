@@ -15,7 +15,7 @@ Sample code
 ===========
 
 Assume to have a simple Django form class with a single input field. Enrich its functionality
-by mixing in the **djangular** class ``NgModelFormMixin``
+by mixing in the **djng** class ``NgModelFormMixin``
 
 .. note:: Here the names **NgModelForm...** do not interrelate with Django's ``forms.ModelForm``.
 		Instead that name reflects the HTML attribute ``ng-model`` as used in ``<form>``-elements
@@ -25,7 +25,7 @@ by mixing in the **djangular** class ``NgModelFormMixin``
 
 	from django import forms
 	from django.utils import six
-	from djangular.forms import NgDeclarativeFieldsMetaclass, NgModelFormMixin
+	from djng.forms import NgDeclarativeFieldsMetaclass, NgModelFormMixin
 	
 	class ContactForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgModelFormMixin, forms.Form)):
 	    subject = forms.CharField()
@@ -36,7 +36,7 @@ can be rewritten in a simpler way, by using the convenience class ``NgForm`` as 
 
 .. code-block:: python
 
-	from djangular.forms import NgModelFormMixin, NgForm
+	from djng.forms import NgModelFormMixin, NgForm
 	
 	class MyValidatedForm(NgModelFormMixin, NgForm):
 	    # members as above
@@ -46,7 +46,7 @@ If the Form shall inherit from Django's ``forms.ModelForm``, use the convenience
 
 .. code-block:: python
 
-	from djangular.forms import NgModelFormMixin, NgModelForm
+	from djng.forms import NgModelFormMixin, NgModelForm
 	
 	class MyValidatedForm(NgModelFormMixin, NgModelForm):
 	    class Meta:

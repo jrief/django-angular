@@ -6,7 +6,7 @@ from django.test import TestCase
 from pyquery.pyquery import PyQuery
 from server.forms.client_validation import SubscribeForm as ClientValidatedForm
 from server.forms.combined_validation import SubscribeForm as CombinedValidatedForm
-from djangular.forms.angular_base import NgBoundField
+from djng.forms.angular_base import NgBoundField
 
 
 class NgFormValidationMixinTest(TestCase):

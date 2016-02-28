@@ -1,6 +1,6 @@
 import os
 from setuptools import setup, find_packages
-from djangular import __version__
+from djng import __version__
 
 DESCRIPTION = 'Let Django play well with AngularJS'
 

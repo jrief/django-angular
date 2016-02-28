@@ -17,7 +17,7 @@ the rendering of form field error lists, in the correct format for the ngMessage
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
+	from djng.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
 
 	class MyNgMessagesForm(NgMessagesMixin, NgFormValidationMixin, NgForm):
 		form_name = 'my_form'
@@ -90,7 +90,7 @@ Valid examples:
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
+	from djng.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
 
 	class MyNgMessagesForm(NgMessagesMixin, NgFormValidationMixin, NgForm):
 		# custom form logic
@@ -100,7 +100,7 @@ Or
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgForm, NgModelFormMixin, NgFormValidationMixin, NgMessagesMixin
+	from djng.forms import NgForm, NgModelFormMixin, NgFormValidationMixin, NgMessagesMixin
 
 	class MyNgMessagesForm(NgMessagesMixin, NgModelFormMixin, NgFormValidationMixin, NgForm):
 		# custom form logic
@@ -110,7 +110,7 @@ Invalid examples:
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgForm, NgModelFormMixin, NgMessagesMixin
+	from djng.forms import NgForm, NgModelFormMixin, NgMessagesMixin
 
 	class MyNgMessagesForm(NgMessagesMixin, NgModelFormMixin, NgForm):
 		# custom form logic
@@ -120,7 +120,7 @@ Or
 .. code-block:: python
 
 	from django import forms
-	from djangular.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
+	from djng.forms import NgForm, NgFormValidationMixin, NgMessagesMixin
 
 	class MyNgMessagesForm(NgFormValidationMixin, NgMessagesMixin, NgForm):
 		# custom form logic

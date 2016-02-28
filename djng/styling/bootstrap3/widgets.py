@@ -8,7 +8,7 @@ try:
 except ImportError:
     from django.forms.util import flatatt
 from django.forms import widgets
-from djangular.forms.widgets import (
+from djng.forms.widgets import (
     ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
     CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
     RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)

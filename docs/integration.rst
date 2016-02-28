@@ -91,7 +91,7 @@ By using the utility function
 
 .. code-block:: python
 
-	from djangular.core.urlresolvers import urls_by_namespace
+	from djng.core.urlresolvers import urls_by_namespace
 
 	my_partials = urls_by_namespace('partials')
 
@@ -151,7 +151,7 @@ your page
 
 .. code-block:: html
 
-	<script src="{% static 'djangular/js/django-angular.min.js' %}" type="text/javascript"></script>
+	<script src="{% static 'djng/js/django-angular.min.js' %}" type="text/javascript"></script>
 
 and add the module dependency to your application initialization
 
@@ -161,6 +161,7 @@ and add the module dependency to your application initialization
 
 .. _verbatim: https://docs.djangoproject.com/en/1.5/ref/templates/builtins/#verbatim
 .. _$routeProvider: http://docs.angularjs.org/api/ngRoute.$routeProvider
+.. _$templateCache: https://docs.angularjs.org/api/ng/service/$templateCache
 .. _translation: https://docs.djangoproject.com/en/1.5/topics/i18n/translation/
 .. _Jasmine: http://pivotal.github.io/jasmine/
 .. _bound forms: https://docs.djangoproject.com/en/dev/ref/forms/api/#bound-and-unbound-forms
