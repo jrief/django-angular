@@ -5,8 +5,8 @@
 	<title>Django-Angular Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<link href="//netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="{% static 'djng/css/styles.css' %}" rel="stylesheet" />
-	<link href="{% static 'djng/css/bootstrap3.css' %}" rel="stylesheet" />
+	<link href="{% static 'django-angular/css/styles.css' %}" rel="stylesheet" />
+	<link href="{% static 'django-angular/css/bootstrap3.css' %}" rel="stylesheet" />
 	<link href="{% static 'css/djangular-demo.css' %}" rel="stylesheet" />
 </head>
 
@@ -34,9 +34,6 @@
 					</li>
 					<li class="{% active request 'djng_combined_validation' %}">
 						<a href="{% url 'djng_combined_validation' %}">Combined Validation</a>
-					</li>
-					<li class="{% active request 'djng_angular_messages' %}">
-						<a href="{% url 'djng_angular_messages' %}">Angular Messages</a>
 					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">

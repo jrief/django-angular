@@ -11,7 +11,6 @@ if VERSION[:2] < (1, 7):
     from .models import PatchedModelFormMetaclass as ModelFormMetaclass
 else:
     from django.forms.models import ModelFormMetaclass
-from .angular_messages import NgMessagesMixin
 
 
 class NgDeclarativeFieldsMetaclass(BaseFieldsModifierMetaclass, DeclarativeFieldsMetaclass):

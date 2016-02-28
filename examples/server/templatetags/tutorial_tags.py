@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 import os
 from django import template
 from django.conf import settings
@@ -10,6 +11,13 @@ from pygments.lexers.web import JavascriptLexer
 from pygments.formatters import HtmlFormatter
 
 register = template.Library()
+
+
+@register.simple_tag(name='component', takes_context=True)
+def component(context, component):
+    the_component = component.as_component()
+    html = the_component.dispatch(context['request'])
+    return html
 
 
 @register.simple_tag

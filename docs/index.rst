@@ -22,7 +22,6 @@ Contents
   angular-model-form
   angular-form-validation
   tutorial-forms
-  angular-messages
   basic-crud-operations
   remote-method-invocation
   csrf-protection

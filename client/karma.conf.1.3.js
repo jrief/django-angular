@@ -5,7 +5,7 @@ module.exports = function(config) {
 	function getFiles() {
 		var fs = require('fs'); 
 		var files = [];
-		['angular.js', 'angular-mocks.js', 'angular-messages.js'].forEach(function(item) {
+		['angular.js', 'angular-mocks.js'].forEach(function(item) {
 			var cachename = 'cdncache/' + item;
 			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.3.0/' + item);
 		});
