@@ -1,5 +1,5 @@
 {% extends "subscribe-form.html" %}
-{% load tutorial_tags %}
+{% load static tutorial_tags %}
 
 {% block form_title %}Django Forms with three-way data-binding{% endblock %}
 
@@ -18,7 +18,7 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script src="{{ STATIC_URL }}js/ng-django-websocket.js" type="text/javascript"></script>
+	<script src="{% static 'js/ng-django-websocket.js' %}" type="text/javascript"></script>
 {% endblock scripts %}
 
 {% block ng_module_dependencies %}['ng.django.websocket']{% endblock %}
@@ -33,7 +33,7 @@
 {% endblock %}
 
 {% block demo_scripts %}
-	<script src="{{ STATIC_URL }}js/three-way-data-binding.js" type="text/javascript"></script>
+	<script src="{% static 'js/three-way-data-binding.js' %}" type="text/javascript"></script>
 	{{ block.super }}
 {% endblock %}
 

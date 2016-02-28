@@ -1,5 +1,5 @@
 {% extends "subscribe-form.html" %}
-{% load djng_tags tutorial_tags %}
+{% load static djng_tags tutorial_tags %}
 
 {% block form_title %}Django Form Model as Scope{% endblock %}
 
@@ -29,7 +29,7 @@
 
 {% block demo_scripts %}
 	{{ block.super }}
-	<script src="{{ STATIC_URL }}js/model-scope.js" type="text/javascript"></script>
+	<script src="{% static 'js/model-scope.js' %}" type="text/javascript"></script>
 {% endblock %}
 
 {% block tutorial_intro %}
