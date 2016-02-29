@@ -21,7 +21,10 @@ ROOT_URLCONF = 'server.urls'
 SECRET_KEY = 'secret'
 
 INSTALLED_APPS = (
+    'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.admin',
     'django.contrib.staticfiles',
     'djng',
     'server',
