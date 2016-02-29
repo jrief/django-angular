@@ -40,12 +40,12 @@ Angular
 
 	<script src="{% static 'djng/js/django-angular.js' %}"></script>
 
-* Add ``ng.django.urls`` as a dependency for you app:
+* Add ``djng.urls`` as a dependency for you app:
 
 .. code-block:: html
 
 	<script>
-	    var my_app = angular.module('MyApp', ['ng.django.urls', /* other dependencies */]);
+	    var my_app = angular.module('MyApp', ['djng.urls', /* other dependencies */]);
 	</script>
 
 The ``djangoUrl`` service is now available through `dependency injection`_ to all directives and
@@ -100,7 +100,7 @@ A typical Angular Controller would use the service ``djangoUrl`` such as:
 
 .. code-block:: javascript
 
-	var myApp = angular.module('MyApp', ['ng.django.urls']);
+	var myApp = angular.module('MyApp', ['djng.urls']);
 	
 	myApp.controller('RemoteItemCtrl', ['$scope', '$http', '$log', 'djangoUrl', function($scope, $http, $log, djangoUrl) {
 	

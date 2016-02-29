@@ -154,7 +154,7 @@ detected errors are hidden the moment, the user sets the form into a dirty state
 .. note:: AngularJS normally hides the content of bound forms, which means that ``<input>`` fields
           seem empty, even if their ``value`` attribute is set. In order to restore the content of
           those input fields to their default value, initialize your AngularJS application with
-          ``angular.module('MyApp', ['ng.django.forms']);``.
+          ``angular.module('MyApp', ['djng.forms']);``.
 
 
 Combine NgFormValidationMixin with NgModelFormMixin
@@ -280,7 +280,7 @@ If your AngularJS application has been initialized with
 
 .. code-block:: javascript
 
-	angular.module('MyApp', ['ng.django.forms']);
+	angular.module('MyApp', ['djng.forms']);
 
 then this new attribute is detected by the AngularJS directive ``validateDate``, which in turn
 checks the date for valid input and shows the content of the errors fields, if not.

@@ -1,7 +1,7 @@
 (function (angular, undefined) {
     'use strict';
     /*
-     module: ng.django.urls
+     module: djng.urls
      Provide url reverse resolution functionality for django urls in angular
      Usage: djangoUrl.reverse(url_name, args_or_kwargs)
 
@@ -9,7 +9,7 @@
      - djangoUrl.reverse('home', [user_id: 2]);
      - djangoUrl.reverse('home', [2]);
      */
-    var djngUrls = angular.module('ng.django.urls', []);
+    var djngUrls = angular.module('djng.urls', []);
 
     djngUrls.provider('djangoUrl', function djangoUrlProvider() {
             var reverseUrl = '/angular/reverse/';

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('unit tests for module ng.django.forms', function() {
+describe('unit tests for module djng.forms', function() {
 	function compileForm($compile, scope, replace_value) {
 		var template =
 			'<form name="valid_form" action=".">' +
@@ -38,7 +38,7 @@ describe('unit tests for module ng.django.forms', function() {
 	
 		beforeEach(function() {
 			// djng's 'form' directive, overrides the behavior of the view value.
-			module('ng.django.forms');
+			module('djng.forms');
 		});
 
 		beforeEach(inject(function($rootScope) {
@@ -66,7 +66,7 @@ describe('unit tests for module ng.django.forms', function() {
 	
 		beforeEach(function() {
 			// djng's 'form' directive, overrides the behavior of the view value.
-			module('ng.django.forms');
+			module('djng.forms');
 		});
 
 		beforeEach(inject(function($rootScope) {
@@ -107,7 +107,7 @@ describe('unit tests for module ng.django.forms', function() {
 		var scope, djangoForm;
 
 		beforeEach(function() {
-			module('ng.django.forms');
+			module('djng.forms');
 		});
 
 		describe('using manual instantiation', function() {
@@ -115,7 +115,7 @@ describe('unit tests for module ng.django.forms', function() {
 				angular.module('testApp', function() {}).config(function(djangoFormProvider) {
 					djangoForm = djangoFormProvider.$get();
 				});
-				module('ng.django.forms', 'testApp');
+				module('djng.forms', 'testApp');
 			});
 
 			beforeEach(inject(function($rootScope) {

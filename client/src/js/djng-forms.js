@@ -1,10 +1,10 @@
 (function(angular, undefined) {
 'use strict';
 
-// module: ng.django.forms
+// module: djng.forms
 // Correct Angular's form.FormController behavior after rendering bound forms.
 // Additional validators for form elements.
-var djng_forms_module = angular.module('ng.django.forms', []);
+var djng_forms_module = angular.module('djng.forms', []);
 
 // create a simple hash code for the given string
 function hashCode(s) {

@@ -88,7 +88,7 @@ class JSONResponseMixin(JSONBaseMixin):
         except ValueError:
             in_data = request.body.decode('utf-8')
         if 'action' in in_data:
-            warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'ng.django.forms'", DeprecationWarning)
+            warnings.warn("Using the keyword 'action' inside the payload is deprecated. Please use 'djangoRMI' from module 'djng.forms'", DeprecationWarning)
             remote_method = in_data.pop('action')
         else:
             remote_method = request.META.get('HTTP_DJNG_REMOTE_METHOD')

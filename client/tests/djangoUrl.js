@@ -1,6 +1,6 @@
 'use strict';
 
-describe('unit tests for module ng.django.url', function () {
+describe('unit tests for module djng.url', function () {
     var base_url = '/angular/reverse/';
     var arg_prefix = 'djng_url_args';
     var kwarg_prefix = 'djng_url_kwarg_';
@@ -12,13 +12,13 @@ describe('unit tests for module ng.django.url', function () {
 
         beforeEach(function () {
 
-            var fakeModule = angular.module('ng.django.urls.config', function () {
+            var fakeModule = angular.module('djng.urls.config', function () {
             });
             fakeModule.config(function (djangoUrlProvider) {
                 provider = djangoUrlProvider;
             });
 
-            module('ng.django.urls', 'ng.django.urls.config');
+            module('djng.urls', 'djng.urls.config');
 
             // Kickstart the injectors previously registered
             // with calls to angular.mock.module
@@ -41,7 +41,7 @@ describe('unit tests for module ng.django.url', function () {
     describe('test djangoUrl url resolving', function () {
 
         beforeEach(function () {
-            module('ng.django.urls');
+            module('djng.urls');
         });
 
         describe('general url reverser tests', function () {

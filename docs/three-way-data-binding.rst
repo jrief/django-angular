@@ -51,7 +51,7 @@ add the module dependency to your application initialization:
 
 .. code-block:: javascript
 
-	var my_app = angular.module('myApp', [/* other dependencies */, 'ng.django.websocket']);
+	var my_app = angular.module('myApp', [/* other dependencies */, 'djng.websocket']);
 
 configure the websocket module with a URL prefix of your choice:
 

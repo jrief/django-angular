@@ -18,10 +18,10 @@
 
 {% block scripts %}
 	{{ block.super }}
-	<script src="{% static 'js/ng-django-websocket.js' %}" type="text/javascript"></script>
+	<script src="{% static 'js/djng-websocket.js' %}" type="text/javascript"></script>
 {% endblock scripts %}
 
-{% block ng_module_dependencies %}['ng.django.websocket']{% endblock %}
+{% block ng_module_dependencies %}['djng.websocket']{% endblock %}
 
 {% block ng_module_definition %}
 	{{ block.super }}

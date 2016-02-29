@@ -6,17 +6,19 @@ Release History
 
 0.8.0
 -----
-* From a functional point of view, nothing changed between 0.7.16 and 0.8.0 with one *big*
-  exception: **djangular has been renamed to djng**. This was required by many users since it
+* ``djangular`` has been renamed to ``djng`` and ``ng.django-...`` has been renamed to ``djng-...``.
+  This was required by many users since it:
   - caused a naming conflict with another django app named djangular and 
   - the identifier "djangular" by many users was seen as a bad choice.
+  - violated the AngularJS principle that only their modules shall be prefixed with "ng".
   Please read https://github.com/jrief/django-angular/issues/35 for the preceded discussion on this
   topic.
 * Support for ``ngMessages`` was removed again because
   - its code base was buggy and unmaintained
   - it does not make much sense to reduce the amount of auto-generated HTML
   - it added an alternative form rendering mixin, without any additional functionality
-
+* In the ``<select>`` element, the default ``<option selected="selected">`` did not work anymore.
+  This regression was introduced in 0.7.16.
 
 0.7.16
 ------

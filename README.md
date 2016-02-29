@@ -7,13 +7,15 @@ Let Django play well with AngularJS
 
 Please help us testing the upcoming release 0.8.0.
 
-From a functional point of view, nothing changed between 0.7.16 and 0.8.0 with one *big* exception:
+From a functional point of view, almost nothing changed between 0.7.16 and 0.8.0 with one *big*
+exception:
 
-**djangular has been renamed to djng**. This was requested by many users since it 
+**djangular has been renamed to djng** and **ng.django-...** has been renamed to **djng-...**.
+This was requested by many users since it:
 
-a) caused a naming conflict with another Django app named the same and 
-
-b) the identifier "djangular" by many users was seen as a bad choice for this Django app.
+* caused a naming conflict with another Django app named the same and 
+* the identifier "djangular" by many users was seen as a bad choice for this Django app.
+* violated the AngularJS principle that only their modules shall be prefixed with ``ng``.
 
 Please read https://github.com/jrief/django-angular/issues/35 for the preceded discussion
 on this topic.

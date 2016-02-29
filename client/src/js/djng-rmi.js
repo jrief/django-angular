@@ -1,8 +1,8 @@
 (function(angular, undefined) {
 'use strict';
 
-// module: ng.django.rmi
-var djng_rmi_module = angular.module('ng.django.rmi', []);
+// module: djng.rmi
+var djng_rmi_module = angular.module('djng.rmi', []);
 
 // A simple wrapper to extend the $httpProvider for executing remote methods on the server side
 // for Django Views derived from JSONResponseMixin.

@@ -15,7 +15,7 @@ module.exports = function(grunt) {
 			dist: {
 				files: [{
 					cwd: 'src/js/',
-					src: ['ng-django-*.js'],
+					src: ['djng-*.js'],
 					dest: 'build/',
 					expand: true
 				}]
@@ -26,7 +26,7 @@ module.exports = function(grunt) {
 				banner: '<%= banner %>'
 			},
 			dist: {
-				src: ['build/ng-django-*.js'],
+				src: ['build/djng-*.js'],
 				dest: '<%= static_dir %><%= pkg.name %>.js'
 			}
 		},

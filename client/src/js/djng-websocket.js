@@ -4,7 +4,7 @@
 function noop() {}
 
 // Add three-way data-binding for AngularJS with Django using websockets.
-var djng_ws_module = angular.module('ng.django.websocket', []);
+var djng_ws_module = angular.module('djng.websocket', []);
 
 // Wraps the built-in WebSocket into a replaceable provider suitable for dependency injection.
 djng_ws_module.service('$websocket', function() {

@@ -1,10 +1,10 @@
 'use strict';
 
-describe('unit tests for module ng.django.rmi', function() {
+describe('unit tests for module djng.rmi', function() {
 	var $httpBackend, djangoRMI;
 
 	beforeEach(function() {
-		module('ng.django.rmi');
+		module('djng.rmi');
 	});
 
 	describe('emulating get_current_remote_methods', function() {
@@ -12,7 +12,7 @@ describe('unit tests for module ng.django.rmi', function() {
 			angular.module('testApp', function() {}).config(function(djangoRMIProvider) {
 				djangoRMIProvider.configure({"foo": {"url": "/straight_methods/", "headers": {"DjNg-Remote-Method": "foo"}, "method": "auto"}, "bar": {"url": "/straight_methods/", "headers": {"DjNg-Remote-Method": "bar"}, "method": "auto"}});
 			});
-			module('ng.django.forms', 'testApp');
+			module('djng.forms', 'testApp');
 		});
 
 		beforeEach(inject(function($injector) {
@@ -41,7 +41,7 @@ describe('unit tests for module ng.django.rmi', function() {
 			angular.module('testApp', function() {}).config(function(djangoRMIProvider) {
 				djangoRMIProvider.configure({"submethods": {"sub": {"app": {"foo": {"url": "/sub_methods/sub/app/", "headers": {"DjNg-Remote-Method": "foo"}, "method": "auto"}, "bar": {"url": "/sub_methods/sub/app/", "headers": {"DjNg-Remote-Method": "bar"}, "method": "auto"}}}}, "straightmethods": {"foo": {"url": "/straight_methods/", "headers": {"DjNg-Remote-Method": "foo"}, "method": "auto"}, "bar": {"url": "/straight_methods/", "headers": {"DjNg-Remote-Method": "bar"}, "method": "auto"}}});
 			});
-			module('ng.django.forms', 'testApp');
+			module('djng.forms', 'testApp');
 		});
 
 		beforeEach(inject(function($injector) {
