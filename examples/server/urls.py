@@ -7,7 +7,6 @@ from server.views.client_validation import SubscribeView as ClientValidationView
 from server.views.model_scope import SubscribeView as ModelScopeView
 from server.views.combined_validation import SubscribeView as CombinedValidationView
 from server.views.threeway_databinding import SubscribeView as ThreeWayDataBindingView
-from server.views.ng_messages import SubscribeView as NgMessagesView
 from server.views import NgFormDataValidView
 
 
