@@ -95,21 +95,20 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 	}
 
 	function restoreSelectOptions(field) {
-		var multivalues = [];
+		var result = [];
 		angular.forEach(field.options, function(option) {
 			if (option.defaultSelected) {
 				// restore the select option to selected
 				angular.element(option).prop('selected', 'selected');
 				if (field.multiple) {
-					multivalues.push(option.value);
+					result.push(option.value);
 				} else {
-					return option.value;
+					result = option.value;
+					return;
 				}
 			}
 		});
-		if (field.multiple) {
-			return multivalues;
-		}
+		return result;
 	}
 
 	function restoreTextArea(field) {
