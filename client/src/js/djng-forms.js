@@ -135,9 +135,12 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 		link: function(scope, element, attrs, ctrls) {
 			var field = angular.isElement(element) ? element[0] : null;
 			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
-
-			if (!field || !formCtrl)
+			var curModelValue = scope.$eval(attrs.ngModel);
+  
+			// if model already has a value defined, don't set the default
+			if (!field || !formCtrl || angular.isDefined(curModelValue)) {
 				return;
+			}
 
 			switch (field.tagName) {
 			case 'INPUT':
