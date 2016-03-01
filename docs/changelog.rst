@@ -4,6 +4,9 @@
 Release History
 ===============
 
+0.8.1.dev0 (will most likely become version 1.0.0)
+-----
+
 0.8.0
 -----
 * ``djangular`` has been renamed to ``djng`` and ``ng.django-...`` has been renamed to ``djng-...``.
