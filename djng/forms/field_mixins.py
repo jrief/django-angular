@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 """
 Mixin class methods to be added to django.forms.fields at runtime. These methods add additional
 error messages for AngularJS form validation.
 """
-from __future__ import unicode_literals
 from django.forms import fields
 from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy

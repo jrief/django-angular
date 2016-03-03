@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 import json
 from base64 import b64encode
 
@@ -263,7 +264,7 @@ class NgFormBaseMixin(object):
         Rewrite the model keys to use dots instead of dashes, since thats the syntax
         used in Angular models.
         """
-        return self.prefix and ('%s.%s' % (self.prefix, field_name)) or field_name
+        return ('%s.%s' % (self.prefix, field_name)) if self.prefix else field_name
 
     def get_field_errors(self, field):
         """

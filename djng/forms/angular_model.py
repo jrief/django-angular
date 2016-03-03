@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 try:
     from django.forms.utils import ErrorDict
 except ImportError:
@@ -59,7 +60,7 @@ class NgModelFormMixin(NgFormBaseMixin):
         ng_models = hasattr(self, 'Meta') and getattr(self.Meta, 'ng_models', []) or []
         for name, field in self.fields.items():
             if 'ng-model' in self.ng_directives or name in ng_models:
-                data[name] = self.initial and self.initial.get(name) or field.initial
+                data[name] = self.initial.get(name) if self.initial else field.initial
         return data
 
     def get_field_errors(self, field):
@@ -81,7 +82,7 @@ class NgModelFormMixin(NgFormBaseMixin):
         ng = {
             'name': bound_field.name,
             'identifier': identifier,
-            'model': self.scope_prefix and ('%s[\'%s\']' % (self.scope_prefix, identifier)) or identifier
+            'model': ('%s[\'%s\']' % (self.scope_prefix, identifier)) if self.scope_prefix else identifier
         }
         if hasattr(self, 'Meta') and bound_field.name in getattr(self.Meta, 'ng_models', []):
             attrs['ng-model'] = ng['model']
