@@ -4,6 +4,9 @@
 Release History
 ===============
 
+0.8.2 (next)
+------------
+
 0.8.1
 -----
 * Fixed a bug in NgModelFormMixin.get_form_data(): Using ``and ... or ...`` as ternary operator
