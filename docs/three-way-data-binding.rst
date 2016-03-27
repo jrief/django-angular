@@ -45,43 +45,45 @@ Refer to the Javascript file ``django-angular.js`` somewhere on your page:
 
 .. code-block:: html
 
-	<script src="{{ STATIC_URL }}djng/js/django-angular.min.js" type="text/javascript"></script>
+    {% load static %}
+    <script src="{% static 'djng/js/django-angular.min.js' %}" type="text/javascript"></script>
 
 add the module dependency to your application initialization:
 
 .. code-block:: javascript
 
-	var my_app = angular.module('myApp', [/* other dependencies */, 'djng.websocket']);
+    var my_app = angular.module('myApp', [/* other dependencies */, 'djng.websocket']);
 
 configure the websocket module with a URL prefix of your choice:
 
 .. code-block:: javascript
 
-	my_app.config(function(djangoWebsocketProvider) {
-	    // use '/ws' as the websocket's prefix
-	    djangoWebsocketProvider.prefix('/ws');
-	
-	    // optionally inform about the connection status in the browser's console
-	    djangoWebsocketProvider.debug(true);
-	});
+    my_app.config(['djangoWebsocketProvider', function(djangoWebsocketProvider) {
+        // use WEBSOCKET_URI from django settings as the websocket's prefix
+        djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}');
+        djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }});
+
+        // optionally inform about the connection status in the browser's console
+        djangoWebsocketProvider.setLogLevel('debug');
+    }]);
 
 If you want to bind the data model in one of your AngularJS controllers, you must inject the
 provider **djangoWebsocket** into this controller and then attach the websocket to the server.
 
 .. code-block:: javascript
 
-	app.controller('MyController', function($scope, djangoWebsocket) {
-	    djangoWebsocket.connect($scope, ['subscribe-broadcast', 'publish-broadcast'], 'my_collection');
-	
-	    // use $scope.my_collection as root object for the data which shall be three-way bound
-	});
+    my_app.controller('MyController', function($scope, djangoWebsocket) {
+        djangoWebsocket.connect($scope, 'my_collection', 'foobar', ['subscribe-broadcast', 'publish-broadcast']);
+
+        // use $scope.my_collection as root object for the data which shall be three-way bound
+    });
 
 This creates a websocket attached to the server sides message queue via the module **ws4redis**.
 It then shallow watches the properties of the object named ``'my_collection'``, which contains the
 model data. It then fires whenever any of the properties change (for arrays, this implies watching
 the array items; for object maps, this implies watching the properties). If a change is detected,
 it is propagated up to the server. Changes made to the corresponding object on the server side,
-are immediately send back to the client.
+are immediately send back to all clients listening on the named facility, referred here as ``foobar``.
 
 .. note:: This feature is new and experimental, but due to its big potential, it will be regarded
           as one of the key features in future versions of **django-angular**.
