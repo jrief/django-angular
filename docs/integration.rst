@@ -159,10 +159,10 @@ and add the module dependency to your application initialization
 
 	var my_app = angular.module('myApp', [/* other dependencies */, 'djng.forms']);
 
-.. _verbatim: https://docs.djangoproject.com/en/1.9/ref/templates/builtins/#verbatim
+.. _verbatim: https://docs.djangoproject.com/en/stable/ref/templates/builtins/#verbatim
 .. _$routeProvider: http://docs.angularjs.org/api/ngRoute.$routeProvider
 .. _$templateCache: https://docs.angularjs.org/api/ng/service/$templateCache
-.. _translation: https://docs.djangoproject.com/en/1.5/topics/i18n/translation/
+.. _translation: https://docs.djangoproject.com/en/stable/topics/i18n/translation/
 .. _Jasmine: http://pivotal.github.io/jasmine/
 .. _bound forms: https://docs.djangoproject.com/en/dev/ref/forms/api/#bound-and-unbound-forms
 .. _built-in form directive: http://code.angularjs.org/1.2.14/docs/api/ng/directive/form
