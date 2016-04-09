@@ -57,7 +57,18 @@
                 if (angular.isObject(value)) {
                     value = angular.toJson(value);
                 }
-                parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                /*
+                 If value is a string and starts with ':' we don't encode the value to enable parametrized urls
+                 E.g. with .reverse('article',{id: ':id'} we build a url
+                 /angular/reverse/?djng_url_name=article?id=:id, which angular resource can use
+                 https://docs.angularjs.org/api/ngResource/service/$resource
+                 */
+                if ((typeof value === 'string' || value instanceof String) && value.lastIndexOf(':', 0) === 0) {
+                    parts.push(encodeURIComponent(key) + '=' + value)
+                } else {
+                    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+                }
+
             });
             return url + ((url.indexOf('?') === -1) ? '?' : '&') + parts.join('&');
         }
