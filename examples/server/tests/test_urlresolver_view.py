@@ -165,3 +165,28 @@ class TestUrlResolverView(TestCase):
         request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
         self.middleware.process_request(request)
         self.assertEqual(request.path, reverse('home_kwargs', kwargs={'id': 1, 'id2': 2, 'id3': 3}))
+
+    def test_empty_args_handling(self):
+        """Args that are empty strings should be ignored"""
+        data = {
+            self.url_name_arg: 'home',
+            self.args_prefix: ['', ''],
+        }
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, reverse('home'))
+        self.assertEqual(request.path_info, reverse('home'))
+        self.assertEqual(request.get_full_path(), reverse('home'))
+
+    def test_empty_kwargs_handling(self):
+        """Kwargs whose values are empty strings should be ignored"""
+        url_name = 'home'
+        data = {
+            self.url_name_arg: url_name,
+            self.kwarg_prefix + 'id': '',
+        }
+        request = self.factory.get(AngularUrlMiddleware.ANGULAR_REVERSE, data=data)
+        self.middleware.process_request(request)
+        self.assertEqual(request.path, reverse('home'))
+        self.assertEqual(request.path_info, reverse('home'))
+        self.assertEqual(request.get_full_path(), reverse('home'))
