@@ -101,19 +101,17 @@ A typical Angular Controller would use the service ``djangoUrl`` such as:
 .. code-block:: javascript
 
 	var myApp = angular.module('MyApp', ['djng.urls']);
-	
-	myApp.controller('RemoteItemCtrl', ['$scope', '$http', '$log', 'djangoUrl', function($scope, $http, $log, djangoUrl) {
-	
-	    $scope.loadItem = function() {
-	        var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
-	        $http.get(fetchItemURL).success(function(item) {
-	            $log.info('Fetched item: ' + item);
-	        }).error(function(msg) {
-	            console.error('Unable to fetch item. Reason: ' + msg);
-	        });
-	    }
-	
-	}]);
+
+	myApp.controller('RemoteItemCtrl', function($scope, $http, $log, djangoUrl) {
+
+		var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
+
+		$http.get(fetchItemURL).success(function(item) {
+			$log.info('Fetched item: ' + item);
+		}).error(function(msg) {
+			console.error('Unable to fetch item. Reason: ' + msg);
+		});
+	});
 
 and with args:
 
@@ -126,6 +124,30 @@ or with kwargs:
 .. code-block:: javascript
 
 	$http.get(djangoUrl.reverse('api:articles', {'id': 1}))
+
+
+Parametrized URLs
+-----------------
+You can pass a "parametrized" arg or kwarg to ``djangoUrl.reverse()`` call to be used with `$resource`_.
+
+.. code-block:: javascript
+
+	var url = djangoUrl.reverse('orders:order_buyer_detail', {id: ':id'});
+	// Returns  '/angular/reverse/?djng_url_name=orders%3Aorder_buyer_detail&djng_url_kwarg_id=:id'
+	// $resource can than replace the ':id' part
+
+	var myRes = $resource(url);
+	myRes.query({id:2}); // Will call reverse('orders:order_buyer_detail', kwargs={'id':2}) url
+
+	// If :param isn't set it will be ignored, e.g.
+	myRes.query(); // Will call reverse('orders:order_buyer_detail') url
+
+	// with @param $resource will autofill param if object has 'param' attribute
+	var CreditCard = $resource(djangoUrl.reverse('card', {id: ':id'}), {id: '@id'});
+	var card = CreditCard.get({id: 3}, function (success) {
+	  card.holder = 'John Doe';
+	  card.$save() // Will correctly POST to reverse('card', kwargs={'id':3})
+	})
 
 
 Additional notes
@@ -146,3 +168,4 @@ it can be set in ``.config()`` stage:
 .. _AngularJS module definition: http://docs.angularjs.org/api/angular.module
 .. _dependency injection: http://docs.angularjs.org/guide/di
 .. _URL template tag : https://docs.djangoproject.com/en/dev/ref/templates/builtins/#url
+.. _$resource: https://docs.angularjs.org/api/ngResource/service/$resource
