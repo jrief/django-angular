@@ -75,6 +75,10 @@ describe('unit tests for module djng.url', function () {
                 expect(djangoUrl.reverse('home', [1, 2, 3]))
                     .toBe(base_url + '?' + url_name_arg + '=home&' + arg_prefix + '=1&' + arg_prefix + '=2&' + arg_prefix + '=3');
             }));
+            it('should not urlencode args starting with :', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('article', [':id'])).toBe(
+                    base_url + '?' + url_name_arg + '=article&' + arg_prefix + '=:id');
+            }));
         });
 
         describe('test building urls with keyword arguments', function () {
@@ -85,6 +89,10 @@ describe('unit tests for module djng.url', function () {
             it('should add multiple kwargs', inject(function (djangoUrl) {
                 expect(djangoUrl.reverse('home', {id: '7', name: 'john'}))
                     .toBe(base_url + '?' + url_name_arg + '=home&' + kwarg_prefix + 'id=7&' + kwarg_prefix + 'name=john');
+            }));
+            it('should not urlencode kwarg values staring with :', inject(function (djangoUrl) {
+                expect(djangoUrl.reverse('home', {id: ':id'}))
+                    .toBe(base_url + '?' + url_name_arg + '=home&' + kwarg_prefix + 'id=:id');
             }));
         });
 
