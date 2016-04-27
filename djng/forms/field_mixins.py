@@ -5,6 +5,7 @@ from __future__ import unicode_literals
 Mixin class methods to be added to django.forms.fields at runtime. These methods add additional
 error messages for AngularJS form validation.
 """
+import re
 from django.forms import fields
 from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
@@ -103,9 +104,28 @@ class DecimalFieldMixin(DefaultFieldMixin):
 
 class EmailFieldMixin(DefaultFieldMixin):
     def get_potential_errors(self):
+        self.widget.attrs['email-pattern'] = self.get_email_regex()
         errors = self.get_input_required_errors()
         errors.extend(self.get_invalid_value_errors('email'))
         return errors
+
+    def get_email_regex(self):
+        """
+        Return a regex pattern matching valid email addresses. Uses the same
+        logic as the django validator, with the folowing exceptions:
+
+        - Internationalized domain names not supported
+        - IP addresses not supported
+        - Strips lookbehinds (not supported in javascript regular expressions)
+        """
+        validator = self.default_validators[0]
+        user_regex = validator.user_regex.pattern.replace('\Z', '@')
+        domain_patterns = ([re.escape(domain) + '$' for domain in
+                            validator.domain_whitelist] +
+                           [validator.domain_regex.pattern.replace('\Z', '$')])
+        domain_regex = '({0})'.format('|'.join(domain_patterns))
+        email_regex = user_regex + domain_regex
+        return re.sub(r'\(\?\<[^()]*?\)', '', email_regex)  # Strip lookbehinds
 
 
 class DateFieldMixin(DefaultFieldMixin):
