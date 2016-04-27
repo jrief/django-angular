@@ -263,6 +263,25 @@ djng_forms_module.directive('validateDate', function() {
 });
 
 
+// This directive can be added to an input field to validate emails using a similar regex to django
+djng_forms_module.directive('validateEmail', function() {
+	return {
+		require: '?ngModel',
+		restrict: 'A',
+		link: function(scope, elem, attrs, controller) {
+			if (controller && controller.$validators.email && attrs.emailPattern) {
+				var emailPattern = new RegExp(attrs.emailPattern, 'i');
+
+				// Overwrite the default Angular email validator
+				controller.$validators.email = function(value) {
+					return controller.$isEmpty(value) || emailPattern.test(value);
+				};
+			}
+		}
+	};
+});
+
+
 // If forms are validated using Ajax, the server shall return a dictionary of detected errors to the
 // client code. The success-handler of this Ajax call, now can set those error messages on their
 // prepared list-items. The simplest way, is to add this code snippet into the controllers function
