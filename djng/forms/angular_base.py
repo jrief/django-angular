@@ -78,7 +78,7 @@ class TupleErrorList(UserList, list):
             return SafeText()
         first = self[0]
         if isinstance(first, tuple):
-            error_lists = {'$pristine': [], '$dirty': []}
+            error_lists = {'$untouched': [], '$touched': []}
             for e in self:
                 li_format = e[5] == '$message' and self.li_format_bind or self.li_format
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
@@ -274,12 +274,12 @@ class NgFormBaseMixin(object):
         identifier = format_html('{0}.{1}', self.form_name, field.name)
         errors = self.errors.get(field.html_name, [])
         return self.error_class([SafeTuple(
-            (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
+            (identifier, self.field_error_css_classes, '$untouched', '$untouched', 'invalid', e)) for e in errors])
 
     def non_field_errors(self):
         errors = super(NgFormBaseMixin, self).non_field_errors()
         return self.error_class([SafeTuple(
-            (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
+            (self.form_name, self.form_error_css_classes, '$untouched', '$untouched', 'invalid', e)) for e in errors])
 
     def get_widget_attrs(self, bound_field):
         """

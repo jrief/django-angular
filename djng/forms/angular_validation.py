@@ -31,20 +31,20 @@ class NgFormValidationMixin(NgFormBaseMixin):
             return errors
         identifier = format_html('{0}[\'{1}\']', self.form_name, self.add_prefix(bound_field.name))
         potential_errors = bound_field.field.get_potential_errors()
-        errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$dirty', pe[0], 'invalid', force_text(pe[1])))
+        errors.extend([SafeTuple((identifier, self.field_error_css_classes, '$touched', pe[0], 'invalid', force_text(pe[1])))
                        for pe in potential_errors])
         if not isinstance(bound_field.field.widget, widgets.PasswordInput):
             # all valid fields shall display OK tick after changed into dirty state
-            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$dirty', '$valid', 'valid', '')))
+            errors.append(SafeTuple((identifier, self.field_error_css_classes, '$touched', '$valid', 'valid', '')))
             if bound_field.value():
                 # valid bound fields shall display OK tick, even in pristine state
-                errors.append(SafeTuple((identifier, self.field_error_css_classes, '$pristine', '$valid', 'valid', '')))
+                errors.append(SafeTuple((identifier, self.field_error_css_classes, '$untouched', '$valid', 'valid', '')))
         return errors
 
     def get_widget_attrs(self, bound_field):
         attrs = super(NgFormValidationMixin, self).get_widget_attrs(bound_field)
         # transfer error state from bound field to AngularJS validation
-        errors = [e for e in bound_field.errors if e[3] == '$pristine']
+        errors = [e for e in bound_field.errors if e[3] == '$untouched']
         if errors and self.add_djng_error:
             attrs.update({'djng-error': 'bound-field'})
         # some fields require special directives to work with AngularJS
