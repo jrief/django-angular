@@ -84,10 +84,10 @@ A common use case is to hide a form field based on the value of another. For exa
 
 .. code-block:: python
 
-    field_css_classes = {
-        '*': 'form-group has-feedback',
-        'phone': "ng-class:{'ng-hide':sex==='f'}",
-    }
+	field_css_classes = {
+	    '*': 'form-group has-feedback',
+	    'phone': "ng-class:{'ng-hide':sex==='f'}",
+	}
 
 ``field_css_classes`` adds css classes to the wrapper div surrounding individual fields in bootstrap.
 In the above example, ``'*'`` adds the classes ``form-group has-feedback`` to all fields within the
@@ -98,10 +98,10 @@ specified as a list, spaces can be used, and the above example can be rewritten 
 
 .. code-block:: python
 
-    field_css_classes = {
-        '*': 'form-group has-feedback',
-        'phone': ["ng-class: {'ng-hide': sex==='f'};"],
-    }
+	field_css_classes = {
+	    '*': 'form-group has-feedback',
+	    'phone': ["ng-class: {'ng-hide': sex==='f'};"],
+	}
 
 By adding the keyword ``'__default__'`` to this list, the CSS classes for the default entry,
 ie. ``'*'``, are merged with the CSS classes for the current field.

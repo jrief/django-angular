@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-try:
-    from django.forms.utils import flatatt
-except ImportError:
-    from django.forms.util import flatatt
 from django.forms import widgets
-from djng.forms.widgets import (
+from djng.forms.widgets import (flatatt,
     ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
     CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
     RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
