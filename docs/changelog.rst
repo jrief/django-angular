@@ -4,8 +4,13 @@
 Release History
 ===============
 
-0.8.2 (next)
-------------
+0.8.2
+-----
+* On the client side, validation of the email address is done using the same regular expression
+  as is used by Django. Until 0.8.1, the less restrictive Angular validation patterns were used.
+* Some widgets require more finegrained formatting capabilities.Added a slightly modified method
+  method:`django.forms.utils.flatatt` which can use its own context for formatting.
+
 
 0.8.1
 -----
