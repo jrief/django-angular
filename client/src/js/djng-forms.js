@@ -356,7 +356,6 @@ djng_forms_module.factory('djangoForm', function() {
 						field = form[key];
 						field.$message = errors[0];
 						field.$setValidity('rejected', false);
-						field.$setPristine();
 						if (isField(field)) {
 							resetFieldValidity(field);
 						} else {
