@@ -23,7 +23,7 @@
 	{{ block.super }}
 	my_app.config(function($httpProvider) {
 		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
 	});
 {% endblock %}
 
@@ -68,7 +68,7 @@ the controller submitting the form, shall use the returned data and pass it to t
 {% endautoescape %}
 {% verbatim %}
 <p class="bg-info"><strong>Note: </strong>The AngularJS app is configured inside Django's HTML
-template code, since template tags, such as <code>{%&nbsp;csrf_value&nbsp;%}</code> can't be expanded in pure
-JavaScript.</p>
+template code, since template tags, such as <code>{&#8203;{&nbsp;csrf_token&nbsp;}&#8203;}</code> can't be
+expanded in pure JavaScript.</p>
 {% endverbatim %}
 {% endblock tutorial_code %}

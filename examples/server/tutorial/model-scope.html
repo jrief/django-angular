@@ -1,7 +1,7 @@
 <script type="text/javascript">
     angular.module('djangular-demo', ['djng.forms']).config(function($httpProvider) {
         $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
     });
 </script>
 

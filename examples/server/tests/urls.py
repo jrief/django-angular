@@ -8,7 +8,7 @@ from djng.views.mixins import JSONResponseMixin, allow_remote_invocation
 
 class TestCSRFValueView(View):
     def get(self, request):
-        template = Template('{% load djng_tags %}<script>var x="{% csrf_value %}";</script>')
+        template = Template('{% load djng_tags %}<script>var x="{{ csrf_token }}";</script>')
         context = RequestContext(request, {})
         return HttpResponse(template.render(context))
 
