@@ -5,32 +5,18 @@ python:
   - 3.5
 
 env:
-  - DJANGO=1.6.10 MIGRATE='true'
-  - DJANGO=1.7.11 MIGRATE='./manage.py migrate'
-  - DJANGO=1.8.14 MIGRATE='./manage.py migrate'
-  - DJANGO=1.9.8 MIGRATE='./manage.py migrate'
+  - DJANGOVER=django16
+  - DJANGOVER=django17
+  - DJANGOVER=django18
+  - DJANGOVER=django19
 
 install:
-  - pip install -q Django==$DJANGO
-  - pip install pyquery
-  - pip install pygments
-  - python setup.py -q install
-  - npm install -g grunt-cli
-  - pushd . ; cd client && npm install; popd
-
-branches:
-  only:
-    - master
-
-matrix:
-  exclude:
-  - python: 3.5
-    env: DJANGO=1.9 MIGRATE='./manage.py migrate'
+  - pip install tox
 
 before_script:
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
 
 script:
- - pushd . && cd client && grunt travis-ci && popd
- - pushd . && cd examples && $MIGRATE && ./manage.py test server && popd
+  - export TOX_ENV=${TRAVIS_PYTHON_VERSION}-${DJANGOVER}
+  - tox -r -e "$TOX_ENV"
