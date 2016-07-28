@@ -29,10 +29,12 @@ client-side Form validation is combined with two-way data-binding.</p>
 {% endblock tutorial_intro %}
 
 {% block tutorial_code %}
+{% autoescape off %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/combined_validation.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/combined_validation.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/combined-validation.html" %}</div>
 <div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
+{% endautoescape %}
 <p class="bg-info">This configuration is the most flexible one. Use it on productive web-sites.<br/>
 <strong>Note: </strong>The submit buttons are disabled, until the client-side Form validation has
 validated all the fields.</p>
