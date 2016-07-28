@@ -2,25 +2,17 @@
 
 // Karma configuration
 module.exports = function(config) {
-	function getFiles() {
-		var fs = require('fs'); 
-		var files = [];
-		['angular.js', 'angular-mocks.js'].forEach(function(item) {
-			var cachename = 'cdncache/' + item;
-			files.push(fs.existsSync(cachename) ? cachename : 'http://code.angularjs.org/1.3.20/' + item);
-		});
-		return files.concat(['src/js/*.js', 'tests/*.js']);
-	}
-
 	config.set({
 		// frameworks to use
 		frameworks: ['jasmine'],
 
 		// list of files / patterns to load in the browser
-		files: getFiles(),
-
-		// list of files to exclude
-		exclude: ['tests/djangoNgMessagesSpec.js'],
+		files: [
+			'bower_components/angular/angular.js',
+			'bower_components/angular-mocks/angular-mocks.js',
+			'src/js/*.js',
+			'tests/*.js'
+		],
 
 		// test results reporter to use
 		// possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
