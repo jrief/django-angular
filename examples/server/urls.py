@@ -10,7 +10,7 @@ from server.views.threeway_databinding import SubscribeView as ThreeWayDataBindi
 from server.views import NgFormDataValidView
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^classic_form/$', ClassicSubscribeView.as_view(),
         name='djng_classic_subscription'),
     url(r'^form_validation/$', ClientValidationView.as_view(),
@@ -23,4 +23,4 @@ urlpatterns = patterns('',
         name='djng_3way_databinding'),
     url(r'^form_data_valid', NgFormDataValidView.as_view(), name='form_data_valid'),
     url(r'^$', RedirectView.as_view(url=reverse_lazy('djng_form_validation'))),
-)
+]
