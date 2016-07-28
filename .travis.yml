@@ -2,14 +2,13 @@ language: python
 
 python:
   - 2.7
-  - 3.3
-  - 3.4
+  - 3.5
 
 env:
   - DJANGO=1.6.10 MIGRATE='true'
-  - DJANGO=1.7.7 MIGRATE='./manage.py migrate'
-  - DJANGO=1.8 MIGRATE='./manage.py migrate'
-  - DJANGO=1.9 MIGRATE='./manage.py migrate'
+  - DJANGO=1.7.11 MIGRATE='./manage.py migrate'
+  - DJANGO=1.8.14 MIGRATE='./manage.py migrate'
+  - DJANGO=1.9.8 MIGRATE='./manage.py migrate'
 
 install:
   - pip install -q Django==$DJANGO
@@ -25,7 +24,7 @@ branches:
 
 matrix:
   exclude:
-  - python: 3.3
+  - python: 3.5
     env: DJANGO=1.9 MIGRATE='./manage.py migrate'
 
 before_script:
