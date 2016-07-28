@@ -62,7 +62,7 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         if 'id' in attrs:
             tag_attrs['id'] = '{0}_{1}'.format(attrs['id'], self.index)
         if 'ng-model' in attrs:
-            tag_attrs['ng-model'] = '{0}.{1}'.format(attrs['ng-model'], self.choice_value)
+            tag_attrs['ng-model'] = "{0}['{1}']".format(attrs['ng-model'], self.choice_value)
         if self.is_checked():
             tag_attrs['checked'] = 'checked'
         return format_html('<input{0} />', flatatt(tag_attrs))
