@@ -2,13 +2,18 @@ language: python
 
 python:
   - 2.7
+  - 3.4
   - 3.5
 
 env:
-  - DJANGOVER=django16
   - DJANGOVER=django17
   - DJANGOVER=django18
   - DJANGOVER=django19
+
+matrix:
+  exclude:
+    - python: 3.5
+      env: DJANGOVER=django17
 
 install:
   - pip install tox
