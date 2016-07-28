@@ -28,5 +28,5 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
-  - "if [[ $CLIENT_TESTS == '1' ]]; then export TOX_ENV=client-tests; else; export TOX_ENV=py${TRAVIS_PYTHON_VERSION/./}-${DJANGOVER}; fi"
+  - "if [[ $CLIENT_TESTS == '1' ]]; then export TOX_ENV=client-tests; else export TOX_ENV=py${TRAVIS_PYTHON_VERSION/./}-${DJANGOVER}; fi"
   - tox -r -e "$TOX_ENV"
