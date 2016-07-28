@@ -18,5 +18,5 @@ before_script:
   - sh -e /etc/init.d/xvfb start
 
 script:
-  - export TOX_ENV=${TRAVIS_PYTHON_VERSION}-${DJANGOVER}
+  - export TOX_ENV=py${TRAVIS_PYTHON_VERSION/./}-${DJANGOVER}
   - tox -r -e "$TOX_ENV"
