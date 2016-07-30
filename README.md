@@ -30,10 +30,12 @@ Please drop me a line, if and where you use this project.
 
 ## Latest Changes
 
-### 0.8.2
+### 0.8.3
 
-* On the client side, validation of the email address is done using the same regular expression
-  as is used by Django. Until 0.8.1, the less restrictive Angular validation patterns were used.
+* Refactored client side test runner to use npm instead of Grunt.
+* Use tox to create the testing matrix.
+* Fix #261: ModelMultipleChoiceField and CheckboxSelectMultiple.
+* Deprecate ``{% csrf_value %}`` in favour of ``{{ csrf_token }}``.
 
 
 ## License

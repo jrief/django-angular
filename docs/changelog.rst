@@ -4,13 +4,19 @@
 Release History
 ===============
 
+0.8.3
+-----
+* Refactored client side test runner to use npm instead of Grunt.
+* Use tox to create the testing matrix.
+* Fix #261: ModelMultipleChoiceField and CheckboxSelectMultiple.
+* Deprecate ``{% csrf_value %}`` in favour of ``{{ csrf_token }}``.
+
 0.8.2
 -----
 * On the client side, validation of the email address is done using the same regular expression
   as is used by Django. Until 0.8.1, the less restrictive Angular validation patterns were used.
 * Some widgets require more finegrained formatting capabilities.Added a slightly modified method
   method:`django.forms.utils.flatatt` which can use its own context for formatting.
-
 
 0.8.1
 -----
