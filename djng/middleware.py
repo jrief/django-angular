@@ -4,9 +4,13 @@ import six
 from django import http
 from django.core.urlresolvers import reverse
 from django.utils.http import unquote
+try:
+    from django.utils.deprecation import MiddlewareMixin
+except ImportError:
+    MiddlewareMixin = object
 
 
-class AngularUrlMiddleware(object):
+class AngularUrlMiddleware(MiddlewareMixin):
     """
     If the request path is <ANGULAR_REVERSE> it should be resolved to actual view, otherwise return
     ``None`` and continue as usual.
