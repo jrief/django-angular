@@ -27,6 +27,7 @@ Contents
   csrf-protection
   template-sharing
   reverse-urls
+  resolve-dependencies
   three-way-data-binding
   changelog
 
