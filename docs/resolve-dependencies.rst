@@ -7,7 +7,7 @@ Resolve Angular Dependenies
 As with any application, we also must manage the client side files. They normally are not available
 from **PyPI** and must be installed by other means than ``pip``. This typically is the
 `Node Packet Manager`_ also known as ``npm``. When managing a Django project, I strongly recommend
-to keep external dependencies outside of any asset's folder, such as ``.../static/...``. They *never
+to keep external dependencies outside of any asset's folder, such as ``static``. They *never
 shall* be checked into your version control system. Instead change into to the root directory of
 your project and run
 
@@ -27,7 +27,7 @@ This step has to be integrated into your project's deployment scripts. It is the
 Accessing External Dependencies
 ===============================
 
-Our external dependencies now are located outside of any static folder. We there have to tell Django
+Our external dependencies now are located outside of any static folder. We then have to tell Django
 where to find them. By using these configuration variables in ``settings.py``
 
 .. code-block:: python
@@ -42,7 +42,7 @@ where to find them. By using these configuration variables in ``settings.py``
 	    ('node_modules', os.path.join(PROJECT_ROOT, 'node_modules')),
 	)
 
-we can access external assets, such as
+with this additional static files directory, we now can access external assets, such as
 
 .. code-block:: html
 
@@ -58,7 +58,8 @@ django-sekizai_ is an asset manager for any Django project. It helps the authors
 declare their assets in the files where they are required. During the rendering phase, these
 declared assets are grouped together in central places.
 
-This helps us to separate concern. We include Stylesheets and JavaScript files where we need them.
+This helps us to separate concern. We include Stylesheets and JavaScript files only when and where
+we need them, instead of add every dependency we ever might encounter.
 
 Additionally, in AngularJS we must initialize and optionally configure the loaded modules. Since we
 do not want to load and initialize every possible AngularJS module we ever might need in any
@@ -96,6 +97,7 @@ Before the closing ``</body>``-tag, we then combine those includes and initializ
 application
 
 .. code-block:: django
+	:emphasize-lines: 5,11
 
 	...
 	{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
@@ -146,4 +148,5 @@ templates. This also applies for HTML snippets included by an extended template.
 
 This approach is a great way to separate concern to the realm it belongs to.
 
+.. _Node Packet Manager: https://www.npmjs.com/
 .. _django-sekizai: https://django-sekizai.readthedocs.io/
