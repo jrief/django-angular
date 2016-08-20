@@ -1,4 +1,6 @@
-# Django settings for unit test project.
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+"""Django settings for unit test project."""
 import os
 
 DEBUG = True
@@ -24,6 +26,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'sekizai',
     'djng',
     'server',
 )

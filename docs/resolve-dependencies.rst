@@ -124,7 +124,7 @@ our project, we only add it to the template which requires this functionality.
 	{% extends "my_project/base.html" %}
 	{% load static sekizai_tags %}
 
-	{% block any_block_will_do %}
+	{% block any_inhertited_block_will_do %}
 	    {% addtoblock "js" %}<script src="{% static 'node_modules/angular-animate/angular-animate.min.js' %}"></script>{% endaddtoblock %}
 	    {% addtoblock "ng-requires" %}ngAnimate{% endaddtoblock %}
 	    {% addtoblock "ng-config" %}['$animateProvider', function($animateProvider) {

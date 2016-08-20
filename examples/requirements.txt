@@ -4,3 +4,4 @@ Pygments>=1.6
 pyquery>=1.2.9
 cssselect>=0.9.1
 lxml>=3.3.3
+django-sekizai>0.8
