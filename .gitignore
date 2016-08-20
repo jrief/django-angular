@@ -1,6 +1,7 @@
 *.pyc
 *.egg-info
 *.coverage
+*.cache
 *~
 .tmp*
 .DS_Store

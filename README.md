@@ -25,17 +25,14 @@ Please drop me a line, if and where you use this project.
 ## Build status
 
 [![Build Status](https://travis-ci.org/jrief/django-angular.svg?branch=master)](https://travis-ci.org/jrief/django-angular)
-[![Downloads](http://img.shields.io/pypi/dm/django-angular.svg?style=flat-square)](https://pypi.python.org/pypi/django-angular/)
 
 
 ## Latest Changes
 
-### 0.8.3
+### 0.8.4 (2016-08-20)
 
-* Refactored client side test runner to use npm instead of Grunt.
-* Use tox to create the testing matrix.
-* Fix #261: ModelMultipleChoiceField and CheckboxSelectMultiple.
-* Deprecate ``{% csrf_value %}`` in favour of ``{{ csrf_token }}``.
+* Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS
+  imports and module initialization.
 
 
 ## License

@@ -58,6 +58,8 @@ django-sekizai_ is an asset manager for any Django project. It helps the authors
 declare their assets in the files where they are required. During the rendering phase, these
 declared assets are grouped together in central places.
 
+**django-sekizai** is an optional dependency, only required if you want to use the postprocessor.
+
 This helps us to separate concern. We include Stylesheets and JavaScript files only when and where
 we need them, instead of add every dependency we ever might encounter.
 

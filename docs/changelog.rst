@@ -4,6 +4,11 @@
 Release History
 ===============
 
+0.8.4
+-----
+* Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS
+  imports and module initialization.
+
 0.8.3
 -----
 * Refactored client side test runner to use npm instead of Grunt.
