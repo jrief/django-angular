@@ -35,7 +35,7 @@ where to find them. By using these configuration variables in ``settings.py``
 	BASE_DIR = os.path.join(os.path.dirname(__file__)
 
 	# Root directory for this Django project (may vary)
-	PROJECT_ROOT = os.path.abspath(BASE_DIR, os.path.pardir))
+	PROJECT_ROOT = os.path.abspath(BASE_DIR, os.path.pardir)
 
 	STATICFILES_DIRS = (
 	    os.path.join(BASE_DIR, 'static'),
