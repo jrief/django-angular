@@ -235,7 +235,7 @@ class NgFormBaseMixin(object):
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-field-errors'
 
-    def __init__(self, data=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         try:
             form_name = self.form_name
         except AttributeError:
@@ -245,11 +245,11 @@ class NgFormBaseMixin(object):
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
         self.convert_widgets()
-        if isinstance(data, QueryDict):
-            data = self.rectify_multipart_form_data(data.copy())
-        elif isinstance(data, dict):
-            data = self.rectify_ajax_form_data(data.copy())
-        super(NgFormBaseMixin, self).__init__(data=data, *args, **kwargs)
+        super(NgFormBaseMixin, self).__init__(*args, **kwargs)
+        if isinstance(self.data, QueryDict):
+            self.data = self.rectify_multipart_form_data(self.data.copy())
+        elif isinstance(self.data, dict):
+            self.data = self.rectify_ajax_form_data(self.data.copy())
 
     def __getitem__(self, name):
         "Returns a NgBoundField with the given name."

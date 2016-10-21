@@ -20,7 +20,7 @@ class NgModelFormMixin(NgFormBaseMixin):
     """
     add_djng_error = False
 
-    def __init__(self, data=None, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.scope_prefix = kwargs.pop('scope_prefix', getattr(self, 'scope_prefix', None))
         self.ng_directives = {}
         for key in list(kwargs.keys()):
@@ -32,13 +32,13 @@ class NgModelFormMixin(NgFormBaseMixin):
                 raise TypeError('Meta.ng_model is not of type list')
         elif 'ng-model' not in self.ng_directives:
             self.ng_directives['ng-model'] = '%(model)s'
+        super(NgModelFormMixin, self).__init__(*args, **kwargs)
         self.prefix = kwargs.get('prefix')
-        if self.prefix and data:
-            if data.get(self.prefix):
-                data = {self.add_prefix(name): value for (name, value) in data.get(self.prefix).items()}
+        if self.prefix and self.data:
+            if self.data.get(self.prefix):
+                self.data = {self.add_prefix(name): value for (name, value) in self.data.get(self.prefix).items()}
             else:
-                data = {name : value for (name, value) in data.items() if name.startswith(self.prefix + '.')}	
-        super(NgModelFormMixin, self).__init__(data, *args, **kwargs)
+                self.data = {name: value for (name, value) in self.data.items() if name.startswith(self.prefix + '.')}
         if self.scope_prefix == self.form_name:
             raise ValueError("The form's name may not be identical with its scope_prefix")
 
