@@ -10,3 +10,7 @@ class SubscribeView(FormView):
     template_name = 'subscribe-form.html'
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
+
+
+class Bootstrap4SubscribeView(SubscribeView):
+    template_name = "example-bootstrap4.html"

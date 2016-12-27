@@ -20,6 +20,9 @@ forms, rather than having to work with helper-classes.
 This tutorial attempts to explain how to combine the Django Form framework in combination with
 AngularJS and Bootstrap.
 
+.. note:: Initially created with **Bootstrap3**, **Bootstrap4** support has been added. You can safely replace `Bootstrap3` by `Bootstrap4` and you should get the same result.
+		Ex: replace `Bootstrap3FormMixin` with `Bootstrap4FormMixin`.
+
 .. _crispy-forms: http://django-crispy-forms.readthedocs.org/
 
 

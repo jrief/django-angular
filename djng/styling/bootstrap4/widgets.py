@@ -24,15 +24,15 @@ class ChoiceFieldRenderer(OriginalChoiceFieldRenderer):
 
 
 class CheckboxInput(OriginalCheckboxInput):
-    _label_attrs = ['class="checkbox-inline"']
+    _label_attrs = ['class="form-check-label"']
 
 
 class CheckboxChoiceInput(OriginalCheckboxChoiceInput):
-    _checkbox_class = "checkbox"
+    _checkbox_class = "form-check-input"
 
 
 class CheckboxInlineChoiceInput(OriginalCheckboxInlineChoiceInput):
-    _label_attrs = ['class="checkbox-inline"']
+    _label_attrs = ['class="form-check-label"']
 
 
 class CheckboxFieldRenderer(OriginalCheckboxFieldRenderer):
