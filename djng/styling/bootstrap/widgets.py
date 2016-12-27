@@ -50,7 +50,7 @@ class CheckboxInput(widgets.CheckboxInput):
 
 
 class CheckboxChoiceInput(DjngCheckboxChoiceInput):
-    _checkbox_class = 'checkbox'
+    _checkbox_class = ''
 
     def render(self, name=None, value=None, attrs=None, choices=()):
         label_tag = super(CheckboxChoiceInput, self).render(name, value, attrs, choices)

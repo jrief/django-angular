@@ -13,7 +13,6 @@ class BootstrapFormMixin(object):
     error_row = '<div class="djng-line-spreader">%s</div>'
     normal_row = '<div%(html_class_attr)s>%(label)s%(field)s%(help_text)s%(errors)s</div>'
     row_ender = '</div>'
-    help_text_html = '<span class="help-block">%s</span>'
 
     def as_div(self):
         """

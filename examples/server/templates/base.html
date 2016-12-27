@@ -4,15 +4,16 @@
 <head>
 	<title>Django-Angular Demo</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	{% block bootstap_css %}
+	{% block bootstrap_css %}
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-	{% endblock bootstap_css %}
+	{% endblock bootstrap_css %}
 	<link href="{% static 'djng/css/styles.css' %}" rel="stylesheet" />
 	<link href="{% static 'djng/css/bootstrap.css' %}" rel="stylesheet" />
 	<link href="{% static 'css/djangular-demo.css' %}" rel="stylesheet" />
 </head>
 
 <body>
+	{% block header %}
 	<header class="navbar navbar-static-top navbar-inverse">
 		<div class="container">
 			<div class="navbar-header">
@@ -46,6 +47,7 @@
 			</nav>
 		</div>
 	</header>
+	{% endblock header %}
 
 	<div class="container">
 		{% block container %}{% endblock %}

@@ -16,6 +16,7 @@ class Bootstrap3FormMixin(BootstrapFormMixin):
     widget_css_classes = 'form-control'
     label_css_classes = 'control-label'
     field_mixins_module = 'djng.styling.bootstrap3.field_mixins'
+    help_text_html = '<span class="help-block">%s</span>'
 
 
 class Bootstrap3Form(six.with_metaclass(NgDeclarativeFieldsMetaclass, Bootstrap3FormMixin, NgFormBaseMixin, BaseForm)):

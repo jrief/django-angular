@@ -14,8 +14,9 @@ from ..bootstrap.forms import BootstrapFormMixin
 class Bootstrap4FormMixin(BootstrapFormMixin):
     field_css_classes = 'form-group row has-feedback'
     widget_css_classes = 'form-control'
-    label_css_classes = 'form-control-label'
+    label_css_classes = 'col-form-label'
     field_mixins_module = 'djng.styling.bootstrap4.field_mixins'
+    help_text_html = '<span class="form-text text-muted">%s</span>'
 
 
 class Bootstrap4Form(six.with_metaclass(NgDeclarativeFieldsMetaclass, Bootstrap4FormMixin, NgFormBaseMixin, BaseForm)):
