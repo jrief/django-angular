@@ -4,8 +4,6 @@ from django.forms import fields, widgets
 
 from djng.forms import field_mixins
 
-# from . import widgets as bootstrap_widgets
-
 
 def build_boolean_field_mixin(bootstrap_widgets):
     class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
