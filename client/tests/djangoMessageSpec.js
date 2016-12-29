@@ -1,13 +1,13 @@
 'use strict';
 
-describe('unit tests for module ng.django.messages', function() {
-	
+describe('unit tests for module djng-messages', function() {
+
 	beforeEach(function() {
-		module('ng.django.messages');
+		module('djng-messages');
 	});
-	
+
 	describe('django messages signal', function() {
-		
+
 		var signal,
 			djngMessagesEvents,
 			$rootScope,
@@ -35,18 +35,18 @@ describe('unit tests for module ng.django.messages', function() {
 			signal.messagesUpdated(messages);
 			expect(result).toBe(messages);
 		});
-	
+
 	});
-	
-	
+
+
 	describe('django messages interceptor', function() {
-		
+
 		var djngMessagesInterceptor;
-		
+
 		beforeEach(inject(function(_djngMessagesInterceptor_) {
 			djngMessagesInterceptor = _djngMessagesInterceptor_;
 		}));
-		
+
 		it('should remove django_messages from response data', function() {
 			var data = { my_data: 'blah' },
 				response = {
@@ -58,11 +58,11 @@ describe('unit tests for module ng.django.messages', function() {
 						return 'application/json';
 					}
 				};
-			
+
 			var res = djngMessagesInterceptor.response(response);
 			expect(res.data).toBe(data);
 		});
-		
+
 		it('should ignore json root object without django_messages property', function() {
 			var data = { my_data: 'blah' },
 				response = {
@@ -71,11 +71,11 @@ describe('unit tests for module ng.django.messages', function() {
 						return 'application/json';
 					}
 				};
-				
+
 			var res = djngMessagesInterceptor.response(response);
 			expect(res.data).toBe(data);
 		});
-		
+
 		it('should ignore json array', function() {
 			var data = [],
 				response = {
@@ -84,11 +84,11 @@ describe('unit tests for module ng.django.messages', function() {
 						return 'application/json';
 					}
 				};
-				
+
 			var res = djngMessagesInterceptor.response(response);
 			expect(res.data).toBe(data);
 		});
-		
+
 		it('should ignore non json content type', function() {
 			var data = '<xml></xml>',
 				response = {
@@ -97,15 +97,15 @@ describe('unit tests for module ng.django.messages', function() {
 						return 'text/xml';
 					}
 				};
-				
+
 			var res = djngMessagesInterceptor.response(response);
 			expect(res.data).toBe(data);
 		});
 	});
-	
-	
+
+
 	describe('django messages interceptor responders', function(){
-		
+
 		var djngMessagesInterceptor,
 			response_data,
 			messages = [{}],
@@ -129,14 +129,14 @@ describe('unit tests for module ng.django.messages', function() {
 			djngMessagesInterceptor = _djngMessagesInterceptor_;
 			response_data = angular.extend({}, response); // make copy of response so that original can be re
 		}));
-		
+
 		it('should call individual responder with messages', function() {
 			spyOn(responder, 'addMessages');
 			djngMessagesInterceptor.addResponder(responder);
 			djngMessagesInterceptor.response(response_data);
 			expect(responder.addMessages).toHaveBeenCalledWith(messages);
 		});
-		
+
 		it('should call multiple responders with messages', function() {
 			spyOn(responder, 'addMessages');
 			spyOn(responder2, 'addMessages');
@@ -145,7 +145,7 @@ describe('unit tests for module ng.django.messages', function() {
 			expect(responder.addMessages).toHaveBeenCalledWith(messages);
 			expect(responder2.addMessages).toHaveBeenCalledWith(messages);
 		});
-		
+
 		it('should remove specific responder', function() {
 			spyOn(responder, 'addMessages');
 			spyOn(responder2, 'addMessages');
@@ -159,7 +159,7 @@ describe('unit tests for module ng.django.messages', function() {
 			expect(responder.addMessages.calls.count()).toBe(1);
 			expect(responder2.addMessages.calls.count()).toBe(2);
 		});
-		
+
 		iit('should clear all responders', function() {
 			spyOn(responder, 'addMessages');
 			spyOn(responder2, 'addMessages');
@@ -174,10 +174,10 @@ describe('unit tests for module ng.django.messages', function() {
 			expect(responder2.addMessages.calls.count()).toBe(1);
 		});
 	});
-	
-	
+
+
 	describe('django messages interceptor and signal integration', function(){
-		
+
 		var signal,
 			djngMessagesEvents,
 			djngMessagesInterceptor,
@@ -199,7 +199,7 @@ describe('unit tests for module ng.django.messages', function() {
 			djngMessagesEvents = _djngMessagesEvents_;
 			djngMessagesInterceptor = _djngMessagesInterceptor_;
 		}));
-		
+
 		it('should broadcast an updated event when new messages added', function() {
 			spyOn($rootScope, '$broadcast');
 			djngMessagesInterceptor.response(response);

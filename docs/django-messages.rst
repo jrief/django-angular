@@ -148,7 +148,7 @@ First include the messages module.
 
 .. code-block:: javascript
 
-    var app = angular.module('myApp', ['ng.django.messages']);
+    var app = angular.module('myApp', ['djng-messages']);
 
 
 Handling messages
