@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 import json
 
 from django.contrib import messages
@@ -23,7 +26,7 @@ def process_response(request, response):
 
 
 def is_not_valid_type(request, response):
-	return not request.is_ajax() and not _content_type_is_json(response)
+    return not request.is_ajax() and not _content_type_is_json(response)
 
 
 def _content_type_is_json(response):
@@ -38,5 +41,5 @@ def _get_messages(request):
             "message": message.message,
             "type": message.tags.split(' ').pop(),
             "tags": message.tags,
-    })
+        })
     return django_messages

@@ -28,7 +28,7 @@ AjaxDjangoMessagesMiddleware
 ----------------------------
 
 The first is middleware, which can be added in ``settings.py`` and adds blanket coverage to
-the entire site: 
+the entire site:
 
 .. code-block:: python
 
@@ -36,11 +36,11 @@ the entire site:
 	    ...
 	    'django.contrib.sessions.middleware.SessionMiddleware',
 	    'django.contrib.messages.middleware.MessageMiddleware',
-	
-	    'djangular.middleware.AjaxDjangoMessagesMiddleware'
+
+	    'djng.middleware.AjaxDjangoMessagesMiddleware'
 	)
-	
-Using this method, it's also possible to exclude specific URLS (by ``app_name``, ``namespace``, 
+
+Using this method, it's also possible to exclude specific URLS (by ``app_name``, ``namespace``,
 ``namespace:name`` or ``name``) using the ``DJANGULAR_MESSAGES_EXCLUDE_URLS`` setting.
 
 .. code-block:: python
@@ -51,11 +51,11 @@ Using this method, it's also possible to exclude specific URLS (by ``app_name``,
          "accounts:detail",  # An AccountDetail view you wish to exclude
         "home",  # Site homepage
     )
-	
+
 .. warning:: Adding app_names to applications.
 
     To make the (myapp) work, you may need to define an app_name in the include() function in the URLConf. For example:
-    
+
     .. code-block:: python
 
         # in urls.py
@@ -66,29 +66,29 @@ Using this method, it's also possible to exclude specific URLS (by ``app_name``,
 Using the Decorator
 -------------------
 
-If you only wish to affect a specific view, you can use the ``djangular.core.decorators.add_messages_to_response``
+If you only wish to affect a specific view, you can use the ``djng.core.decorators.add_messages_to_response``
 decorator.
 
 **Class Based View example**:
 
 .. code-block:: python
-    
+
     from django.views.generic import View
     from django.utils.decorators import method_decorator
 
-    from djangular.core.decorators import add_messages_to_response
+    from djng.core.decorators import add_messages_to_response
 
     class MyClassBasedView(View):
-        
+
         @method_decorator(add_messages_to_response)
         def post(self, request, *args, **kwargs):
             return HttpResponse(json.dumps({'data': 'my response data'}),
 			                    status=200,
 			                    content_type='application/json')
-			
+
 For more information on this technique, please see here_.
 
-.. _here: https://docs.djangoproject.com/en/1.5/topics/class-based-views/intro/#decorating-the-class 
+.. _here: https://docs.djangoproject.com/en/1.5/topics/class-based-views/intro/#decorating-the-class
 
 
 **Function Based View example**:
@@ -97,8 +97,8 @@ For more information on this technique, please see here_.
 
     from django.http import HttpResponse
 
-    from djangular.core.decorators import add_messages_to_response
-    
+    from djng.core.decorators import add_messages_to_response
+
     @add_messages_to_response
     def my_function_based_view(request):
         return HttpResponse(json.dumps({'data': 'my response data'}),
@@ -106,15 +106,15 @@ For more information on this technique, please see here_.
 		                    content_type='application/json')
 
 The Result
-----------		
-		
-Using either of these methods, there are two criteria that must be meet in order for 
+----------
+
+Using either of these methods, there are two criteria that must be meet in order for
 a view to add Django Messages to its response:
 
 1. The request must be ajax
 2. The response ``content-type`` must be ``application/json``
 
-If both these criteria are meet and messages exist, they'll be added to the response 
+If both these criteria are meet and messages exist, they'll be added to the response
 content in the following format:
 
 Original response content:
@@ -129,7 +129,7 @@ Converted response content with messages added:
 
     {
         'data': {'data': 'my response data'},
-        'django_messages': [ 
+        'django_messages': [
             {
                 message: "this is a message",
                 tags: "info",
@@ -162,8 +162,8 @@ The easiest way to handle messages in your Angular client, is through the ``djng
         $httpProvider.interceptors.push('djngMessagesInterceptor');
     });
 
-This intercepts the response, checking its data for the existence of the ``django_messages`` 
-property. If it exists, it's stripped and the response data is reverted back to it's original 
+This intercepts the response, checking its data for the existence of the ``django_messages``
+property. If it exists, it's stripped and the response data is reverted back to it's original
 form.
 
 
@@ -174,9 +174,9 @@ There are two ways to respond to intercepted messages. You can either add a hand
 the ``djngMessagesSignal`` to be notified when messages are intercepted:
 
 .. code-block:: javascript
-    
+
     app.controller('MyCtrl', function($scope, djngMessagesSignal) {
-        
+
         vm.messages = [];
 
         djngMessagesSignal.onMessagesUpdated($scope, _messagesUpdated);
@@ -203,11 +203,11 @@ or you can add a responder to the ``djngMessagesInterceptor`` to handle new mess
             }
         };
     });
-    
+
     app.controller('MyCtrl', function(messagesModel) {
-        
+
         var vm = this;
-        
+
         vm.model = messagesModel;
     });
 
@@ -225,4 +225,4 @@ or you can add a responder to the ``djngMessagesInterceptor`` to handle new mess
             <div>{{message.message}}</div>
         </div>
     </div>
-    
+

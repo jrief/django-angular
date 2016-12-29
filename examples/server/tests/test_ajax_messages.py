@@ -8,9 +8,9 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 from django.contrib.messages.storage.base import Message
 
-from djangular.middleware import AjaxDjangoMessagesMiddleware
-from djangular.core.ajax_messages import process_response, is_not_valid_type
-from djangular.core.decorators import add_messages_to_response
+from djng.middleware import AjaxDjangoMessagesMiddleware
+from djng.core.ajax_messages import process_response, is_not_valid_type
+from djng.core.decorators import add_messages_to_response
 
 
 try:
@@ -19,16 +19,16 @@ except ImportError:
     import unittest.mock
 
 
-
 def get_messages(request):
     return [Message(25, 'this is my message')]
+
 
 def get_no_messages(request):
     return []
 
 
 class DummyCBView(View):
-	
+
     def __init__(self, content_type='application/json', **kwargs):
         super(DummyCBView, self).__init__(**kwargs)
         self.content_type = content_type
@@ -50,7 +50,7 @@ class MessagesTestCase(TestCase):
 
     def setUp(self):
         self.factory = RequestFactory()
-	
+
     def assertResponseContainsMessages(self, response):
         content = json.loads(response.content.decode('utf8'))
         messages = content['django_messages']
@@ -66,10 +66,7 @@ class MessagesTestCase(TestCase):
         content = json.loads(response.content.decode('utf8'))
         messages = content.get('django_messages')
         self.assertEqual(messages, None)
-        self.assertEqual(content['data'], 'success')	
-
-
-
+        self.assertEqual(content['data'], 'success')
 
 
 class AjaxMessagesMethodTest(MessagesTestCase):
@@ -89,7 +86,7 @@ class AjaxMessagesMethodTest(MessagesTestCase):
         self.assertResponseDoesNotContainMessages(response)
 
     @mock.patch('django.contrib.messages.get_messages', get_messages)
-    def test_messages_added_to_response_when_they_exist(self):
+    def test_messages_added_to_response_when_they_exist2(self):
         request = self.factory.get('/')
         response = DummyCBView('text/html').get(request)
         response = process_response(request, response)
@@ -101,11 +98,11 @@ class AjaxMessagesMethodTest(MessagesTestCase):
         response = DummyCBView().get(request)
         self.assertFalse(is_not_valid_type(request, response))
 
-    def test_is_not_valid_type_with_json(self):
+    def test_is_not_valid_type_with_json2(self):
         request = self.factory.get('/')
         response = DummyCBView('text/html').get(request)
         self.assertTrue(is_not_valid_type(request, response))
-		
+
 
 class MessagesDecoratorTest(MessagesTestCase):
 
@@ -120,9 +117,9 @@ class MessagesDecoratorTest(MessagesTestCase):
         request = self.factory.get('/')
         response = DummyDecCBView().get(request)
         self.assertResponseDoesNotContainMessages(response)
-		
+
     @mock.patch('django.contrib.messages.get_messages', get_messages)
-    def test_messages_added_to_response_when_they_exist(self):
+    def test_messages_added_to_response_when_they_exist2(self):
         request = self.factory.get('/')
         response = DummyDecCBView('text/html').get(request)
         self.assertResponseDoesNotContainMessages(response)
@@ -135,8 +132,8 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     def setUp(self):
         super(AjaxDjangoMessagesMiddlewareTest, self).setUp()
         self.middleware = AjaxDjangoMessagesMiddleware()
-    
-    @mock.patch('djangular.middleware.EXEMPT', list(('(submethods_app)',)))
+
+    @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_added_to_response_when_url_is_not_exempt_and_they_exist(self):
         request = self.factory.get('straight_methods/')
@@ -144,14 +141,14 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
         response = self.middleware.process_response(request, response)
         self.assertResponseContainsMessages(response)
 
-    @mock.patch('djangular.middleware.EXEMPT', list(('(submethods_app)',)))
+    @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_no_messages)
     def test_messages_not_added_to_response_when_url_is_not_exempt_and_there_are_none(self):
         request = self.factory.get('straight_methods/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
-    
+
     @override_settings(DEBUG=True)
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_debug_tool_url_exempt(self):
@@ -160,7 +157,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
 
-    @mock.patch('djangular.middleware.EXEMPT', list(('(submethods_app)',)))
+    @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_app_name(self):
         request = self.factory.get('sub_methods/sub/app/')
@@ -168,7 +165,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
 
-    @mock.patch('djangular.middleware.EXEMPT', list(('[submethods:sub]',)))
+    @mock.patch('djng.middleware.EXEMPT', list(('[submethods:sub]',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_namespace(self):
         request = self.factory.get('sub_methods/sub/app/')
@@ -176,7 +173,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
 
-    @mock.patch('djangular.middleware.EXEMPT', list(('submethods:sub:app',)))
+    @mock.patch('djng.middleware.EXEMPT', list(('submethods:sub:app',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_namespace_name(self):
         request = self.factory.get('sub_methods/sub/app/')
@@ -184,11 +181,10 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
 
-    @mock.patch('djangular.middleware.EXEMPT', list(('straightmethods',)))
+    @mock.patch('djng.middleware.EXEMPT', list(('straightmethods',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_name(self):
         request = self.factory.get('straight_methods/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
-

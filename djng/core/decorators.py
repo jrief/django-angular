@@ -1,8 +1,11 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+
 from functools import wraps
 
 from django.utils.decorators import available_attrs
 
-from djangular.core.ajax_messages import process_response
+from djng.core.ajax_messages import process_response
 
 
 def add_messages_to_response(view_func):
