@@ -19,6 +19,6 @@ class SubscribeView(FormView):
         return super(SubscribeView, self).post(request, **kwargs)
 
     def ajax(self, request):
-        form = self.form_class(data=json.loads(request.body))
+        form = self.form_class(data=json.loads(request.body.decode('utf8')))
         response_data = {'errors': form.errors, 'success_url': force_text(self.success_url)}
         return HttpResponse(json.dumps(response_data), content_type="application/json")

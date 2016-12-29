@@ -5,3 +5,4 @@ pyquery>=1.2.9
 cssselect>=0.9.1
 lxml>=3.3.3
 django-sekizai>0.8
+mock==1.0.1

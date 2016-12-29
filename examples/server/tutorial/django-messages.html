@@ -1,0 +1,18 @@
+<script type="text/javascript">
+    angular.module('djangular-demo', ['ng.django.forms', 'ng.django.messages', 'toastr'])
+           .config(function($httpProvider) {
+	            $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+	            $httpProvider.defaults.headers.common['X-CSRFToken'] = '{% csrf_value %}';
+	            $httpProvider.interceptors.push('djngMessagesInterceptor');
+            });
+</script>
+
+<form {% block form_tag %}name="{{ form.form_name }}" ng-controller="MyFormCtrl" validate{% endblock %}>
+    {% csrf_token %}
+    {{ form.as_div }}
+
+    <button type="button"
+            class="btn btn-primary"
+            ng-click="submit({{ form.scope_prefix }}, {{ form.form_name }})"
+            ng-disabled="!{{ form.form_name }}.$dirty || {{ form.form_name }}.$invalid">Submit via Ajax</button>
+</form>

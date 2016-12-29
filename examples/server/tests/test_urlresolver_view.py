@@ -16,7 +16,8 @@ def dummy_view(request, *args, **kwargs):
         'name': 'DummyView',
         'request': request,
         'args': args,
-        'kwargs': kwargs
+        'kwargs': kwargs,
+        'Content-Type': 'text/html'
     }
 
 
@@ -25,7 +26,8 @@ def dummy_view2(request, *args, **kwargs):
         'name': 'DummyView2',
         'request': request,
         'args': args,
-        'kwargs': kwargs
+        'kwargs': kwargs,
+        'Content-Type': 'text/html'
     }
 
 
