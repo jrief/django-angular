@@ -6,7 +6,7 @@ import six
 
 from django import http
 from django.conf import settings
-from django.core.urlresolvers import reverse, resolve
+from django.core.urlresolvers import reverse, resolve, Resolver404
 from django.utils.http import unquote
 try:
     from django.utils.deprecation import MiddlewareMixin
@@ -125,7 +125,10 @@ class AjaxDjangoMessagesMiddleware(object):
 
     def _is_exempt(self, path):
         is_match = False
-        match = resolve(path)
+        try:
+            match = resolve(path)
+        except Resolver404:
+            return False
 
         if (
             "({0})".format(match.app_name) in EXEMPT or

@@ -136,7 +136,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_added_to_response_when_url_is_not_exempt_and_they_exist(self):
-        request = self.factory.get('straight_methods/')
+        request = self.factory.get('/straight_methods/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseContainsMessages(response)
@@ -144,7 +144,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_no_messages)
     def test_messages_not_added_to_response_when_url_is_not_exempt_and_there_are_none(self):
-        request = self.factory.get('straight_methods/')
+        request = self.factory.get('/wrong_url/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
@@ -152,7 +152,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @override_settings(DEBUG=True)
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_debug_tool_url_exempt(self):
-        request = self.factory.get('__debug__')
+        request = self.factory.get('/__debug__')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
@@ -160,7 +160,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('(submethods_app)',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_app_name(self):
-        request = self.factory.get('sub_methods/sub/app/')
+        request = self.factory.get('/sub_methods/sub/app/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
@@ -168,7 +168,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('[submethods:sub]',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_namespace(self):
-        request = self.factory.get('sub_methods/sub/app/')
+        request = self.factory.get('/sub_methods/sub/app/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
@@ -176,7 +176,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('submethods:sub:app',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_namespace_name(self):
-        request = self.factory.get('sub_methods/sub/app/')
+        request = self.factory.get('/sub_methods/sub/app/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
@@ -184,7 +184,7 @@ class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
     @mock.patch('djng.middleware.EXEMPT', list(('straightmethods',)))
     @mock.patch('django.contrib.messages.get_messages', get_messages)
     def test_messages_not_added_to_response_as_exempt_name(self):
-        request = self.factory.get('straight_methods/')
+        request = self.factory.get('/straight_methods/')
         response = DummyCBView().get(request)
         response = self.middleware.process_response(request, response)
         self.assertResponseDoesNotContainMessages(response)
