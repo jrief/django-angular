@@ -1,19 +1,35 @@
 # -*- coding: utf-8 -*-
+
 from __future__ import unicode_literals
+
 import six
+
 from django import http
-from django.core.urlresolvers import reverse
+from django.conf import settings
+from django.core.urlresolvers import reverse, resolve
 from django.utils.http import unquote
 try:
     from django.utils.deprecation import MiddlewareMixin
 except ImportError:
     MiddlewareMixin = object
 
+from djng.core.ajax_messages import process_response, is_not_valid_type
+
+
+DJANGULAR_MESSAGES_EXCLUDE_URLS = getattr(
+    settings,
+    "DJANGULAR_MESSAGES_EXCLUDE_URLS",
+    ()
+)
+
+EXEMPT = list(DJANGULAR_MESSAGES_EXCLUDE_URLS)
+
 
 class AngularUrlMiddleware(MiddlewareMixin):
     """
-    If the request path is <ANGULAR_REVERSE> it should be resolved to actual view, otherwise return
-    ``None`` and continue as usual.
+    If the request path is <ANGULAR_REVERSE>
+    it should be resolved to actual view, otherwise return ``None``
+    and continue as usual.
     This must be the first middleware in the MIDDLEWARE_CLASSES tuple!
     """
     ANGULAR_REVERSE = '/angular/reverse/'
@@ -71,3 +87,52 @@ class AngularUrlMiddleware(MiddlewareMixin):
 
             # Reconstruct GET QueryList in the same way WSGIRequest.GET function works
             request.GET = http.QueryDict(request.environ['QUERY_STRING'])
+
+
+class AjaxDjangoMessagesMiddleware(object):
+    """
+    Exclusion method adapted from
+    https://github.com/pydanny/dj-stripe/blob/master/djstripe/middleware.py
+
+    Rules:
+
+        * "(app_name)" means everything from this app is exempt
+        * "[namespace]" means everything with this name is exempt
+        * "namespace:name" means this namespaced URL is exempt
+        * "name" means this URL is exempt
+        * If settings.DEBUG is True, then django-debug-toolbar is exempt
+
+    Example::
+
+        DJANGULAR_MESSAGES_EXCLUDE_URLS = (
+            "(myapp)",  # anything in the myapp URLConf
+            "[blogs]",  # Anything in the blogs namespace
+            "accounts:detail",  # An AccountDetail view you wish to exclude
+            "home",  # Site homepage
+        )
+    """
+    def process_response(self, request, response):
+        if is_not_valid_type(request, response):
+            return response
+        if self._is_debug_toolbar(request.path):
+            return response
+        if self._is_exempt(request.path):
+            return response
+        return process_response(request, response)
+
+    def _is_debug_toolbar(self, path):
+        return settings.DEBUG and path.startswith("/__debug__")
+
+    def _is_exempt(self, path):
+        is_match = False
+        match = resolve(path)
+
+        if (
+            "({0})".format(match.app_name) in EXEMPT or
+            "[{0}]".format(match.namespace) in EXEMPT or
+            "{0}:{1}".format(match.namespace, match.url_name) in EXEMPT or
+            match.url_name in EXEMPT
+        ):
+            is_match = True
+
+        return is_match
