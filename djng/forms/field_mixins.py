@@ -214,6 +214,10 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
 
 
 class FileFieldMixin(DefaultFieldMixin):
+    def get_converted_widget(self):
+        self.widget_css_classes = None
+        return super(FileFieldMixin, self).get_converted_widget()
+
     def get_potential_errors(self):
         errors = []
         return errors
