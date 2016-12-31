@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import six
+
 from django.conf.urls import url, include
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import QueryDict
-from django.test import TestCase, RequestFactory
+from django.test import override_settings, TestCase, RequestFactory
+
 from djng.middleware import AngularUrlMiddleware
-from django.core.urlresolvers import resolve
 
 TEST_URLCONF_PATH = 'server.tests.test_urlresolver_view'
 
@@ -41,9 +42,9 @@ urlpatterns = [
 ]
 
 
+@override_settings(ROOT_URLCONF=TEST_URLCONF_PATH)
 class TestUrlResolverView(TestCase):
     pattern_dict = None
-    urls = 'server.tests.test_urlresolver_view'
 
     def setUp(self):
         self.factory = RequestFactory()

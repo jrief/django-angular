@@ -4,7 +4,6 @@ from __future__ import unicode_literals
 from django import template
 from django.test import TestCase
 from sekizai.context import SekizaiContext
-#from django.test.client import Client
 
 
 class PostProcessorTagsTest(TestCase):

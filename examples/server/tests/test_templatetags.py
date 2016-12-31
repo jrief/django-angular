@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.test.client import Client
 
 
+TEST_URL_PATH = 'server.tests.urls'
+
+
+@override_settings(ROOT_URLCONF=TEST_URL_PATH)
 class TemplateTagsTest(TestCase):
-    urls = 'server.tests.urls'
 
     def test_csrf_token(self):
         client = Client(enforce_csrf_checks=True)
