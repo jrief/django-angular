@@ -9,11 +9,16 @@ env:
   - DJANGOVER=django17
   - DJANGOVER=django18
   - DJANGOVER=django19
+  - CLIENT_TESTS=1
 
 matrix:
   exclude:
     - python: 3.5
       env: DJANGOVER=django17
+    - python: 2.7
+      env: CLIENT_TESTS=1
+    - python: 3.4
+      env: CLIENT_TESTS=1
 
 install:
   - pip install tox
@@ -22,7 +27,8 @@ before_script:
   - export CHROME_BIN=chromium-browser
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
+  - sleep 3
 
 script:
-  - export TOX_ENV=py${TRAVIS_PYTHON_VERSION/./}-${DJANGOVER}
+  - "if [[ $CLIENT_TESTS == '1' ]]; then export TOX_ENV=client-tests; else export TOX_ENV=py${TRAVIS_PYTHON_VERSION/./}-${DJANGOVER}; fi"
   - tox -r -e "$TOX_ENV"
