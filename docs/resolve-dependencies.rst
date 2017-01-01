@@ -1,8 +1,8 @@
 .. _resolve-dependencies:
 
-===========================
-Resolve Angular Dependenies
-===========================
+============================
+Resolve Angular Dependencies
+============================
 
 As with any application, we also must manage the client side files. They normally are not available
 from **PyPI** and must be installed by other means than ``pip``. This typically is the
