@@ -14,6 +14,8 @@ def validate_password(value):
 
 
 class SubscribeForm(Bootstrap3Form):
+    use_required_attribute = False
+
     CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
                          ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
     TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
