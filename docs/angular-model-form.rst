@@ -26,7 +26,7 @@ by mixing in the **djng** class ``NgModelFormMixin``
 	from django import forms
 	from django.utils import six
 	from djng.forms import NgDeclarativeFieldsMetaclass, NgModelFormMixin
-	
+
 	class ContactForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgModelFormMixin, forms.Form)):
 	    subject = forms.CharField()
 	    # more fields ...
@@ -37,7 +37,7 @@ can be rewritten in a simpler way, by using the convenience class ``NgForm`` as 
 .. code-block:: python
 
 	from djng.forms import NgModelFormMixin, NgForm
-	
+
 	class MyValidatedForm(NgModelFormMixin, NgForm):
 	    # members as above
 
@@ -47,11 +47,11 @@ If the Form shall inherit from Django's ``forms.ModelForm``, use the convenience
 .. code-block:: python
 
 	from djng.forms import NgModelFormMixin, NgModelForm
-	
+
 	class MyValidatedForm(NgModelFormMixin, NgModelForm):
 	    class Meta:
 	         model = Article
-	
+
 	    # fields as usual
 
 Now, each rendered form field gets an additional attribute ``ng-model`` containing the field's name.
@@ -73,10 +73,10 @@ this unbound contact form class may look like
 .. code-block:: python
 
 	from django.views.generic import TemplateView
-	
+
 	class ContactFormView(TemplateView):
 	    template = 'contact.html'
-	
+
 	    def get_context_data(self, **kwargs):
 	        context = super(ContactFormView, self).get_context_data(**kwargs)
 	        context.update(contact_form=ContactForm())
@@ -129,14 +129,14 @@ Add these methods to view class handling the contact form
 	import json
 	from django.views.decorators.csrf import csrf_exempt
 	from django.http import HttpResponseBadRequest
-	
+
 	class ContactFormView(TemplateView):
 	    # use ‘get_context_data()’ from above
-	    
+
 	    @csrf_exempt
 	    def dispatch(self, *args, **kwargs):
 	        return super(ContactFormView, self).dispatch(*args, **kwargs)
-	    
+
 	    def post(self, request, *args, **kwargs):
 	        if not request.is_ajax():
 	            return HttpResponseBadRequest('Expected an XMLHttpRequest')
@@ -165,7 +165,7 @@ hard code this prefix into the constructor of the form class
 
 	class ContactForm(NgModelFormMixin, forms.Form):
 	    # declare form fields
-	
+
 	    def __init__(self, *args, **kwargs):
 	        kwargs.update(scope_prefix='my_prefix')
 	        super(ContactForm, self).__init__(*args, **kwargs)
@@ -201,3 +201,16 @@ parsing of all bound form fields, even from the nested forms.
 		use a dot ‘``.``’, since this is the natural separator between Javascript objects.
 
 .. _promise: https://en.wikipedia.org/wiki/Promise_(programming)
+
+
+Form with FileField or ImageField
+---------------------------------
+
+If you have a `FileField` within your form, you need to add in your `<form>` definition:
+
+`enctype="multipart/form-data`
+
+For fancier rendering and behaviour, consider using a custom directive.
+Handling file upload is a bit out of scope for this library.
+
+Only basic behaviour is supported with django-angular.
