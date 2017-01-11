@@ -4,6 +4,13 @@
 Release History
 ===============
 
+latest (master) - not released yet
+----------------------------------
+* Added support for Django 1.10, tests & travis updated
+* Drop support for Django 1.7
+* Removed ``{% csrf_value %}`` templatetag
+* Fix file input css (remove the border) and add some documentation about common reported errors
+
 0.8.4
 -----
 * Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS
