@@ -141,12 +141,12 @@ dispatcher.
 	    def get_other_data(self):
 	        return ['baz', 'cap']
 	
-	urlpatterns = patterns('',
+	urlpatterns = [
 	    …
 	    url(r'^fetch-some-data.json$', MyResponseView.as_view(), {'invoke_method': 'get_some_data'}),
 	    url(r'^fetch-other-data.json$', MyResponseView.as_view(), {'invoke_method': 'get_other_data'}),
 	    …
-	)
+	]
 
 If a client calls the URL ``/fetch-some-data.json``, the responding view dispatches incoming
 requests directly onto the method ``get_some_data``. This kind of invocation only works for GET
