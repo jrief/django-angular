@@ -76,16 +76,16 @@ Resolve this view in ``urls.py``
 
 .. code-block:: python
 
-	partial_patterns = patterns('',
+	partial_patterns = [
 	    url(r'^partial-template1.html$', PartialGroupView.as_view(template_name='partial-template1.html'), name='partial_template1'),
 	    # ... more partials ...,
-	)
+	]
 
-	urlpatterns = patterns('',
+	urlpatterns = [
 	    # ...
 	    url(r'^partials/', include(partial_patterns, namespace='partials')),
 	    # ...
-	)
+	]
 
 By using the utility function
 
