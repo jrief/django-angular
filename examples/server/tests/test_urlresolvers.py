@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
-from django.test import TestCase
+
+from django.test import override_settings, TestCase
 from django.test.client import RequestFactory
+
 from djng.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
+
 from .urls import RemoteMethodsView
 
 
+TEST_URL_PATH = 'server.tests.urls'
+
+
+@override_settings(ROOT_URLCONF=TEST_URL_PATH)
 class TemplateRemoteMethods(TestCase):
-    urls = 'server.tests.urls'
 
     def setUp(self):
         self.factory = RequestFactory()

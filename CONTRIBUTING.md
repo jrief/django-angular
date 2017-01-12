@@ -18,7 +18,7 @@ New Translation
 If you'd like to submit new translations, please use:
 
 
-`cd django-angular/djangular`
+`cd django-angular/djng`
 
 `django-admin.py makemessages --locale=fr` (e.g. for french translation)
 
