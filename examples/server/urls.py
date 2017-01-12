@@ -2,12 +2,14 @@
 from django.conf.urls import url
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
+
+from server.views import NgFormDataValidView
 from server.views.classic_subscribe import SubscribeView as ClassicSubscribeView
 from server.views.client_validation import SubscribeView as ClientValidationView
-from server.views.model_scope import SubscribeView as ModelScopeView
 from server.views.combined_validation import SubscribeView as CombinedValidationView
+from server.views.django_messages import DjangoMessagesView
+from server.views.model_scope import SubscribeView as ModelScopeView
 from server.views.threeway_databinding import SubscribeView as ThreeWayDataBindingView
-from server.views import NgFormDataValidView
 
 
 urlpatterns = [

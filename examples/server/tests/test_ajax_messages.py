@@ -1,6 +1,7 @@
 import json
+import mock
 
-from django.test import TestCase
+from django.test import override_settings, TestCase
 from django.test.utils import override_settings
 from django.test.client import RequestFactory
 from django.http import HttpResponse
@@ -11,12 +12,6 @@ from django.contrib.messages.storage.base import Message
 from djng.middleware import AjaxDjangoMessagesMiddleware
 from djng.core.ajax_messages import process_response, is_not_valid_type
 from djng.core.decorators import add_messages_to_response
-
-
-try:
-    import mock
-except ImportError:
-    import unittest.mock
 
 
 def get_messages(request):
@@ -126,8 +121,11 @@ class MessagesDecoratorTest(MessagesTestCase):
         self.assertEqual(response['Content-Type'], 'text/html')
 
 
+TEST_URLCONF_PATH = "server.tests.urls"
+
+
+@override_settings(ROOT_URLCONF=TEST_URLCONF_PATH)
 class AjaxDjangoMessagesMiddlewareTest(MessagesTestCase):
-    urls = 'server.tests.urls'
 
     def setUp(self):
         super(AjaxDjangoMessagesMiddlewareTest, self).setUp()
