@@ -3,6 +3,7 @@ from django.conf.urls import url
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic import RedirectView
 from server.views.classic_subscribe import SubscribeView as ClassicSubscribeView
+from server.views.classic_subscribe import Bootstrap4SubscribeView
 from server.views.client_validation import SubscribeView as ClientValidationView
 from server.views.model_scope import SubscribeView as ModelScopeView
 from server.views.combined_validation import SubscribeView as CombinedValidationView
@@ -23,4 +24,6 @@ urlpatterns = [
         name='djng_3way_databinding'),
     url(r'^form_data_valid', NgFormDataValidView.as_view(), name='form_data_valid'),
     url(r'^$', RedirectView.as_view(url=reverse_lazy('djng_form_validation'))),
+    url(r'^classic_form/bootstrap4/$', Bootstrap4SubscribeView.as_view(),
+        name='bootstrap4_example'),
 ]

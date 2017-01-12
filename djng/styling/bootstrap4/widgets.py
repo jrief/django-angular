@@ -24,15 +24,15 @@ class ChoiceFieldRenderer(OriginalChoiceFieldRenderer):
 
 
 class CheckboxInput(OriginalCheckboxInput):
-    _label_attrs = ['class="checkbox-inline"']
+    _label_attrs = ['class="form-check-label"']
 
 
 class CheckboxChoiceInput(OriginalCheckboxChoiceInput):
-    _checkbox_class = "checkbox"
+    _checkbox_class = "form-check"
 
 
 class CheckboxInlineChoiceInput(OriginalCheckboxInlineChoiceInput):
-    _label_attrs = ['class="checkbox-inline"']
+    _label_attrs = ['class="form-check-label"']
 
 
 class CheckboxFieldRenderer(OriginalCheckboxFieldRenderer):
@@ -48,11 +48,11 @@ class CheckboxSelectMultiple(OriginalCheckboxSelectMultiple):
 
 
 class RadioChoiceInput(OriginalRadioChoiceInput):
-    _radio_class = "radio"
+    _radio_class = "form-check"
 
 
 class RadioInlineChoiceInput(OriginalRadioInlineChoiceInput):
-    _label_attrs = ['class="radio-inline"']
+    _label_attrs = ['class="form-check-label"']
 
 
 class RadioFieldRenderer(OriginalRadioFieldRenderer):
