@@ -2,7 +2,6 @@ import json
 import mock
 
 from django.test import override_settings, TestCase
-from django.test.utils import override_settings
 from django.test.client import RequestFactory
 from django.http import HttpResponse
 from django.views.generic import View
