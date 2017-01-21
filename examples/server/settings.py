@@ -28,6 +28,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'djng',
     'server',
+    'sekizai',
 )
 
 USE_L10N = True
