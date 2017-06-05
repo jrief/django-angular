@@ -1,11 +1,21 @@
 {% extends "subscribe-form.html" %}
-{% load static djng_tags tutorial_tags %}
+{% load static sekizai_tags djng_tags tutorial_tags %}
 
 {% block form_title %}Django Form Model as Scope{% endblock %}
 
 {% block form_header %}Django Form's two-way data-binding with an AngularJS controller{% endblock %}
 
 {% block form_tag %}name="{{ form.form_name }}" method="post" action="." validate ng-controller="MyFormCtrl"{% endblock %}
+
+{% block container %}
+	{{ block.super }}
+	{% addtoblock "js" %}<script src="{% static 'node_modules/ng-file-upload/dist/ng-file-upload.js' %}" type="text/javascript"></script>{% endaddtoblock %}
+	{% addtoblock "ng-requires" %}ngFileUpload{% endaddtoblock %}
+
+	{% addtoblock "js" %}<script src="{% static 'js/djng-urls.js' %}" type="text/javascript"></script>{% endaddtoblock %}
+	{% addtoblock "ng-requires" %}djng.urls{% endaddtoblock %}
+	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
+{% endblock container %}
 
 {% block form_submission %}
 	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>
@@ -18,14 +28,6 @@
 		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
 	{% endverbatim %}
 {% endblock form_foot %}
-
-{% block ng_module_definition %}
-	{{ block.super }}
-	my_app.config(function($httpProvider) {
-		$httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-		$httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
-	});
-{% endblock %}
 
 {% block demo_scripts %}
 	{{ block.super }}

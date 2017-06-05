@@ -26,6 +26,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'sekizai',
     'djng',
     'server',
 )
@@ -84,6 +85,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
                 'django.contrib.messages.context_processors.messages',
+                'sekizai.context_processors.sekizai',
                 'server.context_processors.global_context',
             ],
         },

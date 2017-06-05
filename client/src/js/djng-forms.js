@@ -68,7 +68,7 @@ djng_forms_module.directive('djngError', function() {
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
-djng_forms_module.directive('ngModel', ['$log', function ($log) {
+djng_forms_module.directive('ngModel', ['$log', function($log) {
 	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
@@ -153,7 +153,7 @@ djng_forms_module.directive('ngModel', ['$log', function ($log) {
 				setDefaultValue(modelCtrl, restoreTextArea(field));
 				break;
 			default:
-				$log.log('Unknown field type');
+				$log.log('Unknown field type: ' + field.tagName);
 				break;
 			}
 
