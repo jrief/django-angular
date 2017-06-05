@@ -37,6 +37,6 @@ Please drop me a line, if and where you use this project.
 
 ## License
 
-Copyright &copy; 2016
+Copyright &copy; 2017
 
 MIT licensed
