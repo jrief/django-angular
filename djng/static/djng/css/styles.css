@@ -33,3 +33,27 @@ ul.djng-field-errors li.valid::before {
 	color: #00c900;
 	content: "\2714";
 }
+.drop-box {
+	background: #F8F8F8;
+	border: 5px dashed #DDD;
+	width: 200px;
+	height: auto;
+	min-height: 200px;
+	text-align: center;
+	font-weight: bold;
+	text-shadow: 0 0 5px white;
+	resize: none;
+}
+.has-feedback .form-control.drop-box {
+	padding: 75px 25px 0 25px;
+}
+.drop-box.dragover {
+	background: #f8f8a0;
+	border-color: #dda;
+	border-style: solid;
+}
+.drop-box.filled {
+	border-radius: 0;
+	border-width: 2px;
+	border-style: solid;
+}

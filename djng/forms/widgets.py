@@ -134,3 +134,21 @@ class RadioSelect(widgets.RadioSelect):
 
     def get_field_attrs(self, field):
         return {'radio_select_required': field.required}
+
+
+class DropFileInput(widgets.Widget):
+    def __init__(self, attrs=None, button_label=None):
+        if attrs is not None:
+            self.attrs = attrs.copy()
+        else:
+            self.attrs = {}
+        self.button_label = button_label
+        self.attrs.update({
+            'class': 'drop-box',
+            'ngf-drop': 'uploadFiles($files)',
+            'ngf-select': 'uploadFiles($files)',
+        })
+
+    def render(self, name, value, attrs=None):
+        final_attrs = self.build_attrs(attrs, name=name)
+        return format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.button_label)
