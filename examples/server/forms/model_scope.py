@@ -15,7 +15,7 @@ class SubscribeForm(NgModelFormMixin, subscribe_form.SubscribeForm):
     avatar = ImageField(
         label='Photo of yourself',
         fileupload_url=reverse_lazy('fileupload'),
-        button_label='Drop image here or click to upload',
+        area_label='Drop image here or click to upload',
         required=True)
 
     def clean(self):
