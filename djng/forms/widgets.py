@@ -2,10 +2,16 @@
 from __future__ import unicode_literals
 
 import json
+
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import format_html, format_html_join
+from django.utils.translation import ugettext_lazy as _
+
+from easy_thumbnails.files import get_thumbnailer
+
+from djng import app_settings
 
 
 def flatatt(attrs):
@@ -137,18 +143,32 @@ class RadioSelect(widgets.RadioSelect):
 
 
 class DropFileInput(widgets.Widget):
-    def __init__(self, attrs=None, button_label=None):
+    thumbnail_size = app_settings.THUMBNAIL_SIZE
+
+    def __init__(self, attrs=None, area_label=None):
         if attrs is not None:
             self.attrs = attrs.copy()
         else:
             self.attrs = {}
-        self.button_label = button_label
+        self.area_label = area_label
         self.attrs.update({
-            'class': 'drop-box',
+            'ng-class': 'getClass()',
             'ngf-drop': 'uploadFiles($files)',
             'ngf-select': 'uploadFiles($files)',
         })
 
     def render(self, name, value, attrs=None):
+        if value:
+            background_url = self.get_background_url(value)
+            attrs['style'] = 'background: url({});'.format(background_url)
         final_attrs = self.build_attrs(attrs, name=name)
-        return format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.button_label)
+        delete_button = format_html('<span djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()"></span>',
+                                    attrs['ng-model'])
+        drag_area = format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)
+        return format_html('<div class="drop-box">{}{}</div>', drag_area, delete_button)
+
+    def get_background_url(self, value):
+        thumbnail_options = {'crop': True, 'size': self.thumbnail_size}
+        thumbnailer = get_thumbnailer(value)
+        thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+        return thumbnail.url
