@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from django.views.generic import View
 from django.http import JsonResponse
+
+if 'easy_thumbnails' not in settings.INSTALLED_APPS:
+    raise ImproperlyConfigured("'FileUploadView' can only be used in combination with 'easy_thumbnails'")
 
 from easy_thumbnails.files import get_thumbnailer
 from easy_thumbnails.templatetags.thumbnail import data_uri
