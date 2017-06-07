@@ -25,7 +25,6 @@ fileuploadModule.controller('FileUploadController', ['$scope', 'Upload', functio
 			});
 		});
 	};
-
 }]);
 
 
@@ -33,13 +32,23 @@ fileuploadModule.directive('ngfDrop', function() {
 	return {
 		restrict: 'AEC',
 		controller: 'FileUploadController',
-		link: function(scope, element, attrs, fileUploadController) {
+		require: ['ngfDrop', 'ngModel'],
+		link: function(scope, element, attrs, ctrls) {
+			var fileUploadController = ctrls[0], ngModelController = ctrls[1];
+
+			ngModelController.$setViewValue({
+				previous_image: attrs.previousImage,
+				temp_name: attrs.previousImage ? true : null
+			});
+
 			scope.uploadFiles = function(files) {
 				fileUploadController.uploadFiles(element, attrs, files);
 			};
 
 			scope.getClass = function() {
-				return scope.$eval(attrs.ngModel)['temp_name'] ? '' : 'empty'
+				var model = ngModelController.$viewValue;
+				if (!model || !model.temp_name)
+					return 'empty';
 			};
 		}
 	};
@@ -54,9 +63,6 @@ fileuploadModule.directive('ngfSelect', function() {
 			scope.uploadFiles = function(files) {
 				fileUploadController.uploadFiles(element, attrs, files);
 			};
-			scope.getClass = function() {
-				return scope.$eval(attrs.ngModel)['temp_name'] ? '' : 'empty'
-			};
 		}
 	};
 });
@@ -65,15 +71,16 @@ fileuploadModule.directive('djngFileuploadButton', function() {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
-			var ngModel = attrs['djngFileuploadButton'];
-
 			scope.deleteImage = function() {
-				console.log(scope.$eval(ngModel));
-				scope.$eval(ngModel)['temp_name'] = null;
+				var model = scope.$eval(attrs.djngFileuploadButton);
+				if (model) {
+					model.temp_name = false;  // tags previous image for deletion
+				}
 			};
 
 			scope.isEmpty = function() {
-				return !scope.$eval(ngModel)['temp_name'];
+				var model = scope.$eval(attrs.djngFileuploadButton);
+				return !(model && model.temp_name);
 			};
 		}
 	};

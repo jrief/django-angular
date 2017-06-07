@@ -10,12 +10,9 @@ class AppSettings(object):
     @property
     def upload_storage(self):
         import os
-        from django.core.exceptions import ImproperlyConfigured
         from django.core.files.storage import FileSystemStorage
 
         media_root = self._setting('MEDIA_ROOT', '')
-        if not os.access(media_root, os.W_OK):
-            raise ImproperlyConfigured("'MEDIA_ROOT' must point onto a writable directory.")
         upload_temp = self._setting('DJNG_UPLOAD_TEMP', 'upload_temp')
         return FileSystemStorage(location=os.path.join(media_root, upload_temp))
 

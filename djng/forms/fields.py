@@ -1,12 +1,18 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
+
 from django import forms
 from django.conf import settings
+from django.core import signing
 from django.core.exceptions import ValidationError
+from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _
+
+from easy_thumbnails.models import Source, Thumbnail
 
 from djng import app_settings
 from .widgets import DropFileInput
@@ -28,6 +34,7 @@ class FloatField(forms.FloatField):
 
 class ImageField(forms.Field):
     storage = app_settings.upload_storage
+    signer = signing.Signer()
 
     def __init__(self, *args, **kwargs):
         accept = kwargs.pop('accept', 'image/*')
@@ -42,8 +49,17 @@ class ImageField(forms.Field):
         super(ImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
-        if not (isinstance(value, dict) and value.get('temp_name')):
-            return
+        try:
+            if value['temp_name'] is False and value['previous_image']:
+                # Delete previous image
+                previous_image = self.signer.unsign(value['previous_image'])
+                self.remove_images(previous_image)
+                return False
+            if value['temp_name'] is None or value['temp_name'] is True:
+                # Nothing changed
+                return
+        except (KeyError, TypeError, signing.BadSignature) as excp:
+            raise ValidationError("Got bogous upstream data")
         try:
             temp_file = self.storage.open(value['temp_name'], 'rb')
             file_size = self.storage.size(value['temp_name'])
@@ -72,8 +88,21 @@ class ImageField(forms.Field):
                     obj.file.write(chunk)
                 obj.file.seek(0)
                 obj.file.size = file_size
+        except IOError:
+            obj = None
         except Exception as excp:
             raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
         else:
             self.storage.delete(value['temp_name'])
         return obj
+
+    def remove_images(self, image_name):
+        try:
+            source = Source.objects.get(name=image_name)
+            for thumb in Thumbnail.objects.filter(source=source):
+                default_storage.delete(thumb.name)
+                thumb.delete()
+            source.delete()
+        except Source.DoesNotExist:
+            pass
+        default_storage.delete(image_name)

@@ -3,11 +3,11 @@ from __future__ import unicode_literals
 
 import json
 
+from django.core.signing import Signer
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import format_html, format_html_join
-from django.utils.translation import ugettext_lazy as _
 
 from easy_thumbnails.files import get_thumbnailer
 
@@ -144,6 +144,7 @@ class RadioSelect(widgets.RadioSelect):
 
 class DropFileInput(widgets.Widget):
     thumbnail_size = app_settings.THUMBNAIL_SIZE
+    signer = Signer()
 
     def __init__(self, attrs=None, area_label=None):
         if attrs is not None:
@@ -160,7 +161,8 @@ class DropFileInput(widgets.Widget):
     def render(self, name, value, attrs=None):
         if value:
             background_url = self.get_background_url(value)
-            attrs['style'] = 'background: url({});'.format(background_url)
+            attrs['style'] = 'background-image: url({});'.format(background_url)
+            attrs['previous-image'] = self.signer.sign(value.name)
         final_attrs = self.build_attrs(attrs, name=name)
         delete_button = format_html('<span djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()"></span>',
                                     attrs['ng-model'])
