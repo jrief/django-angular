@@ -12,15 +12,18 @@ fileuploadModule.controller('FileUploadController', ['$scope', 'Upload', functio
 			if (file.$error)
 				return;
 			data[identifier] = file;
+			element.addClass('uploading');
 			Upload.upload({
 				data: data,
 				url: attrs.fileuploadUrl
 			}).then(function(response) {
 				var field = response.data[identifier];
+				element.removeClass('uploading');
 				element.css('background-image', field.url);
 				delete field.url;  // we don't want to send back the whole image
 				angular.extend($scope.$eval(attrs.ngModel), field);
 			}, function(respose) {
+				element.removeClass('uploading');
 				console.error(respose.statusText);
 			});
 		});
