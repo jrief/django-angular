@@ -61,8 +61,9 @@ if 'easy_thumbnails' in settings.INSTALLED_APPS:
             except (KeyError, TypeError, signing.BadSignature) as excp:
                 raise ValidationError("Got bogous upstream data")
             try:
-                temp_file = self.storage.open(value['temp_name'], 'rb')
-                file_size = self.storage.size(value['temp_name'])
+                temp_name = self.signer.unsign(value['temp_name'])
+                temp_file = self.storage.open(temp_name, 'rb')
+                file_size = self.storage.size(temp_name)
                 if file_size < settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
                     obj = InMemoryUploadedFile(
                         file=temp_file,
@@ -93,7 +94,7 @@ if 'easy_thumbnails' in settings.INSTALLED_APPS:
             except Exception as excp:
                 raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
             else:
-                self.storage.delete(value['temp_name'])
+                self.storage.delete(temp_name)
             return obj
 
         def remove_images(self, image_name):
