@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core import signing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
-from django.core.files.storage import FileSystemStorage
 from django.forms import forms
 from django.test import override_settings, TestCase
 from django.test.client import Client
@@ -40,7 +39,7 @@ class FileUploadTest(TestCase):
     def upload_image(self):
         client = Client()
         upload_filename = os.path.join(os.path.dirname(__file__), 'sample-image.jpg')
-        with open(upload_filename) as fp:
+        with open(upload_filename, 'rb') as fp:
             upload_url = reverse('fileupload')
             response = client.post(upload_url, {'file:0': fp})
         self.assertEquals(response.status_code, 200)
