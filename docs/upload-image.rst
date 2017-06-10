@@ -159,8 +159,8 @@ Caveats
 =======
 
 When users upload images, but never submit the corresponding form, the folder holding these
-temporary images gets filled up. Therefore you should some kind of (cron)job which cleans up that
-folder from time to time.
+temporary images gets filled up. Therefore you should add some kind of (cron)job which cleans up
+that folder from time to time.
 
 Depending on your setup, also provide some security measure, so that for example only logged in
 users have access onto the view for uploading images. Otherwise the temporary folder might get

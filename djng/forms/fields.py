@@ -59,7 +59,7 @@ if 'easy_thumbnails' in settings.INSTALLED_APPS:
                     # Nothing changed
                     return
             except (KeyError, TypeError, signing.BadSignature) as excp:
-                raise ValidationError("Got bogous upstream data")
+                raise ValidationError("Got bogus upstream data")
             try:
                 temp_name = self.signer.unsign(value['temp_name'])
                 temp_file = self.storage.open(temp_name, 'rb')
