@@ -240,7 +240,7 @@ class NgFormBaseMixin(object):
             form_name = self.form_name
         except AttributeError:
             # if form_name is unset, then generate a pseudo unique name, based upon the class name
-            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('='))
+            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('=')).decode('utf-8')
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
