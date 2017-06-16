@@ -1,109 +1,58 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+from __future__ import unicode_literals, absolute_import
 
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
-from django.utils.encoding import force_text
-from django.forms import widgets
-from djng.forms.widgets import (flatatt,
-    ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
-    CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
-    RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
+from djng.compat import HAS_CHOICE_FIELD_RENDERER
+from djng.forms.widgets import (
+    CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
+    RadioSelect as DjngRadioSelect
+)
 
+if HAS_CHOICE_FIELD_RENDERER:
 
-class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
-    def render(self):
-        """
-        Outputs a <div ng-form="name"> for this set of choice fields to nest an ngForm.
-        """
-        start_tag = format_html('<div {}>', mark_safe(' '.join(self.field_attrs)))
-        output = [start_tag]
-        for widget in self:
-            output.append(force_text(widget))
-        output.append('</div>')
-        return mark_safe('\n'.join(output))
+    from .compat import CheckboxInput, CheckboxSelectMultiple, RadioSelect
 
+else:
+    from djng.forms.widgets import CheckboxInput as DjngCheckboxInput
 
-class CheckboxInput(widgets.CheckboxInput):
-    def __init__(self, label, attrs=None, check_test=None):
-        # the label is rendered by the Widget class rather than by BoundField.label_tag()
-        self.choice_label = label
-        super(CheckboxInput, self).__init__(attrs, check_test)
+    class CheckboxInput(DjngCheckboxInput):
+        template_name = 'djng/forms/widgets/checkbox.html'
 
-    def render(self, name, value, attrs=None):
-        attrs = attrs or self.attrs
-        label_attrs = ['class="checkbox-inline"']
-        if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{}"', self.attrs['id']))
-        label_for = mark_safe(' '.join(label_attrs))
-        tag = super(CheckboxInput, self).render(name, value, attrs)
-        return format_html('<label {0}>{1} {2}</label>', label_for, tag, self.choice_label)
+        def __init__(self, label, attrs=None, check_test=None):
+            # the label is rendered by the Widget class rather than by BoundField.label_tag()
+            self.choice_label = label
+            super(CheckboxInput, self).__init__(attrs, check_test)
 
+        def get_context(self, name, value, attrs):
+            context = super(CheckboxInput, self).get_context(name, value, attrs)
+            if context:
+                context['label'] = self.choice_label
+            return context
 
-class CheckboxChoiceInput(DjngCheckboxChoiceInput):
-    def render(self, name=None, value=None, attrs=None, choices=()):
-        label_tag = super(CheckboxChoiceInput, self).render(name, value, attrs, choices)
-        return format_html('<div class="checkbox">{}</div>', label_tag)
+    class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
+        template_name = 'djng/styling/bootstrap3/checkbox_select.html'
+        option_template_name = 'djng/forms/widgets/checkbox_option.html'
 
+        def get_context(self, name, value, attrs):
+            validate_fields = []
+            context = super(CheckboxSelectMultiple, self).get_context(name, value, attrs)
+            if context:
+                for optgroup in context['widget']['optgroups']:
+                    elm = optgroup[1][0]
+                    # elm['attrs']['ng-model'] = "{}['{}']".format(elm['name'], elm['value'])
+                    elm['attrs'].pop('ng-model')
+                    validate_fields.append(elm['name'])
+                context['widget']['validate_fields'] = validate_fields
+            return context
 
-class CheckboxInlineChoiceInput(CheckboxChoiceInput):
-    def render(self, name=None, value=None, attrs=None, choices=()):
-        name = name or self.name
-        value = value or self.value
-        attrs = attrs or self.attrs
-        label_attrs = ['class="checkbox-inline"']
-        if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}_{1}"', self.attrs['id'], self.index))
-        label_for = mark_safe(' '.join(label_attrs))
-        return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
+    class RadioSelect(DjngRadioSelect):
+        template_name = 'djng/styling/bootstrap3/radio.html'
+        option_template_name = 'djng/forms/widgets/radio_option.html'
 
-
-class CheckboxFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
-    choice_input_class = CheckboxChoiceInput
-
-
-class CheckboxInlineFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRenderer):
-    choice_input_class = CheckboxInlineChoiceInput
-
-
-class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
-    renderer = CheckboxInlineFieldRenderer
-
-
-class RadioChoiceInput(widgets.RadioChoiceInput):
-    def render(self, name=None, value=None, attrs=None, choices=()):
-        label_tag = super(RadioChoiceInput, self).render(name, value, choices)
-        return format_html('<div class="radio">{}</div>', label_tag)
-
-    def tag(self, attrs=None):
-        attrs = attrs or self.attrs
-        tag_attrs = dict(attrs, type=self.input_type, name=self.name, value=self.choice_value)
-        if 'id' in attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(tag_attrs['id'], self.index)
-        if self.is_checked():
-            tag_attrs['checked'] = 'checked'
-        return format_html('<input{} />', flatatt(tag_attrs))
-
-
-class RadioInlineChoiceInput(widgets.RadioChoiceInput):
-    def render(self, name=None, value=None, attrs=None, choices=()):
-        name = name or self.name
-        value = value or self.value
-        attrs = attrs or self.attrs
-        label_attrs = ['class="radio-inline"']
-        if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}_{1}"', self.attrs['id'], self.index))
-        label_for = mark_safe(' '.join(label_attrs))
-        return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
-
-
-class RadioFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
-    choice_input_class = RadioChoiceInput
-
-
-class RadioInlineFieldRenderer(RadioFieldRendererMixin, ChoiceFieldRenderer):
-    choice_input_class = RadioInlineChoiceInput
-
-
-class RadioSelect(DjngRadioSelect):
-    renderer = RadioFieldRenderer
+        def get_context(self, name, value, attrs):
+            context = super(RadioSelect, self).get_context(name, value, attrs)
+            if context:
+                for optgroup in context['widget']['optgroups']:
+                    elm = optgroup[1][0]
+                    elm['for_id'] = elm['attrs']['id']
+                    elm['attrs']['id'] += '_{}'.format(elm['index'])
+            return context
