@@ -328,11 +328,8 @@ class NgFormBaseMixin(object):
         """
         warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
         for field in self.base_fields.values():
-            try:
+            if hasattr(field, 'get_converted_widget'):
                 new_widget = field.get_converted_widget()
-            except AttributeError:
-                pass
-            else:
                 if new_widget:
                     field.widget = new_widget
 
