@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import unittest
+
+import django
 from django import forms
 from django.test import TestCase
 from djng.forms import NgFormValidationMixin, NgForm
@@ -25,6 +28,7 @@ class SelectMultipleChoicesForm(BaseForm):
     select_multi = forms.MultipleChoiceField(choices=CHOICES, required=True)
 
 
+@unittest.skipIf(django.VERSION < (1, 10), "earlier django versions break the html")
 class NgFieldRenderTestCase(TestCase):
 
     maxDiff = None
@@ -61,6 +65,7 @@ class NgFieldRenderTestCase(TestCase):
             '''\
 <input id="id_email" name="email" ng-model="email" ng-required="true" type="email" value="test@example.com" required />''')  # noqa
 
+    @unittest.skipIf(django.VERSION < (1, 11), "earlier django versions break the html")
     def test_checkbock_check_mulitple_field(self):
         f = ChoicesForm({'check_multi': ['a', 'c']})
         self.assertHTMLEqual(

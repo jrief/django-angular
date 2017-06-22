@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import unittest
+
+import django
 from django import forms
 from django.test import TestCase
 
@@ -23,6 +26,7 @@ class SelectMultipleChoicesForm(Bootstrap3Form):
     select_multi = forms.MultipleChoiceField(choices=CHOICES)
 
 
+@unittest.skipIf(django.VERSION < (1, 10), "earlier django versions break the html")
 class NgFieldRenderBootstrapTestCase(TestCase):
 
     def test_email_field(self):
