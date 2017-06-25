@@ -1,6 +1,10 @@
 body{
 	position:relative;
 }
+h1.navbar-brand {
+	font-size: 32px;
+}
+
 table.subscribe ul.errorlist,
 table.subscribe ul.djng-field-errors {
 	display: inline-block;

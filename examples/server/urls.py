@@ -22,5 +22,6 @@ urlpatterns = [
     url(r'^threeway_databinding/$', ThreeWayDataBindingView.as_view(),
         name='djng_3way_databinding'),
     url(r'^form_data_valid', NgFormDataValidView.as_view(), name='form_data_valid'),
-    url(r'^$', RedirectView.as_view(url=reverse_lazy('djng_form_validation'))),
+    # url(r'^upload/$', FileUploadView.as_view(), name='fileupload'),
+    url(r'^$', RedirectView.as_view(url=reverse_lazy('djng_classic_subscription'))),
 ]

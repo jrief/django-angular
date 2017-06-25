@@ -6,10 +6,12 @@
 .tmp*
 .DS_Store
 .idea/
+.tox
 cdncache/
 dist/
 htmlcov/
 docs/_build/
+media/
 node_modules/
 bower_components/
 build/
