@@ -41,6 +41,9 @@
 					<li class="{% active request 'djng_combined_validation' %}">
 						<a href="{% url 'djng_combined_validation' %}">Combined Validation</a>
 					</li>
+					<li class="{% active request 'djng_image_upload' %}">
+						<a href="{% url 'djng_image_upload' %}">Image Upload</a>
+					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
 						<a href="{% url 'djng_3way_databinding' %}">Three-Way Data-Binding</a>

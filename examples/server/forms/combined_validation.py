@@ -15,6 +15,7 @@ def validate_password(value):
 
 
 class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
+    use_required_attribute = False
     scope_prefix = 'subscribe_data'
     form_name = 'my_form'
 
