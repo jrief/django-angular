@@ -27,7 +27,7 @@ django-angular tags, ``{% load djng_tags %}``:
 
     {% load djng_tags %}
     <script>
-        var my_app = angular.module('MyApp', ['djng.urls', /* other dependencies */]);
+        var my_app = angular.module('MyApp', [..., 'djng.urls', ...]);
     </script>
 
 Now, you have to include ``django-angular.js`` and add data about your django url configuration:

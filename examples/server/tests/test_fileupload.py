@@ -7,7 +7,10 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core import signing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
+<<<<<<< HEAD
 from django.db.models.fields.files import ImageFieldFile
+=======
+>>>>>>> origin/features/upload-image
 from django.forms import forms
 from django.test import override_settings, TestCase
 from django.test.client import Client
@@ -77,12 +80,19 @@ class FileUploadTest(TestCase):
         self.assertEquals(form.cleaned_data['avatar'].name, "sample-image.jpg")
 
         # TODO: delete this image again
+<<<<<<< HEAD
         stored_image = ImageFieldFile(None, form.cleaned_data['avatar'], "sample-image.jpg")
         # stored_image = self.storage.save('persisted.jpg', form.cleaned_data['avatar'].file)
         initial = {'avatar': stored_image}
         form = TestUploadForm(initial=initial)
         htmlsource = form.as_p()
         print(htmlsource)
+=======
+        # stored_image = self.storage.save('persisted.jpg', form.cleaned_data['avatar'].file)
+        # initial = {'avatar': stored_image}
+        # form = TestUploadForm(initial=initial)
+        # htmlsource = form.as_p()
+>>>>>>> origin/features/upload-image
 
     @override_settings(FILE_UPLOAD_MAX_MEMORY_SIZE=50000)
     def test_receive_large_image(self):
