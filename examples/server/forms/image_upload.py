@@ -2,13 +2,13 @@
 from __future__ import unicode_literals
 # start tutorial
 from django.core.urlresolvers import reverse_lazy
-from djng.forms import NgModelFormMixin
+from djng.forms import NgModelFormMixin, NgFormValidationMixin
 from djng.forms.fields import ImageField
 from djng.styling.bootstrap3.forms import Bootstrap3ModelForm
 from ..models.subscribe import SubscribeUser
 
-class SubscribeForm(NgModelFormMixin, Bootstrap3ModelForm):
-#    use_required_attribute = False
+class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3ModelForm):
+    use_required_attribute = False
     scope_prefix = 'subscribe_data'
     form_name = 'my_form'
 
