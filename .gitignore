@@ -7,12 +7,10 @@
 .DS_Store
 .idea/
 .tox
-cdncache/
 dist/
 htmlcov/
 docs/_build/
-media/
+workdir/
 node_modules/
-bower_components/
 build/
 examples/test.sqlite

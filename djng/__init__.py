@@ -20,4 +20,4 @@ Release logic:
 13. git push
 """
 
-__version__ = '0.8.4'  # most likely version 1.0.0
+__version__ = '0.9.0rc1'  # most likely version 1.0.0
