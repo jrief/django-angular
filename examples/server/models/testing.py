@@ -2,6 +2,7 @@
 import datetime
 from django.db import models
 
+__all__ = ['DummyModel', 'DummyModel2', 'SimpleModel', 'M2MModel']
 
 class DummyModel(models.Model):
     name = models.CharField(max_length=255)
