@@ -7,13 +7,11 @@ from djng.models.fields import ImageField
 
 class SubscribeUser(models.Model):
     first_name = models.CharField(
-        'First name',
+        "First name",
         max_length=20)
 
     last_name = models.CharField(
-        'Last name',
-        blank=False,
+        "Last name",
         max_length=50)
 
-    avatar = ImageField(
-        'Your Avatar')
+    avatar = ImageField()
