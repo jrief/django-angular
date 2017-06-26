@@ -6,7 +6,7 @@ from django.test.client import RequestFactory
 
 from djng.views.crud import NgCRUDView
 from djng.views.mixins import JSONResponseMixin
-from server.models import DummyModel, DummyModel2, SimpleModel, M2MModel
+from server.models.testing import DummyModel, DummyModel2, SimpleModel, M2MModel
 
 
 class CRUDTestViewWithM2M(JSONResponseMixin, NgCRUDView):
