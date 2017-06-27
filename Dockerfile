@@ -10,8 +10,13 @@ COPY docker-files/redis.conf /etc/redis.conf
 RUN chown redis.redis /etc/uwsgi.d/redis.ini
 RUN chown -R redis.redis /web/redis
 
+RUN useradd -M -d /web -g uwsgi -s /bin/bash django
+
 # install the basic Django package
-RUN useradd -M -d /web -s /bin/bash django
+RUN echo 2 | alternatives --config python
+RUN python -V
+RUN pip install --upgrade pip
+# RUN pip install --force-reinstall uwsgi
 RUN pip install django==1.10.7
 
 # copy the local django-angular file into a temporary folder
@@ -29,7 +34,8 @@ RUN rm -rf /tmp/django-angular
 RUN mkdir -p /web/workdir/{media,static}
 ADD examples/server /web/django-angular-demo/server
 ADD client /web/django-angular-demo/client
-COPY docker-files/wsgi.py /web/django-angular-demo/wsgi.py
+COPY docker-files/wsgi_runserver.py /web/django-angular-demo/wsgi_runserver.py
+COPY docker-files/wsgi_websocket.py /web/django-angular-demo/wsgi_websocket.py
 COPY examples/manage.py /web/django-angular-demo/manage.py
 COPY examples/package.json /web/django-angular-demo/package.json
 COPY examples/requirements.txt /tmp/requirements.txt
@@ -49,7 +55,7 @@ RUN ln -s /web/workdir/uwsgi-runserver.ini /etc/uwsgi.d/djangular-runserver.ini
 
 # collect static files
 RUN CLIENT_SRC_DIR=/web/django-angular-demo/client/src NODE_MODULES_DIR=/web/django-angular-demo/node_modules DJANGO_STATIC_ROOT=/web/workdir/static ./manage.py collectstatic --noinput
-RUN chown -R django.django /web/{logs,workdir}
+RUN chown -R django.uwsgi /web/{logs,workdir}
 
 # share media files
 VOLUME /web/workdir/media
