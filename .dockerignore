@@ -1,5 +1,5 @@
 *
-!examples/docker-files/
+!docker-files/
 !examples/server/
 !examples/manage.py
 !examples/package.json
