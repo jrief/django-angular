@@ -250,7 +250,7 @@ class NgFormBaseMixin(object):
         super(NgFormBaseMixin, self).__init__(*args, **kwargs)
         if isinstance(self.data, QueryDict):
             self.data = self.rectify_multipart_form_data(self.data.copy())
-        elif isinstance(self.data, dict):
+        elif isinstance(self.data, dict) and self.data:
             self.data = self.rectify_ajax_form_data(self.data.copy())
 
     def __getitem__(self, name):
