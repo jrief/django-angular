@@ -212,6 +212,26 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
 
+    def implode_multi_values(self, name, data):
+        """
+        Due to the way Angular organizes it model, when Form data is sent via a POST request,
+        then for this kind of widget, the posted data must to be converted into a format suitable
+        for Django's Form validation.
+        """
+        mkeys = [k for k in data.keys() if k.startswith(name + '.')]
+        mvls = [data.pop(k)[0] for k in mkeys]
+        if mvls:
+            data.setlist(name, mvls)
+
+    def convert_ajax_data(self, field_data):
+        """
+        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
+        then for this kind of widget, the sent data has to be converted into a format suitable
+        for Django's Form validation.
+        """
+        data = [key for key, val in field_data.items() if val]
+        return data
+
 
 class FileFieldMixin(DefaultFieldMixin):
     def get_converted_widget(self):

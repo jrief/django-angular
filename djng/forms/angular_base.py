@@ -9,6 +9,8 @@ try:
 except ImportError:  # Python 2
     from UserList import UserList
 
+import warnings
+
 from django.forms import forms
 from django.http import QueryDict
 from django.utils import six
@@ -293,6 +295,7 @@ class NgFormBaseMixin(object):
         During form initialization, some widgets have to be replaced by a counterpart suitable to
         be rendered the AngularJS way.
         """
+        warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
         for field in self.base_fields.values():
             try:
                 new_widget = field.get_converted_widget()
@@ -309,7 +312,7 @@ class NgFormBaseMixin(object):
         """
         for name, field in self.base_fields.items():
             try:
-                field.widget.implode_multi_values(name, data)
+                field.implode_multi_values(name, data)
             except AttributeError:
                 pass
         return data
@@ -321,7 +324,7 @@ class NgFormBaseMixin(object):
         """
         for name, field in self.base_fields.items():
             try:
-                data[name] = field.widget.convert_ajax_data(data.get(name, {}))
+                data[name] = field.convert_ajax_data(data.get(name, {}))
             except AttributeError:
                 pass
         return data

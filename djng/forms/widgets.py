@@ -90,23 +90,10 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
     renderer = CheckboxFieldRenderer
 
     def implode_multi_values(self, name, data):
-        """
-        Due to the way Angular organizes it model, when Form data is sent via a POST request,
-        then for this kind of widget, the posted data must to be converted into a format suitable
-        for Django's Form validation.
-        """
-        mkeys = [k for k in data.keys() if k.startswith(name + '.')]
-        mvls = [data.pop(k)[0] for k in mkeys]
-        if mvls:
-            data.setlist(name, mvls)
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
     def convert_ajax_data(self, field_data):
-        """
-        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
-        then for this kind of widget, the sent data has to be converted into a format suitable
-        for Django's Form validation.
-        """
-        return [key for key, val in field_data.items() if val]
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
     def get_field_attrs(self, field):
         return {'multiple_checkbox_required': field.required}
