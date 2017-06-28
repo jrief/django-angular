@@ -11,6 +11,7 @@ except ImportError:  # Python 2
 
 import warnings
 
+from django import VERSION as DJANGO_VERSION
 from django.forms import forms
 from django.http import QueryDict
 from django.utils import six
@@ -217,8 +218,13 @@ class BaseFieldsModifierMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
-        field_mixins_module = import_module(new_class.field_mixins_module)
-        field_mixins_fallback_module = import_module(cls.field_mixins_module)
+        if DJANGO_VERSION < (1, 11):
+            field_mixins_module = import_module(new_class.field_mixins_module)
+            field_mixins_fallback_module = import_module(cls.field_mixins_module)
+        else:
+            # can be simplified after dropping support for Django-1.10
+            field_mixins_module = field_mixins_fallback_module = import_module(cls.field_mixins_module)
+
         # add additional methods to django.form.fields at runtime
         for field in new_class.base_fields.values():
             FieldMixinName = field.__class__.__name__ + 'Mixin'
@@ -246,7 +252,8 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        self.convert_widgets()
+        if DJANGO_VERSION < (1, 11):
+            self.convert_widgets()
         super(NgFormBaseMixin, self).__init__(*args, **kwargs)
         if isinstance(self.data, QueryDict):
             self.data = self.rectify_multipart_form_data(self.data.copy())

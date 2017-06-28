@@ -9,7 +9,6 @@ import re
 from django.forms import fields
 from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
-from .widgets import CheckboxSelectMultiple as DjngCheckboxSelectMultiple
 
 
 class DefaultFieldMixin(object):
@@ -205,10 +204,12 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         return errors
 
     def get_converted_widget(self):
+        from .widgets import CheckboxSelectMultiple
+
         assert(isinstance(self, fields.MultipleChoiceField))
         if not isinstance(self.widget, widgets.CheckboxSelectMultiple):
             return
-        new_widget = DjngCheckboxSelectMultiple()
+        new_widget = CheckboxSelectMultiple()
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
 
