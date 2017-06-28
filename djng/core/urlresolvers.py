@@ -3,8 +3,12 @@ from __future__ import unicode_literals
 from inspect import isclass
 
 from django.utils import six
-from django.core.urlresolvers import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
 from django.core.exceptions import ImproperlyConfigured
+
+try:
+    from django.core.urlresolvers import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
+except ImportError:
+    from django.urls import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
 
 try:
     from django.utils.module_loading import import_string
