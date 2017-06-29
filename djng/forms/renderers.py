@@ -2,6 +2,8 @@
 from __future__ import unicode_literals
 
 from django.forms.renderers import DjangoTemplates
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 
 class DjangoAngularTemplates(DjangoTemplates):
@@ -24,5 +26,11 @@ class DjangoAngularTemplates(DjangoTemplates):
 
     def render(self, template_name, context, request=None):
         template_name = self.template_mappings.get(template_name, template_name)
+        if context['widget']['attrs'].pop('multiple_checkbox_required', False):
+            ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
+            if ng_model:
+                for group, options, index in context['widget']['optgroups']:
+                    for option in options:
+                        option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
         template = self.get_template(template_name)
         return template.render(context, request=request).strip()

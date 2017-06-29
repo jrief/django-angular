@@ -6,6 +6,7 @@ Mixin class methods to be added to django.forms.fields at runtime. These methods
 error messages for AngularJS form validation.
 """
 import re
+
 from django.forms import fields
 from django.forms import widgets
 from django.utils.translation import gettext_lazy, ungettext_lazy
