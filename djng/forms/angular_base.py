@@ -128,9 +128,9 @@ class TupleErrorList(UserList, list):
         return force_text(error)
 
 
-def get_context_with_label(self, name, value, attrs):
+def get_extra_context(self, name, value, attrs):
     """
-    Checkbox widget requires to wrap its `<input ...>` element into a label element,
+    Checkbox widget requires some extra context since it wraps its subelements into a label element,
     which has to be done by the template. Therefore enrich the context by the label string.  
     """
     context = super(self.__class__, self).get_context(name, value, attrs)
@@ -187,7 +187,7 @@ class NgBoundField(forms.BoundField):
         if DJANGO_VERSION > (1, 10) and getattr(self.field, 'render_label', True) is False:
             # so that it can be rendered wrapping the widget
             widget.field_label = self.field.label
-            widget.get_context = MethodType(get_context_with_label, widget)
+            widget.get_context = MethodType(get_extra_context, widget)
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def build_widget_attrs(self, attrs, widget=None):
