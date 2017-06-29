@@ -194,7 +194,8 @@ class NgBoundField(forms.BoundField):
         if not widget:
             widget = self.field.widget
         attrs = super(NgBoundField, self).build_widget_attrs(attrs, widget=widget)
-        self.field.update_widget_attrs(self, attrs)
+        if callable(getattr(self.field, 'update_widget_attrs', None)):
+            self.field.update_widget_attrs(self, attrs)
         return attrs
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):

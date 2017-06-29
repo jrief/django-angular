@@ -1,16 +1,10 @@
 # -*- coding: utf-8 -*-
-from django import VERSION
 from django.forms.forms import DeclarativeFieldsMetaclass, BaseForm
-from django.forms.models import BaseModelForm
+from django.forms.models import BaseModelForm, ModelFormMetaclass
 from django.utils import six
 from .angular_base import BaseFieldsModifierMetaclass, NgFormBaseMixin
 from .angular_model import NgModelFormMixin
-if VERSION[:2] >= (1, 5):
-    from .angular_validation import NgFormValidationMixin
-if VERSION[:2] < (1, 7):
-    from .models import PatchedModelFormMetaclass as ModelFormMetaclass
-else:
-    from django.forms.models import ModelFormMetaclass
+from .angular_validation import NgFormValidationMixin
 
 
 class NgDeclarativeFieldsMetaclass(BaseFieldsModifierMetaclass, DeclarativeFieldsMetaclass):

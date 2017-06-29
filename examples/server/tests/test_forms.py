@@ -5,7 +5,7 @@ from django import forms
 from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
-from djng.forms import NgModelFormMixin, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
+from djng.forms import NgModelFormMixin, NgForm, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -41,7 +41,7 @@ class InvalidForm(NgModelFormMixin, NgModelForm):
         fields = '__all__'
 
 
-class DummyForm(NgModelFormMixin, forms.Form):
+class DummyForm(NgModelFormMixin, NgForm):
     email = forms.EmailField(label='E-Mail')
     onoff = forms.BooleanField(initial=False, required=True)
     sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')), widget=forms.RadioSelect)
@@ -144,7 +144,7 @@ class NgModelFormMixinTest(TestCase):
 
     def check_form_fields(self, form):
         for name in form.fields.keys():
-            identifier = '%s.%s' % (form.prefix, name) if form.prefix else name
+            identifier = '{0}.{1}'.format(form.prefix, name) if form.prefix else name
             input_fields = [e for e in self.elements if e.name.startswith(identifier)]
             self.assertTrue(input_fields)
             for input_field in input_fields:
@@ -153,10 +153,10 @@ class NgModelFormMixinTest(TestCase):
                 if identifier == 'sub2.radio_choices':
                     self.assertFalse(input_field.attrib.get('ng-model'))
                 elif identifier == 'check_multi':
-                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, input_field.name)
+                    model = '{0}[\'{1}\'][\'{2}\']'.format(self.unbound_form.scope_prefix, *input_field.name.split('.'))
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 else:
-                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, identifier)
+                    model = '{0}[\'{1}\']'.format(self.unbound_form.scope_prefix, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement):
                     if input_field.type == 'radio':
