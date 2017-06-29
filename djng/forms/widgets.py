@@ -119,5 +119,8 @@ class RadioSelect(widgets.RadioSelect):
     """
     renderer = RadioFieldRenderer
 
+    def id_for_label(self, id_):
+        return ''
+
     def get_field_attrs(self, field):
         raise NotImplementedError("This method has been moved to its FieldMixin.")
