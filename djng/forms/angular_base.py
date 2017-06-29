@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import json
 from base64 import b64encode
+from types import MethodType
 
 try:
     from collections import UserList
@@ -127,6 +128,16 @@ class TupleErrorList(UserList, list):
         return force_text(error)
 
 
+def get_context_with_label(self, name, value, attrs):
+    """
+    Checkbox widget requires to wrap its `<input ...>` element into a label element,
+    which has to be done by the template. Therefore enrich the context by the label string.  
+    """
+    context = super(self.__class__, self).get_context(name, value, attrs)
+    context['widget'].update(field_label=self.field_label)
+    return context
+
+
 class NgBoundField(forms.BoundField):
     @property
     def errors(self):
@@ -170,6 +181,9 @@ class NgBoundField(forms.BoundField):
         """
         Renders the field.
         """
+        if not widget:
+            widget = self.field.widget
+
         attrs = attrs or {}
         attrs.update(self.form.get_widget_attrs(self))
         if hasattr(self.field, 'widget_css_classes'):
@@ -178,15 +192,21 @@ class NgBoundField(forms.BoundField):
             css_classes = getattr(self.form, 'widget_css_classes', None)
         if css_classes:
             attrs.update({'class': css_classes})
-        widget_classes = self.form.fields[self.name].widget.attrs.get('class', None)
+        widget_classes = widget.attrs.get('class', None)
         if widget_classes:
-            if attrs.get('class', None):
+            if 'class' in attrs:
                 attrs['class'] += ' ' + widget_classes
             else:
                 attrs.update({'class': widget_classes})
+        if DJANGO_VERSION > (1, 10) and getattr(self.field, 'render_label', True) is False:
+            # so that it can be rendered wrapping the widget
+            widget.field_label = self.field.label
+            widget.get_context = MethodType(get_context_with_label, widget)
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        if getattr(self.field, 'render_label', True) is False:
+            return ''  # label shall be rendered by the widget
         attrs = attrs or {}
         css_classes = getattr(self.field, 'label_css_classes', None)
         if hasattr(css_classes, 'split'):
@@ -221,21 +241,25 @@ class BaseFieldsModifierMetaclass(type):
         if DJANGO_VERSION < (1, 11):
             field_mixins_module = import_module(new_class.field_mixins_module)
             field_mixins_fallback_module = import_module(cls.field_mixins_module)
-        else:
-            # can be simplified after dropping support for Django-1.10
-            field_mixins_module = field_mixins_fallback_module = import_module(cls.field_mixins_module)
 
-        # add additional methods to django.form.fields at runtime
-        for field in new_class.base_fields.values():
-            FieldMixinName = field.__class__.__name__ + 'Mixin'
-            try:
-                FieldMixin = getattr(field_mixins_module, FieldMixinName)
-            except AttributeError:
+            # add additional methods to django.form.fields at runtime
+            for field in new_class.base_fields.values():
+                FieldMixinName = field.__class__.__name__ + 'Mixin'
                 try:
-                    FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
+                    FieldMixin = getattr(field_mixins_module, FieldMixinName)
                 except AttributeError:
-                    FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
-            field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+                    try:
+                        FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
+                    except AttributeError:
+                        FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
+                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+        else:
+            field_mixins_module = import_module(cls.field_mixins_module)
+            for field in new_class.base_fields.values():
+                FieldMixinName = field.__class__.__name__ + 'Mixin'
+                FieldMixin = getattr(field_mixins_module, FieldMixinName, field_mixins_module.DefaultFieldMixin)
+                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+
         return new_class
 
 

@@ -16,7 +16,6 @@ class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
             if not isinstance(self.widget, CheckboxInput):
                 new_widget = CheckboxInput(self.label)
                 new_widget.__dict__, new_widget.choice_label = self.widget.__dict__, new_widget.choice_label
-                self.label = ''  # label is rendered by the widget and not by BoundField.label_tag()
                 return new_widget
 
 

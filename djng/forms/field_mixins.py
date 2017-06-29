@@ -167,6 +167,8 @@ class RegexFieldMixin(DefaultFieldMixin):
 
 
 class BooleanFieldMixin(DefaultFieldMixin):
+    render_label = False
+
     def get_potential_errors(self):
         errors = self.get_input_required_errors()
         return errors
