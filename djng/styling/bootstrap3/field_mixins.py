@@ -12,7 +12,6 @@ class BooleanFieldMixin(field_mixins.BooleanFieldMixin):
 
         assert(isinstance(self, fields.BooleanField))
         if isinstance(self.widget, widgets.CheckboxInput):
-            self.widget_css_classes = None
             if not isinstance(self.widget, CheckboxInput):
                 new_widget = CheckboxInput(self.label)
                 new_widget.__dict__, new_widget.choice_label = self.widget.__dict__, new_widget.choice_label
@@ -25,7 +24,6 @@ class ChoiceFieldMixin(field_mixins.ChoiceFieldMixin):
 
         assert(isinstance(self, fields.ChoiceField))
         if isinstance(self.widget, widgets.RadioSelect):
-            self.widget_css_classes = None
             if not isinstance(self.widget, RadioSelect):
                 new_widget = RadioSelect()
                 new_widget.__dict__ = self.widget.__dict__
@@ -38,7 +36,6 @@ class MultipleChoiceFieldMixin(field_mixins.MultipleChoiceFieldMixin):
 
         assert(isinstance(self, fields.MultipleChoiceField))
         if isinstance(self.widget, widgets.CheckboxSelectMultiple):
-            self.widget_css_classes = None
             if not isinstance(self.widget, CheckboxSelectMultiple):
                 new_widget = CheckboxSelectMultiple()
                 new_widget.__dict__ = self.widget.__dict__

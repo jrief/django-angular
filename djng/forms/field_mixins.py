@@ -82,6 +82,19 @@ class DefaultFieldMixin(object):
                 errkeys.append('invalid')
         return errors
 
+    def update_widget_attrs(self, bound_field, attrs):
+        """
+        Update the dictionary of attributes used  while rendering the input widget
+        """
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        widget_classes = self.widget.attrs.get('class', None)
+        if widget_classes:
+            if 'class' in attrs:
+                attrs['class'] += ' ' + widget_classes
+            else:
+                attrs.update({'class': widget_classes})
+        return attrs
+
 
 class CharFieldMixin(DefaultFieldMixin):
     def get_potential_errors(self):
@@ -173,6 +186,11 @@ class BooleanFieldMixin(DefaultFieldMixin):
         errors = self.get_input_required_errors()
         return errors
 
+    def update_widget_attrs(self, bound_field, attrs):
+        attrs['is_subwidget'] = True
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
+
 
 class MultipleFieldMixin(DefaultFieldMixin):
     def get_multiple_choices_required(self):
@@ -196,6 +214,12 @@ class ChoiceFieldMixin(MultipleFieldMixin):
             errors = self.get_input_required_errors()
         return errors
 
+    def update_widget_attrs(self, bound_field, attrs):
+        if isinstance(self.widget, widgets.RadioSelect):
+            attrs.update(is_subwidget=True, radio_select_required=self.required)
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
+
 
 class MultipleChoiceFieldMixin(MultipleFieldMixin):
     def get_potential_errors(self):
@@ -204,6 +228,12 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         else:
             errors = self.get_input_required_errors()
         return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            attrs.update(is_subwidget=True, multiple_checkbox_required=self.required)
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
 
     def get_converted_widget(self):
         from .widgets import CheckboxSelectMultiple
@@ -238,9 +268,11 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
 
 class FileFieldMixin(DefaultFieldMixin):
     def get_converted_widget(self):
-        self.widget_css_classes = None
         return super(FileFieldMixin, self).get_converted_widget()
 
     def get_potential_errors(self):
         errors = []
         return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        return attrs

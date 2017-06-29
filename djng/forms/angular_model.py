@@ -76,8 +76,8 @@ class NgModelFormMixin(NgFormBaseMixin):
         errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$message', 'invalid', '$message')))
         return errors
 
-    def get_widget_attrs(self, bound_field):
-        attrs = super(NgModelFormMixin, self).get_widget_attrs(bound_field)
+    def update_widget_attrs(self, bound_field, attrs):
+        super(NgModelFormMixin, self).update_widget_attrs(bound_field, attrs)
         identifier = self.add_prefix(bound_field.name)
         ng = {
             'name': bound_field.name,

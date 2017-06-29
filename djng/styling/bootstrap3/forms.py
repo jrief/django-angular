@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
 from django.forms.forms import BaseForm
 from django.forms.models import BaseModelForm
 from django.utils import six
@@ -8,6 +9,7 @@ from djng.forms import NgDeclarativeFieldsMetaclass, NgModelFormMetaclass, NgFor
 
 class Bootstrap3FormMixin(object):
     field_css_classes = 'form-group has-feedback'
+    widget_css_classes = 'form-control'
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
     field_mixins_module = 'djng.styling.bootstrap3.field_mixins'

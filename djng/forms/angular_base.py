@@ -151,7 +151,7 @@ class NgBoundField(forms.BoundField):
 
     def css_classes(self, extra_classes=None):
         """
-        Returns a string of space-separated CSS classes for this field.
+        Returns a string of space-separated CSS classes for the wrapping element of this input field.
         """
         if hasattr(extra_classes, 'split'):
             extra_classes = extra_classes.split()
@@ -184,25 +184,18 @@ class NgBoundField(forms.BoundField):
         if not widget:
             widget = self.field.widget
 
-        attrs = attrs or {}
-        attrs.update(self.form.get_widget_attrs(self))
-        if hasattr(self.field, 'widget_css_classes'):
-            css_classes = self.field.widget_css_classes
-        else:
-            css_classes = getattr(self.form, 'widget_css_classes', None)
-        if css_classes:
-            attrs.update({'class': css_classes})
-        widget_classes = widget.attrs.get('class', None)
-        if widget_classes:
-            if 'class' in attrs:
-                attrs['class'] += ' ' + widget_classes
-            else:
-                attrs.update({'class': widget_classes})
         if DJANGO_VERSION > (1, 10) and getattr(self.field, 'render_label', True) is False:
             # so that it can be rendered wrapping the widget
             widget.field_label = self.field.label
             widget.get_context = MethodType(get_context_with_label, widget)
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
+
+    def build_widget_attrs(self, attrs, widget=None):
+        if not widget:
+            widget = self.field.widget
+        attrs = super(NgBoundField, self).build_widget_attrs(attrs, widget=widget)
+        self.field.update_widget_attrs(self, attrs)
+        return attrs
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
         if getattr(self.field, 'render_label', True) is False:
@@ -314,12 +307,18 @@ class NgFormBaseMixin(object):
         return self.error_class([SafeTuple(
             (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
-    def get_widget_attrs(self, bound_field):
+    def update_widget_attrs(self, bound_field, attrs):
         """
-        Return a dictionary of additional attributes which shall be added to the widget,
-        used to render this field.
+        Updated the widget attributes which shall be added to the widget when rendering this field.
         """
-        return {}
+        if attrs.pop('is_subwidget', False) is False:
+            widget_classes = getattr(self, 'widget_css_classes', None)
+            if widget_classes:
+                if 'class' in attrs:
+                    attrs['class'] += ' ' + widget_classes
+                else:
+                    attrs.update({'class': widget_classes})
+        return attrs
 
     def convert_widgets(self):
         """

@@ -96,7 +96,7 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
         raise NotImplementedError("This method has been moved to its FieldMixin.")
 
     def get_field_attrs(self, field):
-        return {'multiple_checkbox_required': field.required}
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
 
 class RadioFieldRendererMixin(object):
@@ -120,4 +120,4 @@ class RadioSelect(widgets.RadioSelect):
     renderer = RadioFieldRenderer
 
     def get_field_attrs(self, field):
-        return {'radio_select_required': field.required}
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
