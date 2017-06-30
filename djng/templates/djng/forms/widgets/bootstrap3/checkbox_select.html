@@ -1,5 +1,5 @@
 {% with id=widget.attrs.id %}
-<div ng-form="notifyme"{% if id %} id="{{ id }}"{% endif %}>{% for group, options, index in widget.optgroups %}{% if group %}<p class="bg-warning">Nested choices not supported yet</p>{% endif %}{% for option in options %}
+<div ng-form="{{ widget.name }}"{% if id %} id="{{ id }}"{% endif %}{% include "django/forms/widgets/attrs.html" %}>{% for group, options, index in widget.optgroups %}{% if group %}<p class="bg-warning">Nested choices not supported yet</p>{% endif %}{% for option in options %}
 	{% if wrap_label %}<label{% if option.attr.id %} for="{{ option.attrs.id }}"{% endif %} class="checkbox-inline">{% endif %}<input name="{{ widget.name }}" type="checkbox" value="{{ option.value }}"{% include "django/forms/widgets/attrs.html" with widget=option %} />{% if wrap_label %} {{ option.label }}</label>{% endif %}
 {% endfor %}{% endfor %}</div>
 {% endwith %}

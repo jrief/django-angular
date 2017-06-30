@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from copy import deepcopy
 from django.forms.renderers import DjangoTemplates
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
@@ -26,11 +27,17 @@ class DjangoAngularTemplates(DjangoTemplates):
 
     def render(self, template_name, context, request=None):
         template_name = self.template_mappings.get(template_name, template_name)
-        if context['widget']['attrs'].pop('multiple_checkbox_required', False):
+        if context['widget']['attrs'].get('multiple_checkbox_required'):
+            context = deepcopy(context)
+            context['widget']['attrs'].pop('multiple_checkbox_required', None)
             ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
             if ng_model:
+                validate_fields = []
                 for group, options, index in context['widget']['optgroups']:
                     for option in options:
+                        validate_fields.append(format_html('"{0}.{value}"', ng_model, **option))
                         option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
+                        option['attrs'].pop('multiple_checkbox_required', None)
+                context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
         template = self.get_template(template_name)
         return template.render(context, request=request).strip()
