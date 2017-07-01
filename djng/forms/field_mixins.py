@@ -9,10 +9,18 @@ import re
 
 from django.forms import fields
 from django.forms import widgets
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy, ungettext_lazy
 
 
 class DefaultFieldMixin(object):
+    render_label = True
+
+    @property
+    def is_subwidget(self):
+        return False
+
     def get_potential_errors(self):
         return self.get_input_required_errors()
 
@@ -183,14 +191,21 @@ class RegexFieldMixin(DefaultFieldMixin):
 class BooleanFieldMixin(DefaultFieldMixin):
     render_label = False
 
+    @property
+    def is_subwidget(self):
+        return True
+
     def get_potential_errors(self):
         errors = self.get_input_required_errors()
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
-        attrs['is_subwidget'] = True
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
+
+    def update_widget_rendering_context(self, context):
+        context['widget'].update(field_label=self.label)
+        return context
 
 
 class MultipleFieldMixin(DefaultFieldMixin):
@@ -208,6 +223,10 @@ class MultipleFieldMixin(DefaultFieldMixin):
 
 
 class ChoiceFieldMixin(MultipleFieldMixin):
+    @property
+    def is_subwidget(self):
+        return isinstance(self.widget, widgets.RadioSelect)
+
     def get_potential_errors(self):
         if isinstance(self.widget, widgets.RadioSelect):
             errors = self.get_multiple_choices_required()
@@ -217,12 +236,16 @@ class ChoiceFieldMixin(MultipleFieldMixin):
 
     def update_widget_attrs(self, bound_field, attrs):
         if isinstance(self.widget, widgets.RadioSelect):
-            attrs.update(is_subwidget=True, radio_select_required=self.required)
+            attrs.update(radio_select_required=self.required)
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
 
 
 class MultipleChoiceFieldMixin(MultipleFieldMixin):
+    @property
+    def is_subwidget(self):
+        return isinstance(self.widget, widgets.CheckboxSelectMultiple)
+
     def get_potential_errors(self):
         if isinstance(self.widget, widgets.CheckboxSelectMultiple):
             errors = self.get_multiple_choices_required()
@@ -231,8 +254,6 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
-        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
-            attrs.update(is_subwidget=True, multiple_checkbox_required=self.required)
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
 
@@ -265,6 +286,18 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         """
         data = [key for key, val in field_data.items() if val]
         return data
+
+    def update_widget_rendering_context(self, context):
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple) and self.required:
+            ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
+            if ng_model:
+                validate_fields = []
+                for group, options, index in context['widget']['optgroups']:
+                    for option in options:
+                        validate_fields.append(format_html('"{name}.{value}"', **option))
+                        option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
+                context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
+        return context
 
 
 class FileFieldMixin(DefaultFieldMixin):

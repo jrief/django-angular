@@ -128,13 +128,13 @@ class TupleErrorList(UserList, list):
         return force_text(error)
 
 
-def get_extra_context(self, name, value, attrs):
+def get_ng_widget_context(self, name, value, attrs):
     """
-    Checkbox widget requires some extra context since it wraps its subelements into a label element,
-    which has to be done by the template. Therefore enrich the context by the label string.  
+    Some widgets require a modified rendering context, if they contain angular directives.
     """
     context = super(self.__class__, self).get_context(name, value, attrs)
-    context['widget'].update(field_label=self.field_label)
+    if callable(getattr(self._field, 'update_widget_rendering_context', None)):
+        self._field.update_widget_rendering_context(context)
     return context
 
 
@@ -184,10 +184,10 @@ class NgBoundField(forms.BoundField):
         if not widget:
             widget = self.field.widget
 
-        if DJANGO_VERSION > (1, 10) and getattr(self.field, 'render_label', True) is False:
-            # so that it can be rendered wrapping the widget
-            widget.field_label = self.field.label
-            widget.get_context = MethodType(get_extra_context, widget)
+        if DJANGO_VERSION > (1, 10):
+            # so that we can refer to the field when building the rendering context
+            widget._field = self.field
+            widget.get_context = MethodType(get_ng_widget_context, widget)
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def build_widget_attrs(self, attrs, widget=None):
@@ -199,7 +199,7 @@ class NgBoundField(forms.BoundField):
         return attrs
 
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
-        if getattr(self.field, 'render_label', True) is False:
+        if self.field.render_label is False:
             return ''  # label shall be rendered by the widget
         attrs = attrs or {}
         css_classes = getattr(self.field, 'label_css_classes', None)
@@ -312,7 +312,7 @@ class NgFormBaseMixin(object):
         """
         Updated the widget attributes which shall be added to the widget when rendering this field.
         """
-        if attrs.pop('is_subwidget', False) is False:
+        if bound_field.field.is_subwidget is False:
             widget_classes = getattr(self, 'widget_css_classes', None)
             if widget_classes:
                 if 'class' in attrs:
