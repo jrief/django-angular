@@ -288,15 +288,17 @@ class MultipleChoiceFieldMixin(MultipleFieldMixin):
         return data
 
     def update_widget_rendering_context(self, context):
-        if isinstance(self.widget, widgets.CheckboxSelectMultiple) and self.required:
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
             ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
             if ng_model:
                 validate_fields = []
                 for group, options, index in context['widget']['optgroups']:
                     for option in options:
-                        validate_fields.append(format_html('"{name}.{value}"', **option))
+                        option['name'] = format_html('{name}.{value}', **option)
+                        validate_fields.append(format_html('"{name}"', **option))
                         option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
-                context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
+                if self.required:
+                    context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
         return context
 
 
