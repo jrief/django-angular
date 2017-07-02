@@ -17,8 +17,7 @@ from django.utils.translation import gettext_lazy, ungettext_lazy
 class DefaultFieldMixin(object):
     render_label = True
 
-    @property
-    def is_subwidget(self):
+    def has_subwidgets(self):
         return False
 
     def get_potential_errors(self):
@@ -191,8 +190,7 @@ class RegexFieldMixin(DefaultFieldMixin):
 class BooleanFieldMixin(DefaultFieldMixin):
     render_label = False
 
-    @property
-    def is_subwidget(self):
+    def has_subwidgets(self):
         return True
 
     def get_potential_errors(self):
@@ -223,8 +221,7 @@ class MultipleFieldMixin(DefaultFieldMixin):
 
 
 class ChoiceFieldMixin(MultipleFieldMixin):
-    @property
-    def is_subwidget(self):
+    def has_subwidgets(self):
         return isinstance(self.widget, widgets.RadioSelect)
 
     def get_potential_errors(self):
@@ -242,8 +239,7 @@ class ChoiceFieldMixin(MultipleFieldMixin):
 
 
 class MultipleChoiceFieldMixin(MultipleFieldMixin):
-    @property
-    def is_subwidget(self):
+    def has_subwidgets(self):
         return isinstance(self.widget, widgets.CheckboxSelectMultiple)
 
     def get_potential_errors(self):

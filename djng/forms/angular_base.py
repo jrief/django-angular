@@ -312,7 +312,7 @@ class NgFormBaseMixin(object):
         """
         Updated the widget attributes which shall be added to the widget when rendering this field.
         """
-        if bound_field.field.is_subwidget is False:
+        if bound_field.field.has_subwidgets() is False:
             widget_classes = getattr(self, 'widget_css_classes', None)
             if widget_classes:
                 if 'class' in attrs:
