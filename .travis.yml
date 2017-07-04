@@ -6,9 +6,8 @@ python:
   - 3.5
 
 env:
-  - DJANGOVER=django18
-  - DJANGOVER=django19
   - DJANGOVER=django110
+  - DJANGOVER=django111
 
 install:
   - pip install tox
