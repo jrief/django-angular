@@ -3,7 +3,10 @@ from __future__ import unicode_literals
 import os
 from django import template
 from django.conf import settings
-from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse
+except ImportError:
+    from django.urls import reverse
 from pygments import highlight
 from pygments.lexers import PythonLexer
 from pygments.lexers.templates import HtmlDjangoLexer
