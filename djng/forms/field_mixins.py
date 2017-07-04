@@ -232,7 +232,9 @@ class ChoiceFieldMixin(MultipleFieldMixin):
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
-        if isinstance(self.widget, widgets.RadioSelect):
+        from django import VERSION
+
+        if VERSION < (1, 11) and isinstance(self.widget, widgets.RadioSelect):
             attrs.update(radio_select_required=self.required)
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
