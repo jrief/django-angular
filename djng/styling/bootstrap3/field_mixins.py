@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import warnings
+
+from django import VERSION as DJANGO_VERSION
 from django.forms import fields
 from django.forms import widgets
 from djng.forms import field_mixins
+
+
+if DJANGO_VERSION >= (1, 11):
+    warnings.warn("Since Django-1.11 `djng.styling.bootstrap3` is deprecated.", PendingDeprecationWarning)
 
 
 class BooleanFieldMixin(field_mixins.BooleanFieldMixin):

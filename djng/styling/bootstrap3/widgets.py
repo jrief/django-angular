@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import warnings
+
+from django import VERSION as DJANGO_VERSION
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
@@ -9,6 +12,10 @@ from djng.forms.widgets import (flatatt,
     ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
     CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
     RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
+
+
+if DJANGO_VERSION >= (1, 11):
+    warnings.warn("Since Django-1.11 `djng.styling.bootstrap3` is deprecated.", PendingDeprecationWarning)
 
 
 class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
