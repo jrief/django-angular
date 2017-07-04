@@ -6,7 +6,6 @@ from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
 from djng.forms import NgModelFormMixin, NgForm, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
-from bs4 import BeautifulSoup
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -135,39 +134,13 @@ class NgModelFormMixinTest(TestCase):
         self.assertEqual(1, ng_custom_args_form.custom_arg1, 'lost custom arg1')
         self.assertEqual(2, ng_custom_args_form.custom_arg2, 'lost custom arg2')
 
-    def t_e_s_t_unbound_form(self):
+    def test_unbound_form(self):
         """Check if Angular attributes are added to the unbound form"""
         self.assertTrue(self.elements, 'No input fields in form')
         self.assertFalse(self.unbound_form.is_bound)
         self.check_form_fields(self.unbound_form)
         self.check_form_fields(self.unbound_form.sub1)
         self.check_form_fields(self.unbound_form.sub2)
-
-    def test_Checkbox(self):
-        soup = BeautifulSoup(str(self.unbound_form['onoff']), 'lxml')
-        self.assertEquals(soup.input.attrs.get('ng-model'), "dataroot['onoff']")
-        self.assertTrue('required' in soup.input.attrs)
-
-    def test_RadioSelect(self):
-        soup = BeautifulSoup(str(self.unbound_form['sex']), 'lxml')
-        lis = soup.ul.find_all('li')
-        self.assertEquals(len(lis), 2)
-        self.assertEquals(lis[0].input.attrs.get('ng-model'), "dataroot['sex']")
-        self.assertEquals(lis[1].input.attrs.get('ng-model'), "dataroot['sex']")
-
-    def test_CheckboxSelectMultiple(self):
-        import pdb
-        soup = BeautifulSoup(str(self.unbound_form['check_multi']), 'lxml')
-        pdb.set_trace()
-        print(soup.prettify())
-        self.assertEquals(soup.ul.attrs.get('ng-form'), 'check_multi')
-        self.assertEquals(soup.ul.attrs.get('validate-multiple-fields'), '["check_multi.a", "check_multi.b", "check_multi.c", "check_multi.d"]')
-        lis = soup.ul.find_all('li')
-        self.assertEquals(len(lis), 4)
-        self.assertEquals(lis[0].input.attrs.get('name'), "check_multi.a")
-        self.assertEquals(lis[1].input.attrs.get('ng-class'), "fieldClass('check_multi')")
-        self.assertEquals(lis[2].input.attrs.get('ng-model'), "dataroot['check_multi']['c']")
-        self.assertEquals(lis[3].input.attrs.get('value'), "d")
 
     def check_form_fields(self, form):
         for name in form.fields.keys():
