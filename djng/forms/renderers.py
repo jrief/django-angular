@@ -1,15 +1,36 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from copy import deepcopy
 from django.forms.renderers import DjangoTemplates
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 
 
 class DjangoAngularTemplates(DjangoTemplates):
     """
     Loads a modified Django template suitable for AngularJS, in case it has to be overridden
+    """
+    template_mappings = {
+        'django/forms/widgets/checkbox.html': 'djng/forms/widgets/checkbox.html',
+        'django/forms/widgets/checkbox_select.html': 'djng/forms/widgets/checkbox_select.html',
+        'django/forms/widgets/date.html': 'djng/forms/widgets/date.html',
+        'django/forms/widgets/datetime.html': 'djng/forms/widgets/datetime.html',
+        'django/forms/widgets/email.html': 'djng/forms/widgets/email.html',
+        'django/forms/widgets/number.html': 'djng/forms/widgets/number.html',
+        'django/forms/widgets/password.html': 'djng/forms/widgets/password.html',
+        'django/forms/widgets/radio.html': 'djng/forms/widgets/radio.html',
+        'django/forms/widgets/select.html': 'djng/forms/widgets/select.html',
+        'django/forms/widgets/text.html': 'djng/forms/widgets/text.html',
+        'django/forms/widgets/textarea.html': 'djng/forms/widgets/textarea.html',
+    }
+
+    def render(self, template_name, context, request=None):
+        template_name = self.template_mappings.get(template_name, template_name)
+        template = self.get_template(template_name)
+        return template.render(context, request=request).strip()
+
+
+class DjangoAngularBootstrap3Templates(DjangoAngularTemplates):
+    """
+    Loads a modified Django template suitable for AngularJS inside Bootstrap3 widgets
     """
     template_mappings = {
         'django/forms/widgets/checkbox.html': 'djng/forms/widgets/bootstrap3/checkbox.html',
@@ -24,20 +45,3 @@ class DjangoAngularTemplates(DjangoTemplates):
         'django/forms/widgets/text.html': 'djng/forms/widgets/bootstrap3/text.html',
         'django/forms/widgets/textarea.html': 'djng/forms/widgets/bootstrap3/textarea.html',
     }
-
-    def render(self, template_name, context, request=None):
-        template_name = self.template_mappings.get(template_name, template_name)
-        # if context['widget']['attrs'].get('multiple_checkbox_required'):
-        #     context = deepcopy(context)
-        #     context['widget']['attrs'].pop('multiple_checkbox_required', None)
-        #     ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
-        #     if ng_model:
-        #         validate_fields = []
-        #         for group, options, index in context['widget']['optgroups']:
-        #             for option in options:
-        #                 validate_fields.append(format_html('"{0}.{value}"', ng_model, **option))
-        #                 option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
-        #                 option['attrs'].pop('multiple_checkbox_required', None)
-        #         context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
-        template = self.get_template(template_name)
-        return template.render(context, request=request).strip()
