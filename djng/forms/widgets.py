@@ -59,8 +59,6 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         attrs = attrs or self.attrs
         name = '{0}.{1}'.format(self.name, self.choice_value)
         tag_attrs = dict(attrs, type=self.input_type, name=name, value=self.choice_value)
-        if 'id' in attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(attrs['id'], self.index)
         if 'ng-model' in attrs:
             tag_attrs['ng-model'] = "{0}['{1}']".format(attrs['ng-model'], self.choice_value)
         if self.is_checked():
@@ -88,6 +86,12 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
     slightly different from the original. This widget overrides the default functionality.
     """
     renderer = CheckboxFieldRenderer
+
+    def id_for_label(self, id_):
+        """
+        Returns the label for the group of checkbox input fields
+        """
+        return id_
 
     def implode_multi_values(self, name, data):
         raise NotImplementedError("This method has been moved to its FieldMixin.")
@@ -120,7 +124,7 @@ class RadioSelect(widgets.RadioSelect):
     renderer = RadioFieldRenderer
 
     def id_for_label(self, id_):
-        return ''
+        return id_
 
     def get_field_attrs(self, field):
         raise NotImplementedError("This method has been moved to its FieldMixin.")

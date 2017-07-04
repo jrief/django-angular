@@ -53,7 +53,8 @@ class CheckboxInlineChoiceInput(CheckboxChoiceInput):
         attrs = attrs or self.attrs
         label_attrs = ['class="checkbox-inline"']
         if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}_{1}"', self.attrs['id'], self.index))
+            #label_attrs.append(format_html('for="{0}_{1}"', self.attrs['id'], self.index))
+            label_attrs.append(format_html('for="{}"', attrs['id']))
         label_for = mark_safe(' '.join(label_attrs))
         return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
 
@@ -68,6 +69,12 @@ class CheckboxInlineFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRendere
 
 class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
     renderer = CheckboxInlineFieldRenderer
+
+    def id_for_label(self, id_):
+        """
+        Returns the label for the group of checkbox input fields
+        """
+        return id_
 
 
 class RadioChoiceInput(widgets.RadioChoiceInput):
