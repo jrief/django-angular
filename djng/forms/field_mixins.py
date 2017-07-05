@@ -115,7 +115,7 @@ class DecimalFieldMixin(DefaultFieldMixin):
     def get_potential_errors(self):
         errors = self.get_input_required_errors()
         self.widget.attrs['ng-minlength'] = 1
-        if hasattr(self, 'max_digits') and self.max_digits > 0:
+        if isinstance(self.max_digits, int) and self.max_digits > 0:
             self.widget.attrs['ng-maxlength'] = self.max_digits + 1
         errors.extend(self.get_min_max_value_errors())
         errors.extend(self.get_invalid_value_errors('number'))
