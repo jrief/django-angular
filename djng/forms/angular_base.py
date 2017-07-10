@@ -132,7 +132,7 @@ def get_ng_widget_context(self, name, value, attrs):
     """
     Some widgets require a modified rendering context, if they contain angular directives.
     """
-    context = super(self.__class__, self).get_context(name, value, attrs)
+    context = self.__class__.get_context(self, name, value, attrs)
     if callable(getattr(self._field, 'update_widget_rendering_context', None)):
         self._field.update_widget_rendering_context(context)
     return context
