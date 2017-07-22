@@ -5,7 +5,7 @@ from django.db import models
 
 class DummyModel(models.Model):
     name = models.CharField(max_length=255)
-    model2 = models.ForeignKey('DummyModel2')
+    model2 = models.ForeignKey('DummyModel2', on_delete=models.CASCADE)
     timefield = models.DateTimeField(default=datetime.datetime.now)
 
 

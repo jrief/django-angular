@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import url
-from django.core.urlresolvers import reverse_lazy
+
+try:
+    from django.core.urlresolvers import reverse_lazy
+except ImportError:
+    from django.urls import reverse_lazy
+
 from django.views.generic import RedirectView
 from server.views.classic_subscribe import SubscribeView as ClassicSubscribeView
 from server.views.client_validation import SubscribeView as ClientValidationView

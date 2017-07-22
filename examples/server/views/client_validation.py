@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from server.forms.client_validation import SubscribeForm
+from server.urls import reverse_lazy
 # start tutorial
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import FormView
 
 

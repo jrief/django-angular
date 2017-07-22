@@ -253,7 +253,7 @@ class NgFormBaseMixin(object):
             form_name = self.form_name
         except AttributeError:
             # if form_name is unset, then generate a pseudo unique name, based upon the class name
-            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('='))
+            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('=')).decode('utf-8')
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
@@ -316,11 +316,8 @@ class NgFormBaseMixin(object):
         be rendered the AngularJS way.
         """
         for field in self.base_fields.values():
-            try:
+            if hasattr(field, 'get_converted_widget'):
                 new_widget = field.get_converted_widget()
-            except AttributeError:
-                pass
-            else:
                 if new_widget:
                     field.widget = new_widget
 
