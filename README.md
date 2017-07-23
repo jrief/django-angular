@@ -6,7 +6,7 @@ Let Django play well with AngularJS
 [![PyPI version](https://img.shields.io/pypi/v/django-angular.svg)](https://https://pypi.python.org/pypi/django-angular)
 [![Python versions](https://img.shields.io/pypi/pyversions/djangocms-cascade.svg)](https://pypi.python.org/pypi/djangocms-cascade)
 [![Software license](https://img.shields.io/pypi/l/djangocms-cascade.svg)](https://github.com/jrief/djangocms-cascade/blob/master/LICENSE-MIT)
-[![Twitter Follow](https://img.shields.io/twitter/follow/shields_io.svg?style=social&label=jacobrief&maxAge=2592000)](https://twitter.com/jacobrief)
+[![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
 ## Breaking News
 
