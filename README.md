@@ -46,7 +46,6 @@ Please drop me a line, if and where you use this project.
 * Removed templatetag ``{% csrf_value %}``, since Django offers ab equivalent tag.
 * Fix file input css (remove the border) and add some documentation about common reported errors.
 * Remove support for bower in favor of npm.
-* Fix exception while rendering Angular Form using ``as_ul``.
 
 
 ## License
