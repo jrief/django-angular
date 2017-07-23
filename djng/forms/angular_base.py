@@ -20,7 +20,7 @@ try:
     from importlib import import_module
 except ImportError:
     from django.utils.importlib import import_module
-from django.utils.html import format_html, format_html_join, escape
+from django.utils.html import format_html, format_html_join, escape, conditional_escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeText, SafeData
 from django.core.exceptions import ValidationError
@@ -76,6 +76,19 @@ class TupleErrorList(UserList, list):
 
     def as_json(self, escape_html=False):
         return json.dumps(self.get_json_data(escape_html))
+
+    def extend(self, iterable):
+        """
+        django.forms.forms.BaseForm._html_output() extends non_field_errors
+        with a string error for each hidden field. The string format is incompatible
+        with djng TupleErrorList of SafeTuples causing an exception in as_ul.
+        Instead we discard extends containing strings here and add errors in non_field_errors
+        for hidden fields in NgFormBaseMixin
+        """
+        for item in iterable:
+            if not isinstance(item, str):
+                self.append(item)
+        return None
 
     def as_ul(self):
         if not self:
@@ -304,8 +317,17 @@ class NgFormBaseMixin(object):
             (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
     def non_field_errors(self):
+        # See TupleErrorList.extend for an explanation
+        hidden_field_errors = []
+        for name, field in self.fields.items():
+            bf = self[name]
+            bf_errors = [conditional_escape(error) for error in bf.errors]
+            if bf.is_hidden and bf_errors:
+                hidden_field_errors += [SafeTuple(
+                    (self.form_name, self.form_error_css_classes, '$pristine', '{}.$isEmpty()'.format(name), 'invalid',
+                        '(Hidden field {}) {}'.format(name, e[5])) ) for e in bf_errors]
         errors = super(NgFormBaseMixin, self).non_field_errors()
-        return self.error_class([SafeTuple(
+        return self.error_class(hidden_field_errors + [SafeTuple(
             (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
     def update_widget_attrs(self, bound_field, attrs):
