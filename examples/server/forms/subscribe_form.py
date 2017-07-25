@@ -80,7 +80,7 @@ class SubscribeForm(Bootstrap3Form):
     notifyme = forms.MultipleChoiceField(
         label='Notify by',
         choices=NOTIFY_BY,
-        widget=forms.CheckboxSelectMultiple, required=True,
+        widget=forms.CheckboxSelectMultiple,
         help_text='Must choose at least one type of notification')
 
     annotation = forms.CharField(

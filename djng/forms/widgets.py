@@ -64,8 +64,6 @@ class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         attrs = attrs or self.attrs
         name = '{0}.{1}'.format(self.name, self.choice_value)
         tag_attrs = dict(attrs, type=self.input_type, name=name, value=self.choice_value)
-        if 'id' in attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(attrs['id'], self.index)
         if 'ng-model' in attrs:
             tag_attrs['ng-model'] = "{0}['{1}']".format(attrs['ng-model'], self.choice_value)
         if self.is_checked():
@@ -77,9 +75,9 @@ class CheckboxFieldRendererMixin(object):
     def __init__(self, name, value, attrs, choices):
         attrs.pop('djng-error', None)
         self.field_attrs = [format_html('ng-form="{0}"', name)]
-        if attrs.pop('multiple_checkbox_required', False):
-            field_names = [format_html('{0}.{1}', name, choice) for choice, dummy in choices]
-            self.field_attrs.append(format_html('validate-multiple-fields="{0}"', json.dumps(field_names)))
+        #if attrs.pop('multiple_checkbox_required', False):
+        field_names = [format_html('{0}.{1}', name, choice) for choice, dummy in choices]
+        self.field_attrs.append(format_html('validate-multiple-fields="{0}"', json.dumps(field_names)))
         super(CheckboxFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 
@@ -94,27 +92,20 @@ class CheckboxSelectMultiple(widgets.CheckboxSelectMultiple):
     """
     renderer = CheckboxFieldRenderer
 
+    def id_for_label(self, id_):
+        """
+        Returns the label for the group of checkbox input fields
+        """
+        return id_
+
     def implode_multi_values(self, name, data):
-        """
-        Due to the way Angular organizes it model, when Form data is sent via a POST request,
-        then for this kind of widget, the posted data must to be converted into a format suitable
-        for Django's Form validation.
-        """
-        mkeys = [k for k in data.keys() if k.startswith(name + '.')]
-        mvls = [data.pop(k)[0] for k in mkeys]
-        if mvls:
-            data.setlist(name, mvls)
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
     def convert_ajax_data(self, field_data):
-        """
-        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
-        then for this kind of widget, the sent data has to be converted into a format suitable
-        for Django's Form validation.
-        """
-        return [key for key, val in field_data.items() if val]
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
     def get_field_attrs(self, field):
-        return {'multiple_checkbox_required': field.required}
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
 
 class RadioFieldRendererMixin(object):
@@ -137,8 +128,11 @@ class RadioSelect(widgets.RadioSelect):
     """
     renderer = RadioFieldRenderer
 
+    def id_for_label(self, id_):
+        return id_
+
     def get_field_attrs(self, field):
-        return {'radio_select_required': field.required}
+        raise NotImplementedError("This method has been moved to its FieldMixin.")
 
 
 if 'easy_thumbnails' in settings.INSTALLED_APPS:

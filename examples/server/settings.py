@@ -71,6 +71,8 @@ STATICFILES_DIRS = (
     ('node_modules', os.path.join(BASE_DIR, 'examples/node_modules')),
 )
 
+FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

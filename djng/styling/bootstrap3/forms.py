@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+
+import warnings
+
+from django import VERSION as DJANGO_VERSION
 from django.forms.forms import BaseForm
 from django.forms.models import BaseModelForm
 from django.utils import six
 from djng.forms import NgDeclarativeFieldsMetaclass, NgModelFormMetaclass, NgFormBaseMixin
+
+
+if DJANGO_VERSION >= (1, 11):
+    warnings.warn("Since Django-1.11 `djng.styling.bootstrap3` is deprecated.", PendingDeprecationWarning)
 
 
 class Bootstrap3FormMixin(object):

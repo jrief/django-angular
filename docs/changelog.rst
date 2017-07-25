@@ -4,12 +4,15 @@
 Release History
 ===============
 
-latest (master) - not released yet
-----------------------------------
-* Added support for Django 1.10, tests & travis updated
-* Drop support for Django 1.7
-* Removed ``{% csrf_value %}`` templatetag
-* Fix file input css (remove the border) and add some documentation about common reported errors
+1.0.0
+-----
+* Added support for Django 1.10 and 1.11, tests & travis updated.
+* Drop support for Django 1.7, 1.8 and 1.9.
+* Removed templatetag ``{% csrf_value %}``, since Django offers ab equivalent tag.
+* Fix file input css (remove the border) and add some documentation about common reported errors.
+* Remove support for bower in favor of npm.
+* Fix exception while rendering Angular Form using ``as_ul``.
+
 
 0.8.4
 -----

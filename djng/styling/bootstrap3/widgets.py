@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import warnings
+
+from django import VERSION as DJANGO_VERSION
 from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
@@ -9,6 +12,10 @@ from djng.forms.widgets import (flatatt,
     ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
     CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
     RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
+
+
+if DJANGO_VERSION >= (1, 11):
+    warnings.warn("Since Django-1.11 `djng.styling.bootstrap3` is deprecated.", PendingDeprecationWarning)
 
 
 class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
@@ -53,7 +60,7 @@ class CheckboxInlineChoiceInput(CheckboxChoiceInput):
         attrs = attrs or self.attrs
         label_attrs = ['class="checkbox-inline"']
         if 'id' in self.attrs:
-            label_attrs.append(format_html('for="{0}_{1}"', self.attrs['id'], self.index))
+            label_attrs.append(format_html('for="{}"', attrs['id']))
         label_for = mark_safe(' '.join(label_attrs))
         return format_html('<label {0}>{1} {2}</label>', label_for, self.tag(), self.choice_label)
 
@@ -69,6 +76,12 @@ class CheckboxInlineFieldRenderer(CheckboxFieldRendererMixin, ChoiceFieldRendere
 class CheckboxSelectMultiple(DjngCheckboxSelectMultiple):
     renderer = CheckboxInlineFieldRenderer
 
+    def id_for_label(self, id_):
+        """
+        Returns the label for the group of checkbox input fields
+        """
+        return id_
+
 
 class RadioChoiceInput(widgets.RadioChoiceInput):
     def render(self, name=None, value=None, attrs=None, choices=()):
@@ -78,8 +91,6 @@ class RadioChoiceInput(widgets.RadioChoiceInput):
     def tag(self, attrs=None):
         attrs = attrs or self.attrs
         tag_attrs = dict(attrs, type=self.input_type, name=self.name, value=self.choice_value)
-        if 'id' in attrs:
-            tag_attrs['id'] = '{0}_{1}'.format(tag_attrs['id'], self.index)
         if self.is_checked():
             tag_attrs['checked'] = 'checked'
         return format_html('<input{} />', flatatt(tag_attrs))

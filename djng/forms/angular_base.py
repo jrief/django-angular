@@ -3,12 +3,16 @@ from __future__ import unicode_literals
 
 import json
 from base64 import b64encode
+from types import MethodType
 
 try:
     from collections import UserList
 except ImportError:  # Python 2
     from UserList import UserList
 
+import warnings
+
+from django import VERSION as DJANGO_VERSION
 from django.forms import forms
 from django.http import QueryDict
 from django.utils import six
@@ -16,7 +20,7 @@ try:
     from importlib import import_module
 except ImportError:
     from django.utils.importlib import import_module
-from django.utils.html import format_html, format_html_join, escape
+from django.utils.html import format_html, format_html_join, escape, conditional_escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
 from django.utils.safestring import mark_safe, SafeText, SafeData
 from django.core.exceptions import ValidationError
@@ -73,6 +77,19 @@ class TupleErrorList(UserList, list):
     def as_json(self, escape_html=False):
         return json.dumps(self.get_json_data(escape_html))
 
+    def extend(self, iterable):
+        """
+        django.forms.forms.BaseForm._html_output() extends non_field_errors
+        with a string error for each hidden field. The string format is incompatible
+        with djng TupleErrorList of SafeTuples causing an exception in as_ul.
+        Instead we discard extends containing strings here and add errors in non_field_errors
+        for hidden fields in NgFormBaseMixin
+        """
+        for item in iterable:
+            if not isinstance(item, str):
+                self.append(item)
+        return None
+
     def as_ul(self):
         if not self:
             return SafeText()
@@ -124,6 +141,16 @@ class TupleErrorList(UserList, list):
         return force_text(error)
 
 
+def get_ng_widget_context(self, name, value, attrs):
+    """
+    Some widgets require a modified rendering context, if they contain angular directives.
+    """
+    context = super(self.__class__, self).get_context(name, value, attrs)
+    if callable(getattr(self._field, 'update_widget_rendering_context', None)):
+        self._field.update_widget_rendering_context(context)
+    return context
+
+
 class NgBoundField(forms.BoundField):
     @property
     def errors(self):
@@ -137,7 +164,7 @@ class NgBoundField(forms.BoundField):
 
     def css_classes(self, extra_classes=None):
         """
-        Returns a string of space-separated CSS classes for this field.
+        Returns a string of space-separated CSS classes for the wrapping element of this input field.
         """
         if hasattr(extra_classes, 'split'):
             extra_classes = extra_classes.split()
@@ -167,23 +194,26 @@ class NgBoundField(forms.BoundField):
         """
         Renders the field.
         """
-        attrs = attrs or {}
-        attrs.update(self.form.get_widget_attrs(self))
-        if hasattr(self.field, 'widget_css_classes'):
-            css_classes = self.field.widget_css_classes
-        else:
-            css_classes = getattr(self.form, 'widget_css_classes', None)
-        if css_classes:
-            attrs.update({'class': css_classes})
-        widget_classes = self.form.fields[self.name].widget.attrs.get('class', None)
-        if widget_classes:
-            if attrs.get('class', None):
-                attrs['class'] += ' ' + widget_classes
-            else:
-                attrs.update({'class': widget_classes})
+        if not widget:
+            widget = self.field.widget
+
+        if DJANGO_VERSION > (1, 10):
+            # so that we can refer to the field when building the rendering context
+            widget._field = self.field
+            widget.get_context = MethodType(get_ng_widget_context, widget)
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
+    def build_widget_attrs(self, attrs, widget=None):
+        if not widget:
+            widget = self.field.widget
+        attrs = super(NgBoundField, self).build_widget_attrs(attrs, widget=widget)
+        if callable(getattr(self.field, 'update_widget_attrs', None)):
+            self.field.update_widget_attrs(self, attrs)
+        return attrs
+
     def label_tag(self, contents=None, attrs=None, label_suffix=None):
+        if self.field.render_label is False:
+            return ''  # label shall be rendered by the widget
         attrs = attrs or {}
         css_classes = getattr(self.field, 'label_css_classes', None)
         if hasattr(css_classes, 'split'):
@@ -215,19 +245,28 @@ class BaseFieldsModifierMetaclass(type):
 
     def __new__(cls, name, bases, attrs):
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
-        field_mixins_module = import_module(new_class.field_mixins_module)
-        field_mixins_fallback_module = import_module(cls.field_mixins_module)
-        # add additional methods to django.form.fields at runtime
-        for field in new_class.base_fields.values():
-            FieldMixinName = field.__class__.__name__ + 'Mixin'
-            try:
-                FieldMixin = getattr(field_mixins_module, FieldMixinName)
-            except AttributeError:
+        if DJANGO_VERSION < (1, 11):
+            field_mixins_module = import_module(new_class.field_mixins_module)
+            field_mixins_fallback_module = import_module(cls.field_mixins_module)
+
+            # add additional methods to django.form.fields at runtime
+            for field in new_class.base_fields.values():
+                FieldMixinName = field.__class__.__name__ + 'Mixin'
                 try:
-                    FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
+                    FieldMixin = getattr(field_mixins_module, FieldMixinName)
                 except AttributeError:
-                    FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
-            field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+                    try:
+                        FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
+                    except AttributeError:
+                        FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
+                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+        else:
+            field_mixins_module = import_module(cls.field_mixins_module)
+            for field in new_class.base_fields.values():
+                FieldMixinName = field.__class__.__name__ + 'Mixin'
+                FieldMixin = getattr(field_mixins_module, FieldMixinName, field_mixins_module.DefaultFieldMixin)
+                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
+
         return new_class
 
 
@@ -244,11 +283,12 @@ class NgFormBaseMixin(object):
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        self.convert_widgets()
+        if DJANGO_VERSION < (1, 11):
+            self.convert_widgets()
         super(NgFormBaseMixin, self).__init__(*args, **kwargs)
         if isinstance(self.data, QueryDict):
             self.data = self.rectify_multipart_form_data(self.data.copy())
-        elif isinstance(self.data, dict):
+        elif isinstance(self.data, dict) and self.data:
             self.data = self.rectify_ajax_form_data(self.data.copy())
 
     def __getitem__(self, name):
@@ -277,28 +317,41 @@ class NgFormBaseMixin(object):
             (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
     def non_field_errors(self):
+        # See TupleErrorList.extend for an explanation
+        hidden_field_errors = []
+        for name, field in self.fields.items():
+            bf = self[name]
+            bf_errors = [conditional_escape(error) for error in bf.errors]
+            if bf.is_hidden and bf_errors:
+                hidden_field_errors += [SafeTuple(
+                    (self.form_name, self.form_error_css_classes, '$pristine', '{}.$isEmpty()'.format(name), 'invalid',
+                        '(Hidden field {}) {}'.format(name, e[5])) ) for e in bf_errors]
         errors = super(NgFormBaseMixin, self).non_field_errors()
-        return self.error_class([SafeTuple(
+        return self.error_class(hidden_field_errors + [SafeTuple(
             (self.form_name, self.form_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
 
-    def get_widget_attrs(self, bound_field):
+    def update_widget_attrs(self, bound_field, attrs):
         """
-        Return a dictionary of additional attributes which shall be added to the widget,
-        used to render this field.
+        Updated the widget attributes which shall be added to the widget when rendering this field.
         """
-        return {}
+        if bound_field.field.has_subwidgets() is False:
+            widget_classes = getattr(self, 'widget_css_classes', None)
+            if widget_classes:
+                if 'class' in attrs:
+                    attrs['class'] += ' ' + widget_classes
+                else:
+                    attrs.update({'class': widget_classes})
+        return attrs
 
     def convert_widgets(self):
         """
         During form initialization, some widgets have to be replaced by a counterpart suitable to
         be rendered the AngularJS way.
         """
+        warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
         for field in self.base_fields.values():
-            try:
+            if hasattr(field, 'get_converted_widget'):
                 new_widget = field.get_converted_widget()
-            except AttributeError:
-                pass
-            else:
                 if new_widget:
                     field.widget = new_widget
 
@@ -309,7 +362,7 @@ class NgFormBaseMixin(object):
         """
         for name, field in self.base_fields.items():
             try:
-                field.widget.implode_multi_values(name, data)
+                field.implode_multi_values(name, data)
             except AttributeError:
                 pass
         return data
@@ -321,7 +374,7 @@ class NgFormBaseMixin(object):
         """
         for name, field in self.base_fields.items():
             try:
-                data[name] = field.widget.convert_ajax_data(data.get(name, {}))
+                data[name] = field.convert_ajax_data(data.get(name, {}))
             except AttributeError:
                 pass
         return data
