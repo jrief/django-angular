@@ -141,14 +141,15 @@ class TupleErrorList(UserList, list):
         return force_text(error)
 
 
-def get_ng_widget_context(self, name, value, attrs):
-    """
-    Some widgets require a modified rendering context, if they contain angular directives.
-    """
-    context = super(self.__class__, self).get_context(name, value, attrs)
-    if callable(getattr(self._field, 'update_widget_rendering_context', None)):
-        self._field.update_widget_rendering_context(context)
-    return context
+class NgWidgetMixin(object):
+    def get_context(self, name, value, attrs):
+        """
+        Some widgets require a modified rendering context, if they contain angular directives.
+        """
+        context = super(NgWidgetMixin, self).get_context(name, value, attrs)
+        if callable(getattr(self._field, 'update_widget_rendering_context', None)):
+            self._field.update_widget_rendering_context(context)
+        return context
 
 
 class NgBoundField(forms.BoundField):
@@ -200,7 +201,7 @@ class NgBoundField(forms.BoundField):
         if DJANGO_VERSION > (1, 10):
             # so that we can refer to the field when building the rendering context
             widget._field = self.field
-            widget.get_context = MethodType(get_ng_widget_context, widget)
+            widget.__class__ = type(widget.__class__.__name__, (NgWidgetMixin, widget.__class__), {})
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def build_widget_attrs(self, attrs, widget=None):
