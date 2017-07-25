@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from distutils.version import LooseVersion
+
+from django import get_version
 from django.conf import settings
 from django.core import signing
 from django.core.exceptions import ImproperlyConfigured
@@ -10,6 +13,8 @@ from django.utils.html import format_html
 
 from djng import app_settings
 
+
+DJANGO_VERSION = get_version()
 
 class DropFileWidget(widgets.Widget):
     signer = signing.Signer()
@@ -31,7 +36,10 @@ class DropFileWidget(widgets.Widget):
         if value:
             extra_attrs.update(style='background-image: url({});'.format(self.get_background_url(value)))
             extra_attrs.update(previous_image=self.signer.sign(value.name))
-        final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
+        if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
+            final_attrs = self.build_attrs(extra_attrs=extra_attrs)
+        else:
+            final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
         delete_button = format_html('<span djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()"></span>',
                                     attrs['ng-model'])
         drag_area = format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)

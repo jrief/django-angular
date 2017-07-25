@@ -7,18 +7,18 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core import signing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
-from django.forms import forms
+#from django.forms import forms
 from django.test import override_settings, TestCase
 from django.test.client import Client
 
 from pyquery.pyquery import PyQuery
 
 from djng import app_settings
-from djng.forms import NgModelFormMixin
+from djng.forms import NgModelFormMixin, NgForm
 from djng.forms.fields import ImageField
 
 
-class TestUploadForm(NgModelFormMixin, forms.Form):
+class TestUploadForm(NgModelFormMixin, NgForm):
     scope_prefix = 'my_data'
     form_name = 'my_form'
 
