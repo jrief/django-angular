@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
-from django.forms import Field
 from django.utils.translation import ugettext_lazy as _
 
 from djng import app_settings
@@ -29,7 +28,8 @@ class FloatField(forms.FloatField):
         return attrs
 
 
-class ImageField(Field):
+class ImageField(forms.Field):
+    render_label = True
     storage = app_settings.upload_storage
     signer = signing.Signer()
 
