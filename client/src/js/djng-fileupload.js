@@ -40,8 +40,8 @@ fileuploadModule.directive('ngfDrop', function() {
 			var fileUploadController = ctrls[0], ngModelController = ctrls[1];
 
 			ngModelController.$setViewValue({
-				previous_image: attrs.previousImage,
-				temp_name: attrs.previousImage ? true : null
+				previous_image: attrs.previous_image,
+				temp_name: Boolean(attrs.previous_image)
 			});
 
 			scope.uploadFiles = function(files) {

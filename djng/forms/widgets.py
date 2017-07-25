@@ -3,47 +3,11 @@ from __future__ import unicode_literals
 
 import json
 
-from django.conf import settings
-from django.core.signing import Signer
 from django.forms import widgets
+from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-from django.utils.html import format_html, format_html_join
-
-from djng import app_settings
-
-
-def flatatt(attrs):
-    """
-    Pilfered from `django.forms.utils`:
-    Convert a dictionary of attributes to a single string.
-    The returned string will contain a leading space followed by key="value",
-    XML-style pairs. In the case of a boolean value, the key will appear
-    without a value. Otherwise, the value is formatted through its own dict of `attrs`,
-    which can be useful to parametrize Angular directives.
-    It is assumed that the keys do not need to be
-    XML-escaped. If the passed dictionary is empty, then return an empty
-    string.
-
-    The result is passed through 'mark_safe' (by way of 'format_html_join').
-    """
-    key_value_attrs = []
-    boolean_attrs = []
-    for attr, value in attrs.items():
-        if isinstance(value, bool):
-            if value:
-                boolean_attrs.append((attr,))
-        else:
-            try:
-                value = value.format(**attrs)
-            except KeyError:
-                pass
-            key_value_attrs.append((attr, value))
-
-    return (
-        format_html_join('', ' {}="{}"', sorted(key_value_attrs)) +
-        format_html_join('', ' {}', sorted(boolean_attrs))
-    )
+from django.utils.html import format_html
 
 
 class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):
@@ -133,40 +97,3 @@ class RadioSelect(widgets.RadioSelect):
 
     def get_field_attrs(self, field):
         raise NotImplementedError("This method has been moved to its FieldMixin.")
-
-
-if 'easy_thumbnails' in settings.INSTALLED_APPS:
-    from easy_thumbnails.files import get_thumbnailer
-
-    class DropFileInput(widgets.Widget):
-        thumbnail_size = app_settings.THUMBNAIL_SIZE
-        signer = Signer()
-
-        def __init__(self, attrs=None, area_label=None):
-            if attrs is not None:
-                self.attrs = attrs.copy()
-            else:
-                self.attrs = {}
-            self.area_label = area_label
-            self.attrs.update({
-                'ng-class': 'getClass()',
-                'ngf-drop': 'uploadFiles($files)',
-                'ngf-select': 'uploadFiles($files)',
-            })
-
-        def render(self, name, value, attrs=None):
-            if value:
-                background_url = self.get_background_url(value)
-                attrs['style'] = 'background-image: url({});'.format(background_url)
-                attrs['previous-image'] = self.signer.sign(value.name)
-            final_attrs = self.build_attrs(attrs, name=name)
-            delete_button = format_html('<span djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()"></span>',
-                                        attrs['ng-model'])
-            drag_area = format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)
-            return format_html('<div class="drop-box">{}{}</div>', drag_area, delete_button)
-
-        def get_background_url(self, value):
-            thumbnail_options = {'crop': True, 'size': self.thumbnail_size}
-            thumbnailer = get_thumbnailer(value)
-            thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
-            return thumbnail.url
