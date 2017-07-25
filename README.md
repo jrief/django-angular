@@ -10,11 +10,11 @@ Let Django play well with AngularJS
 
 ## Breaking News
 
+On 2017-07-23 **django-angular** version 1.0 has been released.
+
 In Django version 1.11, template-based widget rendering has been introduced.
-This gives us a lot more flexibility when rendering form widgets. However,
-**django-angular** had to be refactored and be adopted to this new API. I'd like
-to ask everybody to test the new branch https://github.com/jrief/django-angular/tree/features/django-1.11-support
-before releasing a next major version.
+This gives us a lot more flexibility when rendering form widgets. It however
+required to refactor the internal API of **django-angular**.
 
 
 ## Documentation
