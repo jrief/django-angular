@@ -19,7 +19,7 @@ class Bootstrap3FormMixin(object):
     widget_css_classes = 'form-control'
     form_error_css_classes = 'djng-form-errors'
     field_error_css_classes = 'djng-form-control-feedback djng-field-errors'
-    fields_module = 'djng.styling.bootstrap3.fields'
+    widgets_module = 'djng.styling.bootstrap3.widgets'
     label_css_classes = 'control-label'
 
     def as_div(self):

@@ -34,6 +34,13 @@ if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
             return mark_safe('\n'.join(output))
 
 
+    class CheckboxInput(widgets.CheckboxInput):
+        def __init__(self, label, attrs=None, check_test=None):
+            # the label is rendered by the Widget class rather than by BoundField.label_tag()
+            self.choice_label = label
+            super(CheckboxInput, self).__init__(attrs, check_test)
+
+
     class CheckboxChoiceInput(widgets.CheckboxChoiceInput):
         def tag(self, attrs=None):
             attrs = attrs or self.attrs

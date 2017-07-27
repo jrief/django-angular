@@ -6,6 +6,7 @@ import re
 from django.forms import fields
 from django.forms import widgets
 from django.utils.html import format_html
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 
 from django.conf import settings
@@ -223,6 +224,16 @@ class BooleanField(DefaultFieldMixin, fields.BooleanField):
         context['widget'].update(field_label=self.label)
         return context
 
+    def get_converted_widget(self, widgets_module):
+        if not isinstance(self.widget, widgets.CheckboxInput):
+            return
+        try:
+            new_widget = import_string(widgets_module + '.CheckboxInput')(self.label)
+        except ImportError:
+            new_widget = import_string('djng.forms.widgets.CheckboxInput')(self.label)
+        new_widget.__dict__.update(self.widget.__dict__)
+        return new_widget
+
 
 class MultipleFieldMixin(DefaultFieldMixin):
     def get_multiple_choices_required(self):
@@ -257,6 +268,16 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
 
+    def get_converted_widget(self, widgets_module):
+        if not isinstance(self.widget, widgets.RadioSelect):
+            return
+        try:
+            new_widget = import_string(widgets_module + '.RadioSelect')()
+        except ImportError:
+            new_widget = import_string('djng.forms.widgets.RadioSelect')()
+        new_widget.__dict__ = self.widget.__dict__
+        return new_widget
+
 
 class TypedChoiceField(MultipleFieldMixin, fields.TypedChoiceField):
     def get_potential_errors(self):
@@ -282,13 +303,13 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
 
-    def get_converted_widget(self):
-        from .widgets import CheckboxSelectMultiple
-
-        assert(isinstance(self, fields.MultipleChoiceField))
+    def get_converted_widget(self, widgets_module):
         if not isinstance(self.widget, widgets.CheckboxSelectMultiple):
             return
-        new_widget = CheckboxSelectMultiple()
+        try:
+            new_widget = import_string(widgets_module + '.CheckboxSelectMultiple')()
+        except ImportError:
+            new_widget = import_string('djng.forms.widgets.CheckboxSelectMultiple')()
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
 
@@ -328,9 +349,6 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 
 
 class FileField(DefaultFieldMixin, fields.FileField):
-    def get_converted_widget(self):
-        return super(FileField, self).get_converted_widget()
-
     def get_potential_errors(self):
         errors = []
         return errors

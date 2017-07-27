@@ -243,15 +243,6 @@ class BaseFieldsModifierMetaclass(type):
     with additional functionality required for AngularJS's Form control and Form validation.
     """
     def __new__(cls, name, bases, attrs):
-        cls.fields_modules = ['djng.forms.fields']
-        if DJANGO_VERSION < (1, 11):
-            for b in bases:
-                try:
-                    cls.fields_modules.append(getattr(b, 'fields_module'))
-                    break
-                except AttributeError:
-                    continue
-
         attrs.update(formfield_callback=cls.formfield_callback)
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
         cls.validate_formfields(new_class)
@@ -264,13 +255,9 @@ class BaseFieldsModifierMetaclass(type):
 
         if formfield:
             # use the same class name to load the corresponding inherited formfield
-            for fields_module in reversed(cls.fields_modules):
-                try:
-                    form_class = import_string(fields_module + '.' + formfield.__class__.__name__)
-                    break
-                except ImportError:
-                    continue
-            else:
+            try:
+                form_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
+            except ImportError:
                 msg = "Unable to import field class '{}'"
                 raise ImportError(msg.format(formfield.__class__.__name__))
 
@@ -287,7 +274,7 @@ class BaseFieldsModifierMetaclass(type):
         msg = "Please use the corresponding form fields from 'djng.forms.fields' for field '{} = {}(...)' " \
               "in form '{}', which inherits from 'NgForm' or 'NgModelForm'."
         for name, field in new_class.base_fields.items():
-            if field.__module__ not in cls.fields_modules:
+            if field.__module__ not in ['djng.forms.fields']:
                 raise ImproperlyConfigured(msg.format(name, field.__class__.__name__, new_class))
 
 
@@ -370,9 +357,10 @@ class NgFormBaseMixin(object):
         be rendered the AngularJS way.
         """
         warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
+        widgets_module = getattr(self, 'widgets_module', 'djng.widgets')
         for field in self.base_fields.values():
             if hasattr(field, 'get_converted_widget'):
-                new_widget = field.get_converted_widget()
+                new_widget = field.get_converted_widget(widgets_module)
                 if new_widget:
                     field.widget = new_widget
 
