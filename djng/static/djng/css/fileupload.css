@@ -7,13 +7,17 @@
 	border: 2px solid #a0a0a0;
 	height: auto;
 	min-height: 200px;
+	color: rgba(255, 255, 255, 0.25);
 	text-align: center;
 	font-weight: bold;
-	text-shadow: 0 0 5px white;
+	font-size: 18px;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 	resize: none;
 	cursor: copy;
 }
 .drop-box textarea:hover {
+	color: rgba(255, 255, 255, 1);
+	text-shadow: 0 0 10px rgba(0, 0, 0, 1);
 	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
 }
 .drop-box textarea.uploading {
@@ -30,30 +34,35 @@
 	border-style: solid;
 }
 .drop-box textarea.empty {
+	color: rgb(160, 160, 160);
 	border-radius: 5px;
 	border-width: 5px;
 	border-style: dashed;
 	background-image: none !important;
 }
-.drop-box span[djng-fileupload-button] {
+.drop-box textarea.empty:hover {
+	text-shadow: none;
+}
+.drop-box .djng-fileupload-btn {
 	position: absolute;
-	right: 0;
-	top: 0;
-	background-color: red;
 	width: 25px;
 	height: 25px;
-	text-align: center;
-	border: 2px solid white;
-	border-radius: 50%;
-	opacity: 0.35;
+	opacity: 0.25;
 	cursor: pointer;
 }
-.drop-box span[djng-fileupload-button]::after {
-	content: "\2716";
-	vertical-align: middle;
-	color: white;
-	font-size: 16px;
+.drop-box a.djng-fileupload-btn > img {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
 }
-.drop-box span[djng-fileupload-button]:hover {
+.drop-box .djng-fileupload-btn:hover {
 	opacity: 1;
+}
+.drop-box .djng-fileupload-btn-trash {
+	right: 5px;
+	top: 5px;
+}
+.drop-box .djng-fileupload-btn-download {
+	right: 5px;
+	bottom: 5px;
 }

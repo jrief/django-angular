@@ -17,11 +17,12 @@ fileuploadModule.controller('FileUploadController', ['$scope', 'Upload', functio
 				data: data,
 				url: attrs.fileuploadUrl
 			}).then(function(response) {
-				var field = response.data[identifier];
+				var field = response.data[identifier],
+				    current = angular.isString(attrs.currentFile) ? {current_file: attrs.currentFile} : {};
 				element.removeClass('uploading');
 				element.css('background-image', field.url);
 				delete field.url;  // we don't want to send back the whole image
-				angular.extend($scope.$eval(attrs.ngModel), field);
+				angular.extend($scope.$eval(attrs.ngModel), field, current);
 			}, function(respose) {
 				element.removeClass('uploading');
 				console.error(respose.statusText);
@@ -40,8 +41,8 @@ fileuploadModule.directive('ngfDrop', function() {
 			var fileUploadController = ctrls[0], ngModelController = ctrls[1];
 
 			ngModelController.$setViewValue({
-				previous_image: attrs.previous_image,
-				temp_name: Boolean(attrs.previous_image)
+				current_file: attrs.currentFile,
+				temp_name: Boolean(attrs.currentFile)
 			});
 
 			scope.uploadFiles = function(files) {

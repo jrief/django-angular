@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from distutils.version import LooseVersion
 import json
 
+from django import get_version
+from django.conf import settings
+from django.core import signing
+from django.core.exceptions import ImproperlyConfigured
 from django.forms import widgets
 from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.utils.html import format_html
+
+from djng import app_settings
+
+
+DJANGO_VERSION = get_version()
 
 
 class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):
@@ -97,3 +107,69 @@ class RadioSelect(widgets.RadioSelect):
 
     def get_field_attrs(self, field):
         raise NotImplementedError("This method has been moved to its FieldMixin.")
+
+
+class DropFileWidget(widgets.Widget):
+    signer = signing.Signer()
+
+    def __init__(self, attrs=None, area_label=None):
+        if attrs is not None:
+            self.attrs = attrs.copy()
+        else:
+            self.attrs = {}
+        self.area_label = area_label
+        self.attrs.update({
+            'ng-class': 'getClass()',
+            'ngf-drop': 'uploadFiles($files)',
+            'ngf-select': 'uploadFiles($files)',
+        })
+
+    def render(self, name, value, attrs=None):
+        from django.contrib.staticfiles.storage import staticfiles_storage
+
+        extra_attrs = dict(attrs, name=name)
+        if value:
+            background_url = self.get_background_url(value)
+            if background_url:
+                extra_attrs.update({
+                    'style': 'background-image: url({});'.format(background_url),
+                    'current-file': self.signer.sign(value.name)
+                })
+        if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
+            final_attrs = self.build_attrs(extra_attrs=extra_attrs)
+        else:
+            final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
+        elements = [format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)]
+        elements.append(format_html(
+            '<img src="{}" class="{}" djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()" ng-cloak />',
+            staticfiles_storage.url('djng/icons/trash.svg'), 'djng-fileupload-btn djng-fileupload-btn-trash', attrs['ng-model']))
+        if value:
+            elements.append(format_html(
+                '<a href="{}" class="{}" target="_new" ng-hide="isEmpty()" ng-cloak><img src="{}" /></a>',
+                value.url, 'djng-fileupload-btn djng-fileupload-btn-download',
+                staticfiles_storage.url('djng/icons/download.svg')))
+        return format_html('<div class="drop-box">{}</div>', mark_safe(''.join(elements)))
+
+    def get_background_url(self, value):
+        return ''  # TODO: render an icon, depending on the file type
+
+
+class DropImageWidget(DropFileWidget):
+    thumbnail_size = app_settings.THUMBNAIL_SIZE
+
+    def __init__(self, **kwargs):
+        if 'easy_thumbnails' not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured("'djng.forms.fields.ImageField' requires 'easy-thubnails' to be installed")
+        super(DropImageWidget, self).__init__(**kwargs)
+
+    def get_background_url(self, value):
+        from easy_thumbnails.exceptions import InvalidImageFormatError
+        from easy_thumbnails.files import get_thumbnailer
+
+        try:
+            thumbnail_options = {'crop': True, 'size': self.thumbnail_size}
+            thumbnailer = get_thumbnailer(value)
+            thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+            return thumbnail.url
+        except InvalidImageFormatError:
+            return

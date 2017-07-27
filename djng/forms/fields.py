@@ -1,20 +1,167 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django import forms
+import re
+
+from django.forms import fields
+from django.forms import widgets
+from django.utils.html import format_html
+from django.utils.safestring import mark_safe
+
 from django.conf import settings
 from django.core import signing
 from django.core.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
 from djng import app_settings
-from .drop_widgets import DropImageWidget
+from .widgets import DropImageWidget
 
 
-class FloatField(forms.FloatField):
+class DefaultFieldMixin(object):
+    render_label = True
+
+    def has_subwidgets(self):
+        return False
+
+    def get_potential_errors(self):
+        return self.get_input_required_errors()
+
+    def get_input_required_errors(self):
+        errors = []
+        if self.required:
+            self.widget.attrs['ng-required'] = 'true'
+            for key, msg in self.error_messages.items():
+                if key == 'required':
+                    errors.append(('$error.required', msg))
+        return errors
+
+    def get_min_max_length_errors(self):
+        errors = []
+        if getattr(self, 'min_length', None):
+            self.widget.attrs['ng-minlength'] = self.min_length
+        if getattr(self, 'max_length', None):
+            self.widget.attrs['ng-maxlength'] = self.max_length
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'min_length':
+                message = ungettext_lazy(
+                    'Ensure this value has at least %(limit_value)d character',
+                    'Ensure this value has at least %(limit_value)d characters',
+                    'limit_value')
+                errors.append(('$error.minlength', message % {'limit_value': self.min_length}))
+            if getattr(item, 'code', None) == 'max_length':
+                message = ungettext_lazy(
+                    'Ensure this value has at most %(limit_value)d character',
+                    'Ensure this value has at most %(limit_value)d characters',
+                    'limit_value')
+                errors.append(('$error.maxlength', message % {'limit_value': self.max_length}))
+        return errors
+
+    def get_min_max_value_errors(self):
+        errors = []
+        if isinstance(getattr(self, 'min_value', None), int):
+            self.widget.attrs['min'] = self.min_value
+        if isinstance(getattr(self, 'max_value', None), int):
+            self.widget.attrs['max'] = self.max_value
+        errkeys = []
+        for key, msg in self.error_messages.items():
+            if key == 'min_value':
+                errors.append(('$error.min', msg))
+                errkeys.append(key)
+            if key == 'max_value':
+                errors.append(('$error.max', msg))
+                errkeys.append(key)
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'min_value' and 'min_value' not in errkeys:
+                errors.append(('$error.min', item.message % {'limit_value': self.min_value}))
+                errkeys.append('min_value')
+            if getattr(item, 'code', None) == 'max_value' and 'max_value' not in errkeys:
+                errors.append(('$error.max', item.message % {'limit_value': self.max_value}))
+                errkeys.append('max_value')
+        return errors
+
+    def get_invalid_value_errors(self, ng_error_key):
+        errors = []
+        errkeys = []
+        for key, msg in self.error_messages.items():
+            if key == 'invalid':
+                errors.append(('$error.{0}'.format(ng_error_key), msg))
+                errkeys.append(key)
+        for item in self.validators:
+            if getattr(item, 'code', None) == 'invalid' and 'invalid' not in errkeys:
+                errmsg = getattr(item, 'message', _("This input self does not contain valid data."))
+                errors.append(('$error.{0}'.format(ng_error_key), errmsg))
+                errkeys.append('invalid')
+        return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        """
+        Update the dictionary of attributes used  while rendering the input widget
+        """
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        widget_classes = self.widget.attrs.get('class', None)
+        if widget_classes:
+            if 'class' in attrs:
+                attrs['class'] += ' ' + widget_classes
+            else:
+                attrs.update({'class': widget_classes})
+        return attrs
+
+
+class CharField(DefaultFieldMixin, fields.CharField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_length_errors())
+        return errors
+
+
+class DecimalField(DefaultFieldMixin, fields.DecimalField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        self.widget.attrs['ng-minlength'] = 1
+        if isinstance(self.max_digits, int) and self.max_digits > 0:
+            self.widget.attrs['ng-maxlength'] = self.max_digits + 1
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
+
+
+class EmailField(DefaultFieldMixin, fields.EmailField):
+    def get_potential_errors(self):
+        self.widget.attrs['email-pattern'] = self.get_email_regex()
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('email'))
+        return errors
+
+    def get_email_regex(self):
+        """
+        Return a regex pattern matching valid email addresses. Uses the same
+        logic as the django validator, with the folowing exceptions:
+
+        - Internationalized domain names not supported
+        - IP addresses not supported
+        - Strips lookbehinds (not supported in javascript regular expressions)
+        """
+        validator = self.default_validators[0]
+        user_regex = validator.user_regex.pattern.replace('\Z', '@')
+        domain_patterns = ([re.escape(domain) + '$' for domain in
+                            validator.domain_whitelist] +
+                           [validator.domain_regex.pattern.replace('\Z', '$')])
+        domain_regex = '({0})'.format('|'.join(domain_patterns))
+        email_regex = user_regex + domain_regex
+        return re.sub(r'\(\?\<[^()]*?\)', '', email_regex)  # Strip lookbehinds
+
+
+class DateField(DefaultFieldMixin, fields.DateField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('date'))
+        return errors
+
+
+class FloatField(DefaultFieldMixin, fields.FloatField):
     """
     The internal ``django.forms.FloatField`` does not handle the step value in its number widget.
     """
@@ -27,9 +174,172 @@ class FloatField(forms.FloatField):
         attrs.update(step=self.step)
         return attrs
 
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
 
-class ImageField(forms.Field):
-    render_label = True
+
+class IntegerField(DefaultFieldMixin, fields.IntegerField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_value_errors())
+        errors.extend(self.get_invalid_value_errors('number'))
+        return errors
+
+
+class SlugField(DefaultFieldMixin, fields.SlugField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        return errors
+
+
+class RegexField(DefaultFieldMixin, fields.RegexField):
+    # Presumably Python Regex can't be translated 1:1 into JS regex. Any hints on how to convert these?
+    def get_potential_errors(self):
+        self.widget.attrs['ng-pattern'] = '/{0}/'.format(self.regex.pattern)
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_length_errors())
+        errors.extend(self.get_invalid_value_errors('pattern'))
+        return errors
+
+
+class BooleanField(DefaultFieldMixin, fields.BooleanField):
+    render_label = False
+
+    def has_subwidgets(self):
+        return True
+
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
+
+    def update_widget_rendering_context(self, context):
+        context['widget'].update(field_label=self.label)
+        return context
+
+
+class MultipleFieldMixin(DefaultFieldMixin):
+    def get_multiple_choices_required(self):
+        """
+        Add only the required message, but no 'ng-required' attribute to the input fields,
+        otherwise all Checkboxes of a MultipleChoiceField would require the property "checked".
+        """
+        errors = []
+        if self.required:
+            for key, msg in self.error_messages.items():
+                if key == 'required':
+                    errors.append(('$error.required', msg))
+        return errors
+
+
+class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
+    def has_subwidgets(self):
+        return isinstance(self.widget, widgets.RadioSelect)
+
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.RadioSelect):
+            errors = self.get_multiple_choices_required()
+        else:
+            errors = self.get_input_required_errors()
+        return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        from django import VERSION
+
+        if VERSION < (1, 11) and isinstance(self.widget, widgets.RadioSelect):
+            attrs.update(radio_select_required=self.required)
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
+
+
+class TypedChoiceField(MultipleFieldMixin, fields.TypedChoiceField):
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.RadioSelect):
+            errors = self.get_multiple_choices_required()
+        else:
+            errors = self.get_input_required_errors()
+        return errors
+
+
+class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
+    def has_subwidgets(self):
+        return isinstance(self.widget, widgets.CheckboxSelectMultiple)
+
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            errors = self.get_multiple_choices_required()
+        else:
+            errors = self.get_input_required_errors()
+        return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        bound_field.form.update_widget_attrs(bound_field, attrs)
+        return attrs
+
+    def get_converted_widget(self):
+        from .widgets import CheckboxSelectMultiple
+
+        assert(isinstance(self, fields.MultipleChoiceField))
+        if not isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            return
+        new_widget = CheckboxSelectMultiple()
+        new_widget.__dict__ = self.widget.__dict__
+        return new_widget
+
+    def implode_multi_values(self, name, data):
+        """
+        Due to the way Angular organizes it model, when Form data is sent via a POST request,
+        then for this kind of widget, the posted data must to be converted into a format suitable
+        for Django's Form validation.
+        """
+        mkeys = [k for k in data.keys() if k.startswith(name + '.')]
+        mvls = [data.pop(k)[0] for k in mkeys]
+        if mvls:
+            data.setlist(name, mvls)
+
+    def convert_ajax_data(self, field_data):
+        """
+        Due to the way Angular organizes it model, when this Form data is sent using Ajax,
+        then for this kind of widget, the sent data has to be converted into a format suitable
+        for Django's Form validation.
+        """
+        data = [key for key, val in field_data.items() if val]
+        return data
+
+    def update_widget_rendering_context(self, context):
+        if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
+            if ng_model:
+                validate_fields = []
+                for group, options, index in context['widget']['optgroups']:
+                    for option in options:
+                        option['name'] = format_html('{name}.{value}', **option)
+                        validate_fields.append(format_html('"{name}"', **option))
+                        option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
+                if self.required:
+                    context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
+        return context
+
+
+class FileField(DefaultFieldMixin, fields.FileField):
+    def get_converted_widget(self):
+        return super(FileField, self).get_converted_widget()
+
+    def get_potential_errors(self):
+        errors = []
+        return errors
+
+    def update_widget_attrs(self, bound_field, attrs):
+        return attrs
+
+
+class ImageField(DefaultFieldMixin, fields.ImageField):
     storage = app_settings.upload_storage
     signer = signing.Signer()
 
@@ -46,46 +356,51 @@ class ImageField(forms.Field):
         super(ImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
+        # handle previously existing image
         try:
-            if 'previous_image' in value:
-                # Delete previous image
-                previous_image = self.signer.unsign(value['previous_image'])
-                self.remove_images(previous_image)
-            if isinstance(value['temp_name'], bool):
-                # Nothing changed
-                return
-            temp_name = self.signer.unsign(value['temp_name'])
+            if ':' in value['current_file']:
+                # Delete previous file
+                previous_file = self.signer.unsign(value['current_file'])
+                self.remove_images(previous_file)
         except signing.BadSignature:
             raise ValidationError("Got bogus upstream data")
+        except (KeyError, TypeError):
+            pass
+
+        # handle new uploaded image
         try:
-            temp_file = self.storage.open(temp_name, 'rb')
-            file_size = self.storage.size(temp_name)
-            if file_size < settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
-                obj = InMemoryUploadedFile(
-                    file=temp_file,
-                    field_name=None,
-                    name=value['image_name'],
-                    charset=value['charset'],
-                    content_type=value['content_type'],
-                    content_type_extra=value['content_type_extra'],
-                    size=file_size,
-                )
-            else:
-                obj = TemporaryUploadedFile(
-                    value['image_name'],
-                    value['content_type'],
-                    0,
-                    value['charset'],
-                    content_type_extra=value['content_type_extra'],
-                )
-                while True:
-                    chunk = temp_file.read(0x10000)
-                    if not chunk:
-                        break
-                    obj.file.write(chunk)
-                obj.file.seek(0)
-                obj.file.size = file_size
-        except IOError:
+            if ':' in value['temp_name']:
+                temp_name = self.signer.unsign(value['temp_name'])
+                temp_file = self.storage.open(temp_name, 'rb')
+                file_size = self.storage.size(temp_name)
+                if file_size < settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
+                    obj = InMemoryUploadedFile(
+                        file=temp_file,
+                        field_name=None,
+                        name=value['image_name'],
+                        charset=value['charset'],
+                        content_type=value['content_type'],
+                        content_type_extra=value['content_type_extra'],
+                        size=file_size,
+                    )
+                else:
+                    obj = TemporaryUploadedFile(
+                        value['image_name'],
+                        value['content_type'],
+                        0,
+                        value['charset'],
+                        content_type_extra=value['content_type_extra'],
+                    )
+                    while True:
+                        chunk = temp_file.read(0x10000)
+                        if not chunk:
+                            break
+                        obj.file.write(chunk)
+                    obj.file.seek(0)
+                    obj.file.size = file_size
+        except signing.BadSignature:
+            raise ValidationError("Got bogus upstream data")
+        except (IOError, KeyError, TypeError):
             obj = None
         except Exception as excp:
             raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
