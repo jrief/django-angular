@@ -4,45 +4,46 @@ from bs4 import BeautifulSoup
 
 from django import VERSION as DJANGO_VERSION
 from django import forms
+from django.forms import widgets
 from django.test import TestCase
 
-from djng.forms import NgModelFormMixin, NgForm
+from djng.forms import fields, NgModelFormMixin, NgForm
 
 
 class EmailForm(NgModelFormMixin, NgForm):
     scope_prefix = 'form_data'
 
-    email = forms.EmailField(label='E-Mail')
+    email = fields.EmailField(label='E-Mail')
 
 
 class ChoiceForm(NgModelFormMixin, NgForm):
     scope_prefix = 'form_data'
 
-    choose = forms.BooleanField(required=True, label='Choose')
+    choose = fields.BooleanField(required=True, label='Choose')
 
 
 class RadioForm(NgModelFormMixin, NgForm):
     scope_prefix = 'form_data'
 
-    sex = forms.ChoiceField(
+    sex = fields.ChoiceField(
         choices=[('m', 'Male'), ('f', 'Female')],
-        widget=forms.RadioSelect,
+        widget=widgets.RadioSelect,
         required=True,)
 
 
 class SelectMultipleChoicesForm(NgModelFormMixin, NgForm):
     scope_prefix = 'form_data'
 
-    select_multi = forms.MultipleChoiceField(
+    select_multi = fields.MultipleChoiceField(
         choices=[('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C')])
 
 
 class CheckboxChoicesForm(NgModelFormMixin, NgForm):
     scope_prefix = 'data'
 
-    check_multi = forms.MultipleChoiceField(
+    check_multi = fields.MultipleChoiceField(
         choices=[('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C')],
-        widget=forms.CheckboxSelectMultiple,)
+        widget=widgets.CheckboxSelectMultiple,)
 
 
 @unittest.skipIf(DJANGO_VERSION < (1, 10), "earlier django versions break the html")

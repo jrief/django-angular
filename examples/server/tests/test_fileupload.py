@@ -62,7 +62,7 @@ class FileUploadTest(TestCase):
         self.assertEquals(textarea.attr('ngf-drop'), 'uploadFiles($files)')
         self.assertEquals(textarea.attr('ngf-select'), 'uploadFiles($files)')
 
-        delete_button = dom('div.drop-box span')
+        delete_button = dom('div.drop-box img.djng-fileupload-btn.djng-fileupload-btn-trash')
         self.assertEquals(delete_button.attr('djng-fileupload-button'), "my_data['avatar']")
         self.assertEquals(delete_button.attr('ng-click'), "deleteImage()")
 
