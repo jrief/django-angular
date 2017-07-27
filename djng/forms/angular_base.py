@@ -243,40 +243,19 @@ class BaseFieldsModifierMetaclass(type):
     with additional functionality required for AngularJS's Form control and Form validation.
     """
     def __new__(cls, name, bases, attrs):
+        cls.fields_modules = ['djng.forms.fields']
         if DJANGO_VERSION < (1, 11):
-            cls.fields_module = cls.fields_fallback_module = 'djng.forms.fields'
             for b in bases:
                 try:
-                    cls.fields_module = getattr(b, 'fields_module')
+                    cls.fields_modules.append(getattr(b, 'fields_module'))
                     break
                 except AttributeError:
                     continue
-            attrs.update(formfield_callback=cls.formfield_callback_legacy)
-        else:
-            cls.fields_module = 'djng.forms.fields'
-            attrs.update(formfield_callback=cls.formfield_callback)
+
+        attrs.update(formfield_callback=cls.formfield_callback)
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
         cls.validate_formfields(new_class)
         return new_class
-
-    @classmethod
-    def formfield_callback_legacy(cls, modelfield, **kwargs):
-        # first get the default formfield for this modelfield
-        formfield = modelfield.formfield(**kwargs)
-
-        if formfield:
-            # use the same class name to load the corresponding inherited formfield
-            try:
-                form_class = import_string(cls.fields_module + '.' + formfield.__class__.__name__)
-            except ImportError:
-                form_class = import_string(cls.fields_fallback_module + '.' + formfield.__class__.__name__)
-            # recreate the formfield using our customized field class
-            if getattr(formfield, 'choices', None):
-                kwargs.update(choices_form_class=form_class)
-            else:
-                kwargs.update(form_class=form_class)
-            formfield = modelfield.formfield(**kwargs)
-        return formfield
 
     @classmethod
     def formfield_callback(cls, modelfield, **kwargs):
@@ -285,7 +264,15 @@ class BaseFieldsModifierMetaclass(type):
 
         if formfield:
             # use the same class name to load the corresponding inherited formfield
-            form_class = import_string(cls.fields_module + '.' + formfield.__class__.__name__)
+            for fields_module in reversed(cls.fields_modules):
+                try:
+                    form_class = import_string(fields_module + '.' + formfield.__class__.__name__)
+                    break
+                except ImportError:
+                    continue
+            else:
+                msg = "Unable to import field class '{}'"
+                raise ImportError(msg.format(formfield.__class__.__name__))
 
             # recreate the formfield using our customized field class
             if getattr(formfield, 'choices', None):
@@ -300,7 +287,7 @@ class BaseFieldsModifierMetaclass(type):
         msg = "Please use the corresponding form fields from 'djng.forms.fields' for field '{} = {}(...)' " \
               "in form '{}', which inherits from 'NgForm' or 'NgModelForm'."
         for name, field in new_class.base_fields.items():
-            if field.__module__ not in [cls.fields_module, cls.fields_fallback_module]:
+            if field.__module__ not in cls.fields_modules:
                 raise ImproperlyConfigured(msg.format(name, field.__class__.__name__, new_class))
 
 
