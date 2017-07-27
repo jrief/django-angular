@@ -26,7 +26,7 @@
 }
 
 .drop-box textarea.form-control {
-	padding: 75px 25px 0 25px;
+	padding: 25% 25px;
 }
 .drop-box textarea.dragover {
 	background: #f8f8a0;

@@ -346,7 +346,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
     def __init__(self, *args, **kwargs):
         accept = kwargs.pop('accept', 'image/*')
         fileupload_url = kwargs.pop('fileupload_url', reverse_lazy('fileupload'))
-        area_label = kwargs.pop('area_label', _("Drop or click here to upload"))
+        area_label = kwargs.pop('area_label', _("Drop image here or click to upload"))
         attrs = {
             'accept': accept,
             'ngf-pattern': accept,
