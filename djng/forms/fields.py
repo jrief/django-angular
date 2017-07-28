@@ -11,14 +11,14 @@ from django.utils.safestring import mark_safe
 
 from django.conf import settings
 from django.core import signing
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
 from djng import app_settings
-from .widgets import DropImageWidget
+from .widgets import DropFileWidget, DropImageWidget
 
 
 class DefaultFieldMixin(object):
@@ -349,12 +349,33 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 
 
 class FileField(DefaultFieldMixin, fields.FileField):
-    def get_potential_errors(self):
-        errors = []
-        return errors
+    storage = app_settings.upload_storage
+    signer = signing.Signer()
 
-    def update_widget_attrs(self, bound_field, attrs):
-        return attrs
+    def __init__(self, *args, **kwargs):
+        accept = kwargs.pop('accept', '*/*')
+        fileupload_url = kwargs.pop('fileupload_url', reverse_lazy('fileupload'))
+        area_label = kwargs.pop('area_label', _("Drop file here or click to upload"))
+        attrs = {
+            'accept': accept,
+            'ngf-pattern': accept,
+        }
+        kwargs.update(widget=DropFileWidget(area_label, fileupload_url, attrs=attrs))
+        super(FileField, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def preview(cls, file_obj):
+        available_name = cls.storage.get_available_name(file_obj.name)
+        temp_name = cls.storage.save(available_name, file_obj)
+        return {
+            'url': 'url({})'.format('/abcd.png'),
+            'temp_name': cls.signer.sign(temp_name),
+            'image_name': file_obj.name,
+            'image_size': file_obj.size,
+            'charset': file_obj.charset,
+            'content_type': file_obj.content_type,
+            'content_type_extra': file_obj.content_type_extra,
+        }
 
 
 class ImageField(DefaultFieldMixin, fields.ImageField):
@@ -362,15 +383,16 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
     signer = signing.Signer()
 
     def __init__(self, *args, **kwargs):
+        if 'easy_thumbnails' not in settings.INSTALLED_APPS:
+            raise ImproperlyConfigured("'djng.forms.fields.ImageField' requires 'easy-thubnails' to be installed")
         accept = kwargs.pop('accept', 'image/*')
         fileupload_url = kwargs.pop('fileupload_url', reverse_lazy('fileupload'))
         area_label = kwargs.pop('area_label', _("Drop image here or click to upload"))
         attrs = {
             'accept': accept,
             'ngf-pattern': accept,
-            'fileupload-url': fileupload_url,
         }
-        kwargs.update(widget=DropImageWidget(attrs=attrs, area_label=area_label))
+        kwargs.update(widget=DropImageWidget(area_label, fileupload_url, attrs=attrs))
         super(ImageField, self).__init__(*args, **kwargs)
 
     def to_python(self, value):
@@ -438,3 +460,22 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
         except Source.DoesNotExist:
             pass
         default_storage.delete(image_name)
+
+    @classmethod
+    def preview(cls, file_obj):
+        from easy_thumbnails.files import get_thumbnailer
+        from easy_thumbnails.templatetags.thumbnail import data_uri
+
+        available_name = cls.storage.get_available_name(file_obj.name)
+        temp_name = cls.storage.save(available_name, file_obj)
+        thumbnailer = get_thumbnailer(cls.storage.path(temp_name), relative_name=available_name)
+        thumbnail = thumbnailer.generate_thumbnail(app_settings.THUMBNAIL_OPTIONS)
+        return {
+            'url': 'url({})'.format(data_uri(thumbnail)),
+            'temp_name': cls.signer.sign(temp_name),
+            'image_name': file_obj.name,
+            'image_size': file_obj.size,
+            'charset': file_obj.charset,
+            'content_type': file_obj.content_type,
+            'content_type_extra': file_obj.content_type_extra,
+        }

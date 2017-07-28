@@ -1,12 +1,10 @@
 .drop-box {
 	position: relative;
-	width: 200px;
 }
 .drop-box textarea {
 	background: #F8F8F8;
 	border: 2px solid #a0a0a0;
 	height: auto;
-	min-height: 200px;
 	color: rgba(255, 255, 255, 0.25);
 	text-align: center;
 	font-weight: bold;
@@ -14,6 +12,16 @@
 	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 	resize: none;
 	cursor: copy;
+}
+.drop-box textarea.djng-file-uploader {
+	width: 200px;
+	height: 80px;
+	padding: 10px 25px 0 25px;
+}
+.drop-box textarea.djng-image-uploader {
+	width: 200px;
+	height: 200px;
+	padding: 50px 25px 0 25px;
 }
 .drop-box textarea:hover {
 	color: rgba(255, 255, 255, 1);
@@ -23,10 +31,6 @@
 .drop-box textarea.uploading {
 	background-image: none !important;
 	background-color: cyan;
-}
-
-.drop-box textarea.form-control {
-	padding: 25% 25px;
 }
 .drop-box textarea.dragover {
 	background: #f8f8a0;

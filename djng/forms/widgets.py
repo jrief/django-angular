@@ -5,14 +5,12 @@ from distutils.version import LooseVersion
 import json
 
 from django import get_version
-from django.conf import settings
 from django.core import signing
-from django.core.exceptions import ImproperlyConfigured
 from django.forms import widgets
 from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-from django.utils.html import format_html
+from django.utils.html import format_html, escape
 
 from djng import app_settings
 
@@ -120,29 +118,24 @@ if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
 class DropFileWidget(widgets.Widget):
     signer = signing.Signer()
 
-    def __init__(self, attrs=None, area_label=None):
-        if attrs is not None:
-            self.attrs = attrs.copy()
-        else:
-            self.attrs = {}
+    def __init__(self, area_label, fileupload_url, attrs=None):
         self.area_label = area_label
-        self.attrs.update({
-            'ng-class': 'getClass()',
-            'ngf-drop': 'uploadFiles($files)',
-            'ngf-select': 'uploadFiles($files)',
-        })
+        self.fileupload_url = fileupload_url
+        super(DropFileWidget, self).__init__(attrs)
+        self.file_type = 'file'
 
     def render(self, name, value, attrs=None):
         from django.contrib.staticfiles.storage import staticfiles_storage
 
-        extra_attrs = dict(attrs, name=name)
-        if value:
-            background_url = self.get_background_url(value)
-            if background_url:
-                extra_attrs.update({
-                    'style': 'background-image: url({});'.format(background_url),
-                    'current-file': self.signer.sign(value.name)
-                })
+        extra_attrs = dict(attrs)
+        extra_attrs.update({
+            'name': name,
+            'class': 'djng-{}-uploader'.format(self.file_type),
+            'djng-fileupload-url': self.fileupload_url,
+            'ngf-drop': 'uploadFile($file, "{id}", "{ng-model}")'.format(**attrs),
+            'ngf-select': 'uploadFile($file, "{id}", "{ng-model}")'.format(**attrs),
+        })
+        self.update_attributes(extra_attrs, value)
         if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
             final_attrs = self.build_attrs(extra_attrs=extra_attrs)
         else:
@@ -158,26 +151,38 @@ class DropFileWidget(widgets.Widget):
                 staticfiles_storage.url('djng/icons/download.svg')))
         return format_html('<div class="drop-box">{}</div>', mark_safe(''.join(elements)))
 
-    def get_background_url(self, value):
-        return ''  # TODO: render an icon, depending on the file type
+    def update_attributes(self, attrs, value):
+        attrs.update({'djng-filetype': 'file'})
+        if value:
+            background_url = ''  # TODO: set
+            if background_url:
+                attrs.update({
+                    'style': 'background-image: url({});'.format(background_url),
+                    'current-file': self.signer.sign(value.name)
+                })
 
 
 class DropImageWidget(DropFileWidget):
-    thumbnail_size = app_settings.THUMBNAIL_SIZE
+    def __init__(self, area_label, fileupload_url, attrs=None):
+        super(DropImageWidget, self).__init__(area_label, fileupload_url, attrs=attrs)
+        self.file_type = 'image'
 
-    def __init__(self, **kwargs):
-        if 'easy_thumbnails' not in settings.INSTALLED_APPS:
-            raise ImproperlyConfigured("'djng.forms.fields.ImageField' requires 'easy-thubnails' to be installed")
-        super(DropImageWidget, self).__init__(**kwargs)
+    def update_attributes(self, attrs, value):
+        if value:
+            background_url = self.get_background_url(value)
+            if background_url:
+                attrs.update({
+                    'style': 'background-image: url({});'.format(background_url),
+                    'current-file': self.signer.sign(value.name)
+                })
 
     def get_background_url(self, value):
         from easy_thumbnails.exceptions import InvalidImageFormatError
         from easy_thumbnails.files import get_thumbnailer
 
         try:
-            thumbnail_options = {'crop': True, 'size': self.thumbnail_size}
             thumbnailer = get_thumbnailer(value)
-            thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+            thumbnail = thumbnailer.get_thumbnail(app_settings.THUMBNAIL_OPTIONS)
             return thumbnail.url
         except InvalidImageFormatError:
             return
