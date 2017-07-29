@@ -398,7 +398,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
     def to_python(self, value):
         # handle previously existing image
         try:
-            if ':' in value['current_file']:
+            if ':' in value['current_file'] and (value['temp_name'] == 'delete' or ':' in value['temp_name']):
                 # Delete previous file
                 previous_file = self.signer.unsign(value['current_file'])
                 self.remove_images(previous_file)
@@ -438,14 +438,13 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
                         obj.file.write(chunk)
                     obj.file.seek(0)
                     obj.file.size = file_size
+                self.storage.delete(temp_name)
         except signing.BadSignature:
             raise ValidationError("Got bogus upstream data")
         except (IOError, KeyError, TypeError):
             obj = None
         except Exception as excp:
             raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
-        else:
-            self.storage.delete(temp_name)
         return obj
 
     def remove_images(self, image_name):

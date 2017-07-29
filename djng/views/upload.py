@@ -16,13 +16,12 @@ class FileUploadView(View):
     signer = signing.Signer()
 
     def post(self, request, *args, **kwargs):
-        if request.POST.get('file_type') == 'file':
+        if request.POST.get('filetype') == 'file':
             field = FileField
-        elif request.POST.get('file_type') == 'image':
+        elif request.POST.get('filetype') == 'image':
             field = ImageField
         else:
-            field = ImageField
-#            raise SuspiciousMultipartForm("Missing attribute 'file_type' in form data.")
+            raise SuspiciousMultipartForm("Missing attribute 'filetype' in form data.")
         data = {}
         for name, file_obj in request.FILES.items():
             data[name] = field.preview(file_obj)

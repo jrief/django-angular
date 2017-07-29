@@ -11,15 +11,16 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 		restrict: 'A',
 		require: 'ngModel',
 		link: function(scope, element, attrs, ngModelController) {
-			if (!attrs.currentFile) {
-				element.addClass('empty');
+			if (attrs.currentFile) {
+				ngModelController.$setViewValue({
+					current_file: attrs.currentFile
+				});
+			} else {
+				element.addClass('djng-empty');
 			}
-			ngModelController.$setViewValue({
-				current_file: attrs.currentFile
-			});
 
-			scope.uploadFile = function(file, id, model) {
-				var data = {'file:0': file},
+			scope.uploadFile = function(file, filetype, id, model) {
+				var data = {'file:0': file, filetype: filetype},
 				    element = angular.element(document.querySelector('#' + id));
 				Upload.upload({
 					data: data,
@@ -29,7 +30,7 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					    current = angular.isString(attrs.currentFile) ? {current_file: attrs.currentFile} : {};
 					element.removeClass('uploading');
 					element.css('background-image', field.url);
-					element.removeClass('empty')
+					element.removeClass('djng-empty')
 					delete field.url;  // we don't want to send back the whole image
 					angular.extend(scope.$eval(model), field, current);
 				}, function(respose) {
@@ -41,20 +42,19 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 	};
 }]);
 
+
 fileuploadModule.directive('djngFileuploadButton', function() {
 	return {
-		restrict: 'A',
+		restrict: 'C',
 		link: function(scope, element, attrs) {
-			scope.deleteImage = function() {
-				var model = scope.$eval(attrs.djngFileuploadButton);
+			scope.deleteImage = function(id, model) {
+				var model = scope.$eval(model),
+				    element = angular.element(document.querySelector('#' + id));
+				element.css('background-image', 'none');
+				element.addClass('djng-empty')
 				if (model) {
-					model.temp_name = false;  // tags previous image for deletion
+					model.temp_name = 'delete';  // tags previous image for deletion
 				}
-			};
-
-			scope.isEmpty = function() {
-				var model = scope.$eval(attrs.djngFileuploadButton);
-				return !(model && model.temp_name);
 			};
 		}
 	};

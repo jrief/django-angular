@@ -122,7 +122,7 @@ class DropFileWidget(widgets.Widget):
         self.area_label = area_label
         self.fileupload_url = fileupload_url
         super(DropFileWidget, self).__init__(attrs)
-        self.file_type = 'file'
+        self.filetype = 'file'
 
     def render(self, name, value, attrs=None):
         from django.contrib.staticfiles.storage import staticfiles_storage
@@ -130,10 +130,10 @@ class DropFileWidget(widgets.Widget):
         extra_attrs = dict(attrs)
         extra_attrs.update({
             'name': name,
-            'class': 'djng-{}-uploader'.format(self.file_type),
+            'class': 'djng-{}-uploader'.format(self.filetype),
             'djng-fileupload-url': self.fileupload_url,
-            'ngf-drop': 'uploadFile($file, "{id}", "{ng-model}")'.format(**attrs),
-            'ngf-select': 'uploadFile($file, "{id}", "{ng-model}")'.format(**attrs),
+            'ngf-drop': 'uploadFile($file, "{0}", "{id}", "{ng-model}")'.format(self.filetype, **attrs),
+            'ngf-select': 'uploadFile($file, "{0}", "{id}", "{ng-model}")'.format(self.filetype, **attrs),
         })
         self.update_attributes(extra_attrs, value)
         if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
@@ -141,18 +141,26 @@ class DropFileWidget(widgets.Widget):
         else:
             final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
         elements = [format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)]
-        elements.append(format_html(
-            '<img src="{}" class="{}" djng-fileupload-button="{}" ng-click="deleteImage()" ng-hide="isEmpty()" ng-cloak />',
-            staticfiles_storage.url('djng/icons/trash.svg'), 'djng-fileupload-btn djng-fileupload-btn-trash', attrs['ng-model']))
+
+        # add a delete icon
+        icon_attrs = {
+            'src': staticfiles_storage.url('djng/icons/trash.svg'),
+            'class': 'djng-fileupload-button djng-fileupload-btn-trash',
+            'ng-click': 'deleteImage("{id}", "{ng-model}")'.format(**attrs),
+            'ng-cloak': True,
+        }
+        elements.append(format_html('<img {} />', flatatt(icon_attrs)))
+
+        # add a download icon
         if value:
+            download_icon = staticfiles_storage.url('djng/icons/download.svg')
             elements.append(format_html(
-                '<a href="{}" class="{}" target="_new" ng-hide="isEmpty()" ng-cloak><img src="{}" /></a>',
-                value.url, 'djng-fileupload-btn djng-fileupload-btn-download',
-                staticfiles_storage.url('djng/icons/download.svg')))
+                '<a href="{}" class="{}" download="" ng-cloak><img src="{}" /></a>',
+                value.url, 'djng-fileupload-button djng-fileupload-btn-download', download_icon))
+
         return format_html('<div class="drop-box">{}</div>', mark_safe(''.join(elements)))
 
     def update_attributes(self, attrs, value):
-        attrs.update({'djng-filetype': 'file'})
         if value:
             background_url = ''  # TODO: set
             if background_url:
@@ -165,7 +173,7 @@ class DropFileWidget(widgets.Widget):
 class DropImageWidget(DropFileWidget):
     def __init__(self, area_label, fileupload_url, attrs=None):
         super(DropImageWidget, self).__init__(area_label, fileupload_url, attrs=attrs)
-        self.file_type = 'image'
+        self.filetype = 'image'
 
     def update_attributes(self, attrs, value):
         if value:
