@@ -11,6 +11,7 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 		restrict: 'A',
 		require: 'ngModel',
 		link: function(scope, element, attrs, ngModelController) {
+			element.data('area_label', element.val());
 			if (attrs.currentFile) {
 				ngModelController.$setViewValue({
 					current_file: attrs.currentFile
@@ -31,6 +32,7 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					element.removeClass('uploading');
 					element.css('background-image', field.url);
 					element.removeClass('djng-empty')
+					element.val(field.file_name);
 					delete field.url;  // we don't want to send back the whole image
 					angular.extend(scope.$eval(model), field, current);
 				}, function(respose) {
@@ -51,7 +53,8 @@ fileuploadModule.directive('djngFileuploadButton', function() {
 				var model = scope.$eval(model),
 				    element = angular.element(document.querySelector('#' + id));
 				element.css('background-image', 'none');
-				element.addClass('djng-empty')
+				element.addClass('djng-empty');
+				element.val(element.data('area_label'));
 				if (model) {
 					model.temp_name = 'delete';  // tags previous image for deletion
 				}

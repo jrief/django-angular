@@ -1,20 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+import os
 import re
-
-from django.forms import fields
-from django.forms import widgets
-from django.utils.html import format_html
-from django.utils.module_loading import import_string
-from django.utils.safestring import mark_safe
+import mimetypes
 
 from django.conf import settings
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import signing
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
+from django.forms import fields
+from django.forms import widgets
+from django.utils.html import format_html
+from django.utils.module_loading import import_string
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
 from djng import app_settings
@@ -351,6 +353,7 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 class FileField(DefaultFieldMixin, fields.FileField):
     storage = app_settings.upload_storage
     signer = signing.Signer()
+    types_map = dict((v, k[1:] + '.png') for k, v in mimetypes.types_map.items())
 
     def __init__(self, *args, **kwargs):
         accept = kwargs.pop('accept', '*/*')
@@ -367,11 +370,13 @@ class FileField(DefaultFieldMixin, fields.FileField):
     def preview(cls, file_obj):
         available_name = cls.storage.get_available_name(file_obj.name)
         temp_name = cls.storage.save(available_name, file_obj)
+        icon_file = cls.types_map.get(file_obj.content_type, '_blank.png')
+        icon_url = staticfiles_storage.url(os.path.join('djng/icons', icon_file))
         return {
-            'url': 'url({})'.format('/abcd.png'),
+            'url': 'url({})'.format(icon_url),
             'temp_name': cls.signer.sign(temp_name),
-            'image_name': file_obj.name,
-            'image_size': file_obj.size,
+            'file_name': file_obj.name,
+            'file_size': file_obj.size,
             'charset': file_obj.charset,
             'content_type': file_obj.content_type,
             'content_type_extra': file_obj.content_type_extra,
@@ -417,7 +422,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
                     obj = InMemoryUploadedFile(
                         file=temp_file,
                         field_name=None,
-                        name=value['image_name'],
+                        name=value['file_name'],
                         charset=value['charset'],
                         content_type=value['content_type'],
                         content_type_extra=value['content_type_extra'],
@@ -425,7 +430,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
                     )
                 else:
                     obj = TemporaryUploadedFile(
-                        value['image_name'],
+                        value['file_name'],
                         value['content_type'],
                         0,
                         value['charset'],
@@ -472,8 +477,8 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
         return {
             'url': 'url({})'.format(data_uri(thumbnail)),
             'temp_name': cls.signer.sign(temp_name),
-            'image_name': file_obj.name,
-            'image_size': file_obj.size,
+            'file_name': file_obj.name,
+            'file_size': file_obj.size,
             'charset': file_obj.charset,
             'content_type': file_obj.content_type,
             'content_type_extra': file_obj.content_type_extra,

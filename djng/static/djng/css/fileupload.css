@@ -3,26 +3,41 @@
 	width: 200px;
 }
 .drop-box textarea {
-	background: #F8F8F8;
+	background-color: #F8F8F8;
+	background-repeat: no-repeat;
 	border: 1px solid #a0a0a0;
 	height: auto;
 	color: rgba(255, 255, 255, 0.25);
-	text-align: center;
 	font-weight: bold;
-	font-size: 18px;
+	font-size: 14px;
 	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 	resize: none;
 	cursor: copy;
+	overflow: hidden;
 }
 .drop-box textarea.djng-file-uploader {
+	padding: 55px 0 0 10px;
 	width: 100%;
 	height: 80px;
+	color: #a0a0a0;
+	text-shadow: none;
+	background-position: 4px 8px;
+}
+.drop-box textarea.djng-file-uploader.djng-empty {
 	padding: 10px 25px 0 25px;
+	font-size: 18px;
+	text-align: center;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
 }
 .drop-box textarea.djng-image-uploader {
+	padding: 160px 0 0 10px;
 	width: 100%;
 	height: 200px;
+}
+.drop-box textarea.djng-image-uploader.djng-empty {
 	padding: 50px 25px 0 25px;
+	font-size: 18px;
+	text-align: center;
 }
 .drop-box textarea:hover {
 	color: rgba(255, 255, 255, 1);

@@ -144,7 +144,7 @@ class DropFileWidget(widgets.Widget):
 
         # add a delete icon
         icon_attrs = {
-            'src': staticfiles_storage.url('djng/icons/trash.svg'),
+            'src': staticfiles_storage.url('djng/icons/{}/trash.svg'.format(self.filetype)),
             'class': 'djng-fileupload-button djng-fileupload-btn-trash',
             'ng-click': 'deleteImage("{id}", "{ng-model}")'.format(**attrs),
             'ng-cloak': True,
@@ -153,7 +153,7 @@ class DropFileWidget(widgets.Widget):
 
         # add a download icon
         if value:
-            download_icon = staticfiles_storage.url('djng/icons/download.svg')
+            download_icon = staticfiles_storage.url('djng/icons/{}/download.svg'.format(self.filetype))
             elements.append(format_html(
                 '<a href="{}" class="{}" download="" ng-cloak><img src="{}" /></a>',
                 value.url, 'djng-fileupload-button djng-fileupload-btn-download', download_icon))
