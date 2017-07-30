@@ -3,8 +3,10 @@ from __future__ import unicode_literals
 
 from distutils.version import LooseVersion
 import json
+import mimetypes
 
 from django import get_version
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import signing
 from django.forms import widgets
 from django.forms.utils import flatatt
@@ -163,15 +165,17 @@ class DropFileWidget(widgets.Widget):
 
     def update_attributes(self, attrs, value):
         if value:
-            icon_file = cls.types_map.get(file_obj.content_type, '_blank.png')
-            icon_url = staticfiles_storage.url(os.path.join('djng/icons', icon_file))
-
-            background_url = ''  # TODO: set
-            if background_url:
-                attrs.update({
-                    'style': 'background-image: url({});'.format(background_url),
-                    'current-file': self.signer.sign(value.name)
-                })
+            content_type, _ = mimetypes.guess_type(value.file.name)
+            extension = mimetypes.guess_extension(content_type)
+            if extension:
+                extension = extension[1:]
+            else:
+                extension = '_blank'
+            background_url = staticfiles_storage.url('djng/icons/{}.png'.format(extension))
+            attrs.update({
+                'style': 'background-image: url({});'.format(background_url),
+                'current-file': self.signer.sign(value.name)
+            })
 
 
 class DropImageWidget(DropFileWidget):
