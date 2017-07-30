@@ -25,6 +25,7 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 			scope.uploadFile = function(file, filetype, id, model) {
 				var data = {'file:0': file, filetype: filetype},
 				    element = angular.element(document.querySelector('#' + id));
+				element.addClass('uploading');
 				Upload.upload({
 					data: data,
 					url: attrs.djngFileuploadUrl
