@@ -145,7 +145,8 @@ class DropFileWidget(widgets.Widget):
         # add a delete icon
         icon_attrs = {
             'src': staticfiles_storage.url('djng/icons/{}/trash.svg'.format(self.filetype)),
-            'class': 'djng-fileupload-button djng-fileupload-btn-trash',
+            'djng-fileupload-button ': True,
+            'class': 'djng-btn-trash',
             'ng-click': 'deleteImage("{id}", "{ng-model}")'.format(**attrs),
             'ng-cloak': True,
         }
@@ -155,13 +156,16 @@ class DropFileWidget(widgets.Widget):
         if value:
             download_icon = staticfiles_storage.url('djng/icons/{}/download.svg'.format(self.filetype))
             elements.append(format_html(
-                '<a href="{}" class="{}" download="" ng-cloak><img src="{}" /></a>',
-                value.url, 'djng-fileupload-button djng-fileupload-btn-download', download_icon))
+                '<a href="{}" class="{}" download ng-cloak><img src="{}" /></a>',
+                value.url, 'djng-btn-download', download_icon))
 
         return format_html('<div class="drop-box">{}</div>', mark_safe(''.join(elements)))
 
     def update_attributes(self, attrs, value):
         if value:
+            icon_file = cls.types_map.get(file_obj.content_type, '_blank.png')
+            icon_url = staticfiles_storage.url(os.path.join('djng/icons', icon_file))
+
             background_url = ''  # TODO: set
             if background_url:
                 attrs.update({

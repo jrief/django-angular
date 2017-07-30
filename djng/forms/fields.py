@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import os
 import re
 import mimetypes
 
@@ -353,7 +352,6 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 class FileField(DefaultFieldMixin, fields.FileField):
     storage = app_settings.upload_storage
     signer = signing.Signer()
-    types_map = dict((v, k[1:] + '.png') for k, v in mimetypes.types_map.items())
 
     def __init__(self, *args, **kwargs):
         accept = kwargs.pop('accept', '*/*')
@@ -370,8 +368,12 @@ class FileField(DefaultFieldMixin, fields.FileField):
     def preview(cls, file_obj):
         available_name = cls.storage.get_available_name(file_obj.name)
         temp_name = cls.storage.save(available_name, file_obj)
-        icon_file = cls.types_map.get(file_obj.content_type, '_blank.png')
-        icon_url = staticfiles_storage.url(os.path.join('djng/icons', icon_file))
+        extension = mimetypes.guess_extension(file_obj.content_type)
+        if extension:
+            extension = extension[1:]
+        else:
+            extension = '_blank'
+        icon_url = staticfiles_storage.url('djng/icons/{}.png'.format(extension))
         return {
             'url': 'url({})'.format(icon_url),
             'temp_name': cls.signer.sign(temp_name),
