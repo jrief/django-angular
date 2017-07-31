@@ -34,12 +34,12 @@
 	height: 90px;
 }
 .drop-box textarea.djng-file-uploader:not(.djng-empty) {
-	padding: 60px 0 0 10px;
+	padding: 64px 8px 0 8px;
 	background-position: 4px 8px;
 	text-shadow: none;
 }
 .drop-box textarea.djng-file-uploader.djng-empty {
-	padding: 15px 25px 0 25px;
+	padding: 16px 24px 0 24px;
 }
 
 
@@ -47,7 +47,7 @@
 	height: 200px;
 }
 .drop-box textarea.djng-image-uploader:not(.djng-empty) {
-	padding: 160px 0 0 10px;
+	padding: 160px 8px 0 8px;
 	color: rgba(255, 255, 255, 0.25);
 }
 .drop-box textarea.djng-image-uploader:not(.djng-empty):hover {
@@ -55,7 +55,7 @@
 	text-shadow: 0 0 10px rgba(0, 0, 0, 1);
 }
 .drop-box textarea.djng-image-uploader.djng-empty {
-	padding: 50px 25px 0 25px;
+	padding: 56px 24px 0 24px;
 	color: rgb(160, 160, 160);
 }
 

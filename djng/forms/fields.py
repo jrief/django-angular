@@ -349,7 +349,68 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
         return context
 
 
-class FileField(DefaultFieldMixin, fields.FileField):
+class FileFieldMixin(DefaultFieldMixin):
+    def to_python(self, value):
+        # handle previously existing file
+        try:
+            current_file = None
+            if ':' in value['current_file']:
+                current_file = self.signer.unsign(value['current_file'])
+        except signing.BadSignature:
+            raise ValidationError("Got bogus upstream data")
+        except (KeyError, TypeError):
+            pass
+
+        # handle new uploaded image
+        try:
+            obj = ''
+            if ':' in value['temp_name']:
+                temp_name = self.signer.unsign(value['temp_name'])
+                temp_file = self.storage.open(temp_name, 'rb')
+                file_size = self.storage.size(temp_name)
+                if file_size < settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
+                    obj = InMemoryUploadedFile(
+                        file=temp_file,
+                        field_name=None,
+                        name=value['file_name'],
+                        charset=value['charset'],
+                        content_type=value['content_type'],
+                        content_type_extra=value['content_type_extra'],
+                        size=file_size,
+                    )
+                else:
+                    obj = TemporaryUploadedFile(
+                        value['file_name'],
+                        value['content_type'],
+                        0,
+                        value['charset'],
+                        content_type_extra=value['content_type_extra'],
+                    )
+                    while True:
+                        chunk = temp_file.read(0x10000)
+                        if not chunk:
+                            break
+                        obj.file.write(chunk)
+                    obj.file.seek(0)
+                    obj.file.size = file_size
+                self.storage.delete(temp_name)
+                self.remove_current(current_file)
+            elif value['temp_name'] == 'delete':
+                self.remove_current(current_file)
+        except signing.BadSignature:
+            raise ValidationError("Got bogus upstream data")
+        except (IOError, KeyError, TypeError):
+            obj = current_file
+        except Exception as excp:
+            raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
+        return obj
+
+    def remove_current(self, filename):
+        if filename:
+            default_storage.delete(filename)
+
+
+class FileField(FileFieldMixin, fields.FileField):
     storage = app_settings.upload_storage
     signer = signing.Signer()
 
@@ -385,7 +446,7 @@ class FileField(DefaultFieldMixin, fields.FileField):
         }
 
 
-class ImageField(DefaultFieldMixin, fields.ImageField):
+class ImageField(FileFieldMixin, fields.ImageField):
     storage = app_settings.upload_storage
     signer = signing.Signer()
 
@@ -402,59 +463,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
         kwargs.update(widget=DropImageWidget(area_label, fileupload_url, attrs=attrs))
         super(ImageField, self).__init__(*args, **kwargs)
 
-    def to_python(self, value):
-        # handle previously existing image
-        try:
-            if ':' in value['current_file'] and (value['temp_name'] == 'delete' or ':' in value['temp_name']):
-                # Delete previous file
-                previous_file = self.signer.unsign(value['current_file'])
-                self.remove_images(previous_file)
-        except signing.BadSignature:
-            raise ValidationError("Got bogus upstream data")
-        except (KeyError, TypeError):
-            pass
-
-        # handle new uploaded image
-        try:
-            if ':' in value['temp_name']:
-                temp_name = self.signer.unsign(value['temp_name'])
-                temp_file = self.storage.open(temp_name, 'rb')
-                file_size = self.storage.size(temp_name)
-                if file_size < settings.FILE_UPLOAD_MAX_MEMORY_SIZE:
-                    obj = InMemoryUploadedFile(
-                        file=temp_file,
-                        field_name=None,
-                        name=value['file_name'],
-                        charset=value['charset'],
-                        content_type=value['content_type'],
-                        content_type_extra=value['content_type_extra'],
-                        size=file_size,
-                    )
-                else:
-                    obj = TemporaryUploadedFile(
-                        value['file_name'],
-                        value['content_type'],
-                        0,
-                        value['charset'],
-                        content_type_extra=value['content_type_extra'],
-                    )
-                    while True:
-                        chunk = temp_file.read(0x10000)
-                        if not chunk:
-                            break
-                        obj.file.write(chunk)
-                    obj.file.seek(0)
-                    obj.file.size = file_size
-                self.storage.delete(temp_name)
-        except signing.BadSignature:
-            raise ValidationError("Got bogus upstream data")
-        except (IOError, KeyError, TypeError):
-            obj = None
-        except Exception as excp:
-            raise ValidationError("File upload failed. {}: {}".format(excp.__class__.__name__, excp))
-        return obj
-
-    def remove_images(self, image_name):
+    def remove_current(self, image_name):
         from easy_thumbnails.models import Source, Thumbnail
 
         try:
@@ -465,7 +474,7 @@ class ImageField(DefaultFieldMixin, fields.ImageField):
             source.delete()
         except Source.DoesNotExist:
             pass
-        default_storage.delete(image_name)
+        super(ImageField, self).remove_current(image_name)
 
     @classmethod
     def preview(cls, file_obj):

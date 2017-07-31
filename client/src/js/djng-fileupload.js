@@ -11,12 +11,12 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 		restrict: 'A',
 		require: 'ngModel',
 		link: function(scope, element, attrs, ngModelController) {
+			ngModelController.$setViewValue({});
 			element.data('area_label', element.val());
 			if (attrs.currentFile) {
-				ngModelController.$setViewValue({
-					current_file: attrs.currentFile
-				});
-				element.val(attrs.currentFile);
+				angular.extend(scope.$eval(attrs.ngModel), {current_file: attrs.currentFile});
+				element.data('current_file', attrs.currentFile);
+				element.val(attrs.currentFile.substring(0, attrs.currentFile.indexOf(':')));
 				element.addClass('djng-preset');
 			} else {
 				element.addClass('djng-empty');
@@ -30,15 +30,14 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					data: data,
 					url: attrs.djngFileuploadUrl
 				}).then(function(response) {
-					var field = response.data['file:0'],
-					    current = angular.isString(attrs.currentFile) ? {current_file: attrs.currentFile} : {};
+					var field = response.data['file:0'], cf = element.data('current_file');
 					element.removeClass('uploading');
 					element.css('background-image', field.url);
 					element.removeClass('djng-empty')
 					element.removeClass('djng-preset')
 					element.val(field.file_name);
 					delete field.url;  // we don't want to send back the whole image
-					angular.extend(scope.$eval(model), field, current);
+					angular.extend(scope.$eval(model), field, cf ? {current_file: cf} : {});
 				}, function(respose) {
 					element.removeClass('uploading');
 					console.error(respose.statusText);

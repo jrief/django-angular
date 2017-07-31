@@ -165,11 +165,10 @@ class DropFileWidget(widgets.Widget):
 
     def update_attributes(self, attrs, value):
         if value:
-            content_type, _ = mimetypes.guess_type(value.file.name)
-            extension = mimetypes.guess_extension(content_type)
-            if extension:
-                extension = extension[1:]
-            else:
+            try:
+                content_type, _ = mimetypes.guess_type(value.file.name)
+                extension = mimetypes.guess_extension(content_type)[1:]
+            except (IOError, IndexError, TypeError):
                 extension = '_blank'
             background_url = staticfiles_storage.url('djng/icons/{}.png'.format(extension))
             attrs.update({
