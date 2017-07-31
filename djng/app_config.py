@@ -11,5 +11,11 @@ class DjangoAngularConfig(AppConfig):
         from django import VERSION
         from django.forms.widgets import RadioSelect
 
+        def id_for_label(self, id_, index=None):
+            if id_ and index and self.add_id_index:
+                id_ = '%s_%s' % (id_, index)
+            return id_
+
         if VERSION >= (1, 11):
-            RadioSelect.add_id_index = False
+            RadioSelect.id_for_label = id_for_label
+
