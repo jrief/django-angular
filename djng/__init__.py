@@ -21,3 +21,5 @@ Release logic:
 """
 
 __version__ = '1.0.0'
+
+default_app_config = 'djng.app_config.DjangoAngularConfig'
