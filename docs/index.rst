@@ -22,8 +22,7 @@ Contents
   angular-model-form
   angular-form-validation
   tutorial-forms
-  upload-image
-  manage-urls
+  upload-files
   basic-crud-operations
   remote-method-invocation
   csrf-protection

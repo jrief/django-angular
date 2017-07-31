@@ -60,6 +60,7 @@ Add ``'djng'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py
 	INSTALLED_APPS = [
 	    ...
 	    'djng',
+	    'easy_thumbnails',  # optional, if ImageField is used
 	    ...
 	]
 

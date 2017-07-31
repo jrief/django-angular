@@ -4,8 +4,16 @@
 Release History
 ===============
 
-1.0.0
------
+1.1
+---
+* Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
+  use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
+  from ``NgForm`` or ``NgModelForm``.
+* Added support to upload files and images via Ajax.
+
+
+1.0
+---
 * Added support for Django 1.10 and 1.11, tests & travis updated.
 * Drop support for Django 1.7, 1.8 and 1.9.
 * Removed templatetag ``{% csrf_value %}``, since Django offers ab equivalent tag.

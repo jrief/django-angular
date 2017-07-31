@@ -25,11 +25,13 @@ by mixing in the **djng** class ``NgModelFormMixin``
 
 	from django import forms
 	from django.utils import six
-	from djng.forms import NgDeclarativeFieldsMetaclass, NgModelFormMixin
+	from djng.forms import fields, NgDeclarativeFieldsMetaclass, NgModelFormMixin
 
 	class ContactForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgModelFormMixin, forms.Form)):
-	    subject = forms.CharField()
+	    subject = fields.CharField()
 	    # more fields ...
+
+.. note:: Since **django-angular**-1.1, you must use the adopted field classes, instead of Django's own ``fields``.
 
 In the majority of cases, the Form is derived from Django's ``forms.Form``, so the above example
 can be rewritten in a simpler way, by using the convenience class ``NgForm`` as a replacement:
@@ -206,11 +208,5 @@ parsing of all bound form fields, even from the nested forms.
 Form with FileField or ImageField
 ---------------------------------
 
-If you have a `FileField` within your form, you need to add in your `<form>` definition:
-
-`enctype="multipart/form-data`
-
-For fancier rendering and behaviour, consider using a custom directive.
-Handling file upload is a bit out of scope for this library.
-
-Only basic behaviour is supported with django-angular.
+If you have a ``FileField`` or an ``ImageField`` within your form, you need to provide a file
+upload handler. Please refer to the section :ref:`upload-files` for details.

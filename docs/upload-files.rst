@@ -1,8 +1,8 @@
-.. _upload-image:
+.. _upload-files:
 
-========================
-Upload Images using Ajax
-========================
+==============================
+Upload Files and images Images
+==============================
 
 **Django-Angular** emphasizes the use of Ajax request-response cycles while handling form data. One
 disadvantage of this approach is, that you can't use it to upload files to the server, because
@@ -10,7 +10,7 @@ browsers can not serialize file payload into JSON. Instead, in order to upload f
 **POST** a ``<form>`` using ``enctype="multipart/form-data"``.
 
 This approach nowadays is outdated. Moreover, it requires the use of an ``<input type="file">``
-field, which doesn't provide a good user experience either.
+field, which doesn't provide a good user experience either. A disfunctional example:
 
 .. raw:: html
 
@@ -20,10 +20,11 @@ Instead, we nowadays are used to drag files directly into the browser window and
 input field, which immediately displays the uploaded image. By adding two third party packages,
 **django-angular** provides such a solution.
 
-By replacing Django's field :class:`django.forms.fields.ImageField` against another implementation,
-the corresponding form field is rendered as a rectangular area, where one can drag an image onto
-and drop it. It then is uploaded immediately to the server, which keeps it in a temporary folder
-and returns a thumbail of that image together with a reference onto that temporary file.
+By replacing Django's form fields ``FileField`` against :class:`djng.forms.fields.FileField` and
+``ImageField`` against :class:`djng.forms.fields.ImageField`, the corresponding form field is
+rendered as a rectangular area, where one can drag a file or image onto, and drop it. It then is
+uploaded immediately to the server, which keeps it in a temporary folder and returns a thumbail
+of that file/image together with a reference onto a temporary representation.
 
 In the next step, when the user submits the form, only the reference to that temporary file is
 added to the post data. Therefore the payload of such a form can be posted using JSON via Ajax.
@@ -115,10 +116,8 @@ internal :class:`django.forms.fields.ImageField` would have been used. The attri
 Usage in Models
 ===============
 
-Often you might use a model and rely on Django's automatic form generation. Then instead of using
-Django's model field, use :class:`djng.models.fields.ImageField`. This is just a wrapper and its
-only purpose is to tell the form generator to use the alternative ``ImageField`` implementation.
-Since it's compatible with, it can be replaced without any model migration.
+Often you might use a model and rely on Django's automatic form generation. **django-angular** does
+this out-of-the-box, whenever the form implementing the model inherits form ``NgModelForm``.
 
 
 Usage in Templates
@@ -162,7 +161,7 @@ When users upload images, but never submit the corresponding form, the folder ho
 temporary images gets filled up. Therefore you should add some kind of (cron)job which cleans up
 that folder from time to time.
 
-Depending on your setup, also provide some security measure, so that for example only logged in
+Depending on your setup, also provide some security measure, so that for example, only logged in
 users have access onto the view for uploading images. Otherwise the temporary folder might get
 filled with crap.
 
