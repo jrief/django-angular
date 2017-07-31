@@ -6,6 +6,7 @@
 	background-color: #F8F8F8;
 	background-repeat: no-repeat;
 	border: 1px solid rgb(160, 160, 160);
+	border-radius: 4px;
 	width: 100%;
 	height: auto;
 	color: rgb(160, 160, 160);
@@ -20,8 +21,8 @@
 	font-size: 18px;
 	text-align: center;
 	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-	border-radius: 10px;
-	border-width: 5px;
+	border-radius: 12px;
+	border-width: 6px;
 	border-style: dashed;
 }
 .drop-box textarea.djng-empty:hover {
@@ -38,6 +39,9 @@
 	background-position: 4px 8px;
 	text-shadow: none;
 }
+.drop-box textarea.djng-file-uploader:not(.djng-empty):hover {
+	color: #000;
+}
 .drop-box textarea.djng-file-uploader.djng-empty {
 	padding: 16px 24px 0 24px;
 }
@@ -47,7 +51,7 @@
 	height: 200px;
 }
 .drop-box textarea.djng-image-uploader:not(.djng-empty) {
-	padding: 160px 8px 0 8px;
+	padding: 176px 8px 0 8px;
 	color: rgba(255, 255, 255, 0.25);
 }
 .drop-box textarea.djng-image-uploader:not(.djng-empty):hover {
