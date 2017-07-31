@@ -12,7 +12,8 @@ from django.forms import widgets
 from django.forms.utils import flatatt
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
-from django.utils.html import format_html, escape
+from django.utils.html import format_html
+from django.utils.translation import ugettext_lazy as _
 
 from djng import app_settings
 
@@ -147,8 +148,9 @@ class DropFileWidget(widgets.Widget):
         # add a delete icon
         icon_attrs = {
             'src': staticfiles_storage.url('djng/icons/{}/trash.svg'.format(self.filetype)),
-            'djng-fileupload-button ': True,
             'class': 'djng-btn-trash',
+            'title': _("Delete File"),
+            'djng-fileupload-button ': True,
             'ng-click': 'deleteImage("{id}", "{ng-model}")'.format(**attrs),
             'ng-cloak': True,
         }
@@ -156,10 +158,15 @@ class DropFileWidget(widgets.Widget):
 
         # add a download icon
         if value:
+            download_attrs = {
+                'href': value.url,
+                'class': 'djng-btn-download',
+                'title': _("Download File"),
+                'download': True,
+                'ng-cloak': True,
+            }
             download_icon = staticfiles_storage.url('djng/icons/{}/download.svg'.format(self.filetype))
-            elements.append(format_html(
-                '<a href="{}" class="{}" download ng-cloak><img src="{}" /></a>',
-                value.url, 'djng-btn-download', download_icon))
+            elements.append(format_html('<a {}><img src="{}" /></a>', flatatt(download_attrs), download_icon))
 
         return format_html('<div class="drop-box">{}</div>', mark_safe(''.join(elements)))
 
