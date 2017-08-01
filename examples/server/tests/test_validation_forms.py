@@ -4,35 +4,36 @@ from bs4 import BeautifulSoup
 
 from django import VERSION as DJANGO_VERSION
 from django import forms
+from django.forms import widgets
 from django.test import TestCase
 
-from djng.forms import NgFormValidationMixin, NgForm
+from djng.forms import fields, NgFormValidationMixin, NgForm
 
 
 class EmailForm(NgFormValidationMixin, NgForm):
-    email = forms.EmailField(label='E-Mail')
+    email = fields.EmailField(label='E-Mail')
 
 
 class ChoiceForm(NgFormValidationMixin, NgForm):
-    choose = forms.BooleanField(required=True, label='Choose')
+    choose = fields.BooleanField(required=True, label='Choose')
 
 
 class RadioForm(NgFormValidationMixin, NgForm):
-    sex = forms.ChoiceField(
+    sex = fields.ChoiceField(
         choices=[('m', 'Male'), ('f', 'Female')],
-        widget=forms.RadioSelect,
+        widget=widgets.RadioSelect,
         required=True,)
 
 
 class SelectMultipleChoicesForm(NgFormValidationMixin, NgForm):
-    select_multi = forms.MultipleChoiceField(
+    select_multi = fields.MultipleChoiceField(
         choices=[('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C')])
 
 
 class CheckboxChoicesForm(NgFormValidationMixin, NgForm):
-    check_multi = forms.MultipleChoiceField(
+    check_multi = fields.MultipleChoiceField(
         choices=[('a', 'Choice A'), ('b', 'Choice B'), ('c', 'Choice C')],
-        widget=forms.CheckboxSelectMultiple,)
+        widget=widgets.CheckboxSelectMultiple,)
 
 
 @unittest.skipIf(DJANGO_VERSION < (1, 10), "earlier django versions break the html")

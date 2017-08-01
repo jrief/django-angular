@@ -8,8 +8,12 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 from django.utils.encoding import force_text
 from django.forms import widgets
-from djng.forms.widgets import (flatatt,
-    ChoiceFieldRenderer as DjngChoiceFieldRenderer, CheckboxChoiceInput as DjngCheckboxChoiceInput,
+from django.forms.utils import flatatt
+
+from djng.forms.widgets import (
+    ChoiceFieldRenderer as DjngChoiceFieldRenderer,
+    CheckboxInput as DjngCheckboxInput,
+    CheckboxChoiceInput as DjngCheckboxChoiceInput,
     CheckboxFieldRendererMixin, CheckboxSelectMultiple as DjngCheckboxSelectMultiple,
     RadioFieldRendererMixin, RadioSelect as DjngRadioSelect)
 
@@ -31,12 +35,7 @@ class ChoiceFieldRenderer(DjngChoiceFieldRenderer):
         return mark_safe('\n'.join(output))
 
 
-class CheckboxInput(widgets.CheckboxInput):
-    def __init__(self, label, attrs=None, check_test=None):
-        # the label is rendered by the Widget class rather than by BoundField.label_tag()
-        self.choice_label = label
-        super(CheckboxInput, self).__init__(attrs, check_test)
-
+class CheckboxInput(DjngCheckboxInput):
     def render(self, name, value, attrs=None):
         attrs = attrs or self.attrs
         label_attrs = ['class="checkbox-inline"']

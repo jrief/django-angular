@@ -4,6 +4,14 @@
 Release History
 ===============
 
+1.1
+---
+* Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
+  use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
+  from ``NgForm`` or ``NgModelForm``.
+* Added support to upload files and images via Ajax.
+
+
 1.0.1
 -----
 * Fixed #297 "Method ``get_context()`` on custom Widget is never called": Added class ``NgWidgetMixin``

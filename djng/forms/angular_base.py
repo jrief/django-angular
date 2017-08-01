@@ -22,8 +22,9 @@ except ImportError:
     from django.utils.importlib import import_module
 from django.utils.html import format_html, format_html_join, escape, conditional_escape
 from django.utils.encoding import python_2_unicode_compatible, force_text
+from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe, SafeText, SafeData
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ImproperlyConfigured
 
 
 class SafeTuple(SafeData, tuple):
@@ -242,33 +243,40 @@ class BaseFieldsModifierMetaclass(type):
     Metaclass that reconverts Field attributes from the dictionary 'base_fields' into Fields
     with additional functionality required for AngularJS's Form control and Form validation.
     """
-    field_mixins_module = 'djng.forms.field_mixins'
-
     def __new__(cls, name, bases, attrs):
+        attrs.update(formfield_callback=cls.formfield_callback)
         new_class = super(BaseFieldsModifierMetaclass, cls).__new__(cls, name, bases, attrs)
-        if DJANGO_VERSION < (1, 11):
-            field_mixins_module = import_module(new_class.field_mixins_module)
-            field_mixins_fallback_module = import_module(cls.field_mixins_module)
-
-            # add additional methods to django.form.fields at runtime
-            for field in new_class.base_fields.values():
-                FieldMixinName = field.__class__.__name__ + 'Mixin'
-                try:
-                    FieldMixin = getattr(field_mixins_module, FieldMixinName)
-                except AttributeError:
-                    try:
-                        FieldMixin = getattr(field_mixins_fallback_module, FieldMixinName)
-                    except AttributeError:
-                        FieldMixin = field_mixins_fallback_module.DefaultFieldMixin
-                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
-        else:
-            field_mixins_module = import_module(cls.field_mixins_module)
-            for field in new_class.base_fields.values():
-                FieldMixinName = field.__class__.__name__ + 'Mixin'
-                FieldMixin = getattr(field_mixins_module, FieldMixinName, field_mixins_module.DefaultFieldMixin)
-                field.__class__ = type(field.__class__.__name__, (field.__class__, FieldMixin), {})
-
+        cls.validate_formfields(new_class)
         return new_class
+
+    @classmethod
+    def formfield_callback(cls, modelfield, **kwargs):
+        # first get the default formfield for this modelfield
+        formfield = modelfield.formfield(**kwargs)
+
+        if formfield:
+            # use the same class name to load the corresponding inherited formfield
+            try:
+                form_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
+            except ImportError:
+                msg = "Unable to import field class '{}'"
+                raise ImportError(msg.format(formfield.__class__.__name__))
+
+            # recreate the formfield using our customized field class
+            if getattr(formfield, 'choices', None):
+                kwargs.update(choices_form_class=form_class)
+            else:
+                kwargs.update(form_class=form_class)
+            formfield = modelfield.formfield(**kwargs)
+        return formfield
+
+    @classmethod
+    def validate_formfields(cls, new_class):
+        msg = "Please use the corresponding form fields from 'djng.forms.fields' for field '{} = {}(...)' " \
+              "in form '{}', which inherits from 'NgForm' or 'NgModelForm'."
+        for name, field in new_class.base_fields.items():
+            if field.__module__ not in ['djng.forms.fields']:
+                raise ImproperlyConfigured(msg.format(name, field.__class__.__name__, new_class))
 
 
 class NgFormBaseMixin(object):
@@ -350,9 +358,10 @@ class NgFormBaseMixin(object):
         be rendered the AngularJS way.
         """
         warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
+        widgets_module = getattr(self, 'widgets_module', 'djng.widgets')
         for field in self.base_fields.values():
             if hasattr(field, 'get_converted_widget'):
-                new_widget = field.get_converted_widget()
+                new_widget = field.get_converted_widget(widgets_module)
                 if new_widget:
                     field.widget = new_widget
 

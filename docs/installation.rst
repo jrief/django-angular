@@ -3,25 +3,30 @@
 ============
 Installation
 ============
-Install **Django-Angular**. The latest stable release can be found on PyPI
+
+Install **django-angular**. The latest stable release can be found on PyPI
 
 .. code-block:: bash
 
 	pip install django-angular
 
-or the newest development version from GitHub
+
+Change to the root directory of your project and install Node dependencies:
 
 .. code-block:: bash
 
-	pip install -e git+https://github.com/jrief/django-angular#egg=django-angular
+	npm init
+	npm install angular@~1.5 --save
 
 
 Dependencies
 ------------
 
-**django-angular** has no dependencies to any other Django app. It however requires
-that AngularJS is installed through other means than pip. The best solution is to
-run:
+**django-angular** has no dependencies to any other Django app, except ``easy-thumbnails`` and
+``Pillow`` if using the image upload feature.
+
+Projects using **django-angular** however require that AngularJS is installed through other means
+than pip. The best solution is to run:
 
 .. code-block:: shell
 
@@ -52,15 +57,24 @@ Add ``'djng'`` to the list of ``INSTALLED_APPS`` in your project's ``settings.py
 
 .. code-block:: python
 
-	INSTALLED_APPS = (
+	INSTALLED_APPS = [
 	    ...
 	    'djng',
+	    'easy_thumbnails',  # optional, if ImageField is used
 	    ...
-	)
+	]
 
-Please don't forget to define your ``STATIC_ROOT`` and ``STATIC_URL`` properly, then
-launch the ``python manage.py collectstatic`` command to update your static content
-with the JavaScript files provided by **django-angular**.
+
+Don't forget to define your ``STATIC_ROOT`` and ``STATIC_URL`` properly. Since we load JavaScript
+and CSS files directly from our Node dependencies, add that directory to the static files search
+path:
+
+.. code-block:: python
+
+	STATICFILES_DIRS = [
+	    ('node_modules', os.path.join(PROJECT_DIR, 'node_modules')),
+	]
+
 
 
 Django-1.11
@@ -82,7 +96,7 @@ if templates shall be rendered with a Bootstrap3 grid, otherwise use:
 
 
 .. note:: **django-angular** does not define any database models. It can therefore easily be
-          installed without any database synchronization.
+        installed without any database synchronization.
 
 .. _Django: http://djangoproject.com/
 .. _AngularJS: http://angularjs.org/

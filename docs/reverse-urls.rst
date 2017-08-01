@@ -104,13 +104,13 @@ A typical Angular Controller would use the service ``djangoUrl`` such as:
 
 	myApp.controller('RemoteItemCtrl', function($scope, $http, $log, djangoUrl) {
 
-		var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
+	  var fetchItemURL = djangoUrl.reverse('namespace:fetch-item');
 
-		$http.get(fetchItemURL).success(function(item) {
-			$log.info('Fetched item: ' + item);
-		}).error(function(msg) {
-			console.error('Unable to fetch item. Reason: ' + msg);
-		});
+	  $http.get(fetchItemURL).success(function(item) {
+	    $log.info('Fetched item: ' + item);
+	  }).error(function(msg) {
+	    console.error('Unable to fetch item. Reason: ' + msg);
+	  });
 	});
 
 and with args:

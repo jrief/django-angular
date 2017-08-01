@@ -1,0 +1,104 @@
+.drop-box {
+	position: relative;
+	width: 200px;
+}
+.drop-box textarea {
+	background-color: #F8F8F8;
+	background-repeat: no-repeat;
+	border: 1px solid rgb(160, 160, 160);
+	border-radius: 4px;
+	width: 100%;
+	height: auto;
+	color: rgb(160, 160, 160);
+	font-weight: bold;
+	font-size: 14px;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+	resize: none;
+	cursor: copy;
+	overflow: hidden;
+}
+.drop-box textarea.djng-empty {
+	font-size: 18px;
+	text-align: center;
+	text-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+	border-radius: 12px;
+	border-width: 6px;
+	border-style: dashed;
+}
+.drop-box textarea.djng-empty:hover {
+	text-shadow: none;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+
+.drop-box textarea.djng-file-uploader {
+	height: 90px;
+}
+.drop-box textarea.djng-file-uploader:not(.djng-empty) {
+	padding: 64px 8px 0 8px;
+	background-position: 4px 8px;
+	text-shadow: none;
+}
+.drop-box textarea.djng-file-uploader:not(.djng-empty):hover {
+	color: #000;
+}
+.drop-box textarea.djng-file-uploader.djng-empty {
+	padding: 16px 24px 0 24px;
+}
+
+
+.drop-box textarea.djng-image-uploader {
+	height: 200px;
+}
+.drop-box textarea.djng-image-uploader:not(.djng-empty) {
+	padding: 176px 8px 0 8px;
+	color: rgba(255, 255, 255, 0.25);
+}
+.drop-box textarea.djng-image-uploader:not(.djng-empty):hover {
+	color: rgba(255, 255, 255, 1);
+	text-shadow: 0 0 10px rgba(0, 0, 0, 1);
+}
+.drop-box textarea.djng-image-uploader.djng-empty {
+	padding: 56px 24px 0 24px;
+	color: rgb(160, 160, 160);
+}
+
+
+.drop-box textarea.uploading {
+	background-color: cyan;
+}
+.drop-box textarea.dragover {
+	background: #f8f8a0;
+	border-color: #dda;
+	border-style: solid;
+}
+
+.drop-box .djng-btn-trash, .drop-box .djng-btn-download {
+	position: absolute;
+	width: 25px;
+	height: 25px;
+	opacity: 0.25;
+	cursor: pointer;
+}
+.drop-box .djng-btn-trash:hover, .drop-box .djng-btn-download:hover {
+	opacity: 1;
+}
+.drop-box textarea.djng-empty ~ .djng-btn-trash {
+	display: none;
+}
+.drop-box a.djng-btn-download > img {
+	display: inline-block;
+	width: 100%;
+	height: 100%;
+}
+.drop-box .djng-btn-trash {
+	right: 5px;
+	top: 5px;
+}
+.drop-box .djng-btn-download {
+	right: 35px;
+	top: 5px;
+}
+.drop-box textarea:not(.djng-preset) ~ .djng-btn-download {
+	display: none;
+}
