@@ -4,6 +4,13 @@
 Release History
 ===============
 
+1.0.1
+-----
+* Fixed #297 "Method ``get_context()`` on custom Widget is never called": Added class ``NgWidgetMixin``
+  which allows to override method ``get_context()`` in custom widgets.
+* Fixed #288 Incorrect ``<label for="...">`` in widget ``RadioChoiceInput``.
+
+
 1.0.0
 -----
 * Added support for Django 1.10 and 1.11, tests & travis updated.
