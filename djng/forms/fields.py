@@ -11,8 +11,7 @@ from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.urlresolvers import reverse_lazy
-from django.forms import fields
-from django.forms import widgets
+from django.forms import fields, models as model_fields, widgets
 from django.utils.html import format_html
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
@@ -112,6 +111,10 @@ class DefaultFieldMixin(object):
         return attrs
 
 
+class Field(DefaultFieldMixin, fields.Field):
+    pass
+
+
 class CharField(DefaultFieldMixin, fields.CharField):
     def get_potential_errors(self):
         errors = self.get_input_required_errors()
@@ -163,6 +166,27 @@ class DateField(DefaultFieldMixin, fields.DateField):
         return errors
 
 
+class DateTimeField(DefaultFieldMixin, fields.DateTimeField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('datetime'))
+        return errors
+
+
+class TimeField(DefaultFieldMixin, fields.TimeField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('time'))
+        return errors
+
+
+class DurationField(DefaultFieldMixin, fields.DurationField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_invalid_value_errors('duration'))
+        return errors
+
+
 class FloatField(DefaultFieldMixin, fields.FloatField):
     """
     The internal ``django.forms.FloatField`` does not handle the step value in its number widget.
@@ -192,9 +216,7 @@ class IntegerField(DefaultFieldMixin, fields.IntegerField):
 
 
 class SlugField(DefaultFieldMixin, fields.SlugField):
-    def get_potential_errors(self):
-        errors = self.get_input_required_errors()
-        return errors
+    pass
 
 
 class RegexField(DefaultFieldMixin, fields.RegexField):
@@ -213,10 +235,6 @@ class BooleanField(DefaultFieldMixin, fields.BooleanField):
     def has_subwidgets(self):
         return True
 
-    def get_potential_errors(self):
-        errors = self.get_input_required_errors()
-        return errors
-
     def update_widget_attrs(self, bound_field, attrs):
         bound_field.form.update_widget_attrs(bound_field, attrs)
         return attrs
@@ -234,6 +252,10 @@ class BooleanField(DefaultFieldMixin, fields.BooleanField):
             new_widget = import_string('djng.forms.widgets.CheckboxInput')(self.label)
         new_widget.__dict__.update(self.widget.__dict__)
         return new_widget
+
+
+class NullBooleanField(DefaultFieldMixin, fields.NullBooleanField):
+    pass
 
 
 class MultipleFieldMixin(DefaultFieldMixin):
@@ -278,6 +300,10 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
             new_widget = import_string('djng.forms.widgets.RadioSelect')()
         new_widget.__dict__ = self.widget.__dict__
         return new_widget
+
+
+class ModelChoiceField(MultipleFieldMixin, model_fields.ModelChoiceField):
+    pass
 
 
 class TypedChoiceField(MultipleFieldMixin, fields.TypedChoiceField):
@@ -347,6 +373,24 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
                 if self.required:
                     context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
         return context
+
+
+class ModelMultipleChoiceField(MultipleFieldMixin, model_fields.ModelMultipleChoiceField):
+    pass
+
+
+class TypedMultipleChoiceField(MultipleFieldMixin, fields.TypedMultipleChoiceField):
+    """
+    TODO: this class must be adopted to upcoming use-cases.
+    """
+    pass
+
+
+class UUIDField(DefaultFieldMixin, fields.UUIDField):
+    def get_potential_errors(self):
+        errors = self.get_input_required_errors()
+        errors.extend(self.get_min_max_length_errors())
+        return errors
 
 
 class FileFieldMixin(DefaultFieldMixin):
