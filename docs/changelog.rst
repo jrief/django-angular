@@ -21,6 +21,12 @@ Release History
 * Fix exception while rendering Angular Form using ``as_ul``.
 
 
+0.8.5
+-----
+* Do not mark fields as pristine in ``setErrors``.
+* Move the ``$message`` error from the ``$pristine`` list to the ``$dirty`` list.
+* Only display the OK tick in the ``$pristine`` error list if the field passes server-side validation.
+
 0.8.4
 -----
 * Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS
@@ -49,7 +55,7 @@ Release History
 -----
 * ``djangular`` has been renamed to ``djng`` and ``ng.django-...`` has been renamed to ``djng-...``.
   This was required by many users since it:
-  - caused a naming conflict with another django app named djangular and 
+  - caused a naming conflict with another django app named djangular and
   - the identifier "djangular" by many users was seen as a bad choice.
   - violated the AngularJS principle that only their modules shall be prefixed with "ng".
   Please read https://github.com/jrief/django-angular/issues/35 for the preceded discussion on this
