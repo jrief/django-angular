@@ -10,6 +10,7 @@ Release History
   use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
   from ``NgForm`` or ``NgModelForm``.
 * Added support to upload files and images via Ajax.
+* Added templatetag ``djng_locale_script`` to include the proper AngularJS locale script.
 
 
 1.0.1

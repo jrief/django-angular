@@ -6,7 +6,9 @@ import json
 
 from django.template import Library
 from django.template.base import Node, NodeList, TextNode, VariableNode
+from django.utils.html import format_html
 from django.utils.safestring import mark_safe
+from django.utils.translation import get_language_from_request
 
 from djng.core.urlresolvers import get_all_remote_methods, get_current_remote_methods
 
@@ -93,3 +95,20 @@ def angularjs(parser, token):
         angular_nodelist.append(node)
     parser.delete_first_token()
     return AngularJsNode(django_nodelist, angular_nodelist, values[0])
+
+
+@register.simple_tag(name='djng_locale_script', takes_context=True)
+def djng_locale_script(context, default_language='en'):
+    """
+    Returns a script tag for including the proper locale script in any HTML page.
+    This tag determines the current language with its locale.
+
+    Usage:
+        <script src="{% static 'node_modules/angular-i18n/' %}{% djng_locale_script %}"></script>
+    or, if used with a default language:
+        <script src="{% static 'node_modules/angular-i18n/' %}{% djng_locale_script 'de' %}"></script>
+    """
+    language = get_language_from_request(context['request'])
+    if not language:
+        language = default_language
+    return format_html('angular-locale_{}.js', language.lower())
