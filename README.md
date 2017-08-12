@@ -16,6 +16,12 @@ In Django version 1.11, template-based widget rendering has been introduced.
 This gives us a lot more flexibility when rendering form widgets. It however
 required to refactor the internal API of **django-angular**.
 
+### Upcoming version 1.1
+
+Please help me to test the next upcoming version of **django-angular**. It currently is in
+[review mode awaitng for user comments](https://github.com/jrief/django-angular/pull/303).
+Please check out [this branch](https://github.com/jrief/django-angular/tree/releases/1.1.x).
+
 
 ## Documentation
 
