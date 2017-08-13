@@ -30,3 +30,14 @@ class TemplateTagsTest(TestCase):
         self.assertContains(response, 'expandme[1].foo')
         response = client.get('/angular_tag/', {'switch': '', 'tmpl_id': 'expand_array'})
         self.assertContains(response, 'one')
+
+    @override_settings(USE_I18N=True, LANGUAGE_CODE='de')
+    def test_locale_script_german(self):
+        client = Client()
+        response = client.get('/locale_script_tag/')
+        self.assertContains(response, 'angular-locale_de.js')
+
+    def test_locale_script_default(self):
+        client = Client()
+        response = client.get('/locale_script_tag/')
+        self.assertContains(response, 'angular-locale_en.js')

@@ -69,9 +69,16 @@ class TestAngularTagView(View):
         return HttpResponse(template.render(request_context))
 
 
+def locale_script_view(request):
+    template = Template('{% load djng_tags %}{% djng_locale_script %}')
+    request_context = RequestContext(request, {})
+    return HttpResponse(template.render(request_context))
+
+
 urlpatterns = [
     url(r'^sub_methods/', include(sub_patterns, namespace='submethods')),
     url(r'^straight_methods/$', TestCSRFValueView.as_view(), name='straightmethods'),
     url(r'^url_resolvers/$', TestUrlResolverTagsView.as_view(), name='urlresolvertags'),
     url(r'^angular_tag/$', TestAngularTagView.as_view(), name='angulartags'),
+    url(r'^locale_script_tag/$', locale_script_view, name='locale_script'),
 ]
