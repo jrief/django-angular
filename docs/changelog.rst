@@ -10,15 +10,16 @@ Release History
   use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
   from ``NgForm`` or ``NgModelForm``.
 * Added support to upload files and images via Ajax.
-* Added templatetag ``djng_locale_script`` to include the proper AngularJS locale script.
 
+1.0.2
+-----
+* Added templatetag ``djng_locale_script`` to include the proper AngularJS locale script.
 
 1.0.1
 -----
 * Fixed #297 "Method ``get_context()`` on custom Widget is never called": Added class ``NgWidgetMixin``
   which allows to override method ``get_context()`` in custom widgets.
 * Fixed #288 Incorrect ``<label for="...">`` in widget ``RadioChoiceInput``.
-
 
 1.0.0
 -----
@@ -28,7 +29,6 @@ Release History
 * Fix file input css (remove the border) and add some documentation about common reported errors.
 * Remove support for bower in favor of npm.
 * Fix exception while rendering Angular Form using ``as_ul``.
-
 
 0.8.4
 -----
