@@ -6,7 +6,7 @@
 	{% addtoblock "js" %}<script src="{% static 'js/djng-websocket.js' %}" type="text/javascript"></script>{% endaddtoblock %}
 	{% addtoblock "ng-requires" %}djng.websocket{% endaddtoblock %}
 	{% addtoblock "ng-config" %}['djangoWebsocketProvider', function(djangoWebsocketProvider) { djangoWebsocketProvider.setURI('{{ WEBSOCKET_URI }}'); djangoWebsocketProvider.setLogLevel('debug'); djangoWebsocketProvider.setHeartbeat({{ WS4REDIS_HEARTBEAT }}); }]{% endaddtoblock %}
-{% endblock scripts %}
+{% endblock head %}
 
 {% block form_title %}Django Forms with three-way data-binding{% endblock %}
 
