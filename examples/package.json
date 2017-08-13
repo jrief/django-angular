@@ -1,6 +1,6 @@
 {
   "name": "django-angular",
-  "version": "0.9.0",
+  "version": "1.1.0",
   "description": "Demo for django-angular",
   "main": "index.js",
   "scripts": {
@@ -9,7 +9,7 @@
   "author": "Jacob Rief",
   "license": "MIT",
   "dependencies": {
-    "angular": "^1.5.11",
+    "angular": "~1.5.11",
     "bootstrap": "^3.3.7",
     "ng-file-upload": "^12.2.13"
   }

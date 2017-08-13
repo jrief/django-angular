@@ -23,12 +23,14 @@ this can be achieved automatically and on the fly
 
 	from django import forms
 	from django.utils import six
-	from djng.forms import NgDeclarativeFieldsMetaclass, NgFormValidationMixin
-	
+	from djng.forms import fields, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
+
 	class MyValidatedForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgFormValidationMixin, forms.Form)):
 	    form_name = 'my_valid_form'
-	    surname = forms.CharField(label='Surname', min_length=3, max_length=20)
-	    age = forms.DecimalField(min_value=18, max_value=99)
+	    surname = fields.CharField(label='Surname', min_length=3, max_length=20)
+	    age = fields.DecimalField(min_value=18, max_value=99)
+
+.. note:: Since **django-angular**-1.1, you must use the adopted field classes, instead of Django's own ``fields``.
 
 In the majority of cases, the Form is derived from Django's ``forms.Form``, so the above example
 can be rewritten in a simpler way, by using the convenience class ``NgForm`` as a replacement:
@@ -112,9 +114,6 @@ by replacing the submit button with the following HTML code:
 
 	<input type="submit" class="btn" ng-disabled="{{ form.form_name }}.$invalid" value="Submit">
 
-.. note:: On Django-1.5, some field constraints, such as the attributes ``min_length`` and
-		``max_length``, are ignored when used with ``NgFormValidationMixin``. This has been fixed
-		in Django-1.6 .
 
 More granular output
 ....................
@@ -124,10 +123,10 @@ rendered in templates using a special field tag. Say, the form contains
 .. code-block:: python
 
 	from django import forms
-	from djng.forms import NgFormValidationMixin
+	from djng.forms import fields, NgFormValidationMixin
 	
 	class MyValidatedForm(NgFormValidationMixin, forms.Form):
-		email = forms.EmailField(label='Email')
+		email = fields.EmailField(label='Email')
 
 then access the potential validation errors in templates using ``{{ form.email.errors }}``. This
 renders the form with an unsorted list of potential errors, which may occur during client side

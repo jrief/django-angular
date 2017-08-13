@@ -6,6 +6,7 @@ Integrate AngularJS with Django
 
 XMLHttpRequest
 ==============
+
 As a convention in web applications, Ajax requests shall send the HTTP-Header::
 
 	X-Requested-With: XMLHttpRequest
@@ -28,6 +29,7 @@ would return ``False``, even for perfectly valid Ajax requests. Thus, if you use
 
 Template tags
 =============
+
 Django and AngularJS share the same token for variable substitution in templates, ie.
 ``{{ variable_name }}``. This should not be a big problem, since you are discouraged to mix
 Django template code with AngularJS template code. However, this recommendation is not
@@ -35,28 +37,22 @@ viable in all situations. Sometime there might be the need to mix both template 
 which is expanded by Django on the server, and one which is expanded by AngularJS in the browser.
 
 The cleanest solution to circumvent this, is by using the verbatim_ tag, which became available in
-Django 1.5.
+Django-1.5.
 
-A less clean solution, is to change the syntax of the AngularJS template tags. Just
-add the following statement during module instantiation:
+Another approach is to use the AngularJS mustaches inside a templatetag, for instance:
 
-.. code-block:: javascript
+.. code-block:: django
 
-	var my_app = angular.module('MyApp').config(function($interpolateProvider) {
-	    $interpolateProvider.startSymbol('{$');
-	    $interpolateProvider.endSymbol('$}');
-	});
+	<h2>{% trans "The value you were looking for is: {{ my_data.my_value }}" %}</h2>
 
-Now, you can easily distinguish a server side variable substitution ``{{ varname }}`` from a client
-side variable substitution ``{$ varname $}``.
-
-This approach is less verbose than using the *verbatim* tag. The problem, however, is that you
-have to remember to use this alternative tag syntax for *all* of your AngularJS templates. It also
-makes it difficult to integrate third party AngularJS directives, which are shipped with their own
+It is strongly discouraged to change the syntax of the AngularJS template tags, because it breaks
+the compatibility to all third party AngularJS directives, which are shipped with their own
 templates.
+
 
 Partials
 --------
+
 In AngularJS, when used together with external templates, static HTML code often is loaded by a
 `$templateCache`_. These so named partials can be placed in their own sub-directory below
 ``STATIC_ROOT``.
@@ -98,8 +94,10 @@ By using the utility function
 the caller obtains a list of all partials defined for the given namespace. This list can be used
 when creating a Javascript array of URL's to be injected into controllers or directives.
 
+
 Inlining Partials
 -----------------
+
 An alternative method for handling AngularJS's partial code, is to use the special script type
 ``text/ng-template`` and mixing it into existing HTML code. Say, an AngularJS directive
 refers to a partial using ``templateUrl: 'template/mixed-ng-snipped.html'`` during the link phase,
@@ -124,6 +122,7 @@ or if the ``$interpolateProvider`` is used to replace the AngularJS template tag
 
 Dynamically generated Javascript code
 -------------------------------------
+
 There might be good reasons to mix Django template with AngularJS template code. Consider a
 multilingual application, where text shall be translated, using the Django translation_ engine.
 
@@ -139,8 +138,10 @@ Javascript code must go into separate static files!**
        module, which is part of *your* application, and the client side logic, which always shall be
        independently testable without the need of a running Django server.
 
+
 Bound Forms
 ===========
+
 AngularJS's does not consider `bound forms`_, rather in their mindset data models shall be bound to
 the form's input fields by a controller function. This, for Django developers may be unfamiliar with
 their way of thinking. Hence, if bound forms shall be rendered by Django, the behavior of AngularJS

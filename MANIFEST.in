@@ -4,3 +4,4 @@ include CONTRIBUTIONS.md
 include setup.py
 recursive-include djng *.py
 recursive-include djng/static *
+recursive-include djng/templates *

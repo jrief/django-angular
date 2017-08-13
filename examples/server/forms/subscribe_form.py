@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 # start tutorial
-from django import forms
+from django.forms import widgets
 from django.core.exceptions import ValidationError
-from djng.forms.fields import FloatField
+from djng.forms import fields
 from djng.styling.bootstrap3.forms import Bootstrap3Form
 
 
@@ -22,85 +22,88 @@ class SubscribeForm(Bootstrap3Form):
                      ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
     NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
 
-    first_name = forms.CharField(label='First name', min_length=3, max_length=20)
+    first_name = fields.CharField(
+        label='First name',
+        min_length=3,
+        max_length=20)
 
-    last_name = forms.RegexField(
+    last_name = fields.RegexField(
         r'^[A-Z][a-z -]?',
         label='Last name',
         error_messages={'invalid': 'Last names shall start in upper case'})
 
-    sex = forms.ChoiceField(
+    sex = fields.ChoiceField(
         choices=(('m', 'Male'), ('f', 'Female')),
-        widget=forms.RadioSelect,
+        widget=widgets.RadioSelect,
         error_messages={'invalid_choice': 'Please select your sex'})
 
-    email = forms.EmailField(
+    email = fields.EmailField(
         label='E-Mail',
         required=True,
         help_text='Please enter a valid email address')
 
-    subscribe = forms.BooleanField(
+    subscribe = fields.BooleanField(
         label='Subscribe Newsletter',
         initial=False, required=False)
 
-    phone = forms.RegexField(
+    phone = fields.RegexField(
         r'^\+?[0-9 .-]{4,25}$',
         label='Phone number',
         error_messages={'invalid': 'Phone number have 4-25 digits and may start with +'})
 
-    birth_date = forms.DateField(
+    birth_date = fields.DateField(
         label='Date of birth',
-        widget=forms.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
+        widget=widgets.DateInput(attrs={'validate-date': '^(\d{4})-(\d{1,2})-(\d{1,2})$'}),
         help_text='Allowed date format: yyyy-mm-dd')
 
-    continent = forms.ChoiceField(
+    continent = fields.ChoiceField(
         label='Living on continent',
         choices=CONTINENT_CHOICES,
         error_messages={'invalid_choice': 'Please select your continent'})
 
-    weight = forms.IntegerField(
+    weight = fields.IntegerField(
         label='Weight in kg',
         min_value=42,
         max_value=95,
         error_messages={'min_value': 'You are too lightweight'})
 
-    height = FloatField(
+    height = fields.FloatField(
         label='Height in meters',
         min_value=1.48,
         max_value=1.95,
         step=0.05,
         error_messages={'max_value': 'You are too tall'})
 
-    traveling = forms.MultipleChoiceField(
+    traveling = fields.MultipleChoiceField(
         label='Traveling by',
         choices=TRAVELLING_BY,
         help_text='Choose one or more carriers',
         required=True)
 
-    notifyme = forms.MultipleChoiceField(
+    notifyme = fields.MultipleChoiceField(
         label='Notify by',
         choices=NOTIFY_BY,
-        widget=forms.CheckboxSelectMultiple, required=True,
+        widget=widgets.CheckboxSelectMultiple,
         help_text='Must choose at least one type of notification')
 
-    annotation = forms.CharField(
+    annotation = fields.CharField(
         label='Annotation',
         required=True,
-        widget=forms.Textarea(attrs={'cols': '80', 'rows': '3'}))
+        widget=widgets.Textarea(attrs={'cols': '80', 'rows': '3'}))
 
-    agree = forms.BooleanField(
+    agree = fields.BooleanField(
         label='Agree with our terms and conditions',
         initial=False,
         required=True)
 
-    password = forms.CharField(
+    password = fields.CharField(
         label='Password',
-        widget=forms.PasswordInput,
+        widget=widgets.PasswordInput,
         validators=[validate_password],
         help_text='The password is "secret"')
 
-    confirmation_key = forms.CharField(
+    confirmation_key = fields.CharField(
         max_length=40,
         required=True,
-        widget=forms.HiddenInput(),
+        widget=widgets.HiddenInput(),
         initial='hidden value')

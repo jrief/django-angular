@@ -22,8 +22,7 @@ Contents
   angular-model-form
   angular-form-validation
   tutorial-forms
-  upload-image
-  manage-urls
+  upload-files
   basic-crud-operations
   remote-method-invocation
   csrf-protection
@@ -32,6 +31,15 @@ Contents
   resolve-dependencies
   three-way-data-binding
   changelog
+
+
+Sponsoring
+----------
+
+This project is maintained by one individual with help from the community. If it is useful for you,
+`please consider to sponsor it`_ in order to fund its further development. High on the priority
+list is support for Angular-2 and/or Angular-4.
+
 
 Indices and tables
 ------------------
@@ -43,3 +51,4 @@ Indices and tables
 .. _AngularJS: http://angularjs.org/
 .. _Github: https://github.com/jrief/django-angular
 .. _Issue Tracker: https://github.com/jrief/django-angular/issues
+.. _please consider to sponsor it: https://gratipay.com/django-angular/

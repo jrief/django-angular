@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import copy
 from django.db import models
-from django import forms
+from django.forms import forms, widgets
 from django.http import QueryDict
 from django.test import TestCase
 from django.utils import six
-from djng.forms import NgModelFormMixin, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
+from djng.forms import fields, NgModelFormMixin, NgForm, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 from pyquery.pyquery import PyQuery
 from lxml import html
 
@@ -22,14 +22,14 @@ class SubModel(models.Model):
 class SubForm1(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
-        widgets = {'radio_choices': forms.RadioSelect()}
+        widgets = {'radio_choices': widgets.RadioSelect()}
         fields = '__all__'
 
 
 class SubForm2(NgModelFormMixin, NgModelForm):
     class Meta:
         model = SubModel
-        widgets = {'radio_choices': forms.RadioSelect()}
+        widgets = {'radio_choices': widgets.RadioSelect()}
         ng_models = ['select_choices', 'first_name']
         fields = '__all__'
 
@@ -41,13 +41,13 @@ class InvalidForm(NgModelFormMixin, NgModelForm):
         fields = '__all__'
 
 
-class DummyForm(NgModelFormMixin, forms.Form):
-    email = forms.EmailField(label='E-Mail')
-    onoff = forms.BooleanField(initial=False, required=True)
-    sex = forms.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')), widget=forms.RadioSelect)
-    select_multi = forms.MultipleChoiceField(choices=CHOICES)
-    check_multi = forms.MultipleChoiceField(choices=CHOICES, widget=forms.CheckboxSelectMultiple)
-    hide_me = forms.CharField(widget=forms.HiddenInput)
+class DummyForm(NgModelFormMixin, NgForm):
+    email = fields.EmailField(label='E-Mail')
+    onoff = fields.BooleanField(initial=False, required=True)
+    sex = fields.ChoiceField(choices=(('m', 'Male'), ('f', 'Female')), widget=widgets.RadioSelect)
+    select_multi = fields.MultipleChoiceField(choices=CHOICES)
+    check_multi = fields.MultipleChoiceField(choices=CHOICES, widget=widgets.CheckboxSelectMultiple)
+    hide_me = fields.CharField(widget=widgets.HiddenInput)
     scope_prefix = 'dataroot'
 
     def __init__(self, *args, **kwargs):
@@ -74,8 +74,8 @@ class DummyForm(NgModelFormMixin, forms.Form):
 
 
 class CustomArgsForm(forms.Form):
-    field1 = forms.CharField(widget=forms.HiddenInput)
-    field2 = forms.CharField(widget=forms.HiddenInput)
+    field1 = fields.CharField(widget=widgets.HiddenInput)
+    field2 = fields.CharField(widget=widgets.HiddenInput)
 
     def __init__(self, custom_arg1=None, custom_arg2=None, *args, **kwargs):
         self.custom_arg1 = custom_arg1
@@ -144,7 +144,7 @@ class NgModelFormMixinTest(TestCase):
 
     def check_form_fields(self, form):
         for name in form.fields.keys():
-            identifier = '%s.%s' % (form.prefix, name) if form.prefix else name
+            identifier = '{0}.{1}'.format(form.prefix, name) if form.prefix else name
             input_fields = [e for e in self.elements if e.name.startswith(identifier)]
             self.assertTrue(input_fields)
             for input_field in input_fields:
@@ -153,10 +153,10 @@ class NgModelFormMixinTest(TestCase):
                 if identifier == 'sub2.radio_choices':
                     self.assertFalse(input_field.attrib.get('ng-model'))
                 elif identifier == 'check_multi':
-                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, input_field.name)
+                    model = '{0}[\'{1}\'][\'{2}\']'.format(self.unbound_form.scope_prefix, *input_field.name.split('.'))
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 else:
-                    model = '%s[\'%s\']' % (self.unbound_form.scope_prefix, identifier)
+                    model = '{0}[\'{1}\']'.format(self.unbound_form.scope_prefix, identifier)
                     self.assertEqual(input_field.attrib.get('ng-model'), model)
                 if isinstance(input_field, html.InputElement):
                     if input_field.type == 'radio':

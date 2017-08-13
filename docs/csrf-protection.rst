@@ -17,7 +17,7 @@ Django.
 
 
 Configure Angular for Django's CSRF protection
-----------------------------------------------
+==============================================
 
 Angular looks for ``XSRF-TOKEN`` cookie and submits it in ``X-XSRF-TOKEN`` http header, while Django
 sets ``csrftoken`` cookie and expects ``X-CSRFToken`` http header. All we have to do is change the

@@ -68,6 +68,7 @@ do not want to load and initialize every possible AngularJS module we ever might
 sub-pages of our project, we need a way to initialize and configure them where we need them. This
 can be achieved with two special Sekizai postprocessors.
 
+
 Example
 -------
 

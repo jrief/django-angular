@@ -4,12 +4,31 @@
 Release History
 ===============
 
-latest (master) - not released yet
-----------------------------------
-* Added support for Django 1.10, tests & travis updated
-* Drop support for Django 1.7
-* Removed ``{% csrf_value %}`` templatetag
-* Fix file input css (remove the border) and add some documentation about common reported errors
+1.1
+---
+* Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
+  use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
+  from ``NgForm`` or ``NgModelForm``.
+* Added support to upload files and images via Ajax.
+
+1.0.2
+-----
+* Added templatetag ``djng_locale_script`` to include the proper AngularJS locale script.
+
+1.0.1
+-----
+* Fixed #297 "Method ``get_context()`` on custom Widget is never called": Added class ``NgWidgetMixin``
+  which allows to override method ``get_context()`` in custom widgets.
+* Fixed #288 Incorrect ``<label for="...">`` in widget ``RadioChoiceInput``.
+
+1.0.0
+-----
+* Added support for Django 1.10 and 1.11, tests & travis updated.
+* Drop support for Django 1.7, 1.8 and 1.9.
+* Removed templatetag ``{% csrf_value %}``, since Django offers ab equivalent tag.
+* Fix file input css (remove the border) and add some documentation about common reported errors.
+* Remove support for bower in favor of npm.
+* Fix exception while rendering Angular Form using ``as_ul``.
 
 0.8.4
 -----

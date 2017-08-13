@@ -1,0 +1,5 @@
+{% with id=widget.attrs.id %}
+<span validate-multiple-fields="{{ widget.name }}"{% if id %} id="{{ id }}"{% endif %}>{% for group, options, index in widget.optgroups %}{% if group %}<p class="bg-warning">Nested choices not supported yet</p>{% endif %}{% for option in options %}
+	{% if wrap_label %}<label{% if option.attrs.id %} for="{{ option.attrs.id }}"{% endif %}>{% endif %}<input name="{{ widget.name }}" type="radio" value="{{ option.value }}"{% include "django/forms/widgets/attrs.html" with widget=option %} />{% if wrap_label %} {{ option.label }}</label>{% endif %}
+{% endfor %}
+{% endfor %}</span>{% endwith %}
