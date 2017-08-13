@@ -20,6 +20,6 @@ Release logic:
 13. git push
 """
 
-__version__ = '1.1.dev'
+__version__ = '1.1.dev0'
 
 default_app_config = 'djng.app_config.DjangoAngularConfig'
