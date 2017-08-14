@@ -10,17 +10,17 @@ Let Django play well with AngularJS
 
 ## Breaking News
 
-On 2017-07-23 **django-angular** version 1.0 has been released.
+On 2017-08-14 **django-angular** version 1.1 has been released.
 
-In Django version 1.11, template-based widget rendering has been introduced.
-This gives us a lot more flexibility when rendering form widgets. It however
-required to refactor the internal API of **django-angular**.
+This version introduces file- and image uploads through Ajax form submissions.
 
-### Upcoming version 1.1
+### Backward Incompatibility
 
-Please help me to test the next upcoming version of **django-angular**. It currently
-on the master branch and will be released soon to PyPI.
+If you create Angular forms from Django models, nothing changes.
 
+If you create Angular forms using the provided mixin classes, then you must use the corresponding
+fields as provided by **django-angular**. This keeps the API cleaner and prevents dynamic class 
+tweaks.
 
 ## Documentation
 
