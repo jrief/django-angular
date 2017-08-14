@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-#from server.forms.image_file_upload import SubscribeForm
-from server.models.image_file_upload import SubscribeForm
+from server.forms.image_file_upload import SubscribeForm
+# from server.models.image_file_upload import SubscribeForm
 # start tutorial
 import json
 from django.http import HttpResponse

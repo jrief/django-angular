@@ -22,6 +22,6 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     def clean_permit(self):
         """
         For instance, here you can move the temporary file stored in
-        ``self.cleaned_data['permit'].file`` to a permanent location.
+        `self.cleaned_data['permit'].file` to a permanent location.
         """
         self.cleaned_data['permit'].file
