@@ -8,6 +8,8 @@ DEBUG = True
 PROJECT_DIR = os.path.dirname(__file__)
 BASE_DIR = os.path.abspath(os.path.join(PROJECT_DIR, os.pardir, os.pardir))
 
+ALLOWED_HOSTS = ['*']
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
