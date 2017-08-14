@@ -16,11 +16,11 @@ def validate_password(value):
 class SubscribeForm(Bootstrap3Form):
     use_required_attribute = False
 
-    CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
-                         ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
-    TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
-    NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
+    CONTINENT_CHOICES = [('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
+                         ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica')]
+    TRAVELLING_BY = [('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
+                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane')]
+    NOTIFY_BY = [('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard')]
 
     first_name = fields.CharField(
         label='First name',

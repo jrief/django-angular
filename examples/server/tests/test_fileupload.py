@@ -7,7 +7,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.core import signing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
-#from django.forms import forms
 from django.test import override_settings, TestCase
 from django.test.client import Client
 

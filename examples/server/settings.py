@@ -6,7 +6,10 @@ import os
 DEBUG = True
 
 PROJECT_DIR = os.path.dirname(__file__)
-BASE_DIR = os.path.abspath(os.path.join(PROJECT_DIR, os.pardir, os.pardir))
+
+APP_DIR = os.path.abspath(os.path.join(PROJECT_DIR, os.pardir, os.pardir))
+
+ALLOWED_HOSTS = ['*']
 
 ALLOWED_HOSTS = ['*']
 
@@ -23,7 +26,7 @@ ROOT_URLCONF = 'server.urls'
 
 SECRET_KEY = 'secret'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -33,7 +36,7 @@ INSTALLED_APPS = (
     'sekizai',
     'djng',
     'server',
-)
+]
 
 USE_L10N = True
 
@@ -53,7 +56,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware'
 )
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_ROOT = os.environ.get('DJANGO_MEDIA_ROOT', os.path.join(APP_DIR, 'workdir/media'))
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -62,15 +65,15 @@ MEDIA_URL = '/media/'
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', '')
+STATIC_ROOT = os.environ.get('DJANGO_STATIC_ROOT', os.path.join(APP_DIR, 'workdir/static'))
 
 # URL that handles the static files served from STATIC_ROOT.
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'client', 'src'),
-    ('node_modules', os.path.join(BASE_DIR, 'examples/node_modules')),
+    os.environ.get('CLIENT_SRC_DIR', os.path.join(APP_DIR, 'client/src')),
+    ('node_modules', os.environ.get('NODE_MODULES_DIR', os.path.join(APP_DIR, 'examples/node_modules'))),
 )
 
 FORM_RENDERER = 'djng.forms.renderers.DjangoAngularBootstrap3Templates'
@@ -127,11 +130,10 @@ LOGGING = {
 try:
     import ws4redis
 
-    INSTALLED_APPS += ('ws4redis',)
+    INSTALLED_APPS.append('ws4redis')
 
     for template in TEMPLATES:
-        template["OPTIONS"]["context_processors"] += \
-            ('ws4redis.context_processors.default',)
+        template['OPTIONS']['context_processors'].append('ws4redis.context_processors.default')
 
     # This setting is required to override the Django's main loop, when running in
     # development mode, such as ./manage runserver

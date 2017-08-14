@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from server.forms.model_scope import SubscribeForm
+from server.forms.image_file_upload import SubscribeForm
+# from server.models.image_file_upload import SubscribeForm
 # start tutorial
 import json
 from django.http import HttpResponse
@@ -9,7 +10,7 @@ from django.views.generic.edit import FormView
 
 
 class SubscribeView(FormView):
-    template_name = 'model-scope.html'
+    template_name = 'image-file-upload.html'
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
 

@@ -20,7 +20,7 @@ ROOT_URLCONF = 'server.urls'
 
 SECRET_KEY = 'secret'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -30,7 +30,7 @@ INSTALLED_APPS = (
     'sekizai',
     'djng',
     'server',
-)
+]
 
 USE_L10N = True
 
@@ -108,11 +108,10 @@ LOGGING = {
 try:
     import ws4redis
 
-    INSTALLED_APPS += ('ws4redis',)
+    INSTALLED_APPS.append('ws4redis')
 
     for template in TEMPLATES:
-        template["OPTIONS"]["context_processors"] += \
-            ('ws4redis.context_processors.default',)
+        template["OPTIONS"]["context_processors"].append('ws4redis.context_processors.default')
 
     # This setting is required to override the Django's main loop, when running in
     # development mode, such as ./manage runserver

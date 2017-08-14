@@ -1,0 +1,12 @@
+*
+!docker-files/
+!examples/server/
+!examples/manage.py
+!examples/package.json
+!examples/requirements.txt
+!client/src
+!djng
+!setup.py
+!README.md
+!LICENSE.txt
+!MANIFEST.in

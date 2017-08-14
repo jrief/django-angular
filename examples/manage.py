@@ -2,8 +2,6 @@
 import os
 import sys
 
-sys.path[0:0] = [os.path.abspath('..'), os.path.abspath('../../django-websocket-redis/')]
-
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
     os.environ.setdefault('DJANGO_STATIC_ROOT', '/web/production/managed/djangular/static')

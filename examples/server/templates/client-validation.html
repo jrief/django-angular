@@ -1,9 +1,11 @@
 {% extends "subscribe-form.html" %}
 {% load tutorial_tags %}
 
-{% block form_title %}Client-Side Form Validation{% endblock %}
-
-{% block form_header %}Form validation with AngularJS using only a Django Form{% endblock %}
+{% block main-intro %}
+<h1>Client-Side Form Validation</h1>
+<p class="lead">Form validation with AngularJS using only a Django Form</p>
+<p>This example shows how to let AngularJS validate input fields from a Django Form in a DRY manner.</p>
+{% endblock main-intro %}
 
 {% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate{% endblock %}
 
@@ -12,10 +14,7 @@
 	<p><small>Test submission of invalid POST data:</small><br/><button type="submit" class="btn btn-warning btn-xs">Force Form Submission</button></p>
 {% endblock %}
 
-{% block tutorial_intro %}
-<p ng-init="tabList=['Form', 'View', 'HTML']" class="lead">This example shows how to let AngularJS
-validate input fields from a Django Form in a DRY manner.</p>
-
+{% block main-tutorial %}
 <p>The Django <code>forms.Form</code> class offers many possibilities to validate a given form.
 This for obvious reasons is done on the server. However, while typing, it is unacceptable to send
 the form's content to the server for continuous validation. Therefore, adding client side form
@@ -25,9 +24,11 @@ form's data for final processing.</p>
 <p>With <strong>django-angular</strong>, we can handle this without having to re-implement any
 client side form validation. Apart from initializing the AngularJS application, no JavaScript is
 required to enable this useful feature.</p>
-{% endblock tutorial_intro %}
 
-{% block tutorial_code %}
+<p ng-init="tabList=['Form', 'View', 'HTML']"></p>
+{% endblock main-tutorial %}
+
+{% block main-sample-code %}
 {% autoescape off %}
 <div ng-show="activeTab==='Form'">{% pygments "forms/client_validation.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/client_validation.py" %}</div>
@@ -37,4 +38,4 @@ required to enable this useful feature.</p>
 Form now additionally must inherit from the mixin class <code>NgFormValidationMixin</code>.
 Furthermore, the browsers internal Form validation must be disabled. This is achieved by adding
 the property <code>novalidate</code> to the Form's HTML element.</p>
-{% endblock tutorial_code %}
+{% endblock main-sample-code %}
