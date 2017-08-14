@@ -2,9 +2,8 @@
 <!doctype html>
 <html lang="en" ng-app="djangular-demo">
 <head>
-	<title>Django-Angular Demo</title>
+	<title>{% block form_title %}Django-Angular Demo{% endblock %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	{% block head %}{% endblock head %}
 	{% render_block "css" %}
 </head>
 
@@ -18,27 +17,32 @@
 <body>
 	<header class="navbar navbar-static-top navbar-inverse">
 		<div class="container">
-			<div class="navbar-header">
-				<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-					<span class="sr-only">Toggle navigation</span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-					<span class="icon-bar"></span>
-				</button>
+			<div class="row">
+				<div class="col-xs-12">
+					<h1 class="navbar-brand">django-angular<small style="margin-left: 3em;">Let Django play well with AngularJS</small></h1>
+				</div>
 			</div>
-			<nav class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
-				<ul class="nav navbar-nav">
+		</div>
+	</header>
+
+	<div class="container">
+		<div class="row">
+			<nav class="col-md-3" style="margin-top: 65px;" role="navigation">
+				<ul class="nav nav-pills nav-stacked">
 					<li class="{% active request 'djng_classic_subscription' %}">
 						<a href="{% url 'djng_classic_subscription' %}">Classic Subscription</a>
 					</li>
 					<li class="{% active request 'djng_form_validation' %}">
-						<a href="{% url 'djng_form_validation' %}">Form Validation</a>
+						<a href="{% url 'djng_form_validation' %}">Client Side Validation</a>
 					</li>
 					<li class="{% active request 'djng_model_scope' %}">
-						<a href="{% url 'djng_model_scope' %}">Model Scope</a>
+						<a href="{% url 'djng_model_scope' %}">Server Side Validation</a>
 					</li>
 					<li class="{% active request 'djng_combined_validation' %}">
 						<a href="{% url 'djng_combined_validation' %}">Combined Validation</a>
+					</li>
+					<li class="{% active request 'djng_image_file' %}">
+						<a href="{% url 'djng_image_file' %}">Image and File Upload <span class="badge">New</span></a>
 					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
@@ -47,11 +51,10 @@
 					{% endif %}
 				</ul>
 			</nav>
+			<main class="col-md-9">
+			{% block main-content %}{% endblock %}
+			</main>
 		</div>
-	</header>
-
-	<div class="container">
-		{% block container %}{% endblock %}
 	</div>
 
 	{% render_block "js" %}
@@ -62,10 +65,10 @@
 	]){% render_block "ng-config" postprocessor "djng.sekizai_processors.module_config" %};
 	</script>
 
-	{% block demo_scripts %}
+	{% block addtoblock %}
 	<script src="{% static 'js/djng-tutorial.js' %}" type="text/javascript"></script>
 	{% endblock %}
-	
+
 	<a href="https://github.com/jrief/django-angular">
 		<img style="position: absolute; top: 0; right: 0; border: 0; z-index: 1001;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
 	</a>

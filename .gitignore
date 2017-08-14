@@ -6,12 +6,12 @@
 .tmp*
 .DS_Store
 .idea/
-.tox/
+.tox
 cdncache/
 dist/
 htmlcov/
 docs/_build/
+workdir/
 node_modules/
-bower_components/
 build/
 examples/test.sqlite

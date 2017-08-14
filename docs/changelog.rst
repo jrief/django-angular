@@ -30,7 +30,6 @@ Release History
 * Remove support for bower in favor of npm.
 * Fix exception while rendering Angular Form using ``as_ul``.
 
-
 0.8.4
 -----
 * Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS

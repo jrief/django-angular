@@ -20,27 +20,28 @@ ROOT_URLCONF = 'server.urls'
 
 SECRET_KEY = 'secret'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.admin',
     'django.contrib.staticfiles',
+    'easy_thumbnails',
     'sekizai',
     'djng',
     'server',
-)
+]
 
 USE_L10N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = ''
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory that holds static files.
 # Example: "/home/media/media.lawrence.com/static/"
@@ -97,7 +98,7 @@ LOGGING = {
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'INFO',
             'propagate': True,
         },
     },
@@ -107,11 +108,10 @@ LOGGING = {
 try:
     import ws4redis
 
-    INSTALLED_APPS += ('ws4redis',)
+    INSTALLED_APPS.append('ws4redis')
 
     for template in TEMPLATES:
-        template["OPTIONS"]["context_processors"] += \
-            ('ws4redis.context_processors.default',)
+        template["OPTIONS"]["context_processors"].append('ws4redis.context_processors.default')
 
     # This setting is required to override the Django's main loop, when running in
     # development mode, such as ./manage runserver

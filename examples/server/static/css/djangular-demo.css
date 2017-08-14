@@ -1,6 +1,10 @@
 body{
 	position:relative;
 }
+h1.navbar-brand {
+	font-size: 32px;
+}
+
 table.subscribe ul.errorlist,
 table.subscribe ul.djng-field-errors {
 	display: inline-block;
@@ -73,8 +77,8 @@ table.subscribe tbody textarea {
 .djng-tutorial { margin-bottom: 30px; }
 .djng-tutorial .bg-info, .djng-tutorial .bg-warning { padding: 15px; border-radius: 3px; }
 .djng-tutorial .nav-tabs a { cursor: pointer; }
-.djng-tutorial .highlight { margin-top: 15px; height: 315px; }
-.djng-tutorial .highlight pre { max-height: 300px; overflow-y: auto; }
+.djng-tutorial .highlight { margin-top: 15px; height: 515px; }
+.djng-tutorial .highlight pre { max-height: 500px; overflow-y: auto; }
 .djng-tutorial .highlight .hll { background-color: #ffffcc }
 .djng-tutorial .highlight .c { color: #408080; font-style: italic } /* Comment */
 .djng-tutorial .highlight .err { border: 1px solid #FF0000 } /* Error */
