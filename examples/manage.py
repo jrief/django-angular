@@ -6,6 +6,7 @@ sys.path[0:0] = [os.path.abspath('..'), os.path.abspath('../../django-websocket-
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "server.settings")
+    os.environ.setdefault('DJANGO_STATIC_ROOT', '/web/production/managed/djangular/static')
 
     from django.core.management import execute_from_command_line
 
