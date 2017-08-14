@@ -18,11 +18,11 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     scope_prefix = 'subscribe_data'
     form_name = 'my_form'
 
-    CONTINENT_CHOICES = (('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
-                         ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica'),)
-    TRAVELLING_BY = (('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
-                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane'),)
-    NOTIFY_BY = (('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard'),)
+    CONTINENT_CHOICES = [('am', 'America'), ('eu', 'Europe'), ('as', 'Asia'), ('af', 'Africa'),
+                         ('au', 'Australia'), ('oc', 'Oceania'), ('an', 'Antartica')]
+    TRAVELLING_BY = [('foot', 'Foot'), ('bike', 'Bike'), ('mc', 'Motorcycle'), ('car', 'Car'),
+                     ('public', 'Public Transportation'), ('train', 'Train'), ('air', 'Airplane')]
+    NOTIFY_BY = [('email', 'EMail'), ('phone', 'Phone'), ('sms', 'SMS'), ('postal', 'Postcard')]
 
     first_name = fields.CharField(label='First name', min_length=3, max_length=20)
 
