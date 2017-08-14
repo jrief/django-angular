@@ -18,9 +18,8 @@ required to refactor the internal API of **django-angular**.
 
 ### Upcoming version 1.1
 
-Please help me to test the next upcoming version of **django-angular**. It currently is in
-[review mode awaitng for user comments](https://github.com/jrief/django-angular/pull/303).
-Please check out [this branch](https://github.com/jrief/django-angular/tree/releases/1.1.x).
+Please help me to test the next upcoming version of **django-angular**. It currently
+on the master branch and will be released soon to PyPI.
 
 
 ## Documentation
