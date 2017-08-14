@@ -60,9 +60,11 @@ the controller submitting the form, shall use the returned data and pass it to t
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/model-scope.html" %}</div>
 <div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
 {% endautoescape %}
+
 {% verbatim %}
 <p class="bg-info"><strong>Note: </strong>The AngularJS app is configured inside Django's HTML
 template code, since template tags, such as <code>{&#8203;{&nbsp;csrf_token&nbsp;}&#8203;}</code> can't be
 expanded in pure JavaScript.</p>
 {% endverbatim %}
+
 {% endblock main-sample-code %}
