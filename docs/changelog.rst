@@ -4,6 +4,11 @@
 Release History
 ===============
 
+1.1.1
+-----
+* Added spinner to upload areas. Whenever one uploads a file, the wheel spins to improve the client's
+  user experience.
+
 1.1
 ---
 * Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
