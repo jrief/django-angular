@@ -43,14 +43,12 @@ Please drop me a line, if and where you use this project.
 
 ## Latest Changes
 
-### 1.0.0 (2017-07-23)
+### 1.1 (2017-08-17)
 
-* Adopted for Django's template-based widget rendering, introduced in version 1.11.
-* Drop support for Django 1.7, 1.8 and 1.9.
-* Fixed #270: Exception while rendering form using ``as_ul``.
-* Removed templatetag ``{% csrf_value %}``, since Django offers ab equivalent tag.
-* Fix file input css (remove the border) and add some documentation about common reported errors.
-* Remove support for bower in favor of npm.
+* Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
+  use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
+  from ``NgForm`` or ``NgModelForm``.
+* Added support to upload files and images via Ajax.
 
 
 ## License
