@@ -145,6 +145,13 @@ class DropFileWidget(widgets.Widget):
             final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
         elements = [format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)]
 
+        # add a spinnging wheel
+        spinner_attrs = {
+            'class': 'glyphicon glyphicon-refresh glyphicon-spin',
+            'ng-cloak': True,
+        }
+        elements.append(format_html('<span {}></span>', flatatt(spinner_attrs)))
+
         # add a delete icon
         icon_attrs = {
             'src': staticfiles_storage.url('djng/icons/{}/trash.svg'.format(self.filetype)),

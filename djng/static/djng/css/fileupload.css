@@ -60,17 +60,37 @@
 }
 .drop-box textarea.djng-image-uploader.djng-empty {
 	padding: 56px 24px 0 24px;
-	color: rgb(160, 160, 160);
 }
 
 
 .drop-box textarea.uploading {
-	background-color: cyan;
+	color: transparent;
 }
 .drop-box textarea.dragover {
 	background: #f8f8a0;
 	border-color: #dda;
 	border-style: solid;
+}
+
+.drop-box .glyphicon-refresh {
+	position: absolute;
+	left: 65px;
+	font-size: 64px;
+	display: none;
+	color: rgb(160, 160, 160);
+}
+.drop-box .glyphicon-spin {
+	-webkit-animation: spin 2500ms infinite linear;
+	animation: spin 2500ms infinite linear;
+}
+.drop-box textarea.djng-image-uploader ~ .glyphicon-refresh {
+	top: 75px;
+}
+.drop-box textarea.djng-file-uploader ~ .glyphicon-refresh {
+	top: 15px;
+}
+.drop-box textarea.uploading  ~ .glyphicon-refresh {
+	display: inline-block;
 }
 
 .drop-box .djng-btn-trash, .drop-box .djng-btn-download {
@@ -101,4 +121,25 @@
 }
 .drop-box textarea:not(.djng-preset) ~ .djng-btn-download {
 	display: none;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
+}
+@keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(359deg);
+        transform: rotate(359deg);
+    }
 }
