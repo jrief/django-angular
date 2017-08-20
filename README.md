@@ -43,7 +43,7 @@ Please drop me a line, if and where you use this project.
 ## Future Plans
 A next big change to **django-angular** is to add support for Angular2 and/or 4. This will
 require additional development time from my side, so please
-[consider to fund this and other features using GratiPay](https://gratipay.com/django-angular/).
+[consider to fund this and other features using Gratipay](https://gratipay.com/django-angular/).
 
 
 ## Latest Changes
