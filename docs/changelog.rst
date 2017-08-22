@@ -4,6 +4,11 @@
 Release History
 ===============
 
+1.1.2
+-----
+* Rather than checking if a field in a form that uses the ``NgMixins`` is in ``djng.forms.fields``,
+  check if the field inherits from ``DefaultFieldMixin``. Allows the use of custom form fields.
+
 1.1.1
 -----
 * Added spinner to upload areas. Whenever one uploads a file, the wheel spins to improve the client's
