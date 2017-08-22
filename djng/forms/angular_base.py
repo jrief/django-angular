@@ -26,6 +26,8 @@ from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe, SafeText, SafeData
 from django.core.exceptions import ValidationError, ImproperlyConfigured
 
+from .fields import DefaultFieldMixin
+
 
 class SafeTuple(SafeData, tuple):
     """
@@ -275,7 +277,7 @@ class BaseFieldsModifierMetaclass(type):
         msg = "Please use the corresponding form fields from 'djng.forms.fields' for field '{} = {}(...)' " \
               "in form '{}', which inherits from 'NgForm' or 'NgModelForm'."
         for name, field in new_class.base_fields.items():
-            if field.__module__ not in ['djng.forms.fields']:
+            if not isinstance(field, DefaultFieldMixin):
                 raise ImproperlyConfigured(msg.format(name, field.__class__.__name__, new_class))
 
 
