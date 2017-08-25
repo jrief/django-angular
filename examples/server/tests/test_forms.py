@@ -113,6 +113,12 @@ class NgModelFormMixinTest(TestCase):
         self.dom = PyQuery(htmlsource)
         self.elements = self.dom('input') + self.dom('select')
 
+    def test_widget_mro(self):
+        # render a widget twice to test mro with NgWidgetMixin
+        mro_form = DummyForm()
+        mro_form.as_p()
+        mro_form.as_p()
+
     def test_form_with_custom_args(self):
         form_post_data = {'field1': 'value1', 'field2': 'value2'}
 
