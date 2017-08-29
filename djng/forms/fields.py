@@ -258,6 +258,10 @@ class NullBooleanField(DefaultFieldMixin, fields.NullBooleanField):
     pass
 
 
+class URLField(DefaultFieldMixin, fields.URLField):
+    pass
+
+
 class MultipleFieldMixin(DefaultFieldMixin):
     def get_multiple_choices_required(self):
         """
