@@ -4,6 +4,11 @@
 Release History
 ===============
 
+1.1.3
+-----
+* Fix #309: When using Meta to create forms, ``djng.fields.ModelChoiceField`` isn't substituted for
+  Django's ModelChoiceField.
+
 1.1.2
 -----
 * Rather than checking if a field in a form that uses the ``NgMixins`` is in ``djng.forms.fields``,
