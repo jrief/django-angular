@@ -54,7 +54,7 @@ class NgModelFormMixinTestCase(TestCase):
         self.assertFalse(f.is_valid())
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt.$dirty"})
+        ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt.$dirty && RW1haWxGb3Jt.$touched"})
         self.assertListEqual(ul.attrs['class'], ['djng-form-errors'])
         ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt.$pristine"})
         self.assertListEqual(ul.attrs['class'], ['djng-form-errors'])
