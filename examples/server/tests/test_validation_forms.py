@@ -77,7 +77,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = RadioForm({'sex': 'f'})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty && UmFkaW9Gb3Jt['sex'].$touched"})
         self.assertHTMLEqual(str(ul.li.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$error.required')
         self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
         self.assertHTMLEqual(str(ul.li.nextSibling.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$valid')
