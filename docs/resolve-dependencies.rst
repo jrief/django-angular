@@ -8,8 +8,8 @@ As with any application, we also must manage the client side files. They normall
 from **PyPI** and must be installed by other means than ``pip``. This typically is the
 `Node Packet Manager`_ also known as ``npm``. When managing a Django project, I strongly recommend
 to keep external dependencies outside of any asset's folder, such as ``static``. They *never
-shall* be checked into your version control system. Instead change into to the root directory of
-your project and run
+must* be checked into your version control system! Instead change into to the root directory of
+your project and run:
 
 .. code-block:: bash
 

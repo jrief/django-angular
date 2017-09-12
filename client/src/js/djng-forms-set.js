@@ -4,11 +4,11 @@
 var djngModule = angular.module('djng.forms-set', ['djng.forms']);
 
 
-// Directive <ANY djng-forms-set upload-url="/rest/endpoint" ...>, optionally with a REST endpoint.
-// Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see directive below),
-// so that we can disable the proceed button whenever one of those forms does not validate.
-// For our form-set, such a submit button can be rendered as:
-// <button ng-click="update(some_action)" ng-disabled="setIsValid===false">Submit</button>
+// Directive ``<ANY djng-forms-set upload-url="/rest/endpoint" ...>``, optionally with a REST endpoint.
+// Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see
+// directive below), so that we can use a proceed/submit button outside of the ``<form ...>`` elements.
+// Whenever one of those forms does not validate, that button can be rendered as:
+// ``<button ng-click="update(some_action)" ng-disabled="setIsInvalid">Submit</button>``
 djngModule.directive('djngFormsSet', function() {
 	return {
 		require: 'djngFormsSet',
@@ -29,6 +29,7 @@ djngModule.directive('djngFormsSet', function() {
 				angular.forEach(self.digestValidatedForms, function(validatedForm) {
 					$scope.setIsValid = $scope.setIsValid && validatedForm;
 				});
+				$scope.setIsInvalid = !$scope.setIsValid;
 			};
 
 			this.uploadScope = function(method, action, extraData) {
@@ -68,6 +69,7 @@ djngModule.directive('djngFormsSet', function() {
 						}
 					});
 				}, function(response) {
+				/* server side validation errors shall return here */
 					console.error(response);
 				});
 			};
