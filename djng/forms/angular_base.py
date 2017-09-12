@@ -52,7 +52,6 @@ class TupleErrorList(UserList, list):
     5: The desired error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
     """
-    ul_format = '<ul class="{1}" ng-show="{0}.{2}" ng-cloak>{3}</ul>'
     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
     li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
 
@@ -104,8 +103,11 @@ class TupleErrorList(UserList, list):
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
                 error_lists[e[2]].append(format_html(li_format, *err_tuple))
             # renders and combine both of these lists
-            return mark_safe(''.join([format_html(self.ul_format, first[0], first[1], prop,
-                        mark_safe(''.join(list_items))) for prop, list_items in error_lists.items()]))
+            dirty_errors = format_html('<ul ng-show="{0}.$dirty && {0}.$touched" class="{1}" ng-cloak>{2}</ul>',
+                                       first[0], first[1], mark_safe(''.join(error_lists['$dirty'])))
+            pristine_errors = format_html('<ul ng-show="{0}.$pristine" class="{1}" ng-cloak>{2}</ul>',
+                                          first[0], first[1], mark_safe(''.join(error_lists['$pristine'])))
+            return format_html('{}{}', dirty_errors, pristine_errors)
         return format_html('<ul class="errorlist">{0}</ul>',
             format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
 
