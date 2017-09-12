@@ -89,7 +89,7 @@ with a template named ``contact.html``:
 .. code-block:: html
 
 	<form ng-controller="MyFormCtrl" name="contact_form">
-	    {{contact_form}}
+	    {{ contact_form }}
 	    <button ng-click="submit()">Submit</button>
 	</form>
 
@@ -99,26 +99,29 @@ and using some Javascript code to define the AngularJS controller:
 
 .. code-block:: javascript
 
-	my_app.controller('MyFormCtrl', function($scope, $http) {
+	my_app.controller('MyFormCtrl', ['$scope', '$http', 'djangoForm', function($scope, $http, djangoForm) {
 	    $scope.submit = function() {
-	        var in_data = { subject: $scope.subject };
-	        $http.post('/url/of/your/contact_form_view', in_data)
-	            .success(function(out_data) {
-	                // do something
+	        var request_data = { subject: $scope.subject };
+	        $http.post('/url/of/your/contact_form_view', request_data)
+	            .then(function(response) {
+	                // do something on success
+	            }, function(response) {
+	                djangoForm.setErrors($scope.contact_form, response.data.contact_form.errors);
 	            });
-	    }
-	});
+	    };
+	}]);
 
 Note that the ``<form>`` tag does not require any ``method`` or ``action`` attribute, since the
-promise_ ``success`` in the controller's submit function will handle any further action.
-The success handler, for instance could load a new page or complain about missing fields. It now
-it is even possible to build forms without using the ``<form>`` tag anymore. All what's needed
-from now on, is a working AngularJS controller.
+success promise_ in the controller's submit function will handle all further actions.
+The success handler, for instance could load a new page. If an error occurred during server side
+form validation, the error handler shall place thses errors nearby the offending form fields using
+the injected service ``djangoForm``.
 
 As usual, the form view must handle the post data received through the POST (aka Ajax) request.
 However, AngularJS does not send post data using ``multipart/form-data`` or
 ``application/x-www-form-urlencoded`` encoding – rather, it uses plain JSON, which avoids an
 additional decoding step.
+
 
 .. note:: In real code, do not hard code the URL into an AngularJS controller as shown in this
 		example. Instead inject an object containing the URL into the form controller as explained
@@ -130,7 +133,7 @@ Add these methods to view class handling the contact form
 
 	import json
 	from django.views.decorators.csrf import csrf_exempt
-	from django.http import HttpResponseBadRequest
+	from django.http import HttpResponse, HttpResponseBadRequest
 
 	class ContactFormView(TemplateView):
 	    # use ‘get_context_data()’ from above
@@ -143,15 +146,23 @@ Add these methods to view class handling the contact form
 	        if not request.is_ajax():
 	            return HttpResponseBadRequest('Expected an XMLHttpRequest')
 	        in_data = json.loads(request.body)
-	        bound_contact_form = CheckoutForm(data={'subject': in_data.get('subject')})
-	        # now validate ‘bound_contact_form’ and use it as in normal Django
+	        bound_contact_form = CheckoutForm(data=in_data})
+	        # validate 'bound_contact_form' and use it as if would be a Django form
+	        if form.is_valid():
+	            response_data = {}  # add whatever the success handler can understand
+	            return HttpResponse(json.dumps(response_data), content_type='application/json')
+	        else:
+	            response_data = {form.form_name: {'errors': form.errors}}
+	            return HttpResponseBadRequest(json.dumps(response_data), status=422, content_type='application/json')
 
 .. warning:: In real code, **do not** use the ``@csrf_exempt`` decorator, as shown here for
 		simplicity. Please read on how
 		to :ref:`protect your views from Cross Site Request Forgeries<csrf-protection>`.
 
+
 Prefixing the form fields
 -------------------------
+
 The problem with this implementation, is that one must remember to access each form field three
 times. Once in the declaration of the form, once in the Ajax handler of the AngularJS controller,
 and once in the post handler of the view. This make maintenance hard and is a violation of the DRY
