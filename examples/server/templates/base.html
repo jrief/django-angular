@@ -60,9 +60,11 @@
 	{% render_block "js" %}
 
 	<script type="text/javascript">
-	angular.module('djangular-demo', [
-		{% render_block "ng-requires" postprocessor "djng.sekizai_processors.module_list" %}
-	]){% render_block "ng-config" postprocessor "djng.sekizai_processors.module_config" %};
+	angular.module('djangular-demo', [{% with_data "ng-requires" as ng_requires %}
+		{% for module in ng_requires %}'{{ module }}'{% if not forloop.last %}, {% endif %}{% endfor %}{% end_with_data %}])
+	{% with_data "ng-config" as configs %}
+		{% for config in configs %}.config({{ config }}){% endfor %};
+	{% end_with_data %}
 	</script>
 
 	{% block addtoblock %}
