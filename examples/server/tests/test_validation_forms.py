@@ -43,7 +43,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = EmailForm({'email': 'test@example.com'})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt['email'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt['email'].$dirty && RW1haWxGb3Jt['email'].$touched"})
         self.assertHTMLEqual(str(ul.li), '<li class="invalid" ng-show="RW1haWxGb3Jt[\'email\'].$error.required">This field is required.</li>')
         self.assertHTMLEqual(str(ul.li.nextSibling), '<li class="invalid" ng-show="RW1haWxGb3Jt[\'email\'].$error.email">Enter a valid email address.</li>')
         self.assertHTMLEqual(str(ul.li.nextSibling.nextSibling), '<li class="valid" ng-show="RW1haWxGb3Jt[\'email\'].$valid"></li>')
@@ -61,7 +61,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = ChoiceForm({'choose': True})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "Q2hvaWNlRm9ybQ['choose'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "Q2hvaWNlRm9ybQ['choose'].$dirty && Q2hvaWNlRm9ybQ['choose'].$touched"})
         self.assertHTMLEqual(str(ul.li), '<li class="invalid" ng-show="Q2hvaWNlRm9ybQ[\'choose\'].$error.required">This field is required.</li>')
         self.assertHTMLEqual(str(ul.li.nextSibling), '<li class="valid" ng-show="Q2hvaWNlRm9ybQ[\'choose\'].$valid"></li>')
 
@@ -77,7 +77,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = RadioForm({'sex': 'f'})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty && UmFkaW9Gb3Jt['sex'].$touched"})
         self.assertHTMLEqual(str(ul.li.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$error.required')
         self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
         self.assertHTMLEqual(str(ul.li.nextSibling.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$valid')
@@ -108,7 +108,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = SelectMultipleChoicesForm({'select_multi': ['a', 'c']})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "U2VsZWN0TXVsdGlwbGVDaG9pY2VzRm9ybQ['select_multi'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "U2VsZWN0TXVsdGlwbGVDaG9pY2VzRm9ybQ['select_multi'].$dirty && U2VsZWN0TXVsdGlwbGVDaG9pY2VzRm9ybQ['select_multi'].$touched"})
         self.assertListEqual(ul.attrs['class'], ["djng-field-errors"])
         self.assertHTMLEqual(ul.li.attrs['ng-show'], "U2VsZWN0TXVsdGlwbGVDaG9pY2VzRm9ybQ['select_multi'].$error.required")
         self.assertHTMLEqual(ul.li.text, 'This field is required.')
@@ -140,7 +140,7 @@ class NgFormValidationMixinTestCase(TestCase):
         f = CheckboxChoicesForm({'check_multi': ['a', 'c']})
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
-        ul = soup.find(attrs={'ng-show': "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$dirty"})
+        ul = soup.find(attrs={'ng-show': "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$dirty && Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$touched"})
         self.assertListEqual(ul.attrs['class'], ["djng-field-errors"])
         self.assertHTMLEqual(str(ul.li.attrs['ng-show']), "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$error.required")
         self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
