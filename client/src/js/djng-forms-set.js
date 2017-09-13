@@ -55,22 +55,20 @@ djngModule.directive('djngFormsSet', function() {
 					method: method,
 					data: data
 				}).then(function(response) {
-					angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
-						if (!djangoForm.setErrors($scope[formName], response.errors)) {
-							if (action === 'RELOAD_PAGE') {
-								$window.location.reload();
-							} else if (action !== 'DO_NOTHING') {
-								if (response.data.success_url) {
-									$window.location.assign(response.data.success_url);
-								} else {
-									$window.location.assign(action);
-								}
-							}
+					if (action === 'RELOAD_PAGE') {
+						$window.location.reload();
+					} else if (action !== 'DO_NOTHING') {
+						if (response.data.success_url) {
+							$window.location.assign(response.data.success_url);
+						} else {
+							$window.location.assign(action);
 						}
-					});
+					}
 				}, function(response) {
-				/* server side validation errors shall return here */
-					console.error(response);
+					debugger;
+					angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
+						djangoForm.setErrors($scope[formName], response.errors);
+					});
 				});
 			};
 		}],
