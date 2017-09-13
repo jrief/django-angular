@@ -6,6 +6,7 @@ angular.module('djangular-demo').controller('MyFormCtrl', ['$scope', '$http', '$
 				// on successful post, redirect onto success page
 				$window.location.href = response.data.success_url;
 			}, function(response) {
+				// on form validation error, populate the fields with their messages
 				djangoForm.setErrors($scope.my_form, response.data.my_form.errors);
 			});
 		}
