@@ -56,14 +56,9 @@ class NgFormValidationMixinTest(TestCase):
 
     def test_field_as_ul(self):
         bf = self.subscription_form['email']
-        ul_dirty = ''.join((
-            '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$dirty" ng-cloak>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$error.required" class="invalid">This field is required.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$error.email" class="invalid">Enter a valid email address.</li>',
-            '<li ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$valid" class="valid"></li>'
-            '</ul>'))
+        ul_dirty = '''<ul ng-show="U3Vic2NyaWJlRm9ybQ['email'].$dirty && U3Vic2NyaWJlRm9ybQ['email'].$touched" class="djng-form-control-feedback djng-field-errors" ng-cloak><li ng-show="U3Vic2NyaWJlRm9ybQ['email'].$error.required" class="invalid">This field is required.</li><li ng-show="U3Vic2NyaWJlRm9ybQ['email'].$error.email" class="invalid">Enter a valid email address.</li><li ng-show="U3Vic2NyaWJlRm9ybQ['email'].$valid" class="valid"></li></ul>'''
         self.assertTrue(ul_dirty in bf.errors.as_ul())
-        ul_pristine = '<ul class="djng-form-control-feedback djng-field-errors" ng-show="U3Vic2NyaWJlRm9ybQ[\'email\'].$pristine" ng-cloak></ul>'
+        ul_pristine = '''<ul ng-show="U3Vic2NyaWJlRm9ybQ['email'].$pristine" class="djng-form-control-feedback djng-field-errors" ng-cloak></ul>'''
         self.assertTrue(ul_pristine in bf.errors.as_ul())
 
     def test_field_as_text(self):
