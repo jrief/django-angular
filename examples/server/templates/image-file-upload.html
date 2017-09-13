@@ -21,7 +21,7 @@
 <p>This example shows how to upload an image or file to the server using AngularJS with Ajax.</p>
 {% endblock main-intro %}
 
-{% block form_tag %}name="{{ form.form_name }}" method="post" action="." validate ng-controller="MyFormCtrl"{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl"{% endblock %}
 
 {% block form_submission %}
 	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>

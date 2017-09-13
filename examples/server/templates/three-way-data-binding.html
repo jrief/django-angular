@@ -17,7 +17,7 @@
 <p>This example shows, how to propagate the form's model-scope to a foreign browser using Websockets.</p>
 {% endblock main-intro %}
 
-{% block form_tag %}validate ng-controller="MyWebsocketCtrl"{% endblock %}
+{% block form_tag %}novalidate ng-controller="MyWebsocketCtrl"{% endblock %}
 
 {% block container %}
 	{{ block.super }}
