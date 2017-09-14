@@ -33,3 +33,9 @@ ul.djng-field-errors li.valid::before {
 	color: #00c900;
 	content: "\2714";
 }
+
+.glyphicon-refresh-animate {
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin { 100% { transform:rotate(360deg); } }
