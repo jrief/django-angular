@@ -6,6 +6,7 @@
 	{% addtoblock "js" %}<script src="{% static 'js/djng-forms.js' %}" type="text/javascript"></script>{% endaddtoblock %}
 	{% addtoblock "js" %}<script src="{% static 'js/djng-forms-set.js' %}" type="text/javascript"></script>{% endaddtoblock %}
 	{% add_data "ng-requires" "djng.forms-set" %}
+	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
 {% endblock %}
 
 {% block main-content %}
@@ -16,37 +17,46 @@
 	<p>This example shows how to validate multiple Forms inside an AngularJS application.</p>
 	{% endblock main-intro %}
 
-	<hr />
-
-	<djng-forms-set>
+	<djng-forms-set upload-url="{% url 'djng_form_sets' %}">
 		<div class="row">
 			<div class="col-md-12">
 				<form name="{{ subscribe_form.form_name }}" novalidate>
-					{{ subscribe_form.as_div }}
-			{% verbatim %}
-				<h5><code>djng-forms-set</code>'s scope:</h5>
-				<pre>subscribe_data = {{ subscribe_data | json }}</pre>
-			{% endverbatim %}
+					<fieldset>
+						<legend>Subscribe Form</legend>
+						{{ subscribe_form.as_div }}
+					</fieldset>
 				</form>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<form name="{{ address_form.form_name }}" novalidate>
-					{{ address_form.as_div }}
+				<form name="{{ address_form.form_name }}" scope-model="address_data" novalidate>
+					<fieldset>
+						<legend>Address Form</legend>
+						{{ address_form.as_div }}
+					</fieldset>
 				</form>
 			</div>
 		</div>
 		<div class="row" style="margin-bottom: 20px;">
 			<div class="col-md-12">
-				<button type="submit" class="btn btn-primary">Subscribe Me</button>
+				<button ng-click="update().then(reloadPage())" type="button" class="btn btn-warning">
+					Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
+				</button>
+				<button ng-click="update().then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
+					Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
+				</button>
+				<button ng-click="disableButton().then(update().then(redirectTo(), reenableButton()))" extra-data="{delay: 1500}" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
+					Delayed Submission&emsp;<i class="glyphicon glyphicon-save"></i>
+				</button>
 			</div>
 		</div>
 		<div class="row">
 			<div class="col-md-12">
 			{% verbatim %}
 				<h5><code>djng-forms-set</code>'s scope:</h5>
-				<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+				<pre>subscribe_data = {{ subscribe_data | json }}
+address_data = {{ address_data | json }}</pre>
 			{% endverbatim %}
 			</div>
 		</div>

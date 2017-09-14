@@ -3,8 +3,8 @@
 
 {% block addtoblock %}
 	{{ block.super }}
-	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
 	<script src="{% static 'js/model-scope.js' %}" type="text/javascript"></script>
+	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
 {% endblock addtoblock %}
 
 {% block main-intro %}

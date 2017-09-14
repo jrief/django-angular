@@ -45,7 +45,7 @@
 						<a href="{% url 'djng_image_file' %}">Image and File Upload</a>
 					</li>
 					<li class="{% active request 'djng_form_sets' %}">
-						<a href="{% url 'djng_form_sets' %}">Form Sets <span class="badge">New</span></a>
+						<a href="{% url 'djng_form_sets' %}">Form Sets <span class="badge pull-right">New</span></a>
 					</li>
 					{% if WITH_WS4REDIS %}
 					<li class="{% active request 'djng_3way_databinding' %}">
