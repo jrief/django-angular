@@ -3,7 +3,7 @@ from server.forms.image_file_upload import SubscribeForm
 # from server.models.image_file_upload import SubscribeForm
 # start tutorial
 import json
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.encoding import force_text
 from django.views.generic.edit import FormView
@@ -22,4 +22,4 @@ class SubscribeView(FormView):
     def ajax(self, request):
         form = self.form_class(data=json.loads(request.body))
         response_data = {'errors': form.errors, 'success_url': force_text(self.success_url)}
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        return JsonResponse(response_data)
