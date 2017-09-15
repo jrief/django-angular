@@ -4,7 +4,7 @@
 {% block addtoblock %}
 	{{ block.super }}
 	{% addtoblock "js" %}<script src="{% static 'js/djng-forms.js' %}" type="text/javascript"></script>{% endaddtoblock %}
-	{% addtoblock "ng-requires" %}djng.forms{% endaddtoblock %}
+	{% add_data "ng-requires" "djng.forms" %}
 {% endblock %}
 
 {% block main-content %}

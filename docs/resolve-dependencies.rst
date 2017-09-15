@@ -105,14 +105,12 @@ application
 	...
 	{% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
 	<script type="text/javascript">
-	angular.module('myProject', ['ngSanitize',
-	    {% render_block "ng-requires" postprocessor "djng.sekizai_processors.module_list" %}
-	]).config(['$httpProvider', function($httpProvider) {
-	    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
-	    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-	}]).config(['$locationProvider', function($locationProvider) {
-	    $locationProvider.html5Mode(false);
-	}]){% render_block "ng-config" postprocessor "djng.sekizai_processors.module_config" %};
+	angular.module('myProject', ['ngSanitize', {% with_data "ng-requires" as ng_requires %}
+	    {% for module in ng_requires %}'{{ module }}'{% if not forloop.last %}, {% endif %}{% endfor %}
+	{% end_with_data %}])
+	{% with_data "ng-config" as ng_configs %}
+	    {% for config in ng_configs %}.config({{ config }}){% endfor %};
+	{% end_with_data %}
 	</script>
 
 	</body>
@@ -129,7 +127,7 @@ our project, we only add it to the template which requires this functionality.
 
 	{% block any_inhertited_block_will_do %}
 	    {% addtoblock "js" %}<script src="{% static 'node_modules/angular-animate/angular-animate.min.js' %}"></script>{% endaddtoblock %}
-	    {% addtoblock "ng-requires" %}ngAnimate{% endaddtoblock %}
+	    {% add_data "ng-requires" "ngAnimate" %}
 	    {% addtoblock "ng-config" %}['$animateProvider', function($animateProvider) {
 	        // restrict animation to elements with the bi-animate css class with a regexp.
 	        $animateProvider.classNameFilter(/bi-animate/); }]{% endaddtoblock %}
@@ -138,16 +136,16 @@ our project, we only add it to the template which requires this functionality.
 Here ``addtoblock "js"`` adds the inclusion of the additional requirement to our list of external
 files to load.
 
-The second line, ``addtoblock "ng-requires"`` adds ``ngAnimate`` to the list of Angular
-requirements. In our base template the specified postprocessor ``djng.sekizai_processors.module_list``
-creates a JavaScript array, which is used to initialize our AngularJS application.
+The second line, ``add_data "ng-requires" "ngAnimate"`` adds ``ngAnimate`` to the list of Angular
+requirements. In our base template we use ``{% with_data "ng-requires" as ng_requires %}`` to iterate
+over the list ``ng_requires``, which itself creates the list of AngularJS dependencies.
 
 The third line, ``addtoblock "ng-config"`` adds a configuration statement. In our base template this
-is executed while our AngularJS application configures it's dependencies.
+is executed after our AngularJS application configured their dependencies.
 
-By using these two simple postprocessors inside the templatetag ``render_block``, we can delegate
-the dependency resolution and the configuration of our Angular application to our extended
-templates. This also applies for HTML snippets included by an extended template.
+By using this simple trick, we can delegate the dependency resolution and the configuration of our
+AngularJS application to our extended templates. This also applies for HTML snippets included by
+an extended template.
 
 This approach is a great way to separate concern to the realm it belongs to.
 
