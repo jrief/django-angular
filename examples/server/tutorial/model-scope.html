@@ -5,7 +5,7 @@
     });
 </script>
 
-<form name="{{ form.form_name }}" method="post" action="." validate ng-controller="MyFormCtrl">
+<form name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl">
     {% csrf_token %}
     {{ form.as_div }}
     <button type="submit" class="btn btn-primary">Submit via Post</button>

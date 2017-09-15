@@ -13,7 +13,7 @@
 
 	{% block main-intro %}
 	<h1>Django's Forms Set</h1>
-	<p class="lead">How to validate a Set of Forms</p>
+	<p class="lead"><span class="badge">New in 1.2</span> How to validate a Set of Forms</p>
 	<p>This example shows how to validate multiple Forms inside an AngularJS application.</p>
 	{% endblock main-intro %}
 
@@ -30,7 +30,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<form name="{{ address_form.form_name }}" scope-model="address_data" novalidate>
+				<form name="{{ address_form.form_name }}" novalidate>
 					<fieldset>
 						<legend>Address Form</legend>
 						{{ address_form.as_div }}
@@ -46,7 +46,7 @@
 				<button ng-click="update().then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
 					Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 				</button>
-				<button ng-click="disableButton().then(update().then(redirectTo(), reenableButton()))" extra-data="{delay: 1500}" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
+				<button ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))" extra-data="{delay: 1.5}" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
 					Delayed Submission&emsp;<i class="glyphicon glyphicon-save"></i>
 				</button>
 			</div>
@@ -68,19 +68,80 @@ address_data = {{ address_data | json }}</pre>
 	<h3>How does it work?</h3>
 
 	{% block main-tutorial %}
-	<p>By inheriting from the mixin class <code>Bootstrap3FormMixin</code>, Django renders the form in
-	a way, compatible with Twitter Bootstrap. Here the correct CSS classes are added to the
-	<code>&lt;input&gt;</code> elements, which are embedded inside
-	<code>&lt;div class="form-group"&gt;</code> containers. If you omit <code>Bootstrap3FormMixin</code>,
-	then the Form is rendered, as Django would by default.</p>
-	<p>When this form is rejected by the server, the list of errors is rendered using AngularJS's built
-	in <a href="https://docs.angularjs.org/api/ng/directive/form">Form Controller</a> using the
-	directive <code>ng-show="<em>formname.fieldname</em>.$pristine"</code>. This in contrast to Django's
-	internal behavior has the advantage, that the field's error message disappears as soon as the
-	user starts typing.</p>
-	<p>Passwords can, for obvious reasons only be validated by the server. Here for demonstration
-	purpose, this is performed by the password field itself, but don't do this in a productive
-	environment!</p>
+	<p>
+	In component based web development, it is quite common to arrange more than one form on the
+	same page. As opposed to form submissions via <code>application/x-www-form-urlencoded</code>
+	or <code>multipart/form-data</code>, we can, thanks to Ajax, submit the content of more than
+	one form using a single HTTP-request. This requires to dispatch the submitted data on the
+	server to each form class, but if we prefix them with unique identifiers, that's a no-brainer.
+	</p>
+
+	<h5>Directive <code>djng-forms-set</code></h5>
+	<p>
+	To achieve this, we can reuse the same Form mixin classes as we have used in the previous
+	examples. The main difference is that we must wrap the set of forms into the AngularJS directive,
+	<code>&lt;djng-forms-set upload-url="/some/endpoint"&gt;...&lt;/djng-forms-set&gt;</code>.
+	Inside this directive, we render the forms as usual using
+	<code>{&#8288;{ form.as_div }&#8288;}</code>.
+	</p>
+
+	<h5>Forms Submission</h5>
+	<p>
+	The submit button(s) can now be placed outside of the <code>&lt;form&gt;...&lt;/form&gt;</code>
+	element. This allows us to submit the content from multiple forms altogether. We now however
+	must specify the common endpoint to accept our form submissions; this is, as you might have
+	expected, the attribute <nobr><code>upload-url="/some/endpoint"</code></nobr> in our forms
+	wrapping directive. To send the forms content to the server, add
+	<nobr><code>ng-click="update()"</code></nobr> to the submission button. By itself, this however
+	would not invoke any further action on the client. We therefore must tell our directive, what
+	we want to do next. For this <strong>django-angular</strong>'s button directive offers a few
+	prepared targets, which can be chained. If we change the above to
+	<nobr><code>ng-click="update().then(reloadPage())"</code></nobr>, then after a successful
+	submission the current page is reloaded. Another useful target is
+	<nobr><code>redirectTo('/path/to/view')</code></nobr>, which, after a successful submission,
+	redirects the user to another page. If the response contains
+	<nobr><code>{data: {success_url: "/path/to/other/view"}}</code></nobr>, then the URL
+	provided in <code>redirectTo()</code>is overridden.
+	</p>
+
+	<h5>Forms Validation</h5>
+	<p>
+	All forms wrapped inside our <nobr><code>djng-forms-set</code></nobr> directive, are validated.
+	This shall be used to prevent submitting data, if at least one of the forms does not validate.
+	For this, just add <nobr><code>ng-disabled="setIsInvalid"</code></nobr> to the submission button.
+	</p>
+
+	<h5>Form Submission Methods</h5>
+	<p>
+	By using the <code>update()</code> function, <strong>django-angular</strong> submits the forms
+	data with an HTTP-request using method <code>PUT</code>. To submit the same data using HTTP
+	method <code>POST</code>, use the provided function <code>create()</code>. To submit via HTTP
+	method <code>DELETE</code>, use the provided function <code>delete()</code>.
+	</p>
+
+	<h5>Form Processing Delays</h5>
+	<p>
+	Sometimes processing form data can take additional time. To improve the user experience, we
+	therefore shall add some feedback to the submission button. By changing the submit action to
+	<nobr><code>ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))"</code></nobr>
+	the submit button is deactivated during the form submission and will be reactivated as soon
+	as the server responded. Since form submission is asynchronous, here we use extensively the
+	<a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promises</a> functions
+	provided by AngularJS.
+	</p>
+	<p>If the <code>&lt;button&gt;</code> element contains an <code>&lt;i&gt;</code> element, during
+	the timeout period, the CSS classes are replaced by
+	<nobr><code>glyphicon glyphicon-refresh glyphicon-refresh-animate</code></nobr>. This adds a rotating
+	spinner wheel &ensp;<i class="glyphicon glyphicon-refresh glyphicon-refresh-animate"></i>&ensp;
+	to the button.</p>
+
+	<h5>Passing Extra Data</h5>
+	<p>
+	Sometimes we might want to use more than one submit button. In order to distinguish which of
+	those buttons has been pressed, add for instance <code>extra-data="{foo: 'bar'}"</code> to
+	the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
+	payload and can be extracted by the server's view for further analysis.
+	</p>
 
 	<p ng-init="tabList=['Form', 'View', 'HTML']"></p>
 	{% endblock main-tutorial %}
@@ -97,10 +158,6 @@ address_data = {{ address_data | json }}</pre>
 	<div ng-show="activeTab==='View'">{% pygments "views/forms_set.py" %}</div>
 	<div ng-show="activeTab==='HTML'">{% pygments "tutorial/forms-set.html" %}</div>
 	{% endautoescape %}
-	<p class="bg-info">Use this setting, if you want your forms behave the way intended by Django.
-	Here the only exception is, that errors from a previous and failed form validation disappear, as
-	soon as the user changes that field.<br/>In this setting, AngularJS adds a dummy
-	<code>ng-model</code> attribute to each input field.</p>
 	{% endblock main-sample-code %}
 
 	</div>
