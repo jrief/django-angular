@@ -34,7 +34,7 @@ ul.djng-field-errors li.valid::before {
 	content: "\2714";
 }
 
-.glyphicon-refresh-animate {
+.djng-rotate-animate {
 	animation: spin 2s linear infinite;
 }
 

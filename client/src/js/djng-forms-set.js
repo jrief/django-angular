@@ -196,7 +196,7 @@ djngModule.directive('button', ['$q', '$window', function($q, $window) {
 				angular.forEach(element.find('i'), function(icon) {
 					icon = angular.element(icon);
 					icon.attr('deactivated-class', icon.attr('class'));
-					icon.attr('class', 'glyphicon glyphicon-refresh glyphicon-refresh-animate');
+					icon.attr('class', 'glyphicon glyphicon-refresh djng-rotate-animate');
 				});
 				return {
 					then: function() {
