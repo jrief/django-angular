@@ -21,6 +21,7 @@ Contents
   demos
   angular-model-form
   angular-form-validation
+  forms-set
   tutorial-forms
   upload-files
   basic-crud-operations
