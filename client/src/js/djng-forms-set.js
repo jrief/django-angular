@@ -60,9 +60,11 @@ djngModule.directive('djngFormsSet', function() {
 				}).then(function(response) {
 					deferred.resolve(response);
 				}, function(response) {
-					angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
-						djangoForm.setErrors($scope[formName], response.data[formName].errors);
-					});
+					if (response.status === 422) {
+						angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
+							djangoForm.setErrors($scope[formName], response.data[formName].errors);
+						});
+					}
 					deferred.reject(response);
 				});
 			};
