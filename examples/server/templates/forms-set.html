@@ -46,7 +46,7 @@
 				<button ng-click="update().then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
 					Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 				</button>
-				<button ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))" extra-data="{delay: 1.5}" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
+				<button ng-click="disableButton().then(update({delay: 1.5}).then(redirectTo()).finally(reenableButton()))" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
 					Delayed Submission&emsp;<i class="glyphicon glyphicon-save"></i>
 				</button>
 			</div>
@@ -138,9 +138,9 @@ address_data = {{ address_data | json }}</pre>
 	<h5>Passing Extra Data</h5>
 	<p>
 	Sometimes we might want to use more than one submit button. In order to distinguish which of
-	those buttons has been pressed, add for instance <code>extra-data="{foo: 'bar'}"</code> to
-	the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
-	payload and can be extracted by the server's view for further analysis.
+	those buttons has been pressed, add for instance <code>ng-click="update({foo: 'bar'})"</code>
+	to the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
+	submitted payload and can be extracted by the server's view for further analysis.
 	</p>
 
 	<p ng-init="tabList=['Form', 'View', 'HTML']"></p>

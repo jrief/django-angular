@@ -29,7 +29,7 @@
     Validated Submission
   </button>
 
-  <button ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))" extra-data="{delay: 1.5}" ng-disabled="setIsInvalid" type="button">
+  <button ng-click="disableButton().then(update({delay: 1.5}).then(redirectTo()).finally(reenableButton()))" ng-disabled="setIsInvalid" type="button">
     Delayed Submission
   </button>
 

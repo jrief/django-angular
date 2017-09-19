@@ -38,7 +38,7 @@ djngModule.directive('djngFormsSet', function() {
 					throw new Error("Can not upload form data: Missing attribute 'upload-url'.");
 
 				// merge the data from various scope entities into one data object
-				if (extraData) {
+				if (angular.isObject(extraData)) {
 					angular.merge(data, extraData);
 				}
 				angular.forEach(self.digestUploadScope, function(scopeModels) {
@@ -173,21 +173,21 @@ djngModule.directive('button', ['$q', '$window', function($q, $window) {
 			if (!formsSetController)
 				return;  // not for buttons outside <ANY djng-forms-set></ANY djng-forms-set>
 
-			scope.create = function() {
+			scope.create = function(extraData) {
 				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'POST', scope.djngExtraData);
+				formsSetController.uploadScope(deferred, 'POST', extraData);
 				return deferred.promise;
 			};
 
-			scope.update = function() {
+			scope.update = function(extraData) {
 				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'PUT', scope.djngExtraData);
+				formsSetController.uploadScope(deferred, 'PUT', extraData);
 				return deferred.promise;
 			};
 
-			scope.delete = function() {
+			scope.delete = function(extraData) {
 				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'DELETE', scope.djngExtraData);
+				formsSetController.uploadScope(deferred, 'DELETE', extraData);
 				return deferred.promise;
 			};
 
@@ -236,11 +236,6 @@ djngModule.directive('button', ['$q', '$window', function($q, $window) {
 					}
 				};
 			};
-
-			// initialize the directive
-			if (attrs.extraData) {
-				scope.djngExtraData = scope.$eval(attrs.extraData) || attrs.extraData;
-			}
 
 		}
 	};
