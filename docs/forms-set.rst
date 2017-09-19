@@ -88,6 +88,6 @@ Passing Extra Data
 ------------------
 
 Sometimes we might want to use more than one submit button. In order to distinguish which of those
-buttons has been pressed, add for instance ``extra-data="{foo: 'bar'}"`` to the corresponding
-``<button>`` element. That dictionary then is added to the payload and can be extracted by the
-server's view for further analysis.
+buttons has been pressed, add for instance ``ng-click="update({foo: 'bar'})"`` to the
+corresponding ``<button>`` element. That dictionary then is added to the submitted payload and can
+be extracted by the server's view for further analysis.
