@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 from server.forms.forms_set import SubscribeForm, AddressForm
 # start tutorial
 import json
-import time
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
@@ -21,7 +20,6 @@ class SubscribeView(TemplateView):
 
     def put(self, request, *args, **kwargs):
         form_data = json.loads(request.body)
-        time.sleep(form_data.get('delay', 0))  # artificial delay
         subscribe_form = SubscribeForm(data=form_data.get(SubscribeForm.scope_prefix, {}))
         address_form = AddressForm(data=form_data.get(AddressForm.scope_prefix, {}))
         if subscribe_form.is_valid() and address_form.is_valid():

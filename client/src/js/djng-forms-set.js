@@ -13,7 +13,7 @@ djngModule.directive('djngFormsSet', function() {
 	return {
 		require: 'djngFormsSet',
 		scope: true,
-		controller: ['$scope', '$http', '$window', 'djangoForm', function($scope, $http, $window, djangoForm) {
+		controller: ['$scope', '$http', '$q', '$window', 'djangoForm', function($scope, $http, $q, $window, djangoForm) {
 			var self = this;
 
 			// a map of booleans keeping the validation state for each of the child forms
@@ -32,8 +32,8 @@ djngModule.directive('djngFormsSet', function() {
 				$scope.setIsInvalid = !$scope.setIsValid;
 			};
 
-			this.uploadScope = function(deferred, method, extraData) {
-				var data = {};
+			this.uploadScope = function(method, extraData) {
+				var deferred = $q.defer(), data = {};
 				if (!self.uploadURL)
 					throw new Error("Can not upload form data: Missing attribute 'upload-url'.");
 
@@ -67,6 +67,8 @@ djngModule.directive('djngFormsSet', function() {
 					}
 					deferred.reject(response);
 				});
+
+				return deferred.promise;
 			};
 		}],
 		link: function(scope, element, attrs, formsSetController) {
@@ -165,22 +167,27 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			if (!formsSetController)
 				return;  // not for buttons outside <ANY djng-forms-set></ANY djng-forms-set>
 
-			scope.create = function(extraData) {
-				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'POST', extraData);
-				return deferred.promise;
+			// prefix function create/update/delete with: do(update()).then(...)
+			scope.do = function(resolve, reject) {
+				return $q.resolve().then(resolve, reject);
 			};
 
-			scope.update = function(extraData) {
-				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'PUT', extraData);
-				return deferred.promise;
+			scope.create = function(extraData) {
+				return function() {
+					return formsSetController.uploadScope('POST', extraData);
+				};
+			};
+
+			scope.update = function update(extraData) {
+				return function() {
+					return formsSetController.uploadScope('PUT', extraData);
+				};
 			};
 
 			scope.delete = function(extraData) {
-				var deferred = $q.defer();
-				formsSetController.uploadScope(deferred, 'DELETE', extraData);
-				return deferred.promise;
+				return function() {
+					return formsSetController.uploadScope('DELETE', extraData);
+				};
 			};
 
 			// Some actions require a lot of time. This function disables the button and
@@ -192,11 +199,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 					icon.attr('deactivated-class', icon.attr('class'));
 					icon.attr('class', 'glyphicon glyphicon-refresh djng-rotate-animate');
 				});
-				return {
-					then: function() {
-						this.then = arguments[0];  // reassign .then() to the user-defined function
-					}
-				};
+				return $q.resolve();
 			};
 
 			// Remove a previously added spinning wheel and reenable the button.
@@ -229,6 +232,16 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
+			// add an artificial delay in miliseconds before proceeding
+			scope.delay = function(ms) {
+				return function(response) {
+					return $q(function(resolve) {
+						$timeout(function() {
+							resolve(response);
+						}, ms);
+					});
+				};
+			};
 		}
 	};
 }]);

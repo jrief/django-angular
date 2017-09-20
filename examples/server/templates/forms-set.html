@@ -40,13 +40,13 @@
 		</div>
 		<div class="row" style="margin-bottom: 20px;">
 			<div class="col-md-12">
-				<button ng-click="update().then(reloadPage())" type="button" class="btn btn-warning">
+				<button ng-click="do(update()).then(reloadPage())" type="button" class="btn btn-warning">
 					Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
 				</button>
-				<button ng-click="update().then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
+				<button ng-click="do(update()).then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
 					Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 				</button>
-				<button ng-click="disableButton().then(update({delay: 1.5}).then(redirectTo()).finally(reenableButton()))" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
+				<button ng-click="disableButton().then(update()).then(delay(1500)).then(redirectTo()).finally(reenableButton())" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
 					Delayed Submission&emsp;<i class="glyphicon glyphicon-save"></i>
 				</button>
 			</div>
@@ -90,13 +90,15 @@ address_data = {{ address_data | json }}</pre>
 	The submit button(s) can now be placed outside of the <code>&lt;form&gt;...&lt;/form&gt;</code>
 	element. This allows us to submit the content from multiple forms altogether. We now however
 	must specify the common endpoint to accept our form submissions; this is, as you might have
-	expected, the attribute <nobr><code>upload-url="/some/endpoint"</code></nobr> in our forms
-	wrapping directive. To send the forms content to the server, add
-	<nobr><code>ng-click="update()"</code></nobr> to the submission button. By itself, this however
-	would not invoke any further action on the client. We therefore must tell our directive, what
-	we want to do next. For this <strong>django-angular</strong>'s button directive offers a few
-	prepared targets, which can be chained. If we change the above to
-	<nobr><code>ng-click="update().then(reloadPage())"</code></nobr>, then after a successful
+	expected, the attribute <nobr><code>upload-url="/some/endpoint"</code></nobr> in our form
+	wrapping directive. To send the form's content to the server, add
+	<nobr><code>ng-click="do(update())"</code></nobr> to the submission button. We have to start
+	this expression with <code>do(...)</code>, in order to emulate the first promise, see below.
+
+	By itself, this however would not invoke any further action on the client. We therefore must
+	tell our directive, what we want to do next. For this <strong>django-angular</strong>'s button
+	directive offers a few prepared targets, which can be chained. If we change the above to
+	<nobr><code>ng-click="do(update()).then(reloadPage())"</code></nobr>, then after a successful
 	submission the current page is reloaded. Another useful target is
 	<nobr><code>redirectTo('/path/to/view')</code></nobr>, which, after a successful submission,
 	redirects the user to another page. If the response contains
@@ -123,7 +125,7 @@ address_data = {{ address_data | json }}</pre>
 	<p>
 	Sometimes processing form data can take additional time. To improve the user experience, we
 	therefore shall add some feedback to the submission button. By changing the submit action to
-	<nobr><code>ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))"</code></nobr>
+	<nobr><code>ng-click="disableButton().then(update()).then(redirectTo()).finally(reenableButton())"</code></nobr>
 	the submit button is deactivated during the form submission and will be reactivated as soon
 	as the server responded. Since form submission is asynchronous, here we use extensively the
 	<a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promises</a> functions
@@ -138,7 +140,7 @@ address_data = {{ address_data | json }}</pre>
 	<h5>Passing Extra Data</h5>
 	<p>
 	Sometimes we might want to use more than one submit button. In order to distinguish which of
-	those buttons has been pressed, add for instance <code>ng-click="update({foo: 'bar'})"</code>
+	those buttons has been pressed, add for instance <code>ng-click="do(update({foo: 'bar'}))"</code>
 	to the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
 	submitted payload and can be extracted by the server's view for further analysis.
 	</p>
