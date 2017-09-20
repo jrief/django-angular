@@ -21,15 +21,15 @@
     </fieldset>
   </form>
 
-  <button ng-click="update().then(reloadPage())" type="button">
+  <button ng-click="do(update()).then(reloadPage())" type="button">
     Forced Submission
   </button>
 
-  <button ng-click="update().then(reloadPage())" ng-disabled="setIsInvalid" type="button">
+  <button ng-click="do(update()).then(reloadPage())" ng-disabled="setIsInvalid" type="button">
     Validated Submission
   </button>
 
-  <button ng-click="disableButton().then(update({delay: 1.5}).then(redirectTo()).finally(reenableButton()))" ng-disabled="setIsInvalid" type="button">
+  <button ng-click="disableButton().then(update()).then(delay(1500)).then(redirectTo()).finally(reenableButton())" ng-disabled="setIsInvalid" type="button">
     Delayed Submission
   </button>
 

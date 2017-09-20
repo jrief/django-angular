@@ -27,11 +27,14 @@ The submit button(s) can now be placed outside of the ``<form>...</form>`` eleme
 to submit the content from multiple forms altogether. We now however must specify the common
 endpoint to accept our form submissions; this is, as you might have expected, the attribute
 ``upload-url="/some/endpoint" in our forms wrapping directive ``djng-forms-set``. To send the forms
-content to the server, add ``ng-click="update()"`` to the submission button. By itself however,
-this invocation of ``update()`` does not execute any further action on the client. We therefore
-must tell our directive, what we want to do next. For this, **django-angular**'s ``button``
-directive offers a few prepared targets, such as ``reloadPage()`` or ``redirectTo()``. They
-typically shall be executed asynchronouosly, *after* the server replied to the update request.
+content to the server, add ``ng-click="do(update())"`` to the submission button. By itself however,
+this invocation of ``update()`` does not execute any further action on the client. We have to start
+this expression with ``do(...)``, in order to emulate the first promise, see below.
+
+By itself, sending some data to the server does not cause any further action on the client. We
+therefore must tell our directive, what we want to do next. For this, **django-angular**'s
+``button`` directive offers a few prepared targets, such as ``reloadPage()`` or ``redirectTo()``.
+They typically shall be executed asynchronouosly, *after* the server replied to the update request.
 
 
 Chaining Targets
@@ -40,7 +43,7 @@ Chaining Targets
 Since form submission is asynchronous, here we extensively use the promises functions provided by
 AngularJS.
 
-If we change the button element to ``<button ng-click="update().then(reloadPage())">``, *then*
+If we change the button element to ``<button ng-click="do(update()).then(reloadPage())">``, *then*
 after our successful Ajax submission, the current page is reloaded.
 
 Another useful target is ``redirectTo('/path/to/view')``, which, after a successful submission,
@@ -73,7 +76,7 @@ Form Processing Delays
 
 Sometimes processing form data can take additional time. To improve the user experience, we shall
 add some feedback to the submission button. By changing the submit action to
-``ng-click="disableButton().then(update().then(redirectTo()).finally(reenableButton()))"`` the
+``ng-click="disableButton().then(update()).then(redirectTo()).finally(reenableButton())"`` the
 submit button is deactivated (``disableButton``) during the form submission and will be reactivated
 (``reenableButton``) as soon as the server responded. Here we use ``finally``, since we want to
 reactivate the button, regardless of the servers's success status. Remember,
@@ -88,6 +91,6 @@ Passing Extra Data
 ------------------
 
 Sometimes we might want to use more than one submit button. In order to distinguish which of those
-buttons has been pressed, add for instance ``ng-click="update({foo: 'bar'})"`` to the
+buttons has been pressed, add for instance ``ng-click="do(update({foo: 'bar'}))"`` to the
 corresponding ``<button>`` element. That dictionary then is added to the submitted payload and can
 be extracted by the server's view for further analysis.

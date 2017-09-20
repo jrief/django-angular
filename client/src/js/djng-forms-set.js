@@ -167,7 +167,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			if (!formsSetController)
 				return;  // not for buttons outside <ANY djng-forms-set></ANY djng-forms-set>
 
-			// prefix function create/update/delete with: do(update()).then(...)
+			// prefix function create/update/delete with: do(...).then(...)
 			scope.do = function(resolve, reject) {
 				return $q.resolve().then(resolve, reject);
 			};
@@ -191,7 +191,8 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			};
 
 			// Some actions require a lot of time. This function disables the button and
-			// replaces existing icons against a spinning wheel.
+			// replaces existing icons against a spinning wheel. It must be used instead
+			// as the first action, ie. ``ng-click="disableButton().then(...)``.
 			scope.disableButton = function() {
 				element.attr('disabled', 'disabled');
 				angular.forEach(element.find('i'), function(icon) {
@@ -204,7 +205,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 
 			// Remove a previously added spinning wheel and reenable the button.
 			scope.reenableButton = function() {
-				return function() {
+				return function(response) {
 					element.removeAttr('disabled');
 					angular.forEach(element.find('i'), function(icon) {
 						icon = angular.element(icon);
@@ -213,6 +214,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 							icon.removeAttr('deactivated-class');
 						}
 					});
+					return $q.resolve(response);
 				};
 			};
 
