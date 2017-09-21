@@ -73,23 +73,19 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
 		case 'radio':
-			if (field.defaultChecked) {
+			if (field.defaultChecked)
 				return field.defaultValue;
-			}
 			break;
 		case 'checkbox':
-			if (field.defaultChecked) {
+			if (field.defaultChecked)
 				return true;
-			}
 			break;
 		case 'password':
 			// after an (un)successful submission, reset the password field
 			return null;
-			break;
 		default:
-			if(field.defaultValue) {
+			if (field.defaultValue)
 				return field.defaultValue;
-			}
 			break;
 		}
 	}
@@ -315,23 +311,18 @@ djng_forms_module.factory('djangoForm', function() {
 	}
 
 	return {
-		// setErrors takes care of updating prepared placeholder fields for displaying form errors
-		// detected by an AJAX submission. Returns true if errors have been added to the form.
-		setErrors: function(form, errors) {
-			// remove errors from this form, which may have been rejected by an earlier validation
+		// clearErrors removes errors from this form, which may have been rejected by an earlier validation
+		clearErrors: function(form) {
 			form.$message = '';
 			if (form.hasOwnProperty('$error') && angular.isArray(form.$error.rejected)) {
-				/*
-				 * make copy of rejected before we loop as calling
-				 * field.$setValidity('rejected', true) modifies the error array
-				 * so only every other one was being removed
-				 */
-				var rejected = form.$error.rejected.concat();
-				angular.forEach(rejected, function(rejected) {
+				// make copy of form.$error.rejected before we loop as calling
+				// field.$setValidity('rejected', true) modifies the error array so only every
+				// other one was being removed
+				angular.forEach(form.$error.rejected.concat(), function(rejected) {
 					var field, key = rejected.$name;
 					if (form.hasOwnProperty(key)) {
 						field = form[key];
-						if (isField(field) && field.clearRejected) {
+						if (isField(field) && angular.isFunction(field.clearRejected)) {
 							field.clearRejected();
 						} else {
 							field.$message = '';
@@ -345,6 +336,10 @@ djng_forms_module.factory('djangoForm', function() {
 					}
 				});
 			}
+		},
+		// setErrors takes care of updating prepared placeholder fields for displaying form errors
+		// detected by an AJAX submission. Returns true if errors have been added to the form.
+		setErrors: function(form, errors) {
 			// add the new upstream errors
 			angular.forEach(errors, function(errors, key) {
 				var field;
@@ -370,7 +365,13 @@ djng_forms_module.factory('djangoForm', function() {
 					}
 				}
 			});
-			return isNotEmpty(errors);
+		},
+		// setModels takes care of updating the models of the given form. This can be used to update the forms
+		// content with data send by the server.
+		setModels: function(form, models) {
+			angular.forEach(errors, function(errors, key) {
+				var field;
+			});
 		}
 	};
 });
