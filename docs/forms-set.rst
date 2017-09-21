@@ -76,7 +76,7 @@ Form Processing Delays
 
 Sometimes processing form data can take additional time. To improve the user experience, we shall
 add some feedback to the submission button. By changing the submit action to
-``ng-click="disableButton().then(update()).then(redirectTo()).finally(reenableButton())"`` the
+``ng-click="do(disableButton()).then(update()).then(redirectTo()).finally(reenableButton())"`` the
 submit button is deactivated (``disableButton``) during the form submission and will be reactivated
 (``reenableButton``) as soon as the server responded. Here we use ``finally``, since we want to
 reactivate the button, regardless of the servers's success status. Remember,

@@ -194,13 +194,15 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			// replaces existing icons against a spinning wheel. It must be used instead
 			// as the first action, ie. ``ng-click="disableButton().then(...)``.
 			scope.disableButton = function() {
-				element.attr('disabled', 'disabled');
-				angular.forEach(element.find('i'), function(icon) {
-					icon = angular.element(icon);
-					icon.attr('deactivated-class', icon.attr('class'));
-					icon.attr('class', 'glyphicon glyphicon-refresh djng-rotate-animate');
-				});
-				return $q.resolve();
+				return function(response) {
+					element.attr('disabled', 'disabled');
+					angular.forEach(element.find('i'), function(icon) {
+						icon = angular.element(icon);
+						icon.attr('deactivated-class', icon.attr('class'));
+						icon.attr('class', 'glyphicon glyphicon-refresh djng-rotate-animate');
+					});
+					return $q.resolve(response);
+				};
 			};
 
 			// Remove a previously added spinning wheel and reenable the button.

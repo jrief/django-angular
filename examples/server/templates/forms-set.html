@@ -46,7 +46,7 @@
 				<button ng-click="do(update()).then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
 					Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 				</button>
-				<button ng-click="disableButton().then(update()).then(delay(1500)).then(redirectTo()).finally(reenableButton())" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
+				<button ng-click="do(disableButton()).then(update()).then(delay(1500)).then(redirectTo()).finally(reenableButton())" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
 					Delayed Submission&emsp;<i class="glyphicon glyphicon-save"></i>
 				</button>
 			</div>
@@ -125,7 +125,7 @@ address_data = {{ address_data | json }}</pre>
 	<p>
 	Sometimes processing form data can take additional time. To improve the user experience, we
 	therefore shall add some feedback to the submission button. By changing the submit action to
-	<nobr><code>ng-click="disableButton().then(update()).then(redirectTo()).finally(reenableButton())"</code></nobr>
+	<nobr><code>ng-click="do(disableButton()).then(update()).then(redirectTo()).finally(reenableButton())"</code></nobr>
 	the submit button is deactivated during the form submission and will be reactivated as soon
 	as the server responded. Since form submission is asynchronous, here we use extensively the
 	<a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promises</a> functions
