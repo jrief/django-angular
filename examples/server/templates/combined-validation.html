@@ -7,7 +7,7 @@
 <p>In this example, client-side Form validation is combined with two-way data-binding.</p>
 {% endblock main-intro %}
 
-{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl"{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." ng-model-options="{allowInvalid: true}" novalidate ng-controller="MyFormCtrl"{% endblock %}
 
 {% block form_submission %}
 	<p>

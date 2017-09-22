@@ -20,7 +20,7 @@
 	<djng-forms-set upload-url="{% url 'djng_form_sets' %}">
 		<div class="row">
 			<div class="col-md-12">
-				<form name="{{ subscribe_form.form_name }}" novalidate>
+				<form name="{{ subscribe_form.form_name }}" ng-model-options="{allowInvalid: true}" novalidate>
 					<fieldset>
 						<legend>Subscribe Form</legend>
 						{{ subscribe_form.as_div }}
@@ -30,7 +30,7 @@
 		</div>
 		<div class="row">
 			<div class="col-md-12">
-				<form name="{{ address_form.form_name }}" novalidate>
+				<form name="{{ address_form.form_name }}" ng-model-options="{allowInvalid: true}" novalidate>
 					<fieldset>
 						<legend>Address Form</legend>
 						{{ address_form.as_div }}
