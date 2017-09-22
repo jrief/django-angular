@@ -16,7 +16,7 @@ Directive ``djng-forms-set``
 
 To achieve this, we can reuse the same Form mixin classes as we have used in the previous examples.
 The main difference is that we must wrap the set of forms into the AngularJS directive,
-``<djng-forms-set upload-url="/some/endpoint">...</djng-forms-set>``. Inside this directive, we
+``<djng-forms-set endpoint="/some/endpoint">...</djng-forms-set>``. Inside this directive, we
 render the forms as usual using ``{⁠{ some_form.as_div }⁠}``.
 
 
@@ -26,7 +26,7 @@ Forms Submission
 The submit button(s) can now be placed outside of the ``<form>...</form>`` element. This allows us
 to submit the content from multiple forms altogether. We now however must specify the common
 endpoint to accept our form submissions; this is, as you might have expected, the attribute
-``upload-url="/some/endpoint" in our forms wrapping directive ``djng-forms-set``. To send the forms
+``endpoint="/some/endpoint" in our forms wrapping directive ``djng-forms-set``. To send the forms
 content to the server, add ``ng-click="do(update())"`` to the submission button. By itself however,
 this invocation of ``update()`` does not execute any further action on the client. We have to start
 this expression with ``do(...)``, in order to emulate the first promise, see below.
