@@ -13,11 +13,11 @@
 <p>This example shows how to reflect Django's form data into an AngularJS controller.</p>
 {% endblock main-intro %}
 
-{% block form_tag %}name="{{ form.form_name }}" method="post" action="." ng-model-options="{allowInvalid: true}" novalidate ng-controller="MyFormCtrl"{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" method="post" action="." djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate{% endblock %}
 
 {% block form_submission %}
 	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>
-	<button type="button" class="btn btn-primary" ng-click="submit()">Submit via Ajax</button>
+	<button type="button" class="btn btn-primary" ng-click="do(update())">Submit via Ajax</button>
 {% endblock %}
 
 {% block form_foot %}

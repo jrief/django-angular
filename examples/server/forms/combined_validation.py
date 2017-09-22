@@ -9,9 +9,8 @@ from djng.styling.bootstrap3.forms import Bootstrap3Form
 
 def validate_password(value):
     # Just for demo. Do not validate passwords like this!
-    if value != 'secret':
-        raise ValidationError('The password is wrong.')
-
+    if value != "secret":
+        raise ValidationError("The password is wrong.")
 
 class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     use_required_attribute = False
