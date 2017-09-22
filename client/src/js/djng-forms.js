@@ -15,31 +15,28 @@ function hashCode(s) {
 	}, 0);
 }
 
-// This directive adds a dummy binding to form elements without ng-model attribute,
+// These directives adds a dummy binding to form elements without ng-model attribute,
 // so that AngularJS form validation gets notified whenever the fields content changes
 // http://www.w3schools.com/html/html_form_elements.asp
-var form_elements = ['input', 'select', 'textarea', 'datalist'];
-
-angular.forEach(form_elements, function(element) {
-	djng_forms_module.directive(element, addNgModelDirective());
+angular.forEach(['input', 'select', 'textarea', 'datalist'], function(element) {
+	djngModule.directive(element, (function() {
+		return ['$compile', function($compile) {
+			return {
+				restrict: 'E',
+				require: '?^form',
+				link: function(scope, element, attr, formCtrl) {
+					var modelName;
+					if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
+						return;
+					modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");
+					attr.$set('ngModel', modelName);
+					$compile(element, null, 9999)(scope);
+				}
+			};
+		}];
+	})());
 });
 
-function addNgModelDirective() {
-	return ['$compile', function($compile) {
-		return {
-			restrict: 'E',
-			require: '?^form',
-			link: function(scope, element, attr, formCtrl) {
-				var modelName;
-				if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
-					return;
-				modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");
-				attr.$set('ngModel', modelName);
-				$compile(element, null, 9999)(scope);
-			}
-		};
-	}];
-}
 
 // Bound fields with invalid input data, shall be marked as ng-invalid-bound, so that
 // the input field visibly contains invalid data, even if pristine
