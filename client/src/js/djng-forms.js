@@ -4,7 +4,8 @@
 // module: djng.forms
 // Correct Angular's form.FormController behavior after rendering bound forms.
 // Additional validators for form elements.
-var djng_forms_module = angular.module('djng.forms', []);
+var djngModule = angular.module('djng.forms', []);
+
 
 // create a simple hash code for the given string
 function hashCode(s) {
@@ -42,7 +43,7 @@ function addNgModelDirective() {
 
 // Bound fields with invalid input data, shall be marked as ng-invalid-bound, so that
 // the input field visibly contains invalid data, even if pristine
-djng_forms_module.directive('djngError', function() {
+djngModule.directive('djngError', function() {
 	return {
 		restrict: 'A',
 		require: '?^form',
@@ -68,7 +69,7 @@ djng_forms_module.directive('djngError', function() {
 // This directive overrides some of the internal behavior on forms if used together with AngularJS.
 // Otherwise, the content of bound forms is not displayed, because AngularJS does not know about
 // the concept of bound forms and thus hides values preset by Django while rendering HTML.
-djng_forms_module.directive('ngModel', ['$log', function($log) {
+djngModule.directive('ngModel', ['$log', function($log) {
 	function restoreInputField(field) {
 		// restore the field's content from the rendered content of bound fields
 		switch (field.type) {
@@ -115,9 +116,9 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 	}
 
 	function setDefaultValue(modelCtrl, value) {
-		if(angular.isDefined(value)) {
+		if (angular.isDefined(value)) {
 			modelCtrl.$setViewValue(value);
-			if(angular.isObject(modelCtrl.$options)) {
+			if (angular.isObject(modelCtrl.$options)) {
 				modelCtrl.$commitViewValue();
 			}
 		}
@@ -134,9 +135,8 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 			var curModelValue = scope.$eval(attrs.ngModel);
   
 			// if model already has a value defined, don't set the default
-			if (!field || !formCtrl || angular.isDefined(curModelValue)) {
+			if (!field || !formCtrl || angular.isDefined(curModelValue))
 				return;
-			}
 
 			switch (field.tagName) {
 			case 'INPUT':
@@ -163,7 +163,7 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 // This directive is added automatically by django-angular for widgets of type RadioSelect and
 // CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
 // which forms a group for one `django.forms.Field`.
-djng_forms_module.directive('validateMultipleFields', function() {
+djngModule.directive('validateMultipleFields', function() {
 	return {
 		restrict: 'A',
 		require: '^?form',
@@ -218,7 +218,7 @@ djng_forms_module.directive('validateMultipleFields', function() {
 // <input ng-model="a_date" type="text" validate-date="^(\d{4})-(\d{1,2})-(\d{1,2})$" />
 // Now, such an input field is only considered valid, if the date is a valid date and if it matches
 // against the given regular expression.
-djng_forms_module.directive('validateDate', function() {
+djngModule.directive('validateDate', function() {
 	var validDatePattern = null;
 
 	function validateDate(date) {
@@ -260,7 +260,7 @@ djng_forms_module.directive('validateDate', function() {
 
 
 // This directive can be added to an input field to validate emails using a similar regex to django
-djng_forms_module.directive('validateEmail', function() {
+djngModule.directive('validateEmail', function() {
 	return {
 		require: '?ngModel',
 		restrict: 'A',
@@ -286,7 +286,7 @@ djng_forms_module.directive('validateEmail', function() {
 //      djangoForm.setErrors($scope.form, data.errors);
 //  });
 // djangoForm.setErrors returns false, if no errors have been transferred.
-djng_forms_module.factory('djangoForm', function() {
+djngModule.factory('djangoForm', function() {
 	var NON_FIELD_ERRORS = '__all__';
 
 	function isNotEmpty(obj) {
@@ -380,7 +380,7 @@ djng_forms_module.factory('djangoForm', function() {
 // Directive <ANY djng-bind-if="any_variable"> behaves similar to `ng-bind` but leaves the elements
 // content as is, if the value to bind is undefined. This allows to set a default value in case the
 // scope variables are not ready yet.
-djng_forms_module.directive('djngBindIf', function() {
+djngModule.directive('djngBindIf', function() {
 	return {
 		restrict: 'A',
 		compile: function(templateElement) {
