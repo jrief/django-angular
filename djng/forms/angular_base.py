@@ -325,7 +325,7 @@ class NgFormBaseMixin(object):
         Return server side errors. Shall be overridden by derived forms to add their
         extra errors for AngularJS.
         """
-        identifier = format_html('{0}.{1}', self.form_name, field.name)
+        identifier = format_html('{0}[\'{1}\']', self.form_name, field.name)
         errors = self.errors.get(field.html_name, [])
         return self.error_class([SafeTuple(
             (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])
