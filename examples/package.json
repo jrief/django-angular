@@ -1,6 +1,6 @@
 {
   "name": "django-angular",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Demo for django-angular",
   "main": "index.js",
   "scripts": {
@@ -8,6 +8,10 @@
   },
   "author": "Jacob Rief",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jrief/django-angular.git"
+  },
   "dependencies": {
     "angular": "~1.5.11",
     "bootstrap": "^3.3.7",
