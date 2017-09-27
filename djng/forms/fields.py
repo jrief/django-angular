@@ -277,6 +277,11 @@ class MultipleFieldMixin(DefaultFieldMixin):
 
 
 class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
+    def __init__(self, *args, **kwargs):
+        super(ChoiceField, self).__init__(*args, **kwargs)
+        if isinstance(self.widget, widgets.Select) and self.initial is None and len(self.choices):
+            self.initial = self.choices[0][0]
+
     def has_subwidgets(self):
         return isinstance(self.widget, widgets.RadioSelect)
 
