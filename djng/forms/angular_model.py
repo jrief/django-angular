@@ -70,7 +70,7 @@ class NgModelFormMixin(NgFormBaseMixin):
 
     def non_field_errors(self):
         errors = super(NgModelFormMixin, self).non_field_errors()
-        errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$message', 'invalid', '$message')))
+        errors.append(SafeTuple((self.form_name, self.form_error_css_classes, '$pristine', '$error.rejected', 'invalid', '$message')))
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
