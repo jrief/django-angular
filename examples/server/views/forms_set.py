@@ -19,21 +19,19 @@ class SubscribeView(TemplateView):
         return self.render_to_response(context)
 
     def put(self, request, *args, **kwargs):
-        form_data = json.loads(request.body)
-        subscribe_form = SubscribeForm(data=form_data.get(SubscribeForm.scope_prefix, {}))
-        address_form = AddressForm(data=form_data.get(AddressForm.scope_prefix, {}))
+        request_data = json.loads(request.body)
+        subscribe_form = SubscribeForm(data=request_data.get(SubscribeForm.scope_prefix, {}))
+        address_form = AddressForm(data=request_data.get(AddressForm.scope_prefix, {}))
         response_data = {}
 
-        if form_data.get('delay'):
+        if request_data.get('delay'):
             time.sleep(1.5)  # emulate a delayed form submission
 
         # optionally populate the client model
-        if form_data.get('set_defaults'):
+        if request_data.get('set_defaults'):
             response_data.update({
                 subscribe_form.form_name: {
-                    'models': {
-                        'full_name': "John Doe",
-                    }
+                    'full_name': "John Doe",
                 }
             })
 

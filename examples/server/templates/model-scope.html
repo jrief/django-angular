@@ -3,7 +3,6 @@
 
 {% block addtoblock %}
 	{{ block.super }}
-	<script src="{% static 'js/model-scope.js' %}" type="text/javascript"></script>
 	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
 {% endblock addtoblock %}
 
@@ -22,35 +21,116 @@
 
 {% block form_foot %}
 	{% verbatim %}
-		<h5><code>MyFormCtrl</code>'s scope:</h5>
+		<h5>Scope:</h5>
 		<pre>subscribe_data = {{ subscribe_data | json }}</pre>
+		<h5>Form Scope:</h5>
+		<pre>my_form.$error = {{ my_form.$error | json }}</pre>
+		<h5>Notify Scope:</h5>
+		<pre>my_form.notifyme = {{ my_form.notifyme | json }}</pre>
 	{% endverbatim %}
 {% endblock form_foot %}
 
 {% block main-tutorial %}
-<p>When working with Django Forms and AngularJS, it is a common use case to access the form's model
-from within an Angular controller. If the directive <code>ng-model</code> is added to an input
-field, then the controller's <code>$scope</code> object, always contains the actual field's content
-for further disposal.</p>
-<p>If a form inherits from the mixin class <code>NgModelFormMixin</code>, then Django renders each
-Field with the directive <code>ng-model="<em>fieldname</em>"</code>. To prevent the pollution
-of the scope's namespace, it is common practice to encapsulate all the form fields into a separate
-JavaScript object. The name of this encapsulating object can be set during the form definition,
-using the class member <code>scope_prefix</code>. Furthermore, set the class member
-<code>form_name</code> to a different name. Otherwise the mixin class will invent a unique form
-name for you. The <code>form_name</code> must be different from <code>scope_prefix</code>, because
-AngularJS's internal form controller adds its own object to the scope, using the form's name and
-this <em>must</em> be different from the scope's content.</p>
-<p>In this example, an additional server-side validations has been added to the form: The method 
+<p>When working with Django Forms and AngularJS, it is a common use case to upload the form's model
+data to an endpoint on the server. If the directive <code>ng-model</code> is added to an input
+field, then, thanks to AngularJS's two-way databinding, the <code>scope</code> object contains a
+copy of the actual input field's content.</p>
+
+<h5>Auto-adding <code>ng-model</code> to forms</h5>
+<p>If a form inherits from the mixin class <code>NgModelFormMixin</code>, then
+<strong>django-angular</strong> renders each field with the directive
+<code>ng-model="<em>fieldname</em>"</code>. To prevent the pollution of the scope's namespace,
+it is common practice to encapsulate all the form fields into a separate JavaScript object. The
+name of this encapsulating object can be set during the form definition, using the class member
+<code>scope_prefix</code>. Furthermore, set the class member <code>form_name</code> to a different
+name. Otherwise the mixin class will invent a unique form name for you. The <code>form_name</code>
+must be different from <code>scope_prefix</code>, because AngularJS's internal form controller
+adds its own object to the scope, using the form's name and this <em>must</em> be different from
+the scope's prefix.</p>
+
+<p>In this example, an additional server-side validations has been added to the form: The method
 <code>clean()</code> rejects the combination of “John” and “Doe” for the first- and last name
 respectively. Errors for a failed form validation are send back to the client and displayed on top
 of the form.</p>
-<p>Form data submitted by Ajax, is validated by the server using the same functionality. Errors
-detected during such a validation, are sent back to the client using a JSON object. In JavaScript,
-the controller submitting the form, shall use the returned data and pass it to the special function
-<code>djangoForm.setErrors()</code>, so that all validation errors can be displayed as usual.
 
-<p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']"></p>
+<h5>Using directive <code>djng-endpoint</code></h5>
+<p>We must inform the client where we want the serialized form data to be sent. For this purpose,
+<strong>django-angular</strong> offers the attribute directive
+<nobr><code>&lt;form djng-endpoint="/path/to/endpoint"&gt;</code></nobr>. This is the Ajax's
+counterpart of the <code>action="&hellip;"</code> form attribute.</p>
+
+<h5>Error responses</h5>
+<p>Form data submitted by Ajax, is validated by the server using the same functionality as if they
+would be submitted using the classic <code>application/x-www-form-urlencoded</code> POST submission.
+Errors detected during such a validation, are sent back to the client using a JSON object. This
+object for example, is structured such as:
+<code>{"<em>formname</em>": {"errors": {"<em>fieldname1</em>": ["This field is required."]},
+"__all__": ["The combination of username and password is not correct."]}}}</code>. Just as
+in Django, the <code>__all__</code> is used for form errors not associated with a certain field.
+Such an error, typically is rendered on top of the form.</p>
+
+<h5>Populating the form</h5>
+<p>Sometimes it is desirable to use an Ajax request to prefill all or a subset of the form fields with
+values. Whenever the Django endpoint adds an object such as <code>{"<em>formname</em>": {"models":
+{"<em>fieldname1</em>": "Some value", "fieldname2": "Other value"}}}</code> to the response object,
+then the <strong>django-angular</strong> form-controller adds those values to the form's input
+fields.</p>
+
+<h5>Forms Submission</h5>
+<p>The submit button(s) must be placed anywhere inside the <code>&lt;form&gt;&hellip;&lt;/form&gt;</code>
+element. To send the form's content to the server, add <nobr><code>ng-click="do(update())"</code></nobr>
+to the submission button. We have to start this expression with <code>do(&hellip;)</code>, in order to
+emulate the first promise, see below.</p>
+
+<p>By itself, <code>do(update())</code> would just send the data to the server, but not invoke any
+further action on the client. We therefore must tell our directive, what we want to do next. For
+this purpose, <strong>django-angular</strong>'s button directive offers a few prepared targets,
+which all can be chained in any order. If we change the above to
+<nobr><code>ng-click="do(update()).then(reloadPage())"</code></nobr>, then after a successful
+submission the current page is reloaded.</p>
+
+<p>Another useful target is <nobr><code>redirectTo('/path/to/view')</code></nobr>, which, after a
+successful submission, redirects the user to another page. If the response contains
+<nobr><code>{"success_url": "/path/to/other/view"}</code></nobr>, then the URL provided in
+<code>redirectTo()</code>is overridden.</p>
+
+<h5>Form Processing Delays</h5>
+<p>Sometimes processing form data can take additional time. To improve the user experience, we
+can add some feedback to the submission button. By changing the submit action to
+<nobr><code>ng-click="do(disableButton()).then(update()).then(redirectTo()).finally(reenableButton())"</code></nobr>
+the submit button is deactivated during the form submission and will be reactivated as soon
+as the server responded. Since form submission is asynchronous, here we extensively use the
+<a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promises</a> functions
+provided by AngularJS.</p>
+
+<p>If the <code>&lt;button&gt;</code> element contains an <code>&lt;i class="&hellip;"&gt;</code>
+element, during the timeout period, the CSS classes are replaced by
+<nobr><code>glyphicon glyphicon-refresh djng-rotate-animate</code></nobr>. This adds a rotating
+spinner wheel &ensp;<i class="glyphicon glyphicon-refresh djng-rotate-animate"></i>&ensp;
+to the button.</p>
+
+<p>Another possibility to give feedback to the user, is to flash an OK tick
+<i class="glyphicon glyphicon-ok"></i> on success, and an error symbol
+<i class="glyphicon glyphicon-remove"></i> on a failed submission. By using our promise chain,
+this can be implemented in HTML as
+<nobr><code>ng-click="do(update()).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1000)).finally(restore())"</code>.</nobr>
+Even though this might seem complicated, it actually is very flexible and after getting adopted
+to it, also quite easy to read.</p>
+
+<h5>Passing Extra Data</h5>
+<p>Sometimes we might want to use more than one submit button. In order to distinguish which of
+those buttons has been pressed, add for instance <code>ng-click="do(update({foo: 'bar'}))"</code>
+to the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
+submitted payload and can be extracted by the server's view for further analysis.</p>
+
+<h5>Triggering further actions</h5>
+<p>By adding <code>ng-click="do(update()).then(emit('<em>name</em>', {'foo': 'bar'}))"</code></p>
+to our promises chain, we can
+<a href="https://code.angularjs.org/1.5.10/docs/api/ng/type/$rootScope.Scope#$emit">emit an event</a>
+upwards through the scope hierarchy, notifying registered listeners.</p>
+
+
+<p ng-init="tabList=['Form', 'View', 'HTML']"></p>
 {% endblock main-tutorial %}
 
 {% block main-sample-code %}
@@ -58,7 +138,6 @@ the controller submitting the form, shall use the returned data and pass it to t
 <div ng-show="activeTab==='Form'">{% pygments "forms/model_scope.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/model_scope.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/model-scope.html" %}</div>
-<div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
 {% endautoescape %}
 
 {% verbatim %}
