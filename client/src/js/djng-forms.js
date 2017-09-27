@@ -275,7 +275,7 @@ djngModule.directive('validateEmail', function() {
 });
 
 
-djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoForm', function($scope, $http, $q, djangoForm) {
+djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function($scope, $http, $q) {
 	var self = this;
 
 	// a map of booleans keeping the validation state for each of the child forms
@@ -310,18 +310,24 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoF
 			method: method,
 			data: data
 		}).then(function(response) {
-			angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
-				if (response.data.hasOwnProperty(formName)) {
-					self.setModels($scope[formName], response.data[formName].models);
+			angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+				self.clearErrors($scope[formName]);
+				if (angular.isObject(response.data[formName])) {
+					self.setModels($scope[formName], response.data[formName]);
 				}
+				$scope[formName].$setSubmitted();
 			});
 			deferred.resolve(response);
 		}, function(response) {
-			if (response.status === 422) {
-				angular.forEach(self.digestUploadScope, function(scopeModel, formName) {
-					if (response.data.hasOwnProperty(formName)) {
-						self.setErrors($scope[formName], response.data[formName].errors);
+			if (response.status >= 400 && response.status <= 499) {
+				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+					self.clearErrors($scope[formName]);
+				});
+				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+					if (angular.isObject(response.data[formName])) {
+						self.setErrors($scope[formName], response.data[formName]);
 					}
+					$scope[formName].$setSubmitted();
 				});
 			}
 			deferred.reject(response);
@@ -338,16 +344,16 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoF
 			// field.$setValidity('rejected', true) modifies the error array so only every
 			// other one was being removed
 			angular.forEach(form.$error.rejected.concat(), function(rejected) {
-				var field, key = rejected.$name;
+				var field, key = rejected ? rejected.$name : null;
 				if (form.hasOwnProperty(key)) {
 					field = form[key];
 					if (isField(field) && angular.isFunction(field.clearRejected)) {
 						field.clearRejected();
-					} else {
-						field.$message = '';
+					} else /* TODO: if (isForm(field)) */ {
 						// this field is a composite of input elements
+						field.$setValidity('rejected', true);
 						angular.forEach(field, function(subField, subKey) {
-							if (subField && isField(subField) && subField.clearRejected) {
+							if (isField(subField) && subField.clearRejected) {
 								subField.clearRejected();
 							}
 						});
@@ -364,24 +370,21 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoF
 
 		function resetFieldValidity(field) {
 			var pos = field.$viewChangeListeners.push(field.clearRejected = function() {
-				field.$message = '';
+				field.$message = "";
 				field.$setValidity('rejected', true);
 				field.$viewChangeListeners.splice(pos - 1, 1);
 				delete field.clearRejected;
 			});
 		}
 
-		function isField(field) {
-			return angular.isArray(field.$viewChangeListeners);
-		}
-
 		// add the new upstream errors
 		angular.forEach(errors, function(errors, key) {
 			var field;
 			if (errors.length > 0) {
-				if (key === NON_FIELD_ERRORS) {
+				if (key === NON_FIELD_ERRORS || key === 'non_field_errors') {
 					form.$message = errors[0];
 					form.$setPristine();
+					form.$setValidity('rejected', false);
 				} else if (form.hasOwnProperty(key)) {
 					field = form[key];
 					field.$message = errors[0];
@@ -389,10 +392,10 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoF
 					field.$setPristine();
 					if (isField(field)) {
 						resetFieldValidity(field);
-					} else {
+					} else /* TODO: if isForm(field) */ {
 						// this field is a composite of input elements
 						angular.forEach(field, function(subField, subKey) {
-							if (subField && isField(subField)) {
+							if (isField(subField)) {
 								resetFieldValidity(subField);
 							}
 						});
@@ -405,16 +408,24 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', 'djangoF
 	// setModels takes care of updating the models of the given form. This can be used to update the forms
 	// content with data send by the server.
 	this.setModels = function(formCtrl, models) {
+		if (models.success_message) {
+			formCtrl.$message = models.success_message;
+		}
 		angular.forEach(models, function(value, key) {
 			var fieldCtrl = formCtrl[key];
-			fieldCtrl.$setViewValue(value, 'updateOn');
-			if (angular.isObject(fieldCtrl.$options)) {
-				fieldCtrl.$commitViewValue();
+			if (fieldCtrl) {
+				fieldCtrl.$setViewValue(value, 'updateOn');
+				if (angular.isObject(fieldCtrl.$options)) {
+					fieldCtrl.$commitViewValue();
+				}
+				fieldCtrl.$render();
 			}
-			fieldCtrl.$render();
 		});
-		formCtrl.$setPristine();
 	};
+
+	function isField(field) {
+		return field && angular.isArray(field.$viewChangeListeners);
+	}
 
 }]);
 
@@ -424,10 +435,49 @@ djngModule.directive('djngEndpoint', function() {
 		require: ['form', 'djngEndpoint'],
 		restrict: 'A',
 		controller: 'FormUploadController',
-		link: function(scope, elem, attrs, controllers) {
+		link: function(scope, element, attrs, controllers) {
+			var formController = controllers[0];
+			if (!attrs.name)
+				throw new Error("Attribute 'name' is not set for this form!");
 			if (!attrs.djngEndpoint)
-				throw new Error("Attribute 'djng-endpoint' is not set!");
+				throw new Error("Attribute 'djng-endpoint' is not set for this form!");
 			controllers[1].endpointURL = attrs.djngEndpoint;
+
+			scope.hasError = function(field) {
+				if (angular.isObject(formController[field])) {
+					if (formController[field].$pristine && formController[field].$error.rejected)
+						return 'has-error';
+					if (formController[field].$touched && formController[field].$invalid)
+						return 'has-error';
+				}
+			};
+
+			scope.successMessageVisible = function() {
+				return !formController.$error.rejected && formController.$submitted;
+			};
+
+			scope.rejectMessageVisible = function() {
+				return formController.$error.rejected && formController.$submitted;
+			};
+
+			scope.getSubmitMessage = function() {
+				return formController.$message;
+			};
+
+			scope.dismissSubmitMessage = function() {
+				formController.$setPristine();
+				if (formController.$error.rejected) {
+					formController.$setValidity('rejected', true);
+					return true;
+				}
+			};
+
+			// resets the form into pristine state, after a successful submission
+			element.on('focusin', function() {
+				if (scope.dismissSubmitMessage()) {
+					scope.$apply();
+				}
+			});
 		}
 	};
 });
@@ -490,10 +540,10 @@ djngModule.factory('djangoForm', function() {
 djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeout, $window) {
 	return {
 		restrict: 'E',
-		require: ['^?djngEndpoint', '^?djngFormsSet'],
+		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
 		scope: true,
 		link: function(scope, element, attrs, controllers) {
-			var uploadController = controllers[0] || controllers[1];
+			var uploadController = controllers[2] || controllers[0];
 
 			if (!uploadController)
 				return;  // button neither inside <form djng-endpoint="...">...</form> nor inside <djng-forms-set>...</djng-forms-set>
@@ -510,7 +560,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
-			scope.update = function update(extraData) {
+			scope.update = function(extraData) {
 				return function() {
 					return uploadController.uploadScope('PUT', extraData);
 				};
@@ -522,12 +572,30 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
-			// Some actions require a lot of time. This function disables the button and
-			// replaces existing icons against a spinning wheel. It must be used instead
-			// as the first action, ie. ``ng-click="do(disableButton()).then(...)``.
+			// Disable the button for further submission. Reenable it using the
+			// restore() function. Usage:
+			// <button ng-click="do(disable()).then(update()).then(...).finally(restore())">
 			scope.disable = function() {
 				return function(response) {
-					element.attr('disabled', 'disabled');
+					scope.disabled = true;
+					return $q.resolve(response);
+				};
+			};
+
+			scope.isDisabled = function() {
+				if (controllers[1])
+					return controllers[1].$invalid || scope.disabled;
+				if (controllers[2])
+					return controllers[2].setIsInvalid || scope.disabled;
+			}
+
+			// Some actions require a lot of time. This function disables the button and
+			// replaces existing icons against a spinning wheel. Remove the spinner and
+			// reenable it using the restore() function. Usage:
+			// <button ng-click="do(spinner()).then(update()).then(...).finally(restore())">
+			scope.spinner = function() {
+				return function(response) {
+					scope.disabled = true;
 					angular.forEach(element.find('i'), function(icon) {
 						icon = angular.element(icon);
 						if (!icon.data('remember-class')) {
@@ -539,6 +607,8 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
+			// Replace the existing icon symbol against an OK tick. Restore the previous
+			// symbol using the restore() function.
 			scope.showOk = function() {
 				return function(response) {
 					angular.forEach(element.find('i'), function(icon) {
@@ -552,6 +622,8 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
+			// Replace the existing icon symbol against an fail symbol. Restore the previous
+			// symbol using the restore() function.
 			scope.showFail = function() {
 				return function(response) {
 					angular.forEach(element.find('i'), function(icon) {
@@ -565,10 +637,10 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
-			// Remove any classes previously previously added to the buttons's icon
+			// Remove any classes previously previously added to the buttons's icon.
 			scope.restore = function() {
 				return function(response) {
-					element.removeAttr('disabled');
+					scope.disabled = false;
 					angular.forEach(element.find('i'), function(icon) {
 						icon = angular.element(icon);
 						if (icon.data('remember-class')) {
@@ -576,6 +648,13 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 							icon.removeData('remember-class');
 						}
 					});
+					return $q.resolve(response);
+				};
+			};
+
+			scope.emit = function(name, args) {
+				return function(response) {
+					scope.$emit(name, args);
 					return $q.resolve(response);
 				};
 			};
@@ -600,12 +679,20 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			scope.delay = function(ms) {
 				return function(response) {
 					return $q(function(resolve) {
-						$timeout(function() {
+						scope.timer = $timeout(function() {
+							scope.timer = null;
 							resolve(response);
 						}, ms);
 					});
 				};
 			};
+
+			scope.$on('$destroy', function() {
+				if (scope.timer) {
+					$timeout.cancel(scope.timer);
+				}
+			});
+
 		}
 	};
 }]);

@@ -132,6 +132,7 @@ describe('unit tests for module djng.forms', function() {
 				scope.$digest();
 			}));
 
+/*
 			it('should give a valid form', function() {
 				expect(djangoForm.setErrors(scope.form, {})).toBe(false);
 				expect(scope.form.email_field.$valid).toBe(true);
@@ -142,7 +143,7 @@ describe('unit tests for module djng.forms', function() {
 				expect(djangoForm.setErrors(scope.form, errors)).toBe(true);
 				expect(scope.form.email_field.$valid).toBe(false);
 			});
-
+*/
 		});
 	});
 
