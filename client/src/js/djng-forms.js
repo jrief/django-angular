@@ -350,7 +350,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 					if (isField(field) && angular.isFunction(field.clearRejected)) {
 						field.clearRejected();
 					} else /* TODO: if (isForm(field)) */ {
-						// this field is a composite of input elements
+						// this field acts as form and is a composite of input elements
 						field.$setValidity('rejected', true);
 						angular.forEach(field, function(subField, subKey) {
 							if (isField(subField) && subField.clearRejected) {
@@ -412,17 +412,43 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 			formCtrl.$message = models.success_message;
 		}
 		angular.forEach(models, function(value, key) {
-			var fieldCtrl = formCtrl[key];
-			if (fieldCtrl) {
+			var fieldCtrl = formCtrl[key], anyChecked;
+			if (isField(fieldCtrl)) {
 				fieldCtrl.$setViewValue(value, 'updateOn');
 				if (angular.isObject(fieldCtrl.$options)) {
 					fieldCtrl.$commitViewValue();
 				}
 				fieldCtrl.$render();
+				if (value) {
+					fieldCtrl.$setValidity('required', true);
+				}
+			} else /* TODO: if isForm(field) */ {
+				// this field is a composite of checkbox input elements
+				anyChecked = false;
+				angular.forEach(fieldCtrl, function(subField, subKey) {
+					var leaf;
+					if (isField(subField)) {
+						leaf = subField.$name.replace(fieldCtrl.$name + '.', '');
+						if (value.indexOf(leaf) === -1) {
+							leaf = null;
+						} else {
+							anyChecked = true;
+						}
+						subField.$setViewValue(leaf, 'updateOn');
+						if (angular.isObject(subField.$options)) {
+							subField.$commitViewValue();
+						}
+						subField.$render();
+					}
+				});
+				if (anyChecked) {
+					fieldCtrl.$setValidity('required', true);
+				}
 			}
 		});
 	};
 
+	// use duck-typing to determine if field is a FieldController
 	function isField(field) {
 		return field && angular.isArray(field.$viewChangeListeners);
 	}
