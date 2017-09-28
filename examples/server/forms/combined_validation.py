@@ -110,3 +110,20 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
             raise ValidationError('The full name "John Doe" is rejected by the server.')
         return super(SubscribeForm, self).clean()
+
+
+default_subscribe_data = {
+    'first_name': "John",
+    'last_name': "Doe",
+    'sex': 'm',
+    'email': 'john.doe@example.org',
+    'phone': '+1 234 567 8900',
+    'birth_date': '1975-06-01',
+    'continent': 'eu',
+    'height': 1.82,
+    'weight': 81,
+    'traveling': ['bike', 'train'],
+    'notifyme': ['email', 'sms'],
+    'annotation': "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    'agree': True,
+}
