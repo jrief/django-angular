@@ -40,17 +40,11 @@
 	</div>
 	<div class="row" style="margin-bottom: 20px;">
 		<div class="col-md-12">
-			<button ng-click="do(update()).then(reloadPage())" type="button" class="btn btn-warning">
+			<button ng-click="do(update()).then(redirectTo())" type="button" class="btn btn-warning">
 				Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
 			</button>
-			<button ng-click="do(update()).then(reloadPage())" ng-disabled="setIsInvalid" type="button" class="btn btn-success">
+			<button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
 				Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
-			</button>
-			<button ng-click="do(disable()).then(update({delay: true})).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="setIsInvalid" type="button" class="btn btn-primary">
-				Delayed Submission&emsp;<i class="glyphicon glyphicon-hourglass"></i>
-			</button>
-			<button ng-click="do(update({set_defaults: true}))" type="button" class="btn btn-default">
-				Set Defaults&emsp;<i class="glyphicon glyphicon-transfer"></i>
 			</button>
 		</div>
 	</div>

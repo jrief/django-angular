@@ -611,9 +611,9 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			scope.isDisabled = function() {
 				if (controllers[1])
 					return controllers[1].$invalid || scope.disabled;
-				if (controllers[2])
-					return controllers[2].setIsInvalid || scope.disabled;
-			}
+				if (controllers[0])
+					return !controllers[0].setIsValid || scope.disabled;
+			};
 
 			// Some actions require a lot of time. This function disables the button and
 			// replaces existing icons against a spinning wheel. Remove the spinner and

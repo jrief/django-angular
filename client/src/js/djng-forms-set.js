@@ -8,16 +8,16 @@ var djngModule = angular.module('djng.forms-set', ['djng.forms']);
 // Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see
 // directive below), so that we can use a proceed/submit button outside of the ``<form ...>`` elements.
 // Whenever one of those forms does not validate, that button can be rendered as:
-// ``<button ng-click="update(some_action)" ng-disabled="setIsInvalid">Submit</button>``
+// ``<button ng-click="update(some_action)" ng-disabled="idDisabled()">Submit</button>``
 djngModule.directive('djngFormsSet', function() {
 	return {
 		require: 'djngFormsSet',
 		controller: 'FormUploadController',
-		link: function(scope, element, attrs, formsSetController) {
+		link: function(scope, element, attrs, uploadController) {
 			if (!attrs.endpoint)
 				throw new Error("Attribute 'endpoint' is not set!");
 
-			formsSetController.endpointURL = attrs.endpoint;
+			uploadController.endpointURL = attrs.endpoint;
 		}
 	};
 });
@@ -25,10 +25,7 @@ djngModule.directive('djngFormsSet', function() {
 
 // This directive enriches AngularJS's internal form-controllers if they are wrapped inside a <ANY djng-forms-set ...>
 // directive. One purpose is to summarize the validity of the given forms, so that buttons rendered outside of the
-// <form ...> elements but inside the <djng-forms-set ...> element can check the validity of all forms using.
-// For this check, the scope provides the attributes ``setIsValid`` and ``setIsInvalid`` which shall be used
-// inside the submission button:
-// ``<button type="button" ng-disabled="setIsInvalid" ng-click="update()">Submit</button>``
+// <form ...> elements but inside the <djng-forms-set ...> element can check the validity of all forms.
 // Another purpose of this directive is to summarize the scope-models of the given forms, so that the scope can
 // be uploaded to the endpoint URL using one submission.
 djngModule.directive('form', ['$timeout', function($timeout) {
@@ -65,14 +62,13 @@ djngModule.directive('form', ['$timeout', function($timeout) {
 			// delay first evaluation until form is fully validated
 			$timeout(reduceValidation);
 
-			// check each child form's $valid state and reduce it to one single state scope.setIsValid
+			// check each child form's $valid state and reduce it to one single state `formsSetController.setIsValid`
 			function reduceValidation() {
 				formsSetController.digestValidatedForms[formController.$name] = formController.$valid;
-				scope.setIsValid = true;
+				formsSetController.setIsValid = true;
 				angular.forEach(formsSetController.digestValidatedForms, function(validatedForm) {
-					scope.setIsValid = scope.setIsValid && validatedForm;
+					formsSetController.setIsValid = formsSetController.setIsValid && validatedForm;
 				});
-				scope.setIsInvalid = !scope.setIsValid;
 			}
 
 		}

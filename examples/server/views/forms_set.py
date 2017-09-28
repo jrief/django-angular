@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from server.forms.forms_set import SubscribeForm, AddressForm
 # start tutorial
-import json, time
+import json
 from django.http import JsonResponse, HttpResponseBadRequest
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
@@ -24,25 +24,13 @@ class SubscribeView(TemplateView):
         address_form = AddressForm(data=request_data.get(AddressForm.scope_prefix, {}))
         response_data = {}
 
-        if request_data.get('delay'):
-            time.sleep(1.5)  # emulate a delayed form submission
-
-        # optionally populate the client model
-        if request_data.get('set_defaults'):
-            response_data.update({
-                subscribe_form.form_name: {
-                    'full_name': "John Doe",
-                }
-            })
-
         if subscribe_form.is_valid() and address_form.is_valid():
             response_data.update({'success_url': self.success_url})
             return JsonResponse(response_data)
 
-        # report errors
+        # otherwise report form validation errors
         response_data.update({
-            subscribe_form.form_name: {'errors': subscribe_form.errors},
-            address_form.form_name: {'errors': address_form.errors},
+            subscribe_form.form_name: subscribe_form.errors,
+            address_form.form_name: address_form.errors,
         })
-
         return HttpResponseBadRequest(json.dumps(response_data), status=422, content_type='application/json')
