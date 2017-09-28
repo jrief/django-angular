@@ -109,6 +109,7 @@ class SubscribeForm(NgModelFormMixin, Bootstrap3Form):
         initial='hidden value')
 
     def clean(self):
-        if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
+        if self.cleaned_data.get('first_name', '').lower() == 'john' \
+            and self.cleaned_data.get('last_name', '').lower() == 'doe':
             raise ValidationError('The full name "John Doe" is rejected by the server.')
         return super(SubscribeForm, self).clean()
