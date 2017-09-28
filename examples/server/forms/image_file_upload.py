@@ -13,15 +13,24 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     full_name = fields.CharField(
         label='Full name',
         min_length=3,
-        max_length=99)
+        max_length=99,
+        required=True,
+    )
 
-    avatar = fields.ImageField(label='Photo of yourself')
+    avatar = fields.ImageField(
+        label='Photo of yourself',
+        required=True,
+    )
 
-    permit = fields.FileField(label='Your permit as PDF', accept='application/pdf')
+    permit = fields.FileField(
+        label='Your permit as PDF',
+        accept='application/pdf',
+        required=False,
+    )
 
-    def clean_permit(self):
+    def clean_avatar(self):
         """
         For instance, here you can move the temporary file stored in
-        `self.cleaned_data['permit'].file` to a permanent location.
+        `self.cleaned_data['avatar'].file` to a permanent location.
         """
-        self.cleaned_data['permit'].file
+        self.cleaned_data['avatar'].file

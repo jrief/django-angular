@@ -1,0 +1,12 @@
+<script type="text/javascript">
+    angular.module('djangular-demo', ['djng.forms', 'djng.urls', 'djng.fileupload']).config(function($httpProvider) {
+        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
+    });
+</script>
+
+<form name="{{ form.form_name }}" djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate>
+    {% csrf_token %}
+    {{ form.as_div }}
+    <button type="button" ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()">Submit</button>
+</form>
