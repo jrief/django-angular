@@ -132,18 +132,14 @@ describe('unit tests for module djng.forms', function() {
 				scope.$digest();
 			}));
 
-/*
-			it('should give a valid form', function() {
-				expect(djangoForm.setErrors(scope.form, {})).toBe(false);
-				expect(scope.form.email_field.$valid).toBe(true);
+			it('should parse the composed names', function() {
+				expect(djangoForm.getScopePrefix('any_name')).toBe('any_name');
+				expect(djangoForm.getScopePrefix('any_name.something')).toBe('any_name');
+				expect(djangoForm.getScopePrefix('any_name[\'something\']')).toBe('any_name');
+				expect(djangoForm.getScopePrefix('любое_имя')).toBe('любое_имя');
+				expect(djangoForm.getScopePrefix('любое_имя.что-то')).toBe('любое_имя');
+				expect(djangoForm.getScopePrefix('любое_имя[\'что-то\']')).toBe('любое_имя');
 			});
-
-			it('should give an invalid form', function() {
-				var errors = { email_field: ['A server side error occurred'] };
-				expect(djangoForm.setErrors(scope.form, errors)).toBe(true);
-				expect(scope.form.email_field.$valid).toBe(false);
-			});
-*/
 		});
 	});
 
