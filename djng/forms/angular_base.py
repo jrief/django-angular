@@ -102,14 +102,17 @@ class TupleErrorList(UserList, list):
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
                 error_lists[e[2]].append(format_html(li_format, *err_tuple))
             # renders and combine both of these lists
-            dirty_errors = format_html(
-                '<ul ng-show="{0}.$dirty && !{0}.$untouched" class="{1}" ng-cloak>{2}</ul>',  # duck typing: !...$untouched
-                first[0], first[1], mark_safe(''.join(error_lists['$dirty']))
-            )
-            pristine_errors = format_html(
-                '<ul ng-show="{0}.$pristine" class="{1}" ng-cloak>{2}</ul>',
-                first[0], first[1], mark_safe(''.join(error_lists['$pristine']))
-            )
+            dirty_errors, pristine_errors = '', ''
+            if len(error_lists['$dirty']) > 0:
+                dirty_errors = format_html(
+                    '<ul ng-show="{0}.$dirty && !{0}.$untouched" class="{1}" ng-cloak>{2}</ul>',  # duck typing: !...$untouched
+                    first[0], first[1], mark_safe(''.join(error_lists['$dirty']))
+                )
+            if len(error_lists['$pristine']) > 0:
+                pristine_errors = format_html(
+                    '<ul ng-show="{0}.$pristine" class="{1}" ng-cloak>{2}</ul>',
+                    first[0], first[1], mark_safe(''.join(error_lists['$pristine']))
+                )
             return format_html('{}{}', dirty_errors, pristine_errors)
         return format_html('<ul class="errorlist">{0}</ul>',
             format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
