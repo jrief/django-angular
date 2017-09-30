@@ -5,6 +5,14 @@
 	<title>{% block form_title %}Django-Angular Demo{% endblock %}</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	{% render_block "css" %}
+	<!-- Global Site Tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-107291474-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments)};
+		gtag('js', new Date());
+		gtag('config', 'UA-107291474-1');
+	</script>
 </head>
 
 {% addtoblock "css" %}<link href="{% static 'node_modules/bootstrap/dist/css/bootstrap.css' %}" rel="stylesheet" />{% endaddtoblock %}
