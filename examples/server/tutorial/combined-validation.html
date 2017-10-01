@@ -16,7 +16,7 @@
   <button ng-click="do(spinner()).then(update({delay: true})).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button">
     Delayed Submission <i class="some-icon"></i>
   </button>
-  <button ng-click="do(update({set_defaults: true}))" type="button">
-    Set Defaults <i class="some-icon"></i>
+  <button ng-click="do(fetch())" type="button">
+    Fetch Defaults <i class="some-icon"></i>
   </button>
 </form>

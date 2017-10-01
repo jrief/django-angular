@@ -23,8 +23,8 @@ integrating Django forms with AngularJS.</p>
 		<button ng-click="do(spinner()).then(update({delay: true})).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
 			Delayed Submission&emsp;<i class="glyphicon glyphicon-hourglass"></i>
 		</button>
-		<button ng-click="do(update({set_defaults: true}))" type="button" class="btn btn-default">
-			Set Defaults&emsp;<i class="glyphicon glyphicon-transfer"></i>
+		<button ng-click="do(fetch())" type="button" class="btn btn-default">
+			Fetch Defaults&emsp;<i class="glyphicon glyphicon-transfer"></i>
 		</button>
 	</p>
 {% endblock %}
