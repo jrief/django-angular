@@ -83,19 +83,19 @@ such as: <nobr><code>ng-click="do(upload()).then(reloadPage())"</code></nobr>.</
 from the server contains <nobr><code>{"success_url": "/path/to/other/view"}</code></nobr>,
 then the URL provided by <code>redirectTo()</code>is overridden.</p>
 
-<h5>Adding an artificial delay</h5>
+<h5>Delay the submission</h5>
 <p>Sometimes we might want to delay a further action. If for instance we want to add a 500
-miliseconds delay after a successful submission, the we would rewrite our action such as:
+miliseconds delay after a successful submission, we then would rewrite our action such as:
 <nobr><code>ng-click="do(upload()).then(delay(500)).then(reloadPage())"</code></nobr>.</p>
 
 <h5>Giving feedback to the user</h5>
 <p>To improve the user's experience, it is a good idea to give feedback on an action, which
-succeeded or failed. Our button directive offers to such functions, one to display an OK tick,
+succeeded or failed. Our button directive offers two such functions, one to display an OK tick
 <i class="glyphicon glyphicon-ok"></i> on success, and one to display a cross
 <i class="glyphicon glyphicon-remove"></i> to symbolize a failed operation. These symbols
 replace the buttons <nobr><code>&lt;i class="fontawesome or glyphicon"&gt;&lt;/i&gt;</code></nobr>
 icon element, if present.</p>
-<p>By using our promises chain, we can easily integrate this into our actions flow:
+<p>By using the promises chain, we can easily integrate this into our actions flow:
 <nobr><code>ng-click="do(update()).then(showOk()).then(delay(500)).then(reloadPage()).catch(showFail()).then(delay(2000)).finally(restore())"</code></nobr>.
 Here we use the <code>catch(&hellip;)</code>-clause, to run a different action function in case of
 a failed submission. The <code>finally(restore())</code> is executed regardless of the submission
@@ -104,19 +104,19 @@ success or failure, it restores the button internal icon to its original state.<
 <h5>Handle processing delays</h5>
 <p>Sometimes processing form data can take additional time. To improve the user experience, we
 can add some feedback to the submission button. By changing the submit action to
-<nobr><code>ng-click="do(disable()).then(update()).then(redirectTo()).finally(restore())"</code></nobr>
+<nobr><code>ng-click="do(disable()).then(update()).then(redirectTo()).finally(restore())"</code>,</nobr>
 the submit button is deactivated during the form submission and will be reactivated as soon
 as the server responded.</p>
 
-<p>In case of potentially long lasting submissions, this can be further extended, by replacing
+<p>In case of potentially long lasting submissions this can be further extended, by replacing
 the button's internal icon with a rotating spinner wheel
-&ensp;<i class="glyphicon glyphicon-refresh djng-rotate-animate"></i>&ensp;. For this, replace the
+&ensp;<i class="glyphicon glyphicon-refresh djng-rotate-animate"></i>&ensp;. To do so, just replace the
 <code>disable()</code> function against <code>spinner()</code>.</p>
 
 <h5>Passing Extra Data</h5>
 <p>Sometimes we might want to use more than one submit button. In order to distinguish which of
-those buttons has been pressed, add for instance <nobr><code>ng-click="do(update({foo: 'bar'}))"</code></nobr>
-to the corresponding button-element. That dictionary then is added to the
+those buttons has been pressed, pass an object to the form submission function, for instance
+<nobr><code>ng-click="do(update({foo: 'bar'}))"</code></nobr>. That dictionary then is added to the
 submitted payload and can be extracted by the server's view function for further analysis.</p>
 
 <h5>Triggering Further Actions</h5>
@@ -130,7 +130,7 @@ upwards through the scope hierarchy, notifying registered listeners.</p>
 The server-side endpoint can push data to the form, in order to fill it. Say, a form is named
 <code>my_form</code>, then sending an object, such
 as <code>{"my_form": {"fieldname1": "value1", "fieldname2": "value2", "fieldname3": "value3"}}</code>,
-will set the named form fields with the given values.
+in the response's payload, will set the named form fields with the given values.
 
 
 

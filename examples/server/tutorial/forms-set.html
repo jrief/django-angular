@@ -22,15 +22,11 @@
   </form>
 
   <button ng-click="do(update()).then(reloadPage())" type="button">
-    Forced Submission
+    Forced Submission <i class="some-icon"></i>
   </button>
 
-  <button ng-click="do(update()).then(reloadPage())" ng-disabled="setIsInvalid" type="button">
-    Validated Submission
-  </button>
-
-  <button ng-click="disableButton().then(update()).then(delay(1500)).then(redirectTo()).finally(reenableButton())" ng-disabled="setIsInvalid" type="button">
-    Delayed Submission
+  <button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button">
+    Validated Submission <i class="some-icon"></i>
   </button>
 
 </djng-forms-set>

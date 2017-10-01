@@ -70,8 +70,8 @@ In component based web development, it is quite common to arrange more than one 
 page. As opposed to form submissions via <code>application/x-www-form-urlencoded</code> or
 <code>multipart/form-data</code>, we can, thanks to Ajax, submit the content of more than one form
 using a single HTTP-request. This requires to dispatch the submitted data on the server to each
-form class, but if we prefix them with unique identifiers, that's a no-brainer.
-</p>
+form class, but if we prefix them with unique identifiers (using <code>scope_prefix</code>), that's
+a no-brainer.</p>
 
 <h5>Directive <code>djng-forms-set</code></h5>
 <p>
@@ -95,50 +95,15 @@ expression with <code>do(...)</code>, in order to emulate the first promise, see
 tell our directive, what we want to do next. For this <strong>django-angular</strong>'s button
 directive offers a few prepared targets, which can be chained. If we change the above to
 <nobr><code>ng-click="do(update()).then(reloadPage())"</code></nobr>, then after a successful
-submission the current page is reloaded. Another useful target is
-<nobr><code>redirectTo('/path/to/view')</code></nobr>, which, after a successful submission,
-redirects the user to another page. If the response contains
-<nobr><code>{data: {success_url: "/path/to/other/view"}}</code></nobr>, then the URL
-provided in <code>redirectTo()</code>is overridden.
-</p>
+submission the current page is reloaded.</p>
+<p>For further options on how to chain actions, please refer to the
+<a href="{% url 'djng_combined_validation' %}">previous chapter</a>.</p>
 
 <h5>Forms Validation</h5>
 <p>
 All forms wrapped inside our <nobr><code>djng-forms-set</code></nobr> directive, are validated.
 This shall be used to prevent submitting data, if at least one of the forms does not validate.
-For this, just add <nobr><code>ng-disabled="setIsInvalid"</code></nobr> to the submission button.
-</p>
-
-<h5>Form Submission Methods</h5>
-<p>
-By using the <code>update()</code> function, <strong>django-angular</strong> submits the forms
-data with an HTTP-request using method <code>PUT</code>. To submit the same data using HTTP
-method <code>POST</code>, use the provided function <code>create()</code>. To submit via HTTP
-method <code>DELETE</code>, use the provided function <code>delete()</code>.
-</p>
-
-<h5>Form Processing Delays</h5>
-<p>
-Sometimes processing form data can take additional time. To improve the user experience, we
-therefore shall add some feedback to the submission button. By changing the submit action to
-<nobr><code>ng-click="do(disableButton()).then(update()).then(redirectTo()).finally(reenableButton())"</code></nobr>
-the submit button is deactivated during the form submission and will be reactivated as soon
-as the server responded. Since form submission is asynchronous, here we use extensively the
-<a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promises</a> functions
-provided by AngularJS.
-</p>
-<p>If the <code>&lt;button&gt;</code> element contains an <code>&lt;i&gt;</code> element, during
-the timeout period, the CSS classes are replaced by
-<nobr><code>glyphicon glyphicon-refresh djng-rotate-animate</code></nobr>. This adds a rotating
-spinner wheel &ensp;<i class="glyphicon glyphicon-refresh djng-rotate-animate"></i>&ensp;
-to the button.</p>
-
-<h5>Passing Extra Data</h5>
-<p>
-Sometimes we might want to use more than one submit button. In order to distinguish which of
-those buttons has been pressed, add for instance <code>ng-click="do(update({foo: 'bar'}))"</code>
-to the corresponding <code>&lt;button&gt;</code> element. That dictionary then is added to the
-submitted payload and can be extracted by the server's view for further analysis.
+For this, just add <nobr><code>ng-disabled="isDisabled()"</code></nobr> to the submission button.
 </p>
 
 <p ng-init="tabList=['Form', 'View', 'HTML']"></p>
