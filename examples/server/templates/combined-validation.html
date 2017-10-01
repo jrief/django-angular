@@ -69,8 +69,9 @@ This is why we always have to start our first action such as:
 <p>Forms with input elements bound to the scope, normally use a directive with such a pattern:
 <nobr><code>ng-model="<em>scope_prefix</em>.<em>field_name</em>"</code></nobr>. Here
 the bound models are grouped into one or more subobjects of the scope. By invoking
-<code>create()</code>, <code>update()</code> or <code>delete()</code>, we send that
-subset of data to the server, using the HTTP methods POST, PUT or DELETE respectively.</p>
+<code>fetch()</code>, <code>create()</code>, <code>update()</code> or <code>delete()</code>,
+we send that subset of data to the server, using the HTTP methods GET, POST, PUT or DELETE
+respectively.</p>
 
 <h5>Reload the current page</h5>
 <p>Specially after a successful login- or logout submission, we might want to reload the current
