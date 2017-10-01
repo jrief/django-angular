@@ -734,6 +734,12 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				return $q.resolve().then(resolve, reject);
 			};
 
+			scope.fetch = function(extraData) {
+				return function() {
+					return uploadController.uploadScope('GET', extraData);
+				};
+			};
+
 			scope.create = function(extraData) {
 				return function() {
 					return uploadController.uploadScope('POST', extraData);
