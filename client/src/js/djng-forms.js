@@ -728,6 +728,58 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 }]);
 
 
+// Directive ``<ANY djng-forms-set endpoint="/rest/endpoint" ...>``, the REST endpoint.
+// Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see
+// directives above), so that we can use a proceed/submit button outside of the ``<form ...>`` elements.
+// Whenever one of those forms does not validate, that button can be rendered as:
+// ``<button ng-click="update(some_action)" ng-disabled="idDisabled()">Submit</button>``
+djngModule.directive('djngFormsSet', function() {
+	return {
+		require: 'djngFormsSet',
+		controller: 'FormUploadController',
+		link: function(scope, element, attrs, uploadController) {
+			if (!attrs.endpoint)
+				throw new Error("Attribute 'endpoint' is not set!");
+
+			uploadController.endpointURL = attrs.endpoint;
+		}
+	};
+});
+
+
+// This directive enriches AngularJS's internal form-controllers if they are wrapped inside a <ANY djng-forms-set ...>
+// directive. One purpose is to summarize the validity of the given forms, so that buttons rendered outside of the
+// <form ...> elements but inside the <djng-forms-set ...> element can check the validity of all forms.
+// Another purpose of this directive is to summarize the scope-models of the given forms, so that the scope can
+// be uploaded to the endpoint URL using one submission.
+djngModule.directive('form', ['$timeout', function($timeout) {
+	return {
+		restrict: 'E',
+		require: ['^?djngFormsSet', 'form'],
+		priority: 1,
+		link: function(scope, element, attrs, controllers) {
+			var formsSetController = controllers[0], formController = controllers[1];
+
+			if (!formsSetController)
+				return;  // not for forms outside <ANY djng-forms-set></ANY djng-forms-set>
+
+			if (!attrs.name)
+				throw new Error("Each <form> embedded inside a <djng-forms-set> must identify itself by name.")
+
+			// check each child form's $valid state and reduce it to one single state `formsSetController.setIsValid`
+			scope.$watch(attrs.name + '.$valid', function reduceValidation() {
+				formsSetController.digestValidatedForms[formController.$name] = formController.$valid;
+				formsSetController.setIsValid = true;
+				angular.forEach(formsSetController.digestValidatedForms, function(validatedForm) {
+					formsSetController.setIsValid = formsSetController.setIsValid && validatedForm;
+				});
+			});
+
+		}
+	};
+}]);
+
+
 // Directive <ANY djng-bind-if="any_variable"> behaves similar to `ng-bind` but leaves the elements
 // content as is, if the value to bind is undefined. This allows to set a default value in case the
 // scope variables are not ready yet.
