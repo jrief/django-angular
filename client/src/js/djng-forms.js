@@ -510,28 +510,29 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 		restrict: 'A',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
 		link: function(scope, element, attrs, controllers) {
-			var formController, digestUploadScope, scopePrefix;
+			var formController = controllers[1], digestUploadScope, scopePrefix;
 
-			if (controllers[0]) {
-				// inside  <djng-forms-set>...</djng-forms-set>
-				formController = controllers[1];
-				digestUploadScope = controllers[0].digestUploadScope;
-			} else if (controllers[2]) {
-				// inside  <form djng-endpoint="...">...</form>
-				formController = controllers[1];
-				digestUploadScope = controllers[2].digestUploadScope;
-			}
 			if (!formController)
 				return;  // outside of neither <djng-forms-set /> nor <form djng-endpoint="..." />
 
-			if (!angular.isArray(digestUploadScope[formController.$name])) {
-				digestUploadScope[formController.$name] = [];
-			}
 			scopePrefix = djangoForm.getScopePrefix(attrs.ngModel);
-			if (scopePrefix && digestUploadScope[formController.$name].indexOf(scopePrefix) === -1) {
-				digestUploadScope[formController.$name].push(scopePrefix);
+			if (controllers[0]) {
+				// inside  <djng-forms-set>...</djng-forms-set>
+				digestUploadScope(controllers[0]);
+			}
+			if (controllers[2]) {
+				// inside  <form djng-endpoint="...">...</form>
+				digestUploadScope(controllers[2]);
 			}
 
+			function digestUploadScope(controller) {
+				if (!angular.isArray(controller.digestUploadScope[formController.$name])) {
+					controller.digestUploadScope[formController.$name] = [];
+				}
+				if (scopePrefix && controller.digestUploadScope[formController.$name].indexOf(scopePrefix) === -1) {
+					controller.digestUploadScope[formController.$name].push(scopePrefix);
+				}
+			}
 		}
 	};
 }]);
