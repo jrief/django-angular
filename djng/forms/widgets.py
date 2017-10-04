@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from distutils.version import LooseVersion
-import json
 import mimetypes
 
 from django import get_version
@@ -95,8 +94,6 @@ if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
         def __init__(self, name, value, attrs, choices):
             attrs.pop('djng-error', None)
             self.field_attrs = []
-            if attrs.pop('radio_select_required', False):
-                self.field_attrs.append(format_html('validate-multiple-fields="{0}"', name))
             super(RadioFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 

@@ -292,11 +292,11 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
-        from django import VERSION
-
-        if VERSION < (1, 11) and isinstance(self.widget, widgets.RadioSelect):
-            attrs.update(radio_select_required=self.required)
         bound_field.form.update_widget_attrs(bound_field, attrs)
+        if isinstance(self.widget, widgets.RadioSelect):
+            if self.required and 'ng-model' in attrs:
+                require_model = format_html("!{}", attrs['ng-model'])
+                attrs.update({'ng-required': require_model})
         return attrs
 
     def get_converted_widget(self, widgets_module):
