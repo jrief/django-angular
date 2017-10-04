@@ -125,13 +125,13 @@ djngModule.directive('ngModel', ['$log', function($log) {
 	return {
 		restrict: 'A',
 		// make sure this directive is applied after angular built-in one
-		priority: 1,
-		require: ['ngModel', '^?form'],
-		link: function(scope, element, attrs, ctrls) {
+		priority: 2,
+		require: ['ngModel', '^?form', '^?djngMultifieldsRequired'],
+		link: function(scope, element, attrs, controllers) {
 			var field = angular.isElement(element) ? element[0] : null;
-			var modelCtrl = ctrls[0], formCtrl = ctrls[1] || null;
+			var modelCtrl = controllers[0], formCtrl = controllers[1], multifieldsCtrl = controllers[2];
 			var curModelValue = scope.$eval(attrs.ngModel);
-  
+
 			// if model already has a value defined, don't set the default
 			if (!field || !formCtrl || angular.isDefined(curModelValue))
 				return;
@@ -139,6 +139,11 @@ djngModule.directive('ngModel', ['$log', function($log) {
 			switch (field.tagName) {
 			case 'INPUT':
 				setDefaultValue(modelCtrl, restoreInputField(field));
+				if (multifieldsCtrl) {
+					// if field is wrapped inside a sub-form, add custom validation
+					multifieldsCtrl.subFields.push(modelCtrl);
+					modelCtrl.$validators.multifield = multifieldsCtrl.validate;
+				}
 				break;
 			case 'SELECT':
 				setDefaultValue(modelCtrl, restoreSelectOptions(field));
@@ -158,54 +163,33 @@ djngModule.directive('ngModel', ['$log', function($log) {
 }]);
 
 
-// This directive is added automatically by django-angular for widgets of type RadioSelect and
-// CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
+// Directive <ANY djng-multifields-required="true|false"> is added automatically by django-angular for widgets
+// of type CheckboxSelectMultiple. This is necessary to adjust the behavior of a collection of input fields,
 // which forms a group for one `django.forms.Field`.
-djngModule.directive('validateMultipleFields', function() {
+djngModule.directive('djngMultifieldsRequired', function() {
 	return {
 		restrict: 'A',
-		require: '^?form',
-		link: function(scope, element, attrs, controller) {
-			var subFields, checkboxElems = [];
+		require: 'djngMultifieldsRequired',
+		controller: ['$scope', function($scope) {
+			var self = this;
+			this.subFields = [];
 
-			if (!controller)
-				return;
-
-			function validate(event) {
-				var valid = false;
-				angular.forEach(checkboxElems, function(checkbox) {
-					valid = valid || checkbox.checked;
+			this.validate = function() {
+				var validated = !self.anyFieldRequired;
+				angular.forEach(self.subFields, function(subField) {
+					validated = validated || subField.$viewValue;
 				});
-				controller.$setValidity('required', valid);
-				if (event) {
-					controller.$dirty = true;
-					controller.$pristine = false;
-					// element.on('change', validate) is jQuery and runs outside of Angular's digest cycle.
-					// Therefore Angular does not get the end-of-digest signal and $apply() must be invoked manually.
-					scope.$apply();
+				if (validated) {
+					// if at least one checkbox was selected, validate all of them
+					angular.forEach(self.subFields, function(subField) {
+						subField.$setValidity('multifield', true);
+					});
 				}
-			}
-
-			try {
-				subFields = angular.fromJson(attrs.validateMultipleFields);
-			} catch (SyntaxError) {
-				if (!angular.isString(attrs.validateMultipleFields))
-					return;
-				subFields = [attrs.validateMultipleFields];
-				controller = controller[subFields];
-			}
-			angular.forEach(element.find('input'), function(elem) {
-				if (subFields.indexOf(elem.name) !== -1) {
-					checkboxElems.push(elem);
-					angular.element(elem).on('change', validate);
-				}
-			});
-
-			// remove "change" event handlers from all input fields
-			element.on('$destroy', function() {
-				element.find('input').off('change');
-			});
-			validate();
+				return validated;
+			};
+		}],
+		link: function(scope, element, attrs, controller) {
+			controller.anyFieldRequired = scope.$eval(attrs.djngMultifieldsRequired);
 		}
 	};
 });
@@ -285,40 +269,49 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 	this.digestUploadScope = {};
 
 	this.uploadScope = function(method, extraData) {
-		var deferred = $q.defer(), data = {};
+		var deferred = $q.defer(), data = {}, promise;
 		if (!self.endpointURL)
 			throw new Error("Can not upload form data: Missing endpoint.");
 
-		// merge the data from various scope entities into one data object
-		if (angular.isObject(extraData)) {
-			angular.merge(data, extraData);
-		}
-		angular.forEach(self.digestUploadScope, function(scopeModels) {
-			var modelScopeData = {};
-			angular.forEach(scopeModels, function(scopeModel) {
-				var values = $scope.$eval(scopeModel);
-				if (values) {
-					modelScopeData[scopeModel] = values;
-					angular.merge(data, modelScopeData);
-				}
+		if (method === 'GET') {
+			// send data from all forms below this endpoint to the server
+			promise = $http({
+				url: self.endpointURL,
+				method: method,
+				params: extraData
 			});
-		});
+		} else {
+			// merge the data from various scope entities into one data object
+			if (angular.isObject(extraData)) {
+				angular.merge(data, extraData);
+			}
+			angular.forEach(self.digestUploadScope, function(scopeModels) {
+				var modelScopeData = {};
+				angular.forEach(scopeModels, function(scopeModel) {
+					var values = $scope.$eval(scopeModel);
+					if (values) {
+						modelScopeData[scopeModel] = values;
+						angular.merge(data, modelScopeData);
+					}
+				});
+			});
 
-		// submit data from all forms below this endpoint to the server
-		$http({
-			url: self.endpointURL,
-			method: method,
-			data: data
-		}).then(function(response) {
+			// submit data from all forms below this endpoint to the server
+			promise = $http({
+				url: self.endpointURL,
+				method: method,
+				data: data
+			});
+		}
+		promise.then(function(response) {
 			angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
 				self.clearErrors($scope[formName]);
 				if (angular.isObject(response.data[formName])) {
 					self.setModels($scope[formName], response.data[formName]);
 				}
-				$scope[formName].$setSubmitted();
 			});
 			deferred.resolve(response);
-		}, function(response) {
+		}).catch(function(response) {
 			if (response.status >= 400 && response.status <= 499) {
 				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
 					self.clearErrors($scope[formName]);
@@ -349,7 +342,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 					field = form[key];
 					if (isField(field) && angular.isFunction(field.clearRejected)) {
 						field.clearRejected();
-					} else /* TODO: if (isForm(field)) */ {
+					} else if (isForm(field)) {
 						// this field acts as form and is a composite of input elements
 						field.$setValidity('rejected', true);
 						angular.forEach(field, function(subField, subKey) {
@@ -412,38 +405,35 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 			formCtrl.$message = models.success_message;
 		}
 		angular.forEach(models, function(value, key) {
-			var fieldCtrl = formCtrl[key], anyChecked;
+			var fieldCtrl = formCtrl[key];
 			if (isField(fieldCtrl)) {
 				fieldCtrl.$setViewValue(value, 'updateOn');
 				if (angular.isObject(fieldCtrl.$options)) {
 					fieldCtrl.$commitViewValue();
 				}
 				fieldCtrl.$render();
-				if (value) {
-					fieldCtrl.$setValidity('required', true);
-				}
-			} else /* TODO: if isForm(field) */ {
+				fieldCtrl.$validate();
+				fieldCtrl.$setUntouched();
+				fieldCtrl.$setPristine();
+			} else if (isForm(fieldCtrl)) {
 				// this field is a composite of checkbox input elements
-				anyChecked = false;
 				angular.forEach(fieldCtrl, function(subField, subKey) {
 					var leaf;
 					if (isField(subField)) {
 						leaf = subField.$name.replace(fieldCtrl.$name + '.', '');
 						if (value.indexOf(leaf) === -1) {
 							leaf = null;
-						} else {
-							anyChecked = true;
 						}
 						subField.$setViewValue(leaf, 'updateOn');
 						if (angular.isObject(subField.$options)) {
 							subField.$commitViewValue();
 						}
 						subField.$render();
+						subField.$validate();
+						subField.$setUntouched();
 					}
 				});
-				if (anyChecked) {
-					fieldCtrl.$setValidity('required', true);
-				}
+				fieldCtrl.$setPristine();
 			}
 		});
 	};
@@ -451,6 +441,10 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 	// use duck-typing to determine if field is a FieldController
 	function isField(field) {
 		return field && angular.isArray(field.$viewChangeListeners);
+	}
+
+	function isForm(form) {
+		return form && form.constructor.name === 'FormController';
 	}
 
 }]);
@@ -491,9 +485,9 @@ djngModule.directive('djngEndpoint', function() {
 			};
 
 			scope.dismissSubmitMessage = function() {
-				formController.$setPristine();
 				if (formController.$error.rejected) {
 					formController.$setValidity('rejected', true);
+					formController.$setPristine();
 					return true;
 				}
 			};

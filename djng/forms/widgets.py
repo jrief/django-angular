@@ -58,9 +58,9 @@ if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
         def __init__(self, name, value, attrs, choices):
             attrs.pop('djng-error', None)
             self.field_attrs = [format_html('ng-form="{0}"', name)]
-            #if attrs.pop('multiple_checkbox_required', False):
-            field_names = [format_html('{0}.{1}', name, choice) for choice, dummy in choices]
-            self.field_attrs.append(format_html('validate-multiple-fields="{0}"', json.dumps(field_names)))
+            multifields_required = attrs.pop('multifields_required', None)
+            if multifields_required is not None:
+                self.field_attrs.append(format_html('djng-multifields-required="{}"', str(multifields_required).lower()))
             super(CheckboxFieldRendererMixin, self).__init__(name, value, attrs, choices)
 
 

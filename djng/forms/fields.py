@@ -270,9 +270,8 @@ class MultipleFieldMixin(DefaultFieldMixin):
         """
         errors = []
         if self.required:
-            for key, msg in self.error_messages.items():
-                if key == 'required':
-                    errors.append(('$error.required', msg))
+            msg = _("At least one checkbox has to be selected.")
+            errors.append(('$error.multifield', msg))
         return errors
 
 
@@ -336,7 +335,11 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
+        from django import VERSION
+
         bound_field.form.update_widget_attrs(bound_field, attrs)
+        if VERSION < (1, 11) and isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            attrs.update(multifields_required=self.required)
         return attrs
 
     def get_converted_widget(self, widgets_module):
@@ -371,16 +374,13 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 
     def update_widget_rendering_context(self, context):
         if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            context['widget']['attrs']['djng-multifields-required'] = str(self.required).lower()
             ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
             if ng_model:
-                validate_fields = []
                 for group, options, index in context['widget']['optgroups']:
                     for option in options:
                         option['name'] = format_html('{name}.{value}', **option)
-                        validate_fields.append(format_html('"{name}"', **option))
                         option['attrs']['ng-model'] = format_html('{0}[\'{value}\']', ng_model, **option)
-                if self.required:
-                    context['widget']['attrs']['validate-multiple-fields'] = format_html('[{}]', ', '.join(validate_fields))
         return context
 
 
