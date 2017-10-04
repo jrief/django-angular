@@ -42,34 +42,14 @@ djngModule.directive('form', ['$timeout', function($timeout) {
 			if (!attrs.name)
 				throw new Error("Each <form> embedded inside a <djng-forms-set> must identify itself by name.")
 
-			element.find('input').on('keyup change', function() {
-				// delay until validation is ready
-				$timeout(reduceValidation);
-			});
-			element.find('select').on('change', function() {
-				$timeout(reduceValidation);
-			});
-			element.find('textarea').on('blur', function() {
-				$timeout(reduceValidation);
-			});
-
-			element.on('$destroy', function() {
-				element.find('input').off('keyup change');
-				element.find('select').off('keyup change');
-				element.find('textarea').off('blur');
-			});
-
-			// delay first evaluation until form is fully validated
-			$timeout(reduceValidation);
-
 			// check each child form's $valid state and reduce it to one single state `formsSetController.setIsValid`
-			function reduceValidation() {
+			scope.$watch(attrs.name + '.$valid', function reduceValidation() {
 				formsSetController.digestValidatedForms[formController.$name] = formController.$valid;
 				formsSetController.setIsValid = true;
 				angular.forEach(formsSetController.digestValidatedForms, function(validatedForm) {
 					formsSetController.setIsValid = formsSetController.setIsValid && validatedForm;
 				});
-			}
+			});
 
 		}
 	};
