@@ -259,7 +259,8 @@ djngModule.directive('validateEmail', function() {
 });
 
 
-djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function($scope, $http, $q) {
+djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate', '$parse', '$q',
+                                       function($scope, $http, $interpolate, $parse, $q) {
 	var self = this;
 
 	// a map of booleans keeping the validation state for each of the child forms
@@ -268,15 +269,25 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 	// dictionary of form names mapping their model scopes
 	this.digestUploadScope = {};
 
-	this.uploadScope = function(method, extraData) {
-		var deferred = $q.defer(), data = {}, promise;
+	this.setEndpoint = function(endpointURL) {
+		self.endpointURL = $interpolate(decodeURIComponent(endpointURL));
+	};
+
+	this.uploadScope = function(method, urlParams, extraData) {
+		var deferred = $q.defer(), data = {}, url, promise;
 		if (!self.endpointURL)
 			throw new Error("Can not upload form data: Missing endpoint.");
+
+		if (angular.isObject(urlParams)) {
+			url = self.endpointURL(urlParams);
+		} else {
+			url = self.endpointURL();
+		}
 
 		if (method === 'GET') {
 			// send data from all forms below this endpoint to the server
 			promise = $http({
-				url: self.endpointURL,
+				url: url,
 				method: method,
 				params: extraData
 			});
@@ -298,29 +309,31 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$q', function
 
 			// submit data from all forms below this endpoint to the server
 			promise = $http({
-				url: self.endpointURL,
+				url: url,
 				method: method,
 				data: data
 			});
 		}
 		promise.then(function(response) {
 			angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
-				self.clearErrors($scope[formName]);
-				if (angular.isObject(response.data[formName])) {
-					self.setModels($scope[formName], response.data[formName]);
+				var getter = $parse(formName);
+				self.clearErrors(getter($scope));
+				if (angular.isObject(getter(response.data))) {
+					self.setModels(getter($scope), getter(response.data));
 				}
 			});
 			deferred.resolve(response);
 		}).catch(function(response) {
 			if (response.status >= 400 && response.status <= 499) {
 				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
-					self.clearErrors($scope[formName]);
+					self.clearErrors($parse(formName)($scope));
 				});
 				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
-					if (angular.isObject(response.data[formName])) {
-						self.setErrors($scope[formName], response.data[formName]);
+					var getter = $parse(formName);
+					if (angular.isObject(getter(response.data))) {
+						self.setErrors(getter($scope), getter(response.data));
 					}
-					$scope[formName].$setSubmitted();
+					getter($scope).$setSubmitted();
 				});
 			}
 			deferred.reject(response);
@@ -455,49 +468,53 @@ djngModule.directive('djngEndpoint', function() {
 		require: ['form', 'djngEndpoint'],
 		restrict: 'A',
 		controller: 'FormUploadController',
-		link: function(scope, element, attrs, controllers) {
-			var formController = controllers[0];
-			if (!attrs.name)
-				throw new Error("Attribute 'name' is not set for this form!");
-			if (!attrs.djngEndpoint)
-				throw new Error("Attribute 'djng-endpoint' is not set for this form!");
-			controllers[1].endpointURL = attrs.djngEndpoint;
+		link: {
+			pre: function(scope, element, attrs, controllers) {
+				if (!attrs.name)
+					throw new Error("Attribute 'name' is not set for this form!");
+				if (!attrs.djngEndpoint)
+					throw new Error("Attribute 'djng-endpoint' is not set for this form!");
+				controllers[1].setEndpoint(attrs.djngEndpoint);
+			},
+			post: function(scope, element, attrs, controllers) {
+				var formController = controllers[0];
 
-			scope.hasError = function(field) {
-				if (angular.isObject(formController[field])) {
-					if (formController[field].$pristine && formController[field].$error.rejected)
-						return 'has-error';
-					if (formController[field].$touched && formController[field].$invalid)
-						return 'has-error';
-				}
-			};
+				scope.hasError = function(field) {
+					if (angular.isObject(formController[field])) {
+						if (formController[field].$pristine && formController[field].$error.rejected)
+							return 'has-error';
+						if (formController[field].$touched && formController[field].$invalid)
+							return 'has-error';
+					}
+				};
 
-			scope.successMessageVisible = function() {
-				return !formController.$error.rejected && formController.$submitted;
-			};
+				scope.successMessageVisible = function() {
+					return !formController.$error.rejected && formController.$submitted;
+				};
 
-			scope.rejectMessageVisible = function() {
-				return formController.$error.rejected && formController.$submitted;
-			};
+				scope.rejectMessageVisible = function() {
+					return formController.$error.rejected && formController.$submitted;
+				};
 
-			scope.getSubmitMessage = function() {
-				return formController.$message;
-			};
+				scope.getSubmitMessage = function() {
+					return formController.$message;
+				};
 
-			scope.dismissSubmitMessage = function() {
-				if (formController.$error.rejected) {
-					formController.$setValidity('rejected', true);
-					formController.$setPristine();
-					return true;
-				}
-			};
+				scope.dismissSubmitMessage = function() {
+					if (formController.$error.rejected) {
+						formController.$setValidity('rejected', true);
+						formController.$setPristine();
+						return true;
+					}
+				};
 
-			// resets the form into pristine state, after a successful submission
-			element.on('focusin', function() {
-				if (scope.dismissSubmitMessage()) {
-					scope.$apply();
-				}
-			});
+				// resets the form into pristine state, after a successful submission
+				element.on('focusin', function() {
+					if (scope.dismissSubmitMessage()) {
+						scope.$apply();
+					}
+				});
+			}
 		}
 	};
 });
@@ -565,12 +582,16 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 	return {
 		restrict: 'E',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
-		scope: true,
+		//scope: false,
 		link: function(scope, element, attrs, controllers) {
-			var uploadController = controllers[2] || controllers[0];
+			var uploadController = controllers[2] || controllers[0], urlParams;
 
 			if (!uploadController)
 				return;  // button neither inside <form djng-endpoint="...">...</form> nor inside <djng-forms-set>...</djng-forms-set>
+
+			if (attrs.urlParams) {
+				urlParams = scope.$eval(attrs.urlParams);
+			}
 
 			// prefix function create/update/delete with: do(...).then(...)
 			// to create the initial promise
@@ -580,25 +601,25 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 
 			scope.fetch = function(extraData) {
 				return function() {
-					return uploadController.uploadScope('GET', extraData);
+					return uploadController.uploadScope('GET', urlParams, extraData);
 				};
 			};
 
 			scope.create = function(extraData) {
 				return function() {
-					return uploadController.uploadScope('POST', extraData);
+					return uploadController.uploadScope('POST', urlParams, extraData);
 				};
 			};
 
 			scope.update = function(extraData) {
 				return function() {
-					return uploadController.uploadScope('PUT', extraData);
+					return uploadController.uploadScope('PUT', urlParams, extraData);
 				};
 			};
 
 			scope.delete = function(extraData) {
 				return function() {
-					return uploadController.uploadScope('DELETE', extraData);
+					return uploadController.uploadScope('DELETE', urlParams, extraData);
 				};
 			};
 
@@ -639,7 +660,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 
 			// Replace the existing icon symbol against an OK tick. Restore the previous
 			// symbol using the restore() function.
-			scope.showOk = function() {
+			scope.showOK = function() {
 				return function(response) {
 					angular.forEach(element.find('i'), function(icon) {
 						icon = angular.element(icon);
@@ -732,16 +753,18 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 // Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see
 // directives above), so that we can use a proceed/submit button outside of the ``<form ...>`` elements.
 // Whenever one of those forms does not validate, that button can be rendered as:
-// ``<button ng-click="update(some_action)" ng-disabled="idDisabled()">Submit</button>``
+// ``<button ng-click="update(some_action)" ng-disabled="isDisabled()">Submit</button>``
 djngModule.directive('djngFormsSet', function() {
 	return {
 		require: 'djngFormsSet',
 		controller: 'FormUploadController',
-		link: function(scope, element, attrs, uploadController) {
-			if (!attrs.endpoint)
-				throw new Error("Attribute 'endpoint' is not set!");
+		link: {
+			pre: function(scope, element, attrs, uploadController) {
+				if (!attrs.endpoint)
+					throw new Error("Attribute 'endpoint' is not set!");
 
-			uploadController.endpointURL = attrs.endpoint;
+				uploadController.setEndpoint(attrs.endpoint);
+			}
 		}
 	};
 });
