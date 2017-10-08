@@ -20,7 +20,7 @@ integrating Django forms with AngularJS.</p>
 		<button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
 			Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 		</button>
-		<button ng-click="do(spinner()).then(update({delay: true})).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
+		<button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
 			Delayed Submission&emsp;<i class="glyphicon glyphicon-hourglass"></i>
 		</button>
 		<button ng-click="do(fetch())" type="button" class="btn btn-default">
@@ -97,7 +97,7 @@ succeeded or failed. Our button directive offers two such functions, one to disp
 replace the buttons <nobr><code>&lt;i class="fontawesome or glyphicon"&gt;&lt;/i&gt;</code></nobr>
 icon element, if present.</p>
 <p>By using the promises chain, we can easily integrate this into our actions flow:
-<nobr><code>ng-click="do(update()).then(showOk()).then(delay(500)).then(reloadPage()).catch(showFail()).then(delay(2000)).finally(restore())"</code></nobr>.
+<nobr><code>ng-click="do(update()).then(showOK()).then(delay(500)).then(reloadPage()).catch(showFail()).then(delay(2000)).finally(restore())"</code></nobr>.
 Here we use the <code>catch(&hellip;)</code>-clause, to run a different action function in case of
 a failed submission. The <code>finally(restore())</code> is executed regardless of the submission
 success or failure, it restores the button internal icon to its original state.</p>

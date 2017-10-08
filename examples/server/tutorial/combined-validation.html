@@ -13,7 +13,7 @@
   <button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button">
     Validated Submission <i class="some-icon"></i>
   </button>
-  <button ng-click="do(spinner()).then(update({delay: true})).then(showOk()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button">
+  <button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button">
     Delayed Submission <i class="some-icon"></i>
   </button>
   <button ng-click="do(fetch())" type="button">
