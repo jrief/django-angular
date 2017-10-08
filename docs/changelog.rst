@@ -4,7 +4,7 @@
 Release History
 ===============
 
-1.2
+2.0
 ---
 * To be compliant with other frameworks, Ajax responses from invalid form submissions, now shall
   respond with a ``HttpResponseBadRequest`` (status code 422) rather than with a ``HttpResponse``
@@ -15,6 +15,8 @@ Release History
 * New AngularJS directive ``djng-forms-set``, usable to validate and submit more than one form.
 * AngularJS directive for the ``button``-element, usable to create a chain of action promises for
   form submissions.
+* Add support for AngularJS version 1.6 by replacing deprecated occurrences of ``$http(...).success(...)``
+  against ``$http(...).then(...)``.
 
 1.1.3
 -----
