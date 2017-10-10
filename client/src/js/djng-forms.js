@@ -581,7 +581,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 	return {
 		restrict: 'E',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
-		//scope: false,
+		scope: true,
 		link: function(scope, element, attrs, controllers) {
 			var uploadController = controllers[2] || controllers[0], urlParams;
 
