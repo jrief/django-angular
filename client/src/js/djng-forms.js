@@ -555,10 +555,6 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 }]);
 
 
-// If forms are validated using Ajax, the server shall return a dictionary of detected errors to the
-// client code. The success-handler of this Ajax call, now can set those error messages on their
-// prepared list-items. The simplest way, is to add this code snippet into the controllers function
-// which is responsible for submitting form data using Ajax:
 djngModule.factory('djangoForm', ['$parse', function($parse) {
 	return {
 		getScopePrefix: function(modelName) {
