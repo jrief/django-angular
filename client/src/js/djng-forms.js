@@ -124,8 +124,7 @@ djngModule.directive('ngModel', ['$log', function($log) {
 
 	return {
 		restrict: 'A',
-		// make sure this directive is applied after angular built-in one
-		priority: 2,
+		priority: 2,  // make sure this directive is applied after angular built-in one
 		require: ['ngModel', '^?form', '^?djngMultifieldsRequired'],
 		link: function(scope, element, attrs, controllers) {
 			var field = angular.isElement(element) ? element[0] : null;
@@ -513,6 +512,10 @@ djngModule.directive('djngEndpoint', function() {
 					if (scope.dismissSubmitMessage()) {
 						scope.$apply();
 					}
+				});
+
+				element.on('$destroy', function() {
+					element.off('focusin');
 				});
 			}
 		}
