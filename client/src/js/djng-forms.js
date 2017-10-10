@@ -268,8 +268,9 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 	// dictionary of form names mapping their model scopes
 	this.digestUploadScope = {};
 
-	this.setEndpoint = function(endpointURL) {
+	this.setEndpoint = function(endpointURL, modelScope) {
 		self.endpointURL = $interpolate(decodeURIComponent(endpointURL));
+		self.modelScope = modelScope;
 	};
 
 	this.uploadScope = function(method, urlParams, extraData) {
@@ -473,7 +474,7 @@ djngModule.directive('djngEndpoint', function() {
 					throw new Error("Attribute 'name' is not set for this form!");
 				if (!attrs.djngEndpoint)
 					throw new Error("Attribute 'djng-endpoint' is not set for this form!");
-				controllers[1].setEndpoint(attrs.djngEndpoint);
+				controllers[1].setEndpoint(attrs.djngEndpoint, scope);
 			},
 			post: function(scope, element, attrs, controllers) {
 				var formController = controllers[0];
@@ -523,8 +524,9 @@ djngModule.directive('djngEndpoint', function() {
 });
 
 
-// All directives `ng-model` which are used inside  `<ANY djng-forms-set>...</ANY djng-forms-set>`,
-// must keep track on the scope parts, which later shall be uploaded to the server.
+// All directives `ng-model` which are used inside a `<ANY djng-forms-set>...</ANY djng-forms-set>`
+// or <form djng-endpoint="...">...</form> must keep track on the scope parts, which later shall be
+// uploaded to the server.
 djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 	return {
 		restrict: 'A',
@@ -546,6 +548,24 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 			}
 
 			function digestUploadScope(controller) {
+				if (scope.$id !== controller.modelScope.$id) {
+					// detach object scope[scopePrefix] and scope[formController.$name] and move them
+					// to controller.modelScope so that it is still available through prototypical inheritance.
+					// This is required in case we use a directive with scope=true.
+					if (scope.hasOwnProperty(scopePrefix)) {
+						controller.modelScope[scopePrefix] = scope[scopePrefix];
+						delete scope[scopePrefix];
+						if (!scope[formController.$name])
+							throw new Error("Failed to detach model scope and reappend to its parent.")
+					}
+					if (scope.hasOwnProperty(formController.$name)) {
+						controller.modelScope[formController.$name] = scope[formController.$name];
+						delete scope[formController.$name];
+						if (!scope[formController.$name])
+							throw new Error("Failed to detach form controller and/or to reappend to its parent.")
+					}
+				}
+
 				if (!angular.isArray(controller.digestUploadScope[formController.$name])) {
 					controller.digestUploadScope[formController.$name] = [];
 				}
@@ -762,7 +782,7 @@ djngModule.directive('djngFormsSet', function() {
 				if (!attrs.endpoint)
 					throw new Error("Attribute 'endpoint' is not set!");
 
-				uploadController.setEndpoint(attrs.endpoint);
+				uploadController.setEndpoint(attrs.endpoint, scope);
 			}
 		}
 	};
