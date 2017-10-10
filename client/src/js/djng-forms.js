@@ -774,7 +774,7 @@ djngModule.directive('djngFormsSet', function() {
 // <form ...> elements but inside the <djng-forms-set ...> element can check the validity of all forms.
 // Another purpose of this directive is to summarize the scope-models of the given forms, so that the scope can
 // be uploaded to the endpoint URL using one submission.
-djngModule.directive('form', ['$timeout', function($timeout) {
+djngModule.directive('form', function() {
 	return {
 		restrict: 'E',
 		require: ['^?djngFormsSet', 'form'],
@@ -799,7 +799,7 @@ djngModule.directive('form', ['$timeout', function($timeout) {
 
 		}
 	};
-}]);
+});
 
 
 // Directive <ANY djng-bind-if="any_variable"> behaves similar to `ng-bind` but leaves the elements
