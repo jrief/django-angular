@@ -263,14 +263,14 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 	var self = this;
 
 	// a map of booleans keeping the validation state for each of the child forms
-	this.digestValidatedForms = {};
+	this.endpointValidatedForms = {};
 
 	// dictionary of form names mapping their model scopes
-	this.digestUploadScope = {};
+	this.endpointFormsMap = {};
 
-	this.setEndpoint = function(endpointURL, modelScope) {
+	this.setEndpoint = function(endpointURL, endpointScope) {
 		self.endpointURL = $interpolate(decodeURIComponent(endpointURL));
-		self.modelScope = modelScope;
+		self.endpointScope = endpointScope;
 	};
 
 	this.uploadScope = function(method, urlParams, extraData) {
@@ -296,7 +296,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 			if (angular.isObject(extraData)) {
 				angular.merge(data, extraData);
 			}
-			angular.forEach(self.digestUploadScope, function(scopeModels) {
+			angular.forEach(self.endpointFormsMap, function(scopeModels) {
 				var modelScopeData = {};
 				angular.forEach(scopeModels, function(scopeModel) {
 					var values = $scope.$eval(scopeModel);
@@ -315,7 +315,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 			});
 		}
 		promise.then(function(response) {
-			angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+			angular.forEach(self.endpointFormsMap, function(scopeModels, formName) {
 				var getter = $parse(formName);
 				self.clearErrors(getter($scope));
 				if (angular.isObject(getter(response.data))) {
@@ -325,10 +325,10 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 			deferred.resolve(response);
 		}).catch(function(response) {
 			if (response.status >= 400 && response.status <= 499) {
-				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+				angular.forEach(self.endpointFormsMap, function(scopeModels, formName) {
 					self.clearErrors($parse(formName)($scope));
 				});
-				angular.forEach(self.digestUploadScope, function(scopeModels, formName) {
+				angular.forEach(self.endpointFormsMap, function(scopeModels, formName) {
 					var getter = $parse(formName);
 					if (angular.isObject(getter(response.data))) {
 						self.setErrors(getter($scope), getter(response.data));
@@ -532,7 +532,7 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 		restrict: 'A',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
 		link: function(scope, element, attrs, controllers) {
-			var formController = controllers[1], digestUploadScope, scopePrefix;
+			var formController = controllers[1], scopePrefix;
 
 			if (!formController)
 				return;  // outside of neither <djng-forms-set /> nor <form djng-endpoint="..." />
@@ -540,37 +540,37 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 			scopePrefix = djangoForm.getScopePrefix(attrs.ngModel);
 			if (controllers[0]) {
 				// inside  <djng-forms-set>...</djng-forms-set>
-				digestUploadScope(controllers[0]);
+				addToEndpoint(controllers[0]);
 			}
 			if (controllers[2]) {
 				// inside  <form djng-endpoint="...">...</form>
-				digestUploadScope(controllers[2]);
+				addToEndpoint(controllers[2]);
 			}
 
-			function digestUploadScope(controller) {
-				if (scope.$id !== controller.modelScope.$id) {
+			function addToEndpoint(controller) {
+				if (scope.$id !== controller.endpointScope.$id) {
 					// detach object scope[scopePrefix] and scope[formController.$name] and move them
-					// to controller.modelScope so that it is still available through prototypical inheritance.
+					// to controller.endpointScope so that it is still available through prototypical inheritance.
 					// This is required in case we use a directive with scope=true.
 					if (scope.hasOwnProperty(scopePrefix)) {
-						controller.modelScope[scopePrefix] = scope[scopePrefix];
+						controller.endpointScope[scopePrefix] = scope[scopePrefix];
 						delete scope[scopePrefix];
 						if (!scope[formController.$name])
 							throw new Error("Failed to detach model scope and reappend to its parent.")
 					}
 					if (scope.hasOwnProperty(formController.$name)) {
-						controller.modelScope[formController.$name] = scope[formController.$name];
+						controller.endpointScope[formController.$name] = scope[formController.$name];
 						delete scope[formController.$name];
 						if (!scope[formController.$name])
 							throw new Error("Failed to detach form controller and/or to reappend to its parent.")
 					}
 				}
 
-				if (!angular.isArray(controller.digestUploadScope[formController.$name])) {
-					controller.digestUploadScope[formController.$name] = [];
+				if (!angular.isArray(controller.endpointFormsMap[formController.$name])) {
+					controller.endpointFormsMap[formController.$name] = [];
 				}
-				if (scopePrefix && controller.digestUploadScope[formController.$name].indexOf(scopePrefix) === -1) {
-					controller.digestUploadScope[formController.$name].push(scopePrefix);
+				if (scopePrefix && controller.endpointFormsMap[formController.$name].indexOf(scopePrefix) === -1) {
+					controller.endpointFormsMap[formController.$name].push(scopePrefix);
 				}
 			}
 		}
@@ -810,9 +810,9 @@ djngModule.directive('form', function() {
 
 			// check each child form's $valid state and reduce it to one single state `formsSetController.setIsValid`
 			scope.$watch(attrs.name + '.$valid', function reduceValidation() {
-				formsSetController.digestValidatedForms[formController.$name] = formController.$valid;
+				formsSetController.endpointValidatedForms[formController.$name] = formController.$valid;
 				formsSetController.setIsValid = true;
-				angular.forEach(formsSetController.digestValidatedForms, function(validatedForm) {
+				angular.forEach(formsSetController.endpointValidatedForms, function(validatedForm) {
 					formsSetController.setIsValid = formsSetController.setIsValid && validatedForm;
 				});
 			});
