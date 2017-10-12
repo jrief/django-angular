@@ -95,7 +95,7 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 	}
 
 	function restoreSelectOptions(field) {
-		var result = [];
+		var result = field.multiple ? [] : undefined;
 		angular.forEach(field.options, function(option) {
 			if (option.defaultSelected) {
 				// restore the select option to selected
@@ -104,7 +104,6 @@ djng_forms_module.directive('ngModel', ['$log', function($log) {
 					result.push(option.value);
 				} else {
 					result = option.value;
-					return;
 				}
 			}
 		});
