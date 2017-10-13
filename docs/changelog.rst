@@ -4,12 +4,10 @@
 Release History
 ===============
 
-1.2
----
-* To be compliant with other frameworks, Ajax responses from invalid form submissions, now shall
-  respond with a ``HttpResponseBadRequest`` (status code 422) rather than with a ``HttpResponse``
-  (status 200). This requires to adopt the form response views and the response handlers in the
-  JavaScript files, submitting the form data.
+1.1.4
+-----
+* Fixed: broken <select>-element if used with ng-model.
+* Started to deprecate ``djng.sekizai_processors.module_list``.
 
 1.1.3
 -----
