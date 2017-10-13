@@ -4,6 +4,10 @@
 Release History
 ===============
 
+0.8.5
+-----
+* Fixed: broken <select>-element if used with ng-model.
+
 0.8.4
 -----
 * Added two optional Sekiazai's postprocessors for better dependency resolution of AngularJS
