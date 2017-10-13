@@ -4,6 +4,10 @@
 Release History
 ===============
 
+0.8.6
+-----
+* Adopted karma scripts to latest version of npm.
+
 0.8.5
 -----
 * Fixed: broken <select>-element if used with ng-model.
