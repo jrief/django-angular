@@ -136,9 +136,6 @@ describe('unit tests for module djng.forms', function() {
 				expect(djangoForm.getScopePrefix('any_name')).toBe('any_name');
 				expect(djangoForm.getScopePrefix('any_name.something')).toBe('any_name');
 				expect(djangoForm.getScopePrefix('any_name[\'something\']')).toBe('any_name');
-				expect(djangoForm.getScopePrefix('любое_имя')).toBe('любое_имя');
-				expect(djangoForm.getScopePrefix('любое_имя.что-то')).toBe('любое_имя');
-				expect(djangoForm.getScopePrefix('любое_имя[\'что-то\']')).toBe('любое_имя');
 			});
 		});
 	});
