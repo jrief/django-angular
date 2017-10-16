@@ -19,6 +19,13 @@ Release History
   against ``$http(...).then(...)``.
 * Sekizai's postprocessor ``module_list`` and ``module_config`` are deprecated and will be removed,
   since it is easier to fulfill the same result using Sekizai's templatetag ``with_data``.
+* Radio input fields do not require the DjNg directive ``validate-multiple-fields`` anymore.
+
+
+1.1.4
+-----
+* Fixed: broken <select>-element if used with ng-model.
+* Started to deprecate ``djng.sekizai_processors.module_list``.
 
 1.1.3
 -----
