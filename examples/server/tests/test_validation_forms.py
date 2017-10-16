@@ -77,7 +77,7 @@ class NgFormValidationMixinTestCase(TestCase):
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
         ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty && !UmFkaW9Gb3Jt['sex'].$untouched"})
-        self.assertHTMLEqual(str(ul.li.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$error.required')
+        self.assertHTMLEqual(str(ul.li.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$error.multifield')
         self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
         self.assertHTMLEqual(str(ul.li.nextSibling.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$valid')
 
@@ -141,8 +141,8 @@ class NgFormValidationMixinTestCase(TestCase):
 
         ul = soup.find(attrs={'ng-show': "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$dirty && !Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$untouched"})
         self.assertListEqual(ul.attrs['class'], ["djng-field-errors"])
-        self.assertHTMLEqual(str(ul.li.attrs['ng-show']), "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$error.required")
-        self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
+        self.assertHTMLEqual(str(ul.li.attrs['ng-show']), "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$error.multifield")
+        self.assertHTMLEqual(str(ul.li.text), 'At least one checkbox has to be selected.')
         self.assertHTMLEqual(str(ul.li.nextSibling.attrs['ng-show']), "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$valid")
 
         ul = soup.find(attrs={'ng-show': "Q2hlY2tib3hDaG9pY2VzRm9ybQ['check_multi'].$pristine"})
@@ -151,7 +151,7 @@ class NgFormValidationMixinTestCase(TestCase):
 
         self.assertEquals(soup.label.text, "Check multi")
         elem = soup.find(attrs={'ng-form': "check_multi"})
-        self.assertEquals(elem.attrs['validate-multiple-fields'], '["check_multi.a", "check_multi.b", "check_multi.c"]')
+        self.assertTrue(elem.attrs['djng-multifields-required'])
 
         label = elem.find(attrs={'for': 'id_check_multi_0'})
         self.assertEquals(label.text.strip(), "Choice A")

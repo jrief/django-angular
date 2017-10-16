@@ -7,39 +7,19 @@ describe('unit tests for module djng.url', function () {
     var url_name_arg = 'djng_url_name';
 
     describe("test djangoUrlProvider", function () {
-        var custom_url = 'example.com/test/';
-        var provider;
-
         beforeEach(function () {
-
-            var fakeModule = angular.module('djng.urls.config', function () {
-            });
-            fakeModule.config(function (djangoUrlProvider) {
-                provider = djangoUrlProvider;
-            });
-
-            module('djng.urls', 'djng.urls.config');
-
-            // Kickstart the injectors previously registered
-            // with calls to angular.mock.module
-            inject(function () {
-            });
+            module('djng.urls');
         });
+
         describe("Test provider custom url config", function () {
-            it('tests the providers internal function', function () {
-
-                expect(provider).not.toBeUndefined();
-                provider.setReverseUrl(custom_url);
-
-                var reverser = provider.$get();
-                expect(reverser.reverse('home')).toBe(custom_url + '?' + url_name_arg + '=home');
-
-            });
+            it('tests the providers internal function', inject(function(djangoUrl) {
+                expect(djangoUrl.reverse('myapp:home')).toBe('/angular/reverse/?djng_url_name=myapp%3Ahome');
+            }));
         });
+
     });
 
     describe('test djangoUrl url resolving', function () {
-
         beforeEach(function () {
             module('djng.urls');
         });
