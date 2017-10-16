@@ -78,7 +78,7 @@ class NgFormValidationMixinTestCase(TestCase):
 
         ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$dirty && !UmFkaW9Gb3Jt['sex'].$untouched"})
         self.assertHTMLEqual(str(ul.li.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$error.multifield')
-        self.assertHTMLEqual(str(ul.li.text), 'This field is required.')
+        self.assertHTMLEqual(str(ul.li.text), 'At least one checkbox has to be selected.')
         self.assertHTMLEqual(str(ul.li.nextSibling.attrs['ng-show']), 'UmFkaW9Gb3Jt[\'sex\'].$valid')
 
         ul = soup.find(attrs={'ng-show': "UmFkaW9Gb3Jt['sex'].$pristine"})
