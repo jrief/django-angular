@@ -87,7 +87,6 @@ class NgFormValidationMixinTestCase(TestCase):
         self.assertEquals(soup.label.text, "Sex")
 
         elem = soup.find(id="id_sex")
-        self.assertEquals(elem.attrs['validate-multiple-fields'], "sex")
         self.assertEquals(elem.label.text.strip(), "Male")
         self.assertEquals(elem.label.input.attrs['id'], "id_sex_0")
         self.assertEquals(elem.label.input.attrs['name'], "sex")
