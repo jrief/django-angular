@@ -506,17 +506,6 @@ djngModule.directive('djngEndpoint', function() {
 						return true;
 					}
 				};
-
-				// resets the form into pristine state, after a successful submission
-				element.on('focusin', function() {
-					if (scope.dismissSubmitMessage()) {
-						scope.$apply();
-					}
-				});
-
-				element.on('$destroy', function() {
-					element.off('focusin');
-				});
 			}
 		}
 	};
