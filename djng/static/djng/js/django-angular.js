@@ -394,6 +394,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 				if (angular.isObject(getter(response.data))) {
 					self.setModels(getter($scope), getter(response.data));
 				}
+				getter($scope).$setSubmitted();
 			});
 			deferred.resolve(response);
 		}).catch(function(response) {
@@ -417,7 +418,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 
 	// clearErrors removes errors from this form, which may have been rejected by an earlier validation
 	this.clearErrors = function(form) {
-		form.$message = '';
+		form.$message = "";
 		if (form.hasOwnProperty('$error') && angular.isArray(form.$error.rejected)) {
 			// make copy of form.$error.rejected before we loop as calling
 			// field.$setValidity('rejected', true) modifies the error array so only every
@@ -541,6 +542,7 @@ djngModule.directive('djngEndpoint', function() {
 		require: ['form', 'djngEndpoint'],
 		restrict: 'A',
 		controller: 'FormUploadController',
+		scope: true,
 		link: {
 			pre: function(scope, element, attrs, controllers) {
 				if (!attrs.name)
@@ -561,12 +563,12 @@ djngModule.directive('djngEndpoint', function() {
 					}
 				};
 
-				scope.successMessageVisible = function() {
-					return !formController.$error.rejected && formController.$submitted;
+				scope.successMessageIsVisible = function() {
+					return formController.$message && !formController.$error.rejected && formController.$submitted;
 				};
 
-				scope.rejectMessageVisible = function() {
-					return formController.$error.rejected && formController.$submitted;
+				scope.rejectMessageIsVisible = function() {
+					return formController.$message && formController.$error.rejected && formController.$submitted;
 				};
 
 				scope.getSubmitMessage = function() {
@@ -576,21 +578,9 @@ djngModule.directive('djngEndpoint', function() {
 				scope.dismissSubmitMessage = function() {
 					if (formController.$error.rejected) {
 						formController.$setValidity('rejected', true);
-						formController.$setPristine();
-						return true;
 					}
+					formController.$setPristine();
 				};
-
-				// resets the form into pristine state, after a successful submission
-				element.on('focusin', function() {
-					if (scope.dismissSubmitMessage()) {
-						scope.$apply();
-					}
-				});
-
-				element.on('$destroy', function() {
-					element.off('focusin');
-				});
 			}
 		}
 	};
