@@ -16,7 +16,7 @@
 
 {% block form_submission %}
 	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>
-	<button type="button" class="btn btn-primary" ng-click="do(update())">Submit via Ajax</button>
+	<button type="button" class="btn btn-primary" ng-click="do(update()).then(redirectTo())">Submit via Ajax</button>
 {% endblock %}
 
 {% block form_foot %}
@@ -35,11 +35,11 @@ copy of the actual input field's content.</p>
 <h5>Auto-adding <code>ng-model</code> to forms</h5>
 <p>If a form inherits from the mixin class <code>NgModelFormMixin</code>, then
 <strong>django-angular</strong> renders each field with the directive
-<nobr><code>ng-model="<em>fieldname</em>"</code></nobr>. To prevent the pollution of the scope's
+<nobr><code>ng-model="<em>fieldname</em>"</code></nobr>. To prevent polluting the scope's
 namespace, it is common practice to encapsulate all the form fields into a separate JavaScript
 object. The name of this encapsulating object can be set during the form definition, using the
 class member <code>scope_prefix</code>. Furthermore, set the class member <code>form_name</code>
-to a different name. Otherwise the mixin class will invent a unique form name for you. The
+to a different name. If omitted, the mixin class will invent a unique form name for you. The
 <code>form_name</code> <em>must</em> be different from <code>scope_prefix</code>, because
 AngularJS's internal form controller adds its own object to the scope, and this objects is
 named after the form. To prevent confusion, name your forms ending in something such as

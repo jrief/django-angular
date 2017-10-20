@@ -10,8 +10,14 @@
 {% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate{% endblock %}
 
 {% block form_submission %}
-	<p><button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe Me</button></p>
-	<p><small>Test submission of invalid POST data:</small><br/><button type="submit" class="btn btn-warning btn-xs">Force Form Submission</button></p>
+	<p>
+		<small>Submission using a POST request:</small><br/>
+		<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Subscribe Me</button>
+	</p>
+	<p>
+		<small>Test submission of invalid POST data:</small><br/>
+		<button type="submit" class="btn btn-warning btn-xs">Force Form Submission</button>
+	</p>
 {% endblock %}
 
 {% block main-tutorial %}
