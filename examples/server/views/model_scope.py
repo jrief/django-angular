@@ -2,7 +2,7 @@
 from server.forms.model_scope import SubscribeForm
 # start tutorial
 import json
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.encoding import force_text
 from django.views.generic.edit import FormView
@@ -24,5 +24,4 @@ class SubscribeView(FormView):
         if form.is_valid():
             return JsonResponse({'success_url': force_text(self.success_url)})
         else:
-            response_data = {form.form_name: form.errors}
-            return HttpResponseBadRequest(json.dumps(response_data), status=422, content_type='application/json')
+            return JsonResponse({form.form_name: form.errors}, status=422)

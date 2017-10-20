@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from server.forms.forms_set import SubscribeForm, AddressForm
 # start tutorial
 import json
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.http import JsonResponse
 from django.views.generic import TemplateView
 from django.core.urlresolvers import reverse_lazy
 
@@ -33,4 +33,4 @@ class SubscribeView(TemplateView):
             subscribe_form.form_name: subscribe_form.errors,
             address_form.form_name: address_form.errors,
         })
-        return HttpResponseBadRequest(json.dumps(response_data), status=422, content_type='application/json')
+        return JsonResponse(response_data, status=422)
