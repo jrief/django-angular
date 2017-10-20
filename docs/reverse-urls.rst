@@ -9,13 +9,6 @@ pointing to some of the views of your application. Don't fall into temptation to
 URL into the client side controller code. Even worse would be to create Javascript dynamically using
 a template engine. There is a clean and simple solution to solve this problem.
 
-.. note:: Until version 0.7.14 **django-angular** reversed all existing URLs of a project and created
-	an object exposing them to Javascript. Documentation for now deprecated approach is available
-	:ref:`here <manage-urls>`.
-	
-	Starting with version 0.7.15, **django-angular** provides a new way to handle URLs, which offers
-	the reversing functionality directly to AngularJS modules.
-
 This service is provided by ``djangoUrl.reverse(name, args_or_kwargs)`` method. It behaves
 exactly like Django's `URL template tag`_.
 
@@ -56,7 +49,7 @@ Setting via Django Middleware
 -----------------------------
 
 * Add ``'djng.middleware.AngularUrlMiddleware'`` to ``MIDDLEWARE_CLASSES`` in your Django
-``settings.py`` file:
+  ``settings.py`` file:
 
 .. code-block:: python
 

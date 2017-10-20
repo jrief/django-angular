@@ -30,7 +30,7 @@ by mixing in the **djng** class ``NgModelFormMixin``
 	    # more fields ...
 
 .. note:: Since **django-angular**-1.1, you must use the adopted field classes provided by **django-angular**,
-instead of Django's own ``fields`` module.
+		instead of Django's own ``fields`` module.
 
 In the majority of cases, the Form inherits from Django's ``forms.Form``, so the above example
 can be rewritten in a simpler way, by using the convenience class ``NgForm`` as a replacement:

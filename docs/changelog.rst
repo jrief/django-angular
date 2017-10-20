@@ -11,7 +11,7 @@ Release History
   200). This requires to adopt the form response views and the response handlers in the JavaScript
   files, submitting the form data.
 * No more need to add a controller for uploading form data to the server. Instead add the directive
-  ``djng-endpoint="/path/to/endpoint" to a form and submit the form's content using an action event.
+  ``djng-endpoint="/path/to/endpoint"`` to a form and submit the form's content using an action event.
 * New AngularJS directive ``djng-forms-set``, usable to validate and submit more than one form.
 * AngularJS directive for the ``button``-element, usable to create a chain of action promises for
   form submissions.
