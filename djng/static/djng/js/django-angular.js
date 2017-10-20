@@ -636,6 +636,14 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 					controller.endpointFormsMap[formController.$name].push(scopePrefix);
 				}
 			}
+
+			element.on('change', function() {
+				if (formController.$error.rejected) {
+					formController.$setValidity('rejected', true);
+					formController.$submitted = false;
+					scope.$apply();
+				}
+			});
 		}
 	};
 }]);
