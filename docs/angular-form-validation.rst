@@ -13,8 +13,10 @@ for final processing.
 
 *This leads to code duplication and generally violates the DRY principle!*
 
+
 NgFormValidationMixin
 =====================
+
 A workaround to this problem is to use Django's form declaration to automatically generate client
 side validation code, suitable for AngularJS. By adding a special mixin class to the form class,
 this can be achieved automatically and on the fly
@@ -117,6 +119,7 @@ by replacing the submit button with the following HTML code:
 
 More granular output
 ....................
+
 If the form fields shall be explicitly rendered, the potential field validation errors can be
 rendered in templates using a special field tag. Say, the form contains
 
@@ -145,6 +148,7 @@ visible, if the user enters an invalid email address.
 
 Bound forms
 ...........
+
 If the `form is bound`_ and rendered, then errors detected by the server side's validation code are
 rendered as unsorted list in addition to the list of potential errors. Both of these error lists are
 rendered using their own ``<ul>`` elements. The behavior for potential errors remains the same, but
@@ -158,6 +162,7 @@ detected errors are hidden the moment, the user sets the form into a dirty state
 
 Combine NgFormValidationMixin with NgModelFormMixin
 ---------------------------------------------------
+
 While it is possible to use ``NgFormValidationMixin`` on itself, it is perfectly legal to mix
 ``NgModelFormMixin`` with ``NgFormValidationMixin``. However, a few precautions have to be taken.
 
@@ -192,8 +197,10 @@ but this is not
 
 	form = MyValidatedForm(form_name='my_form', scope_prefix='my_form')
 
+
 An implementation note
 ......................
+
 AngularJS names each input field to validate, by concatenating its forms name with its fields name.
 This object member then contains an error object, named ``my_form.field_name.$error`` filled by
 the AngularJS validation mechanism. The placeholder for the error object would clash with
@@ -203,6 +210,7 @@ different names.
 
 Customize detected and potential validation errors
 ==================================================
+
 If a form with AngularJS validation is rendered, each input field is prefixed with an unsorted list
 ``<ul>`` of potential validation errors. For each possible constraint violation, a list item
 ``<li>`` containing a descriptive message is added to that list.
@@ -256,6 +264,7 @@ error list renderer, renders two ``<ul>``-elements for each input field, one to 
 
 Adding an AngularJS directive for validating form fields
 --------------------------------------------------------
+
 Sometimes it can be useful to add a generic field validator on the client side, which can be
 controlled by the form's definition on the server. One such example is Django's DateField:
 

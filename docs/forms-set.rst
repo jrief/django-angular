@@ -60,7 +60,7 @@ Forms Validation
 
 All Forms wrapped inside our ``djng-forms-set`` directive, are validated. This can and shall be
 used to prevent submitting data, if at least one of the forms does not validate. For this, just
-add ``ng-disabled="setIsInvalid"`` to the submission button.
+add ``ng-disabled="isDisabled()"`` to the submission button.
 
 
 Form Submission Methods
