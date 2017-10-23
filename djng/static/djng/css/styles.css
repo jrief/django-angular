@@ -40,3 +40,9 @@ ul.djng-field-errors li.valid::before {
 }
 
 @keyframes spin { 100% { transform:rotate(360deg); } }
+
+button.btn > i {
+	width: 2em;
+	display: inline-block;
+	text-align: center;
+}
