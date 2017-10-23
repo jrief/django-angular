@@ -17,13 +17,14 @@ label.djng-field-required::after {
 	content: "\00a0*";
 }
 ul.djng-form-errors, ul.djng-field-errors {
-	display: inline-block;
+	display: block;
 	list-style-type: none;
-	margin: 5px 0 0 0;
+	margin: 0;
 	padding: 0;
 }
 ul.djng-form-errors li, ul.djng-field-errors li {
 	color: #e9322d;
+	margin-bottom: 5px;
 }
 ul.djng-field-errors li.invalid::before {
 	content: "\2716";
