@@ -269,15 +269,14 @@ class BaseFieldsModifierMetaclass(type):
         if formfield:
             # use the same class name to load the corresponding inherited formfield
             try:
-                form_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
-            except ImportError:
-                msg = "Unable to import field class '{}'"
-                raise ImportError(msg.format(formfield.__class__.__name__))
+                formfield_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
+            except ImportError: # form field not declared by Django
+                formfield_class = type(str(formfield.__class__.__name__), (DefaultFieldMixin, formfield.__class__), {})
 
             # recreate the formfield using our customized field class
             if hasattr(formfield, 'choices'):
-                kwargs.update(choices_form_class=form_class)
-            kwargs.update(form_class=form_class)
+                kwargs.update(choices_form_class=formfield_class)
+            kwargs.update(form_class=formfield_class)
             formfield = modelfield.formfield(**kwargs)
         return formfield
 
