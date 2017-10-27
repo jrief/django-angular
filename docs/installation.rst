@@ -16,39 +16,14 @@ Change to the root directory of your project and install Node dependencies:
 .. code-block:: bash
 
 	npm init
-	npm install angular@~1.5 --save
+	npm install angular --save
 
 
 Dependencies
 ------------
 
 **django-angular** has no dependencies to any other Django app, except ``easy-thumbnails`` and
-``Pillow`` if using the image upload feature.
-
-Projects using **django-angular** however require that AngularJS is installed through other means
-than pip. The best solution is to run:
-
-.. code-block:: shell
-
-	npm install angular@1.5 --save
-
-in your project's root folder and add it to the Django's static files search path:
-
-.. code-block:: shell
-
-	npm install angular@1.5 --save
-
-	STATICFILES_DIRS = [
-	    ...
-	    ('node_modules', /path/to/my-project-root/node_modules'),
-	]
-
-From the project's templates, you may refer the AngularJS files as:
-
-.. code-block:: django
-
-	<script src="{% static 'node_modules/angular/angular.js' %}" type="text/javascript">
-
+``Pillow`` if using the image upload feature. AngularJS may be installed through other then ``npm``. However ``pip`` isn't valid in any case.
 
 Configuration
 =============
@@ -72,9 +47,14 @@ path:
 .. code-block:: python
 
 	STATICFILES_DIRS = [
-	    ('node_modules', os.path.join(PROJECT_DIR, 'node_modules')),
+	    ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
 	]
 
+From the project's templates, you may refer the AngularJS files as:
+
+.. code-block:: django
+
+	<script src="{% static 'node_modules/angular/angular.js' %}" type="text/javascript">
 
 
 Django-1.11
