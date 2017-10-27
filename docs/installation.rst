@@ -30,13 +30,13 @@ than pip. The best solution is to run:
 
 .. code-block:: shell
 
-	npm install angularjs@1.5 --save
+	npm install angular@1.5 --save
 
 in your project's root folder and add it to the Django's static files search path:
 
 .. code-block:: shell
 
-	npm install angularjs@1.5 --save
+	npm install angular@1.5 --save
 
 	STATICFILES_DIRS = [
 	    ...
