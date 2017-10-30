@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from distutils.version import LooseVersion
 import mimetypes
 
-from django import get_version
+from django import VERSION as DJANGO_VERSION
 from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core import signing
 from django.forms import widgets
@@ -17,9 +16,7 @@ from django.utils.translation import ugettext_lazy as _
 from djng import app_settings
 
 
-DJANGO_VERSION = get_version()
-
-if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
+if DJANGO_VERSION < (1, 11):
 
     class ChoiceFieldRenderer(widgets.ChoiceFieldRenderer):
         def render(self):
@@ -136,7 +133,7 @@ class DropFileWidget(widgets.Widget):
             'ngf-select': 'uploadFile($file, "{0}", "{id}", "{ng-model}")'.format(self.filetype, **attrs),
         })
         self.update_attributes(extra_attrs, value)
-        if LooseVersion(DJANGO_VERSION) < LooseVersion('1.11'):
+        if DJANGO_VERSION < (1, 11):
             final_attrs = self.build_attrs(extra_attrs=extra_attrs)
         else:
             final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
