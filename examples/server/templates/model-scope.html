@@ -16,7 +16,7 @@
 
 {% block form_submission %}
 	<button type="submit" class="btn btn-primary">Submit via Post</button><span>&nbsp;</span>
-	<button type="button" class="btn btn-primary" ng-click="do(update()).then(redirectTo())">Submit via Ajax</button>
+	<button type="button" class="btn btn-primary" ng-click="do(update()).then(redirectTo()).catch(scrollToRejection())">Submit via Ajax</button>
 {% endblock %}
 
 {% block form_foot %}

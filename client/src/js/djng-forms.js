@@ -757,6 +757,35 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 				};
 			};
 
+			// Only to be used in a catch clause!
+			// Looking at the response error, look for the input field with
+			// the rejected content and scroll to this element.
+			scope.scrollToRejection = function() {
+				return function(response) {
+					var form_name, field_name, element;
+					if (response.status >= 400 && response.status <= 499) {
+						for (form_name in response.data) {
+							element = null;
+							if (response.data[form_name]['__all__']) {
+								element = document.getElementsByName(form_name)[0];
+							}
+							if (!element) {
+								for (field_name in response.data[form_name]) {
+									element = document.getElementById('id_' + field_name);
+									if (element)
+										break;
+								}
+							}
+							if (element) {
+								element.scrollIntoView();
+								$window.scrollBy(0, -40);
+								break;
+							}
+						}
+					}
+				};
+			};
+
 			scope.$on('$destroy', function() {
 				if (scope.timer) {
 					$timeout.cancel(scope.timer);
