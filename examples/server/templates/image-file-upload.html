@@ -40,14 +40,14 @@
 
 {% block main-tutorial %}
 <p>If we want to upload an image or file to the server through an Ajax request, we have to divide
-the submission in two steps. This is because browsers can not serialize submitted file payload to
+the submission into two steps. This is because browsers can not serialize submitted file payload to
 JSON. Instead, we first must upload the image or file to the server encoded as
 <code>multipart/form-data</code>. The server then creates a temporary copy of the uploaded image
 or file and returns a reference to it. This temporary reference is stored inside a hidden field
 of our form.</p>
-<p>When the complete form is submitted by the client, only the reference to the temporary file is
-sent through Ajax. The server then moves the previously uploaded copy of that file into its
-<code>MEDIA_ROOT</code> directory and stores its location inside a model field.</p>
+<p>When the complete form is submitted by the client, only that reference to the temporary file
+will be sent through Ajax. The server then moves the previously uploaded copy of that file into
+its <code>MEDIA_ROOT</code> directory and stores its location inside a model field.</p>
 
 <p ng-init="tabList=['Form', 'View', 'HTML', 'Model']"></p>
 {% endblock main-tutorial %}
@@ -61,9 +61,9 @@ sent through Ajax. The server then moves the previously uploaded copy of that fi
 {% endautoescape %}
 
 <p class="bg-info">A form accepting files and images without a permanent storage does not make
-much sense. Therefore you normally would create a Django model using an <code>models.ImageField</code>
-and/or <code>models.FileField</code>. From this model, you can create a form as usual. Image and
-file fields then are replaced by their AngularJS enabled counterparts, enabling drag & drop and
-immediate image preview.<br/>
-Some example code is shown in the last tab labeled <strong>Model</strong>.</p>
+much sense. Therefore you normally would create a Django model using an <code>django.models.ImageField</code>
+and/or <code>django.models.FileField</code>. From this model, you can create a form inheriting from
+<code>django.forms.ModelForm</code>, as usual. Image and file fields then are replaced by their
+AngularJS enabled counterparts, enabling drag & drop and immediate image preview.<br/>
+A sample implementation is shown in the last tab labeled <strong>Model</strong>.</p>
 {% endblock main-sample-code %}
