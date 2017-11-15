@@ -23,12 +23,15 @@ angular.forEach(['input', 'select', 'textarea', 'datalist'], function(element) {
 		return ['$compile', function($compile) {
 			return {
 				restrict: 'E',
-				require: '?^form',
-				link: function(scope, element, attr, formCtrl) {
-					var modelName;
+				require: ['?^form', '?^djngMultifieldsRequired'],
+				link: function(scope, element, attr, controllers) {
+					var modelName, formCtrl = controllers[0];
 					if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
 						return;
 					modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");
+					if (controllers[1]) {
+						modelName = modelName.concat("['" + attr.value + "']");
+					}
 					attr.$set('ngModel', modelName);
 					$compile(element, null, 9999)(scope);
 				}
