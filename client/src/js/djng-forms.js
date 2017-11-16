@@ -768,17 +768,19 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 							element = null;
 							if (response.data[form_name]['__all__']) {
 								element = document.getElementsByName(form_name)[0];
+								element = element ? element.getElementsByClassName('djng-line-spreader')[0] : null;
 							}
 							if (!element) {
 								for (field_name in response.data[form_name]) {
 									element = document.getElementById('id_' + field_name);
-									if (element)
+									if (element) {
+										element = element.parentElement;
 										break;
+									}
 								}
 							}
 							if (element) {
 								element.scrollIntoView();
-								$window.scrollBy(0, -40);
 								break;
 							}
 						}
