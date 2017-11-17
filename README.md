@@ -10,7 +10,7 @@ Let Django play well with AngularJS
 
 ## Breaking News
 
-On 2017-10-19 **django-angular** version 2.0 has been released.
+On 2017-11-17 **django-angular** version 2.0 has been released.
 
 ### Backward Incompatibility
 
@@ -61,12 +61,25 @@ require additional development time from my side, so please
 
 ## Latest Changes
 
-### 1.1 (2017-08-17)
+### 2.0 (2017-11-17)
 
-* Instead of adding extra functionality to Django's form fields via inheritance magic, now one must
-  use the corresponding field classes from ``djng.forms.fields`` if its own form class inheritis
-  from ``NgForm`` or ``NgModelForm``.
-* Added support to upload files and images via Ajax.
+2.0
+---
+* To be compliant with other frameworks, Ajax responses from invalid form submissions, now respond
+  with a ``HttpResponseBadRequest`` (status code 422) rather than with a ``HttpResponse`` (status
+  200). This requires to adopt the form response views and the response handlers in JavaScript
+  files, submitting the form data.
+* No more need to add a customized controller for uploading form data to the server. Instead add the
+  directive ``djng-endpoint="/path/to/endpoint"`` to a form and submit the form's content using an
+  action event.
+* New AngularJS directive ``djng-forms-set``, usable to validate and submit more than one form.
+* AngularJS directive for the ``button``-element, usable to create a chain of action promises for
+  form submissions.
+* Add support for AngularJS version 1.6 by replacing deprecated occurrences of ``$http(...).success(...)``
+  against ``$http(...).then(...)``.
+* Sekizai's postprocessor ``module_list`` and ``module_config`` are deprecated and will be removed,
+  since it is easier to fulfill the same result using Sekizai's templatetag ``with_data``.
+* Radio input fields do not require the DjNg directive ``validate-multiple-fields`` anymore.
 
 
 ## License
