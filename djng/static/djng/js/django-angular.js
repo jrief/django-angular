@@ -97,12 +97,15 @@ angular.forEach(['input', 'select', 'textarea', 'datalist'], function(element) {
 		return ['$compile', function($compile) {
 			return {
 				restrict: 'E',
-				require: '?^form',
-				link: function(scope, element, attr, formCtrl) {
-					var modelName;
+				require: ['?^form', '?^djngMultifieldsRequired'],
+				link: function(scope, element, attr, controllers) {
+					var modelName, formCtrl = controllers[0];
 					if (!formCtrl || angular.isUndefined(formCtrl.$name) || element.prop('type') === 'hidden' || angular.isUndefined(attr.name) || angular.isDefined(attr.ngModel))
 						return;
 					modelName = 'dmy' + Math.abs(hashCode(formCtrl.$name)) +'.' + attr.name.replace(/-/g, "_");
+					if (controllers[1]) {
+						modelName = modelName.concat("['" + attr.value + "']");
+					}
 					attr.$set('ngModel', modelName);
 					$compile(element, null, 9999)(scope);
 				}
@@ -825,6 +828,37 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 							resolve(response);
 						}, ms);
 					});
+				};
+			};
+
+			// Only to be used in a catch clause!
+			// Looking at the response error, look for the input field with
+			// the rejected content and scroll to this element.
+			scope.scrollToRejected = function() {
+				return function(response) {
+					var form_name, field_name, element;
+					if (response.status >= 400 && response.status <= 499) {
+						for (form_name in response.data) {
+							element = null;
+							if (response.data[form_name]['__all__']) {
+								element = document.getElementsByName(form_name)[0];
+								element = element ? element.getElementsByClassName('djng-line-spreader')[0] : null;
+							}
+							if (!element) {
+								for (field_name in response.data[form_name]) {
+									element = document.getElementById('id_' + field_name);
+									if (element) {
+										element = element.parentElement;
+										break;
+									}
+								}
+							}
+							if (element) {
+								element.scrollIntoView();
+								break;
+							}
+						}
+					}
 				};
 			};
 
