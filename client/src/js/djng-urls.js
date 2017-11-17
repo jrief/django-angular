@@ -111,5 +111,4 @@
         };
     };
 
-}(window.angular));
-
+})(window.angular);

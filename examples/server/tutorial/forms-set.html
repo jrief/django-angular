@@ -1,0 +1,32 @@
+<script type="text/javascript">
+  angular.module('djangular-demo', ['djng.forms']).config(function($httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
+  });
+</script>
+
+<djng-forms-set endpoint="/form_sets/">
+
+  <form name="subscribe_form" novalidate>
+    <fieldset>
+      <legend>Subscribe Form</legend>
+      {{ subscribe_form.as_div }}
+    </fieldset>
+  </form>
+
+  <form name="address_form" novalidate>
+    <fieldset>
+      <legend>Address Form</legend>
+      {{ address_form.as_div }}
+    </fieldset>
+  </form>
+
+  <button ng-click="do(update()).then(reloadPage())" type="button">
+    Forced Submission <i class="some-icon"></i>
+  </button>
+
+  <button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button">
+    Validated Submission <i class="some-icon"></i>
+  </button>
+
+</djng-forms-set>

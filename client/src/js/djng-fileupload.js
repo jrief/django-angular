@@ -30,8 +30,11 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					data: data,
 					url: attrs.djngFileuploadUrl
 				}).then(function(response) {
-					var field = response.data['file:0'], cf = element.data('current_file');
+					var field = response.data['file:0'];
+					var cf = element.data('current_file');
 					element.removeClass('uploading');
+					if (!field)
+						return;
 					element.css('background-image', field.url);
 					element.removeClass('djng-empty')
 					element.removeClass('djng-preset')

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static sekizai_tags tutorial_tags %}
+
+{% block addtoblock %}
+	{{ block.super }}
+	{% addtoblock "js" %}<script src="{% static 'js/djng-forms.js' %}" type="text/javascript"></script>{% endaddtoblock %}
+	{% add_data "ng-requires" "djng.forms" %}
+	{% addtoblock "ng-config" %}['$httpProvider', function($httpProvider) { $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'; $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}'; }]{% endaddtoblock %}
+{% endblock %}
+
+{% block main-content %}
+
+{% block main-intro %}
+<h1>Django's Forms Set</h1>
+<p class="lead"><span class="badge">New in 2.0</span> How to validate a Set of Forms</p>
+<p>This example shows how to validate multiple Forms inside an AngularJS application.</p>
+{% endblock main-intro %}
+
+<djng-forms-set endpoint="{% url 'djng_form_sets' %}">
+	<div class="row">
+		<div class="col-md-12">
+			<form name="{{ subscribe_form.form_name }}" ng-model-options="{allowInvalid: true}" novalidate>
+				<fieldset>
+					<legend>Subscribe Form</legend>
+					{{ subscribe_form.as_div }}
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<form name="{{ address_form.form_name }}" ng-model-options="{allowInvalid: true}" novalidate>
+				<fieldset>
+					<legend>Address Form</legend>
+					{{ address_form.as_div }}
+				</fieldset>
+			</form>
+		</div>
+	</div>
+	<div class="row" style="margin-bottom: 20px;">
+		<div class="col-md-12">
+			<button ng-click="do(update()).then(redirectTo())" type="button" class="btn btn-warning">
+				Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
+			</button>
+			<button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
+				Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
+			</button>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+		{% verbatim %}
+			<h5><code>djng-forms-set</code>'s scope:</h5>
+			<pre>subscribe_data = {{ subscribe_data | json }}
+address_data = {{ address_data | json }}</pre>
+		{% endverbatim %}
+		</div>
+	</div>
+</djng-forms-set>
+
+<hr />
+
+<div class="djng-tutorial" ng-controller="TutorialCtrl">
+<h3>How does it work?</h3>
+
+{% block main-tutorial %}
+<p>
+In component based web development, it is quite common to arrange more than one form on the same
+page. As opposed to form submissions via <code>application/x-www-form-urlencoded</code> or
+<code>multipart/form-data</code>, we can, thanks to Ajax, submit the content of more than one form
+using a <em>single</em> HTTP-request. This requires to dispatch the submitted data on the server to each
+form class, but if we prefix them with unique identifiers (using <code>scope_prefix</code>), that's
+a no-brainer.</p>
+
+<h4>Directive <code>djng-forms-set</code></h4>
+<p>
+To achieve this, we can reuse the same Form mixin classes as we have used in the previous examples.
+The main difference is that we must wrap the set of forms into the AngularJS directive,
+<code>&lt;djng-forms-set endpoint="/some/endpoint"&gt;...&lt;/djng-forms-set&gt;</code>.
+Inside this directive, we render the forms as usual, using
+<code>{&#8288;{ form.as_div }&#8288;}</code>.
+</p>
+
+<h4>Forms Submission</h4>
+<p>The submit button(s) now can be placed outside of the <code>&lt;form&gt;...&lt;/form&gt;</code>
+element. This allows us to submit the content from multiple forms altogether. However, we
+must specify the common endpoint to accept our form submissions; this is, as you might have
+expected, the attribute <nobr><code>endpoint="/some/endpoint"</code></nobr> in our forms wrapping
+directive. To send the form's content to the server, add
+<nobr><code>ng-click="do(update())"</code></nobr> to the submission button. We have to start this
+expression with <code>do(...)</code>, in order to emulate the first promise (see below for a longer
+explanation).</p>
+
+<p>By itself, this however would not invoke any further action on the client. We therefore must
+tell our directive, what we want to do next. For this, the <strong>django-angular</strong>'s button
+directive offers a few prepared targets, which can be chained. If we change the above to
+<nobr><code>ng-click="do(update()).then(reloadPage())"</code></nobr>, then after a successful
+submission the current page is reloaded.</p>
+<p>For further options on how to chain actions, please refer to the
+<a href="{% url 'djng_combined_validation' %}">previous chapter</a>.</p>
+
+<h4>Forms Validation</h4>
+<p>All forms wrapped inside our <nobr><code>djng-forms-set</code></nobr> directive, are validated.
+This shall be used to prevent submitting data, if at least one of the forms does not validate.
+For this, just add <nobr><code>ng-disabled="isDisabled()"</code></nobr> to the submission button.
+</p>
+
+<p ng-init="tabList=['Form', 'View', 'HTML']"></p>
+{% endblock main-tutorial %}
+
+<ul class="nav nav-tabs" role="tablist">
+	<li ng-repeat="tab in tabList" ng-class="tabClass(tab)">
+		<a ng-click="setTab(tab)" ng-bind="tab"></a>
+	</li>
+</ul>
+
+{% block main-sample-code %}
+{% autoescape off %}
+<div ng-show="activeTab==='Form'">{% pygments "forms/forms_set.py" %}</div>
+<div ng-show="activeTab==='View'">{% pygments "views/forms_set.py" %}</div>
+<div ng-show="activeTab==='HTML'">{% pygments "tutorial/forms-set.html" %}</div>
+{% endautoescape %}
+{% endblock main-sample-code %}
+
+</div>
+
+{% endblock main-content %}

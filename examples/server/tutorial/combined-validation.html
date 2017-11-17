@@ -1,13 +1,22 @@
 <script type="text/javascript">
-    angular.module('djangular-demo', ['djng.forms']).config(function($httpProvider) {
-        $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-        $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
-    });
+  angular.module('djangular-demo', ['djng.forms']).config(function($httpProvider) {
+    $httpProvider.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    $httpProvider.defaults.headers.common['X-CSRFToken'] = '{{ csrf_token }}';
+  });
 </script>
 
-<form name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl">
-    {% csrf_token %}
-    {{ form.as_div }}
-    <button type="submit" ng-disabled="{{ form.form_name }}.$invalid" class="btn btn-primary">Submit via Post</button>
-    <button type="button" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()" class="btn btn-primary">Submit via Ajax</button>
+<form name="{{ form.form_name }}" djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate>
+  {{ form.as_div }}
+  <button ng-click="do(update()).then(redirectTo())" type="button">
+    Forced Submission <i class="some-icon"></i>
+  </button>
+  <button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button">
+    Validated Submission <i class="some-icon"></i>
+  </button>
+  <button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).finally(restore())" ng-disabled="isDisabled()" type="button">
+    Delayed Submission <i class="some-icon"></i>
+  </button>
+  <button ng-click="do(fetch())" type="button">
+    Fetch Defaults <i class="some-icon"></i>
+  </button>
 </form>

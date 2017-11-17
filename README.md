@@ -10,17 +10,30 @@ Let Django play well with AngularJS
 
 ## Breaking News
 
-On 2017-08-14 **django-angular** version 1.1 has been released.
-
-This version introduces file- and image uploads through Ajax form submissions.
+On 2017-10-19 **django-angular** version 2.0 has been released.
 
 ### Backward Incompatibility
 
-If you create Angular forms from Django models, nothing changes.
+To be compliant with other libraries such as **djangorestframework**,  server-side responses on
+rejected forms use error code 422, rather than 200. If you use your own form controllers, adopt
+them accordingly. The JSON format used to communicate errors downstream has changed slightly.
 
-If you create Angular forms using the provided mixin classes, then you must use the corresponding
-fields as provided by **django-angular**. This keeps the API cleaner and prevents dynamic class 
-tweaks.
+### New Features
+
+For a smoother transition path, **django-angular** added two directives in version 2.0:
+
+``<form djng-endpoint="/path/to/endpoint">...</form>``, which can be used to upload form
+data to the server. It also populates the error fields, in case the server rejected some data.
+
+``<djng-forms-set endpoint="/path/to/endpoint"><form ...>...</form>...</djng-forms-set>``
+Similar to the above directive, but rather than validating one single form, it validates a
+set of forms using one shared endpoint.
+
+A promise chain has been introduced. Buttons used to submit form data and then proceed with
+something else, now can be written as:
+
+``<button ng-click="do(update()).then(redirectTo('/path/to/other/page'))">Label</button>``
+
 
 ## Documentation
 

@@ -3,7 +3,6 @@ from __future__ import unicode_literals
 
 import json
 from base64 import b64encode
-from types import MethodType
 
 try:
     from collections import UserList
@@ -52,9 +51,6 @@ class TupleErrorList(UserList, list):
     5: The desired error message. If this contains the magic word '$message' it will be added with
        ``ng-bind`` rather than rendered inside the list item.
     """
-    li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
-    li_format_bind = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
-
     def __init__(self, initlist=None, error_class=None):
         super(TupleErrorList, self).__init__(initlist)
 
@@ -99,14 +95,24 @@ class TupleErrorList(UserList, list):
         if isinstance(first, tuple):
             error_lists = {'$pristine': [], '$dirty': []}
             for e in self:
-                li_format = e[5] == '$message' and self.li_format_bind or self.li_format
+                if e[5] == '$message':
+                    li_format = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
+                else:
+                    li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
                 error_lists[e[2]].append(format_html(li_format, *err_tuple))
             # renders and combine both of these lists
-            dirty_errors = format_html('<ul ng-show="{0}.$dirty && {0}.$touched" class="{1}" ng-cloak>{2}</ul>',
-                                       first[0], first[1], mark_safe(''.join(error_lists['$dirty'])))
-            pristine_errors = format_html('<ul ng-show="{0}.$pristine" class="{1}" ng-cloak>{2}</ul>',
-                                          first[0], first[1], mark_safe(''.join(error_lists['$pristine'])))
+            dirty_errors, pristine_errors = '', ''
+            if len(error_lists['$dirty']) > 0:
+                dirty_errors = format_html(
+                    '<ul ng-show="{0}.$dirty && !{0}.$untouched" class="{1}" ng-cloak>{2}</ul>',  # duck typing: !...$untouched
+                    first[0], first[1], mark_safe(''.join(error_lists['$dirty']))
+                )
+            if len(error_lists['$pristine']) > 0:
+                pristine_errors = format_html(
+                    '<ul ng-show="{0}.$pristine" class="{1}" ng-cloak>{2}</ul>',
+                    first[0], first[1], mark_safe(''.join(error_lists['$pristine']))
+                )
             return format_html('{}{}', dirty_errors, pristine_errors)
         return format_html('<ul class="errorlist">{0}</ul>',
             format_html_join('', '<li>{0}</li>', ((force_text(e),) for e in self)))
@@ -263,15 +269,14 @@ class BaseFieldsModifierMetaclass(type):
         if formfield:
             # use the same class name to load the corresponding inherited formfield
             try:
-                form_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
-            except ImportError:
-                msg = "Unable to import field class '{}'"
-                raise ImportError(msg.format(formfield.__class__.__name__))
+                formfield_class = import_string('djng.forms.fields.' + formfield.__class__.__name__)
+            except ImportError: # form field not declared by Django
+                formfield_class = type(str(formfield.__class__.__name__), (DefaultFieldMixin, formfield.__class__), {})
 
             # recreate the formfield using our customized field class
             if hasattr(formfield, 'choices'):
-                kwargs.update(choices_form_class=form_class)
-            kwargs.update(form_class=form_class)
+                kwargs.update(choices_form_class=formfield_class)
+            kwargs.update(form_class=formfield_class)
             formfield = modelfield.formfield(**kwargs)
         return formfield
 
@@ -325,7 +330,7 @@ class NgFormBaseMixin(object):
         Return server side errors. Shall be overridden by derived forms to add their
         extra errors for AngularJS.
         """
-        identifier = format_html('{0}.{1}', self.form_name, field.name)
+        identifier = format_html('{0}[\'{1}\']', self.form_name, field.name)
         errors = self.errors.get(field.html_name, [])
         return self.error_class([SafeTuple(
             (identifier, self.field_error_css_classes, '$pristine', '$pristine', 'invalid', e)) for e in errors])

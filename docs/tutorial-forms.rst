@@ -30,7 +30,7 @@ Lets start with a very basic example, a functioning demo is available here: http
 
 Say, we have a simple but rather long Form definition, to subscribe a person wanting to visit us:
 
-.. literalinclude:: ../examples/server/forms.py
+.. literalinclude:: ../examples/server/forms/subscribe_form.py
     :linenos:
     :language: python
     :lines: 2, 6, 16-50

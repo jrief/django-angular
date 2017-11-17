@@ -103,7 +103,7 @@ An alternative method for handling AngularJS's partial code, is to use the speci
 refers to a partial using ``templateUrl: 'template/mixed-ng-snipped.html'`` during the link phase,
 then that partial may be embedded inside a normal Django template using
 
-.. code-block:: html
+.. code-block:: django
 
 	<script id="template/mixed-ng-snipped.html" type="text/ng-template">
 	  <div>{{ resolved_by_django }}</div>
@@ -112,7 +112,7 @@ then that partial may be embedded inside a normal Django template using
 
 or if the ``$interpolateProvider`` is used to replace the AngularJS template tags
 
-.. code-block:: html
+.. code-block:: django
 
 	<script id="template/mixed-ng-snipped.html" type="text/ng-template">
 	  <div>{{ resolved_by_django }}</div>
@@ -150,7 +150,7 @@ on forms must be adopted using a special directive which overrides the `built-in
 To override the built-in behavior, refer to the Javascript file ``django-angular.js`` somewhere on
 your page
 
-.. code-block:: html
+.. code-block:: django
 
 	<script src="{% static 'djng/js/django-angular.min.js' %}" type="text/javascript"></script>
 

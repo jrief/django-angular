@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-from server.forms.combined_validation import SubscribeForm
+from server.forms.combined_validation import SubscribeForm, default_subscribe_data
 # start tutorial
 import json
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse_lazy
 from django.views.generic.edit import FormView
 from django.utils.encoding import force_text
@@ -13,12 +13,20 @@ class SubscribeView(FormView):
     form_class = SubscribeForm
     success_url = reverse_lazy('form_data_valid')
 
-    def post(self, request, **kwargs):
+    def get(self, request, **kwargs):
         if request.is_ajax():
-            return self.ajax(request)
-        return super(SubscribeView, self).post(request, **kwargs)
+            form = self.form_class(initial=default_subscribe_data)
+            return JsonResponse({form.form_name: form.initial})
+        return super(SubscribeView, self).get(request, **kwargs)
+
+    def post(self, request, **kwargs):
+        assert request.is_ajax()
+        return self.ajax(request)
 
     def ajax(self, request):
-        form = self.form_class(data=json.loads(request.body))
-        response_data = {'errors': form.errors, 'success_url': force_text(self.success_url)}
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        request_data = json.loads(request.body)
+        form = self.form_class(data=request_data.get(self.form_class.scope_prefix, {}))
+        if form.is_valid():
+            return JsonResponse({'success_url': force_text(self.success_url)})
+        else:
+            return JsonResponse({form.form_name: form.errors}, status=422)

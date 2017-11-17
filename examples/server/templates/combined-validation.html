@@ -3,20 +3,29 @@
 
 {% block main-intro %}
 <h1>Validated Model-Form Demo</h1>
-<p class="lead">Combine client-side Form validation with two-way data-binding</p>
-<p>In this example, client-side Form validation is combined with two-way data-binding.</p>
+<p class="lead">Combine client-side form validation with server-side form validation</p>
+<p><span class="label label-warning">New in version 2.0</span>&emsp;
+Here we drop support for <code>application/x-www-form-urlencoded</code> submissions and combine
+the validation from the two previous examples. This presumably is the best solution, when
+integrating Django forms with AngularJS.</p>
 {% endblock main-intro %}
 
-{% block form_tag %}name="{{ form.form_name }}" method="post" action="." novalidate ng-controller="MyFormCtrl"{% endblock %}
+{% block form_tag %}name="{{ form.form_name }}" djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate{% endblock %}
 
 {% block form_submission %}
 	<p>
-		<button type="submit" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid">Submit via Post</button><span>&nbsp;</span>
-		<button type="button" class="btn btn-primary" ng-disabled="{{ form.form_name }}.$invalid" ng-click="submit()">Submit via Ajax</button>
-	</p>
-	<p><small>Test submission of invalid Form data:</small><br/>
-		<button type="submit" class="btn btn-warning btn-xs">Force Submission via Post</button>&nbsp;
-		<button type="button"  ng-click="submit()" class="btn btn-warning btn-xs">Force Submission via Ajax</button>
+		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejected())" type="button" class="btn btn-warning">
+			Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
+		</button>
+		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejected())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
+			Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
+		</button>
+		<button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).catch(scrollToRejected()).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
+			Delayed Submission&emsp;<i class="glyphicon glyphicon-hourglass"></i>
+		</button>
+		<button ng-click="do(fetch())" type="button" class="btn btn-default">
+			Fetch Defaults&emsp;<i class="glyphicon glyphicon-transfer"></i>
+		</button>
 	</p>
 {% endblock %}
 
@@ -27,7 +36,106 @@
 <a href="{% url 'djng_model_scope' %}">model scope</a>.</p>
 <p>Refer to the previous examples for a detailed explanation.</p>
 
-<p ng-init="tabList=['Form', 'View', 'HTML', 'JavaScript']" class="lead"></p>
+<h4>Adding Actions to Buttons</h4>
+<p>In the previous example we have seen, that we can chain asynchronous actions on the button's
+<nobr><code>&lt;button ng-click="on(&hellip;)" type="button" &hellip;&gt;</code></nobr> directive. For this we're
+using <a href="https://code.angularjs.org/snapshot/docs/api/ng/service/$q">promise</a> functions
+extensively, provided by AngularJS.</p>
+
+<p>On success a promise calls the function passed into the <code>&hellip;then(&hellip;)</code>-clause. By
+chaining these clauses, we can invoke actions sequentially, each one after the previous action
+has finished.</p>
+<p>This can be used to build a chain of independent actions for each button. If an action fails, the
+following action inside the <code>&hellip;then(&hellip;)</code> is skipped in favour of the function inside the
+next <code>&hellip;catch(&hellip;)</code> call. If an action shall be executed regardless of its previous
+success or failure state, use it inside a <code>&hellip;finally(&hellip;)</code>-clause.</p>
+
+<h4>Promise aware actions</h4>
+<strong>django-angular</strong> is shipped with a special button directive, which, if used inside
+a <nobr><code>&lt;form djng-endpoint="&hellip;" &hellip;&gt;</code></nobr> directive, adds a bunch
+of prepared action functions to its (isolated) scope:</p>
+
+<h5>Disable button for invalid form</h5>
+<p>By adding <nobr><code>ng-disabled="isDisabled()"</code></nobr> to the button element,
+the button element is greyed out and disabled in case the client-side form validation fails.
+This shall be used to prevent users from submitting forms with missing fields or wrong values.</p>
+
+<h5>Our first promise</h5>
+<p>In order to chain our actions, we have to start with a promise-clause, which always resolves.
+This is why we always have to start our first action such as:
+<nobr><code>ng-click="do(<em>first_action</em>).then(&hellip;)&hellip;"</code></nobr>.</p>
+
+<h5>Send a subset of the scope to the server</h5>
+<p>Forms with input elements bound to the scope, normally use a directive with such a pattern:
+<nobr><code>ng-model="<em>scope_prefix</em>.<em>field_name</em>"</code></nobr>. Here
+the bound models are grouped into one or more subobjects of the scope. By invoking
+<code>fetch()</code>, <code>create()</code>, <code>update()</code> or <code>delete()</code>,
+we send that subset of data to the server, using the HTTP methods GET, POST, PUT or DELETE
+respectively.</p>
+
+<h5>Reload the current page</h5>
+<p>Specially after a successful login- or logout submission, we might want to reload the current
+page, in order to reset the cookie value and/or session states. For this purpose, use an action
+such as: <nobr><code>ng-click="do(upload()).then(reloadPage())"</code></nobr>.</p>
+
+<h5>Proceed to another page</h5>
+<p>To proceed to another page after a successful submission, use an action such as:
+<nobr><code>ng-click="do(upload()).then(redirectTo('/path/to/view'))"</code></nobr>. If the response
+from the server contains <nobr><code>{"success_url": "/path/to/other/view"}</code></nobr>,
+then the URL provided by <code>redirectTo()</code>is overridden.</p>
+
+<h5>Delay the submission</h5>
+<p>Sometimes we might want to delay a further action. If for instance we want to add a 500
+miliseconds delay after a successful submission, we then would rewrite our action such as:
+<nobr><code>ng-click="do(upload()).then(delay(500)).then(reloadPage())"</code></nobr>.</p>
+
+<h5>Giving feedback to the user</h5>
+<p>To improve the user's experience, it is a good idea to give feedback on an action, which
+succeeded or failed. Our button directive offers two such functions, one to display an OK tick
+<i class="glyphicon glyphicon-ok"></i> on success, and one to display a cross
+<i class="glyphicon glyphicon-remove"></i> to symbolize a failed operation. These symbols
+replace the buttons <nobr><code>&lt;i class="fontawesome or glyphicon"&gt;&lt;/i&gt;</code></nobr>
+icon element, if present.</p>
+<p>By using the promises chain, we can easily integrate this into our actions flow:
+<nobr><code>ng-click="do(update()).then(showOK()).then(delay(500)).then(reloadPage()).catch(showFail()).then(delay(2000)).finally(restore())"</code></nobr>.
+Here we use the <code>catch(&hellip;)</code>-clause, to run a different action function in case of
+a failed submission. The <code>finally(restore())</code> is executed regardless of the submission
+success or failure, it restores the button internal icon to its original state.</p>
+
+<h5>Handle processing delays</h5>
+<p>Sometimes processing form data can take additional time. To improve the user experience, we
+can add some feedback to the submission button. By changing the submit action to
+<nobr><code>ng-click="do(disable()).then(update()).then(redirectTo()).finally(restore())"</code>,</nobr>
+the submit button is deactivated during the form submission and will be reactivated as soon
+as the server responded.</p>
+
+<p>In case of potentially long lasting submissions this can be further extended, by replacing
+the button's internal icon with a rotating spinner wheel
+&ensp;<i class="glyphicon glyphicon-refresh djng-rotate-animate"></i>&ensp;. To do so, just replace the
+<code>disable()</code> function against <code>spinner()</code>.</p>
+
+<h5>Passing Extra Data</h5>
+<p>Sometimes we might want to use more than one submit button. In order to distinguish which of
+those buttons has been pressed, pass an object to the form submission function, for instance
+<nobr><code>ng-click="do(update({foo: 'bar'}))"</code></nobr>. That dictionary then is added to the
+submitted payload and can be extracted by the server's view function for further analysis.</p>
+
+<h5>Triggering Further Actions</h5>
+<p>By adding <nobr><code>ng-click="do(update()).then(emit('<em>name</em>', {'foo': 'bar'}))"</code></nobr>
+to our promises chain, we can
+<a href="https://code.angularjs.org/1.5.10/docs/api/ng/type/$rootScope.Scope#$emit">emit an event</a>
+upwards through the scope hierarchy, notifying registered listeners.</p>
+
+
+<h4>Fill Form with Data send by Server</h4>
+The server-side endpoint can push data to the form, in order to fill it. Say, a form is named
+<code>my_form</code>, then sending an object, such
+as <code>{"my_form": {"fieldname1": "value1", "fieldname2": "value2", "fieldname3": "value3"}}</code>,
+in the response's payload, will set the named form fields with the given values.
+
+
+
+<p ng-init="tabList=['Form', 'View', 'HTML']" class="lead"></p>
 {% endblock main-tutorial %}
 
 {% block main-sample-code %}
@@ -35,7 +143,6 @@
 <div ng-show="activeTab==='Form'">{% pygments "forms/combined_validation.py" %}</div>
 <div ng-show="activeTab==='View'">{% pygments "views/combined_validation.py" %}</div>
 <div ng-show="activeTab==='HTML'">{% pygments "tutorial/combined-validation.html" %}</div>
-<div ng-show="activeTab==='JavaScript'">{% pygments "static/js/model-scope.js" %}</div>
 {% endautoescape %}
 <p class="bg-info">This configuration is the most flexible one. Use it on productive web-sites.<br/>
 <strong>Note: </strong>The submit buttons are disabled, until the client-side Form validation has

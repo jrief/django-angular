@@ -19,7 +19,13 @@ You can also run unit tests:
 
 .. code-block:: bash
 
-	./manage.py test
+	py.test
+
+or, even better
+
+.. code-block:: bash
+
+	tox
 
 Now, point a browser onto one of
 

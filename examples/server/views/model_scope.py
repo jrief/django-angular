@@ -2,7 +2,7 @@
 from server.forms.model_scope import SubscribeForm
 # start tutorial
 import json
-from django.http import HttpResponse
+from django.http import JsonResponse
 from django.core.urlresolvers import reverse_lazy
 from django.utils.encoding import force_text
 from django.views.generic.edit import FormView
@@ -19,6 +19,9 @@ class SubscribeView(FormView):
         return super(SubscribeView, self).post(request, **kwargs)
 
     def ajax(self, request):
-        form = self.form_class(data=json.loads(request.body))
-        response_data = {'errors': form.errors, 'success_url': force_text(self.success_url)}
-        return HttpResponse(json.dumps(response_data), content_type="application/json")
+        request_data = json.loads(request.body)
+        form = self.form_class(data=request_data.get(self.form_class.scope_prefix, {}))
+        if form.is_valid():
+            return JsonResponse({'success_url': force_text(self.success_url)})
+        else:
+            return JsonResponse({form.form_name: form.errors}, status=422)

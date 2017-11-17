@@ -9,9 +9,8 @@ from djng.styling.bootstrap3.forms import Bootstrap3Form
 
 def validate_password(value):
     # Just for demo. Do not validate passwords like this!
-    if value != 'secret':
-        raise ValidationError('The password is wrong.')
-
+    if value != "secret":
+        raise ValidationError("The password is wrong.")
 
 class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     use_required_attribute = False
@@ -34,7 +33,9 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     sex = fields.ChoiceField(
         choices=(('m', 'Male'), ('f', 'Female')),
         widget=widgets.RadioSelect,
-        error_messages={'invalid_choice': 'Please select your sex'})
+        required=True,
+        error_messages={'invalid_choice': 'Please select your sex'},
+    )
 
     email = fields.EmailField(
         label='E-Mail',
@@ -82,8 +83,10 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
     notifyme = fields.MultipleChoiceField(
         label='Notify by',
         choices=NOTIFY_BY,
-        widget=widgets.CheckboxSelectMultiple, required=True,
-        help_text='Must choose at least one type of notification')
+        widget=widgets.CheckboxSelectMultiple,
+        required=True,
+        help_text='Must choose at least one type of notification',
+    )
 
     annotation = fields.CharField(
         label='Annotation',
@@ -99,6 +102,7 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
         label='Password',
         widget=widgets.PasswordInput,
         validators=[validate_password],
+        min_length=6,
         help_text='The password is "secret"')
 
     confirmation_key = fields.CharField(
@@ -111,3 +115,21 @@ class SubscribeForm(NgModelFormMixin, NgFormValidationMixin, Bootstrap3Form):
         if self.cleaned_data.get('first_name') == 'John' and self.cleaned_data.get('last_name') == 'Doe':
             raise ValidationError('The full name "John Doe" is rejected by the server.')
         return super(SubscribeForm, self).clean()
+
+
+default_subscribe_data = {
+    'first_name': "John",
+    'last_name': "Doe",
+    'sex': 'm',
+    'email': 'john.doe@example.org',
+    'phone': '+1 234 567 8900',
+    'birth_date': '1975-06-01',
+    'continent': 'eu',
+    'height': 1.82,
+    'weight': 81,
+    'traveling': ['bike', 'train'],
+    'notifyme': ['email', 'sms'],
+    'annotation': "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+    'agree': True,
+    'password': '',
+}

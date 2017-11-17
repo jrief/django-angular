@@ -104,19 +104,12 @@ describe('unit tests for module djng.forms', function() {
 	});
 
 	describe('test provider djangoForm', function() {
-		var scope, djangoForm;
-
 		beforeEach(function() {
 			module('djng.forms');
 		});
 
 		describe('using manual instantiation', function() {
-			beforeEach(function() {
-				angular.module('testApp', function() {}).config(function(djangoFormProvider) {
-					djangoForm = djangoFormProvider.$get();
-				});
-				module('djng.forms', 'testApp');
-			});
+			var scope;
 
 			beforeEach(inject(function($rootScope) {
 				scope = $rootScope.$new();
@@ -132,16 +125,11 @@ describe('unit tests for module djng.forms', function() {
 				scope.$digest();
 			}));
 
-			it('should give a valid form', function() {
-				expect(djangoForm.setErrors(scope.form, {})).toBe(false);
-				expect(scope.form.email_field.$valid).toBe(true);
-			});
-
-			it('should give an invalid form', function() {
-				var errors = { email_field: ['A server side error occurred'] };
-				expect(djangoForm.setErrors(scope.form, errors)).toBe(true);
-				expect(scope.form.email_field.$valid).toBe(false);
-			});
+			it('should parse the composed names', inject(function(djangoForm) {
+				expect(djangoForm.getScopePrefix('any_name')).toBe('any_name');
+				expect(djangoForm.getScopePrefix('any_name.something')).toBe('any_name');
+				expect(djangoForm.getScopePrefix('any_name[\'something\']')).toBe('any_name');
+			}));
 
 		});
 	});

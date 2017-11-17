@@ -5,9 +5,9 @@
     });
 </script>
 
-<form name="{{ form.form_name }}" method="post" action="." validate ng-controller="MyFormCtrl">
+<form name="{{ form.form_name }}" method="post" action="." djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate>
     {% csrf_token %}
     {{ form.as_div }}
     <button type="submit" class="btn btn-primary">Submit via Post</button>
-    <button type="button" ng-click="submit()" class="btn btn-primary">Submit via Ajax</button>
+    <button type="button" ng-click="do(update()).then(redirectTo())" class="btn btn-primary">Submit via Ajax</button>
 </form>

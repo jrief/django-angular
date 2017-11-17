@@ -17,13 +17,14 @@ label.djng-field-required::after {
 	content: "\00a0*";
 }
 ul.djng-form-errors, ul.djng-field-errors {
-	display: inline-block;
+	display: block;
 	list-style-type: none;
-	margin: 5px 0 0 0;
+	margin: 0;
 	padding: 0;
 }
 ul.djng-form-errors li, ul.djng-field-errors li {
 	color: #e9322d;
+	margin-bottom: 5px;
 }
 ul.djng-field-errors li.invalid::before {
 	content: "\2716";
@@ -32,4 +33,16 @@ ul.djng-field-errors li.invalid::before {
 ul.djng-field-errors li.valid::before {
 	color: #00c900;
 	content: "\2714";
+}
+
+.djng-rotate-animate {
+	animation: spin 2s linear infinite;
+}
+
+@keyframes spin { 100% { transform:rotate(360deg); } }
+
+button.btn > i {
+	width: 2em;
+	display: inline-block;
+	text-align: center;
 }
