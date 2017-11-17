@@ -760,7 +760,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 			// Only to be used in a catch clause!
 			// Looking at the response error, look for the input field with
 			// the rejected content and scroll to this element.
-			scope.scrollToRejection = function() {
+			scope.scrollToRejected = function() {
 				return function(response) {
 					var form_name, field_name, element;
 					if (response.status >= 400 && response.status <= 499) {

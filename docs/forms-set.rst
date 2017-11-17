@@ -94,3 +94,14 @@ Sometimes we might want to use more than one submit button. In order to distingu
 buttons has been pressed, add for instance ``ng-click="do(update({foo: 'bar'}))"`` to the
 corresponding ``<button>`` element. That dictionary then is added to the submitted payload and can
 be extracted by the server's view for further analysis.
+
+
+Scroll to Rejected Field
+------------------------
+
+Forms sometimes extend over more than one screen height. If a form validation fails, the message
+near a rejected field may be outside the visible area. To improve the user experience, it therefore
+is good practice to point the user to the field(s), which have been rejected. This can by achieved
+by adding a target such as ``ng-click="do(...).then(...).catch(scrollToRejected())`` to our promises
+chain. Now, whenever a form validation fails, **django-angular** looks for the first rejected field
+and scrolls the page content, so that it shows up on top of the visible area.

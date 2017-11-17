@@ -14,13 +14,13 @@ integrating Django forms with AngularJS.</p>
 
 {% block form_submission %}
 	<p>
-		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejection())" type="button" class="btn btn-warning">
+		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejected())" type="button" class="btn btn-warning">
 			Forced Submission&emsp;<i class="glyphicon glyphicon-circle-arrow-right"></i>
 		</button>
-		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejection())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
+		<button ng-click="do(update()).then(redirectTo()).catch(scrollToRejected())" ng-disabled="isDisabled()" type="button" class="btn btn-success">
 			Validated Submission&emsp;<i class="glyphicon glyphicon-ok-sign"></i>
 		</button>
-		<button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).catch(scrollToRejection()).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
+		<button ng-click="do(spinner()).then(update({delay: true})).then(showOK()).then(delay(500)).then(redirectTo()).catch(showFail()).then(delay(1500)).catch(scrollToRejected()).finally(restore())" ng-disabled="isDisabled()" type="button" class="btn btn-primary">
 			Delayed Submission&emsp;<i class="glyphicon glyphicon-hourglass"></i>
 		</button>
 		<button ng-click="do(fetch())" type="button" class="btn btn-default">
