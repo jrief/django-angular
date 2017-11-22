@@ -7,7 +7,7 @@
 
 <form name="{{ form.form_name }}" djng-endpoint="." ng-model-options="{allowInvalid: true}" novalidate>
   {{ form.as_div }}
-  <button ng-click="do(update()).then(redirectTo())" type="button">
+  <button ng-click="do(update()).then(redirectTo()).catch(scrollToRejected())" type="button">
     Forced Submission <i class="some-icon"></i>
   </button>
   <button ng-click="do(update()).then(redirectTo())" ng-disabled="isDisabled()" type="button">

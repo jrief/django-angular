@@ -73,6 +73,14 @@ the bound models are grouped into one or more subobjects of the scope. By invoki
 we send that subset of data to the server, using the HTTP methods GET, POST, PUT or DELETE
 respectively.</p>
 
+<h5>Scroll to rejected fields</h5>
+<p>Forms sometimes extend over more than one screen height. If a form validation fails, the message
+near a rejected field may be outside the visible area. To improve the user experience, it therefore
+is good practice to point the user to the field(s), which have been rejected. This can by achieved
+by adding a target such as <nobr><code>ng-click="do(&hellip;).then(&hellip;).catch(scrollToRejected())</code></nobr>
+to our promises chain. Whenever a form validation fails, the browser scrolls the page content, so
+that it shows up on top of the visible area.</p>
+
 <h5>Reload the current page</h5>
 <p>Specially after a successful login- or logout submission, we might want to reload the current
 page, in order to reset the cookie value and/or session states. For this purpose, use an action
