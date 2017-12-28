@@ -15,7 +15,7 @@ install:
 
 matrix:
   exclude:
-  - python: "2.7"
+  - python: 2.7
     env: DJANGOVER=django20
 
 before_script:
