@@ -1,5 +1,5 @@
 import warnings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf.urls import url
 from django.http.response import HttpResponsePermanentRedirect
 

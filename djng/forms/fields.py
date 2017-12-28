@@ -10,7 +10,7 @@ from django.core import signing
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.core.files.storage import default_storage
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.forms import fields, models as model_fields, widgets
 from django.utils.html import format_html
 from django.utils.module_loading import import_string

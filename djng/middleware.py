@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import six
 from django import http
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.http import unquote
 try:
     from django.utils.deprecation import MiddlewareMixin
