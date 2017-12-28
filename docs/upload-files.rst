@@ -91,7 +91,7 @@ An example:
 
 .. code-block:: python
 
-	from django.core.urlresolvers import reverse_lazy
+	from django.urls import reverse_lazy
 	from djng.forms import NgModelFormMixin
 	from djng.forms.fields import ImageField
 	from . import subscribe_form

@@ -4,7 +4,7 @@ from server.forms.image_file_upload import SubscribeForm
 # start tutorial
 import json
 from django.http import JsonResponse
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.encoding import force_text
 from django.views.generic.edit import FormView
 
