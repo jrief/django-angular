@@ -54,10 +54,9 @@ Please drop me a line, if and where you use this project.
 * Perform basic CRUD operations.
 
 ## Future Plans
-A next big change to **django-angular** is to add support for Angular2 and/or 4. This will
-require additional development time from my side, so please
-[consider to fund this and other upcoming features using Gratipay](https://gratipay.com/django-angular/).
-
+A next big change to **django-angular** should be to add support for Angular2/4/5.
+However, I'm still unsure about the future roadmap of the Angular, and I currently
+don't have the resources to do so.
 
 ## Latest Changes
 
