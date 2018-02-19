@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import os, json
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core import signing
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.test import override_settings, TestCase

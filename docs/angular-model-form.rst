@@ -82,7 +82,7 @@ The Django view handling this unbound contact form class may look like
 
 	import json
 	from django.http import JsonResponse
-	from django.core.urlresolvers import reverse_lazy
+	from django.urls import reverse_lazy
 	from django.views.generic import FormView
 	from djng.forms import NgModelFormMixin, NgForm
 

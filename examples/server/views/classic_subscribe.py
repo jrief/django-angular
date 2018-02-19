@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 from server.forms.subscribe_form import SubscribeForm
 # start tutorial
 from django.views.generic.edit import FormView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 
 class SubscribeView(FormView):

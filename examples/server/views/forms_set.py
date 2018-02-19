@@ -5,7 +5,7 @@ from server.forms.forms_set import SubscribeForm, AddressForm
 import json
 from django.http import JsonResponse
 from django.views.generic import TemplateView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 
 
 class SubscribeView(TemplateView):

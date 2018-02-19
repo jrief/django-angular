@@ -3,7 +3,7 @@ import six
 
 from django.conf.urls import url, include
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import QueryDict
 from django.test import override_settings, TestCase, RequestFactory
 
@@ -31,14 +31,14 @@ def dummy_view2(request, *args, **kwargs):
 
 
 include1 = [
-    url(r'^home2/$', dummy_view2, name='home2'),
+    url(r'^home2/$', dummy_view2, name='include1-home2'),
 ]
 
 urlpatterns = [
     url(r'^$', dummy_view, name='home'),
     url(r'^(\d)/(\d)/(\d)/$', dummy_view, name='home_args'),
     url(r'^(?P<id>\d)/(?P<id2>\d)/(?P<id3>\d)$', dummy_view, name='home_kwargs'),
-    url(r'^include/', include(include1, namespace='include1')),
+    url(r'^include/', include(include1)),
 ]
 
 
@@ -70,7 +70,7 @@ class TestUrlResolverView(TestCase):
         self.assertEqual(request.get_full_path(), reverse('home'))
 
     def test_resolver_path_resolution_include(self):
-        url_name = 'include1:home2'
+        url_name = 'include1-home2'
         data = {
             self.url_name_arg: url_name
         }
@@ -91,7 +91,7 @@ class TestUrlResolverView(TestCase):
         """
         Request attributes, such as .user or .session must not be modified
         """
-        url_name = 'include1:home2'
+        url_name = 'include1-home2'
         data = {
             self.url_name_arg: url_name
         }

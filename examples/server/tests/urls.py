@@ -48,7 +48,7 @@ subsub_patterns = [
 ]
 
 sub_patterns = [
-    url(r'^sub/', include(subsub_patterns, namespace='sub')),
+    url(r'^sub/', include(subsub_patterns)),
 ]
 
 
