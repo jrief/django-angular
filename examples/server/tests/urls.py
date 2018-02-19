@@ -47,9 +47,9 @@ subsub_patterns = [
     url(r'^app/$', RemoteMethodsView.as_view(), name='app'),
 ]
 
-sub_patterns = [
+sub_patterns = ([
     url(r'^sub/', include(subsub_patterns)),
-]
+], 'sub')
 
 
 class TestAngularTagView(View):
