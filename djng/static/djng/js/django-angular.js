@@ -847,14 +847,12 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 							if (!element) {
 								for (field_name in response.data[form_name]) {
 									element = document.getElementById('id_' + field_name);
-									if (element) {
-										element = element.parentElement;
+									if (element)
 										break;
-									}
 								}
 							}
 							if (element) {
-								element.scrollIntoView();
+								element.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'nearest'});
 								break;
 							}
 						}
