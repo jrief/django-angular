@@ -12,6 +12,9 @@ Check for the latest release of this project on `Github`_.
 
 Please report bugs or ask questions using the `Issue Tracker`_.
 
+For a quick impression, visit the `demo site`_ for this project.
+
+
 Contents
 --------
 .. toctree::
@@ -34,14 +37,6 @@ Contents
   changelog
 
 
-Sponsoring
-----------
-
-This project is maintained by one individual with help from the community. If it is useful for you,
-`please consider to sponsor it`_ in order to fund its further development. High on the priority
-list is support for Angular-2 and/or Angular-4.
-
-
 Indices and tables
 ------------------
 * :ref:`genindex`
@@ -52,4 +47,4 @@ Indices and tables
 .. _AngularJS: http://angularjs.org/
 .. _Github: https://github.com/jrief/django-angular
 .. _Issue Tracker: https://github.com/jrief/django-angular/issues
-.. _please consider to sponsor it: https://gratipay.com/django-angular/
+.. _demo site: https://django-angular.awesto.com/combined_validation/
