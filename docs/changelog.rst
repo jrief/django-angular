@@ -4,6 +4,12 @@
 Release History
 ===============
 
+2.0.1
+-----
+* Prepared for Django-2.0 by changing imports for urlresolvers.
+* Changed scope function ``scrollToRejected()`` to scroll smoothly and to the center of a rejected
+  element.
+
 2.0
 ---
 * To be compliant with other frameworks, Ajax responses from invalid form submissions, now respond
