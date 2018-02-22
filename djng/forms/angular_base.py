@@ -96,7 +96,7 @@ class TupleErrorList(UserList, list):
             error_lists = {'$pristine': [], '$dirty': []}
             for e in self:
                 if e[5] == '$message':
-                    li_format = '<li ng-show="{0}.{1}" class="{2}" ng-bind="{0}.{3}"></li>'
+                    li_format = '<li ng-show="{0}.{1} && {0}.{3}" class="{2}" ng-bind="{0}.{3}"></li>'
                 else:
                     li_format = '<li ng-show="{0}.{1}" class="{2}">{3}</li>'
                 err_tuple = (e[0], e[3], e[4], force_text(e[5]))
