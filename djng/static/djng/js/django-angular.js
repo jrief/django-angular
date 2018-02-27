@@ -36,8 +36,8 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					if (!field)
 						return;
 					element.css('background-image', field.url);
-					element.removeClass('djng-empty')
-					element.removeClass('djng-preset')
+					element.removeClass('djng-empty');
+					element.removeClass('djng-preset');
 					element.val(field.file_name);
 					delete field.url;  // we don't want to send back the whole image
 					angular.extend(scope.$eval(model), field, cf ? {current_file: cf} : {});
@@ -55,8 +55,8 @@ fileuploadModule.directive('djngFileuploadButton', function() {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
-			scope.deleteImage = function(id, model) {
-				var model = scope.$eval(model),
+			scope.deleteImage = function(id, _model) {
+				var model = scope.$eval(_model),
 				    element = angular.element(document.querySelector('#' + id));
 				element.css('background-image', 'none');
 				element.addClass('djng-empty');
@@ -622,13 +622,13 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 						controller.endpointScope[scopePrefix] = scope[scopePrefix];
 						delete scope[scopePrefix];
 						if (!scope[formController.$name])
-							throw new Error("Failed to detach model scope and reappend to its parent.")
+							throw new Error("Failed to detach model scope and reappend to its parent.");
 					}
 					if (scope.hasOwnProperty(formController.$name)) {
 						controller.endpointScope[formController.$name] = scope[formController.$name];
 						delete scope[formController.$name];
 						if (!scope[formController.$name])
-							throw new Error("Failed to detach form controller and/or to reappend to its parent.")
+							throw new Error("Failed to detach form controller and/or to reappend to its parent.");
 					}
 				}
 
@@ -909,7 +909,7 @@ djngModule.directive('form', function() {
 				return;  // not for forms outside <ANY djng-forms-set></ANY djng-forms-set>
 
 			if (!attrs.name)
-				throw new Error("Each <form> embedded inside a <djng-forms-set> must identify itself by name.")
+				throw new Error("Each <form> embedded inside a <djng-forms-set> must identify itself by name.");
 
 			// check each child form's $valid state and reduce it to one single state `formsSetController.setIsValid`
 			scope.$watch(attrs.name + '.$valid', function reduceValidation() {
@@ -1009,21 +1009,6 @@ djng_rmi_module.provider('djangoRMI', function() {
 
 })(window.angular);
 
-(function(angular, undefined) {
-'use strict';
-
-var djng_module = angular.module('djng.timeago', []);
-
-djng_module.factory('timeAgo', function() {
-	return {
-		sayHello: function(name) {
-			return "Hi " + name + "!";
-		}
-	}
-});
-
-})(window.angular);
-
 (function (angular, undefined) {
     'use strict';
     /*
@@ -1090,7 +1075,7 @@ djng_module.factory('timeAgo', function() {
                  https://docs.angularjs.org/api/ngResource/service/$resource
                  */
                 if ((typeof value === 'string' || value instanceof String) && value.lastIndexOf(':', 0) === 0) {
-                    parts.push(encodeURIComponent(key) + '=' + value)
+                    parts.push(encodeURIComponent(key) + '=' + value);
                 } else {
                     parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
                 }
