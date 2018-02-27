@@ -36,8 +36,8 @@ fileuploadModule.directive('djngFileuploadUrl', ['Upload', function(Upload) {
 					if (!field)
 						return;
 					element.css('background-image', field.url);
-					element.removeClass('djng-empty')
-					element.removeClass('djng-preset')
+					element.removeClass('djng-empty');
+					element.removeClass('djng-preset');
 					element.val(field.file_name);
 					delete field.url;  // we don't want to send back the whole image
 					angular.extend(scope.$eval(model), field, cf ? {current_file: cf} : {});
@@ -55,8 +55,8 @@ fileuploadModule.directive('djngFileuploadButton', function() {
 	return {
 		restrict: 'A',
 		link: function(scope, element, attrs) {
-			scope.deleteImage = function(id, model) {
-				var model = scope.$eval(model),
+			scope.deleteImage = function(id, _model) {
+				var model = scope.$eval(_model),
 				    element = angular.element(document.querySelector('#' + id));
 				element.css('background-image', 'none');
 				element.addClass('djng-empty');

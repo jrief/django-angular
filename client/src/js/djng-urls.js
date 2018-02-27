@@ -64,7 +64,7 @@
                  https://docs.angularjs.org/api/ngResource/service/$resource
                  */
                 if ((typeof value === 'string' || value instanceof String) && value.lastIndexOf(':', 0) === 0) {
-                    parts.push(encodeURIComponent(key) + '=' + value)
+                    parts.push(encodeURIComponent(key) + '=' + value);
                 } else {
                     parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
                 }
