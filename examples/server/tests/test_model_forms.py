@@ -57,7 +57,7 @@ class NgModelFormMixinTestCase(TestCase):
 
         ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt.$pristine"})
         self.assertListEqual(ul.attrs['class'], ['djng-form-errors'])
-        self.assertEquals(ul.li.attrs['ng-show'], 'RW1haWxGb3Jt.$error.rejected')
+        self.assertEquals(ul.li.attrs['ng-show'], 'RW1haWxGb3Jt.$error.rejected && RW1haWxGb3Jt.$message')
         self.assertEquals(ul.li.attrs['ng-bind'], 'RW1haWxGb3Jt.$message')
         self.assertListEqual(ul.li.attrs['class'], ['invalid'])
 
