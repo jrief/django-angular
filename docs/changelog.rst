@@ -4,11 +4,18 @@
 Release History
 ===============
 
+2.0.2
+-----
+* Do not render empty ``$message``` if Django's validation rejected a field or the whole form.
+* Follow JavaScript best practices.
+
+
 2.0.1
 -----
 * Prepared for Django-2.0 by changing imports for urlresolvers.
 * Changed scope function ``scrollToRejected()`` to scroll smoothly and to the center of a rejected
   element.
+
 
 2.0
 ---
