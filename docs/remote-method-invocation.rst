@@ -50,12 +50,12 @@ Template Tag ``djng_all_rmi``
 The AngularJS Provider ``djangoRMIProvider`` shall be configured during the initialization of the
 client side, such as:
 
-.. code-block:: javascript
+.. code-block:: django
 
-	{­% load djng_tags %­}
+	{% load djng_tags %}
 	…
 	<script type="text/javascript">
-	var tags = {­% djng_all_rmi %­};
+	var tags = {% djng_all_rmi %};
 	my_app.config(function(djangoRMIProvider) {
 	    djangoRMIProvider.configure(tags);
 	});
@@ -72,12 +72,12 @@ Template Tag ``djng_current_rmi``
 Alternatively, the AngularJS Provider ``djangoRMIProvider`` can be configured during the
 initialization of the client side, such as:
 
-.. code-block:: javascript
+.. code-block:: django
 
-	{­% load djng_tags %­}
+	{% load djng_tags %}
 	…
 	<script type="text/javascript">
-	var tags = {­% djng_current_rmi %­};
+	var tags = {% djng_current_rmi %};
 	my_app.config(function(djangoRMIProvider) {
 	    djangoRMIProvider.configure(tags);
 	});
@@ -142,10 +142,10 @@ dispatcher.
 	        return ['baz', 'cap']
 	
 	urlpatterns = [
-	    …
+	    # …
 	    url(r'^fetch-some-data.json$', MyResponseView.as_view(), {'invoke_method': 'get_some_data'}),
 	    url(r'^fetch-other-data.json$', MyResponseView.as_view(), {'invoke_method': 'get_other_data'}),
-	    …
+	    # …
 	]
 
 If a client calls the URL ``/fetch-some-data.json``, the responding view dispatches incoming
