@@ -17,7 +17,7 @@ class NgFormValidationMixinTest(TestCase):
         self.maxDiff = None
 
     def test_form(self):
-        self.assertEqual(self.subscription_form.form_name, six.b(self.form_name))
+        self.assertEqual(self.subscription_form.form_name, self.form_name)
 
     def test_ng_length(self):
         first_name = self.dom('input[name=first_name]')
