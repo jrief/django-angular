@@ -47,4 +47,3 @@ setup(
     packages=find_packages(exclude=['examples', 'docs']),
     include_package_data=True,
 )
-

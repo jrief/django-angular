@@ -4,6 +4,11 @@
 Release History
 ===============
 
+2.0.3
+-----
+* Fix #333: Automatically generated form names broken in Python 3.
+
+
 2.0.2
 -----
 * Do not render empty ``$message``` if Django's validation rejected a field or the whole form.
