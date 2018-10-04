@@ -675,7 +675,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 	return {
 		restrict: 'E',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
-		scope: true,
+		scope: false,  // use child scope from djng-endpoint
 		link: function(scope, element, attrs, controllers) {
 			var uploadController = controllers[2] || controllers[0], urlParams;
 
@@ -875,11 +875,12 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 // Use this as a wrapper around self validating <form ...> or <ANY ng-form ...> elements (see
 // directives above), so that we can use a proceed/submit button outside of the ``<form ...>`` elements.
 // Whenever one of those forms does not validate, that button can be rendered as:
-// ``<button ng-click="update(some_action)" ng-disabled="isDisabled()">Submit</button>``
+// ``<button ng-click="do(update(some_action))" ng-disabled="isDisabled()">Submit</button>``
 djngModule.directive('djngFormsSet', function() {
 	return {
 		require: 'djngFormsSet',
 		controller: 'FormUploadController',
+		scope: true,
 		link: {
 			pre: function(scope, element, attrs, uploadController) {
 				if (!attrs.endpoint)

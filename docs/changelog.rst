@@ -4,6 +4,13 @@
 Release History
 ===============
 
+2.0.4
+-----
+* AngularJS directive ``djng-forms-set`` now creates its own child scope, inheriting prototypically.
+* AngularJS directive ``button`` does not create its own child scope anymore, and now uses that of
+  parent directives, either ``djng-forms-set`` or ``djng-endpoint``.
+
+
 2.0.3
 -----
 * Fix #333: Automatically generated form names broken in Python 3.
