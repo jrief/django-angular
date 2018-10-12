@@ -578,15 +578,38 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 }]);
 
 
-djngModule.factory('djangoForm', ['$parse', function($parse) {
-	return {
-		getScopePrefix: function(modelName) {
-			var context = {}, result;
-			$parse(modelName).assign(context, true);
-			angular.forEach(context, function(val, key) {
-				result = key;
-			});
-			return result;
+// Provider to configure the classes temporarily added to the button directives wrapped inside
+// a `djng-forms-set` or `djng-endpoint`.
+djngModule.provider('djangoForm', ['$parse', function($parse) {
+	var self = this;
+	this.$get = function() {
+		return self;
+	};
+
+	this.buttonClasses = {
+		showOK: 'glyphicon glyphicon-ok',
+		showFail: 'glyphicon glyphicon-remove',
+		spinner: 'glyphicon glyphicon-refresh djng-rotate-animate'
+	};
+
+	this.getScopePrefix = function(modelName) {
+		var context = {}, result;
+		$parse(modelName).assign(context, true);
+		angular.forEach(context, function(val, key) {
+			result = key;
+		});
+		return result;
+	};
+
+	this.setButtonClasses = function(buttonClasses) {
+		if (angular.isDefined(buttonClasses.showOK)) {
+			this.buttonClasses.showOK = buttonClasses.showOK;
+		}
+		if (angular.isDefined(buttonClasses.showFail)) {
+			this.buttonClasses.showFail = buttonClasses.showFail;
+		}
+		if (angular.isDefined(buttonClasses.spinner)) {
+			this.buttonClasses.spinner = buttonClasses.spinner;
 		}
 	};
 }]);
@@ -597,7 +620,7 @@ djngModule.factory('djangoForm', ['$parse', function($parse) {
 // PUT or DELETE request on the forms-set endpoint URL.
 // Optionally one can pass an object to create, update or delete, in order to pass further information
 // to the given endpoint.
-djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeout, $window) {
+djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', function($q, $timeout, $window, djangoForm) {
 	return {
 		restrict: 'E',
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
@@ -671,7 +694,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 						if (!icon.data('remember-class')) {
 							icon.data('remember-class', icon.attr('class'));
 						}
-						icon.attr('class', 'glyphicon glyphicon-refresh djng-rotate-animate');
+						icon.attr('class', djangoForm.buttonClasses.spinner);
 					});
 					return $q.resolve(response);
 				};
@@ -686,7 +709,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 						if (!icon.data('remember-class')) {
 							icon.data('remember-class', icon.attr('class'));
 						}
-						icon.attr('class', 'glyphicon glyphicon-ok');
+						icon.attr('class', djangoForm.buttonClasses.showOK);
 					});
 					return $q.resolve(response);
 				};
@@ -701,7 +724,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', function($q, $timeo
 						if (!icon.data('remember-class')) {
 							icon.data('remember-class', icon.attr('class'));
 						}
-						icon.attr('class', 'glyphicon glyphicon-remove');
+						icon.attr('class', djangoForm.buttonClasses.showFail);
 					});
 					return $q.resolve(response);
 				};
