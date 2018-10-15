@@ -580,39 +580,39 @@ djngModule.directive('ngModel', ['djangoForm', function(djangoForm) {
 
 // Provider to configure the classes temporarily added to the button directives wrapped inside
 // a `djng-forms-set` or `djng-endpoint`.
-djngModule.provider('djangoForm', ['$parse', function($parse) {
-	var self = this;
-	this.$get = function() {
-		return self;
-	};
-
-	this.buttonClasses = {
+djngModule.provider('djangoForm', function() {
+	var self = this, _buttonClasses = {
 		showOK: 'glyphicon glyphicon-ok',
 		showFail: 'glyphicon glyphicon-remove',
 		spinner: 'glyphicon glyphicon-refresh djng-rotate-animate'
 	};
 
-	this.getScopePrefix = function(modelName) {
-		var context = {}, result;
-		$parse(modelName).assign(context, true);
-		angular.forEach(context, function(val, key) {
-			result = key;
-		});
-		return result;
-	};
-
 	this.setButtonClasses = function(buttonClasses) {
 		if (angular.isDefined(buttonClasses.showOK)) {
-			this.buttonClasses.showOK = buttonClasses.showOK;
+			_buttonClasses.showOK = buttonClasses.showOK;
 		}
 		if (angular.isDefined(buttonClasses.showFail)) {
-			this.buttonClasses.showFail = buttonClasses.showFail;
+			_buttonClasses.showFail = buttonClasses.showFail;
 		}
 		if (angular.isDefined(buttonClasses.spinner)) {
-			this.buttonClasses.spinner = buttonClasses.spinner;
+			_buttonClasses.spinner = buttonClasses.spinner;
 		}
 	};
-}]);
+
+	this.$get = ['$parse', function($parse) {
+		return {
+			buttonClasses: _buttonClasses,
+			getScopePrefix: function(modelName) {
+				var context = {}, result;
+				$parse(modelName).assign(context, true);
+				angular.forEach(context, function (val, key) {
+					result = key;
+				});
+				return result;
+			}
+		}
+	}];
+});
 
 
 // This directive enriches the button element with a set of actions chainable through promises.
