@@ -4,6 +4,11 @@
 Release History
 ===============
 
+2.1
+---
+* Add provider ``djangoForm`` to make the button classes for ``showOK()`` , ``showFail()`` and
+  ``showSpinner()`` configurable.
+
 2.0.4
 -----
 * AngularJS directive ``djng-forms-set`` now creates its own child scope, inheriting prototypically.
