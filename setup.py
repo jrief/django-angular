@@ -4,14 +4,9 @@ from __future__ import unicode_literals
 
 from setuptools import setup, find_packages
 from djng import __version__
-try:
-    from pypandoc import convert
-except ImportError:
-    import io
 
-    def convert(filename, fmt):
-        with io.open(filename, encoding='utf-8') as fd:
-            return fd.read()
+with open('README.md', 'r') as fh:
+    long_description = fh.read()
 
 DESCRIPTION = 'Let Django play well with AngularJS'
 
@@ -38,7 +33,8 @@ setup(
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
-    long_description=convert('README.md', 'rst'),
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/jrief/django-angular',
     license='MIT',
     keywords=['django', 'angularjs'],
