@@ -8,10 +8,6 @@ Let Django play well with AngularJS
 [![Software license](https://img.shields.io/pypi/l/django-angular.svg)](https://github.com/jrief/django-angular/blob/master/LICENSE-MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
-## Breaking News
-
-On 2017-11-17 **django-angular** version 2.0 has been released.
-
 ### Backward Incompatibility
 
 To be compliant with other libraries such as **djangorestframework**,  server-side responses on
