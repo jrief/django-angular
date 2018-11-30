@@ -349,6 +349,7 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 		self.endpointScope = endpointScope;
 	};
 
+	// uploads the validated form data as spawned by the `ng-model`s to the given endpoint
 	this.uploadScope = function(method, urlParams, extraData) {
 		var deferred = $q.defer(), data = {}, url, promise;
 		if (!self.endpointURL)
@@ -528,6 +529,36 @@ djngModule.controller('FormUploadController', ['$scope', '$http', '$interpolate'
 		});
 	};
 
+	this.acceptOrReject = function() {
+		var deferred = $q.defer(), rejected = false, formName, formController;
+		for (formName in self.endpointValidatedForms) {
+			var response;
+			if (!self.endpointValidatedForms[formName]) {
+				formController = $parse(formName)($scope);
+				formController.$setSubmitted();
+				response = {
+					status: 422,
+					data: {}
+				};
+				response.data[formName] = {};
+				angular.forEach(formController, function(field, fieldName) {
+					if (angular.isObject(field) && field.hasOwnProperty('$modelValue') && field.$invalid) {
+						formController[fieldName].$setDirty();
+						formController[fieldName].$setTouched();
+						response.data[formName][fieldName] = true;
+					}
+				});
+				deferred.reject(response);
+				rejected = true;
+				break;
+			}
+		}
+		if (!rejected) {
+			deferred.resolve();
+		}
+		return deferred.promise;
+	};
+
 	// use duck-typing to determine if field is a FieldController
 	function isField(field) {
 		return field && angular.isArray(field.$viewChangeListeners);
@@ -700,7 +731,7 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 		require: ['^?djngFormsSet', '^?form', '^?djngEndpoint'],
 		scope: false,  // use child scope from djng-endpoint
 		link: function(scope, element, attrs, controllers) {
-			var uploadController = controllers[2] || controllers[0], urlParams;
+			var uploadController = controllers[2] || controllers[0], urlParams, preparePromises = [];
 
 			if (!uploadController)
 				return;  // button neither inside <form djng-endpoint="...">...</form> nor inside <djng-forms-set>...</djng-forms-set>
@@ -709,10 +740,26 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 				urlParams = scope.$eval(attrs.urlParams);
 			}
 
+			preparePromises.push(uploadController.acceptOrReject);
+			// in case a wrapping element declares its own prepare function, add it to the promises
+			if (angular.isFunction(scope.prepare)) {
+				preparePromises.push(scope.prepare());
+			}
+
 			// prefix function create/update/delete with: do(...).then(...)
 			// to create the initial promise
 			scope.do = function(resolve, reject) {
 				return $q.resolve().then(resolve, reject);
+			};
+
+			scope.prepare = function(resolve, reject) {
+				return function() {
+					var promises = [];
+					angular.forEach(preparePromises, function(p) {
+						promises.push(p());
+					});
+					return $q.all(promises);
+				}
 			};
 
 			scope.fetch = function(extraData) {
@@ -859,17 +906,18 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 			// the rejected content and scroll to this element.
 			scope.scrollToRejected = function() {
 				return function(response) {
-					var form_name, field_name, element;
+					var formName, fieldName, element;
 					if (response.status >= 400 && response.status <= 499) {
-						for (form_name in response.data) {
+						for (formName in response.data) {
 							element = null;
-							if (response.data[form_name]['__all__']) {
-								element = document.getElementsByName(form_name)[0];
+							if (response.data[formName]['__all__']) {
+								element = document.getElementsByName(formName)[0];
 								element = element ? element.getElementsByClassName('djng-line-spreader')[0] : null;
 							}
 							if (!element) {
-								for (field_name in response.data[form_name]) {
-									element = document.getElementById('id_' + field_name);
+								for (fieldName in response.data[formName]) {
+									element = document.getElementById('id_' + fieldName)
+									       || document.getElementById(formName + '-' + fieldName);
 									if (element)
 										break;
 								}
@@ -891,6 +939,23 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 
 		}
 	};
+}]);
+
+
+// This directive enriches the link element with a function to give feedback using a tick symbol when clicked.
+djngModule.directive('a', ['djangoForm', function(djangoForm) {
+	return {
+		restrict: 'E',
+		scope: false,  // use child scope from djng-endpoint
+		link: function (scope, element) {
+			scope.showOK = function() {
+				angular.forEach(element.find('i'), function(icon) {
+					icon = angular.element(icon);
+					icon.attr('class', djangoForm.buttonClasses.showOK);
+				});
+			};
+		}
+	}
 }]);
 
 
