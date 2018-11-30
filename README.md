@@ -79,6 +79,6 @@ don't have the resources to do so.
 
 ## License
 
-Copyright &copy; 2017
+Copyright &copy; 2018
 
 MIT licensed
