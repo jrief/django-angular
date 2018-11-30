@@ -832,18 +832,18 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 			// the rejected content and scroll to this element.
 			scope.scrollToRejected = function() {
 				return function(response) {
-					var form_name, field_name, element;
+					var formName, fieldName, element;
 					if (response.status >= 400 && response.status <= 499) {
-						for (form_name in response.data) {
+						for (formName in response.data) {
 							element = null;
-							if (response.data[form_name]['__all__']) {
-								element = document.getElementsByName(form_name)[0];
+							if (response.data[formName]['__all__']) {
+								element = document.getElementsByName(formName)[0];
 								element = element ? element.getElementsByClassName('djng-line-spreader')[0] : null;
 							}
 							if (!element) {
-								for (field_name in response.data[form_name]) {
-									element = document.getElementById('id_' + field_name)
-									       || document.getElementById(form_name + '-' + field_name);
+								for (fieldName in response.data[formName]) {
+									element = document.getElementById('id_' + fieldName)
+									       || document.getElementById(formName + '-' + fieldName);
 									if (element)
 										break;
 								}
