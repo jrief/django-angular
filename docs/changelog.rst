@@ -4,6 +4,16 @@
 Release History
 ===============
 
+2.2
+---
+* If an HTML element ``<a>`` contains an ``<i>``-element, then enriche the link element with a
+  function to give feedback using a tick symbol when clicked.
+* Add function ``acceptOrReject()`` which is invoked by the optional ``prepare()``-function inside
+  a submit button. It will scroll to invalid form fields whenever a user tries to submit a
+  non-validated form. This has a better user experience rather than disabling submit buttons in
+  non-validated forms.
+
+
 2.1
 ---
 * Add provider ``djangoForm`` to make the button classes for ``showOK()`` , ``showFail()`` and
