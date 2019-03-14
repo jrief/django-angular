@@ -1,4 +1,4 @@
-FROM awesto/fedora-uwsgi-python:24.1
+FROM awesto/fedora-uwsgi-python:5
 
 LABEL Description="Run django-angular demo" Maintainer="Jacob Rief <jacob.rief@gmail.com>"
 
