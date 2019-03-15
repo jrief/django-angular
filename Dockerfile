@@ -1,4 +1,4 @@
-FROM awesto/fedora-uwsgi-python:24.1
+FROM awesto/fedora-uwsgi-python:5
 
 LABEL Description="Run django-angular demo" Maintainer="Jacob Rief <jacob.rief@gmail.com>"
 
@@ -15,7 +15,7 @@ RUN useradd -M -d /web -g uwsgi -s /bin/bash django
 # install the basic Django package
 RUN echo 2 | alternatives --config python
 RUN python -V
-RUN pip install --upgrade pip
+# RUN pip install --upgrade pip
 # RUN pip install --force-reinstall uwsgi
 RUN pip install django==1.10.7
 
@@ -42,7 +42,7 @@ COPY examples/requirements.txt /tmp/requirements.txt
 RUN pip install -r /tmp/requirements.txt
 RUN pip install django-websocket-redis
 
-# install packages outside of PyPI
+# install packages under node_modules/ outside of PyPI
 WORKDIR /web/django-angular-demo
 RUN npm install
 

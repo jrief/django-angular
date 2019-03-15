@@ -8,6 +8,17 @@ Let Django play well with AngularJS
 [![Software license](https://img.shields.io/pypi/l/django-angular.svg)](https://github.com/jrief/django-angular/blob/master/LICENSE-MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
+### How to run
+
+```
+git clone https://github.com/jrief/django-angular.git django-angular.git
+cd django-angular.git
+docker build -t django-angular.git .
+docker run -d -it -p 9002:9002 django-angular.git
+```
+
+Open the applcaiton at `http://{docker-host's-ip}:9002/`
+
 ### Backward Incompatibility
 
 To be compliant with other libraries such as **djangorestframework**,  server-side responses on
