@@ -23,6 +23,7 @@ matrix:
   exclude:
   - python: 2.7
     env: DJANGOVER=django20
+    env: DJANGOVER=django21
 
 before_script:
   - export CHROME_BIN=chromium-browser
