@@ -60,36 +60,9 @@ Please drop me a line, if and where you use this project.
 * Three way data binding to connect AngularJS models with a server side message queue.
 * Perform basic CRUD operations.
 
-## Future Plans
-A next big change to **django-angular** should be to add support for Angular2/4/5.
-However, I'm still unsure about the future roadmap of the Angular, and I currently
-don't have the resources to do so.
-
-## Latest Changes
-
-### 2.0 (2017-11-17)
-
-2.0
----
-* To be compliant with other frameworks, Ajax responses from invalid form submissions, now respond
-  with a ``HttpResponseBadRequest`` (status code 422) rather than with a ``HttpResponse`` (status
-  200). This requires to adopt the form response views and the response handlers in JavaScript
-  files, submitting the form data.
-* No more need to add a customized controller for uploading form data to the server. Instead add the
-  directive ``djng-endpoint="/path/to/endpoint"`` to a form and submit the form's content using an
-  action event.
-* New AngularJS directive ``djng-forms-set``, usable to validate and submit more than one form.
-* AngularJS directive for the ``button``-element, usable to create a chain of action promises for
-  form submissions.
-* Add support for AngularJS version 1.6 by replacing deprecated occurrences of ``$http(...).success(...)``
-  against ``$http(...).then(...)``.
-* Sekizai's postprocessor ``module_list`` and ``module_config`` are deprecated and will be removed,
-  since it is easier to fulfill the same result using Sekizai's templatetag ``with_data``.
-* Radio input fields do not require the DjNg directive ``validate-multiple-fields`` anymore.
-
 
 ## License
 
-Copyright &copy; 2018
+Copyright &copy; 2019
 
 MIT licensed
