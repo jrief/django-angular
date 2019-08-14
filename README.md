@@ -8,6 +8,14 @@ Let Django play well with AngularJS
 [![Software license](https://img.shields.io/pypi/l/django-angular.svg)](https://github.com/jrief/django-angular/blob/master/LICENSE-MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
+## What does it offer?
+
+Add AngularJS directives to Django Forms. This allows to handle client side form validation using
+the constraints provided by the server side Form declaration.
+
+For more information, please visit the [demo site](https://django-angular.awesto.com/form_validation/).
+
+
 ### How to run
 
 ```
