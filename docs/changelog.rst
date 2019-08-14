@@ -4,6 +4,11 @@
 Release History
 ===============
 
+2.2.1
+-----
+* on element ``<a..>`` always render a tick if an icon has been pre- or appended to the pseudo
+  button element.
+
 2.2
 ---
 * If an HTML element ``<a>`` contains an ``<i>``-element, then enriche the link element with a
