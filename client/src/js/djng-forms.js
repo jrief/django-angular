@@ -874,12 +874,12 @@ djngModule.directive('a', ['djangoForm', function(djangoForm) {
 		restrict: 'E',
 		scope: false,  // use child scope from djng-endpoint
 		link: function (scope, element) {
-			scope.showOK = function() {
-				angular.forEach(element.find('i'), function(icon) {
-					icon = angular.element(icon);
+			var icon = element.find('i');
+			if (icon.length > 0) {
+				element.on('click', function() {
 					icon.attr('class', djangoForm.buttonClasses.showOK);
 				});
-			};
+			}
 		}
 	}
 }]);
