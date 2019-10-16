@@ -943,13 +943,17 @@ djngModule.directive('button', ['$q', '$timeout', '$window', 'djangoForm', funct
 
 
 // This directive enriches the link element with a function to give feedback using a tick symbol when clicked.
+// To be effective, the link element must be rendered such as:
+// <a href="..." aria-pressed="false">Button Label<i class="some icon"></i></a>
+// Now, whenever someone clicks on that link, the icon inside the button is replaced by another icon class, typically
+// a tick symbol, to signalize that the operation was successful.
 djngModule.directive('a', ['djangoForm', function(djangoForm) {
 	return {
 		restrict: 'E',
-		scope: false,  // use child scope from djng-endpoint
-		link: function (scope, element) {
+		scope: false,
+		link: function(scope, element, attrs) {
 			var icon = element.find('i');
-			if (icon.length > 0) {
+			if (attrs.ariaPressed === 'false' && icon.length > 0) {
 				element.on('click', function() {
 					icon.attr('class', djangoForm.buttonClasses.showOK);
 				});
