@@ -4,6 +4,13 @@
 Release History
 ===============
 
+2.2.2
+-----
+* Render success tick on element ``<a..>`` only, if it contains the attribute ``aria-pressed="false"``.
+* In Django-2.1 fix regression regarding rendering of per-choice labels.
+* Enable for Django-2.0 and Django-2.1.
+
+
 2.2.1
 -----
 * on element ``<a..>`` always render a tick if an icon has been pre- or appended to the pseudo

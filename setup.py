@@ -25,6 +25,9 @@ CLASSIFIERS = [
     'Programming Language :: Python :: 3.6',
     'Framework :: Django :: 1.10',
     'Framework :: Django :: 1.11',
+    'Framework :: Django :: 2.0',
+    'Framework :: Django :: 2.1',
+    'Framework :: Django :: 2.2',
 ]
 
 setup(
@@ -33,11 +36,12 @@ setup(
     author='Jacob Rief',
     author_email='jacob.rief@gmail.com',
     description=DESCRIPTION,
+    install_requires=['django>=1.10'],
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/jrief/django-angular',
     license='MIT',
-    keywords=['django', 'angularjs'],
+    keywords=['Django', 'AngularJS'],
     platforms=['OS Independent'],
     classifiers=CLASSIFIERS,
     packages=find_packages(exclude=['examples', 'docs']),
