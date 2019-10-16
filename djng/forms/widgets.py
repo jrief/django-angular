@@ -121,7 +121,7 @@ class DropFileWidget(widgets.Widget):
         super(DropFileWidget, self).__init__(attrs)
         self.filetype = 'file'
 
-    def render(self, name, value, attrs=None):
+    def render(self, name, value, attrs=None, renderer=None):
         from django.contrib.staticfiles.storage import staticfiles_storage
 
         extra_attrs = dict(attrs)
