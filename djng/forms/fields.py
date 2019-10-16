@@ -299,6 +299,10 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
                 attrs.update({'ng-required': require_model})
         return attrs
 
+    def update_widget_rendering_context(self, context):
+        context.setdefault('wrap_label', isinstance(self.widget, widgets.RadioSelect))
+        return context
+
     def get_converted_widget(self, widgets_module):
         if not isinstance(self.widget, widgets.RadioSelect):
             return
