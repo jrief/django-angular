@@ -28,6 +28,14 @@ matrix:
       env: DJANGOVER=django21
     - python: 2.7
       env: DJANGOVER=django22
+    - python: 3.6
+      env: DJANGOVER=django110
+    - python: 3.7
+      env: DJANGOVER=django110
+    - python: 3.7
+      env: DJANGOVER=django111
+    - python: 3.7
+      env: DJANGOVER=django20
 
 before_script:
   - export CHROME_BIN=chromium-browser
