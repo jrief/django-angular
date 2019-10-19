@@ -25,7 +25,7 @@ docker build -t django-angular.git .
 docker run -d -it -p 9002:9002 django-angular.git
 ```
 
-Open the applcaiton at `http://{docker-host's-ip}:9002/`
+Open the application at `http://{docker-host's-ip}:9002/`
 
 ### Backward Incompatibility
 
