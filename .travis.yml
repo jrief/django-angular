@@ -23,11 +23,11 @@ install:
 matrix:
   exclude:
     - python: 2.7
-      env DJANGOVER=django20
+      env: DJANGOVER=django20
     - python: 2.7
-      env DJANGOVER=django21
+      env: DJANGOVER=django21
     - python: 2.7
-      env DJANGOVER=django22
+      env: DJANGOVER=django22
 
 before_script:
   - export CHROME_BIN=chromium-browser
