@@ -4,6 +4,13 @@
 Release History
 ===============
 
+
+2.2.3
+-----
+* In Django-2.1 fix regression regarding rendering of labels in MultiSelectCheckbox fields.
+* Fix regression introduced in 2.2.2 when generating form name.
+
+
 2.2.2
 -----
 * Render success tick on element ``<a..>`` only, if it contains the attribute ``aria-pressed="false"``.
