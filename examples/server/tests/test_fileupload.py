@@ -41,30 +41,30 @@ class FileUploadTest(TestCase):
         with open(upload_filename, 'rb') as fp:
             upload_url = reverse('fileupload')
             response = client.post(upload_url, {'file:0': fp, 'filetype': 'image'})
-        self.assertEquals(response.status_code, 200)
+        self.assertEqual(response.status_code, 200)
         return json.loads(response.content.decode('utf-8'))
 
     def test_upload(self):
         content = self.upload_image()
         self.assertTrue('file:0' in content)
         self.assertTrue(content['file:0']['url'].startswith('url(data:application/octet-stream;base64,/9j/4AAQSkZJRgABA'))
-        self.assertEquals(content['file:0']['file_name'], 'sample-image.jpg')
-        self.assertEquals(content['file:0']['content_type'], 'image/jpeg')
-        self.assertEquals(self.signer.unsign(content['file:0']['temp_name']), 'sample-image.jpg')
+        self.assertEqual(content['file:0']['file_name'], 'sample-image.jpg')
+        self.assertEqual(content['file:0']['content_type'], 'image/jpeg')
+        self.assertEqual(self.signer.unsign(content['file:0']['temp_name']), 'sample-image.jpg')
 
     def test_render_widget(self):
         form = TestUploadForm()
         htmlsource = form.as_p()
         dom = PyQuery(htmlsource)
         textarea = dom('div.drop-box textarea')
-        self.assertEquals(textarea.attr('djng-fileupload-url'), reverse('fileupload'))
-        self.assertEquals(textarea.attr('ngf-drop'), 'uploadFile($file, "image", "id_avatar", "my_data[\'avatar\']")')
-        self.assertEquals(textarea.attr('ngf-select'), 'uploadFile($file, "image", "id_avatar", "my_data[\'avatar\']")')
+        self.assertEqual(textarea.attr('djng-fileupload-url'), reverse('fileupload'))
+        self.assertEqual(textarea.attr('ngf-drop'), 'uploadFile($file, "image", "id_avatar", "my_data[\'avatar\']")')
+        self.assertEqual(textarea.attr('ngf-select'), 'uploadFile($file, "image", "id_avatar", "my_data[\'avatar\']")')
 
         delete_button = dom('div.drop-box img.djng-btn-trash')
-        self.assertEquals(delete_button.attr('src'), '/static/djng/icons/image/trash.svg')
-        self.assertEquals(delete_button.attr('djng-fileupload-button'), '')
-        self.assertEquals(delete_button.attr('ng-click'), 'deleteImage("id_avatar", "my_data[\'avatar\']")')
+        self.assertEqual(delete_button.attr('src'), '/static/djng/icons/image/trash.svg')
+        self.assertEqual(delete_button.attr('djng-fileupload-button'), '')
+        self.assertEqual(delete_button.attr('ng-click'), 'deleteImage("id_avatar", "my_data[\'avatar\']")')
 
     def test_receive_small_image(self):
         content = self.upload_image()
@@ -73,7 +73,7 @@ class FileUploadTest(TestCase):
         form = TestUploadForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertIsInstance(form.cleaned_data['avatar'], InMemoryUploadedFile)
-        self.assertEquals(form.cleaned_data['avatar'].name, "sample-image.jpg")
+        self.assertEqual(form.cleaned_data['avatar'].name, "sample-image.jpg")
 
         # TODO: delete this image again
         # stored_image = self.storage.save('persisted.jpg', form.cleaned_data['avatar'].file)
@@ -89,4 +89,4 @@ class FileUploadTest(TestCase):
         form = TestUploadForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertIsInstance(form.cleaned_data['avatar'], TemporaryUploadedFile)
-        self.assertEquals(form.cleaned_data['avatar'].name, "sample-image.jpg")
+        self.assertEqual(form.cleaned_data['avatar'].name, "sample-image.jpg")

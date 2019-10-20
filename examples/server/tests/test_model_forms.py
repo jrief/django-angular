@@ -53,18 +53,17 @@ class NgModelFormMixinTestCase(TestCase):
         f = EmailForm(ng_foo="bar")
         self.assertFalse(f.is_valid())
         soup = BeautifulSoup(f.as_p(), 'lxml')
-        print(soup.prettify())
 
         ul = soup.find(attrs={'ng-show': "RW1haWxGb3Jt.$pristine"})
         self.assertListEqual(ul.attrs['class'], ['djng-form-errors'])
-        self.assertEquals(ul.li.attrs['ng-show'], 'RW1haWxGb3Jt.$error.rejected && RW1haWxGb3Jt.$message')
-        self.assertEquals(ul.li.attrs['ng-bind'], 'RW1haWxGb3Jt.$message')
+        self.assertEqual(ul.li.attrs['ng-show'], 'RW1haWxGb3Jt.$error.rejected && RW1haWxGb3Jt.$message')
+        self.assertEqual(ul.li.attrs['ng-bind'], 'RW1haWxGb3Jt.$message')
         self.assertListEqual(ul.li.attrs['class'], ['invalid'])
 
         elem = soup.find(id='id_email')
-        self.assertEquals(elem.attrs['name'], "email")
-        self.assertEquals(elem.attrs['ng-model'], "form_data['email']")
-        self.assertEquals(elem.attrs['ng-foo'], "bar")
+        self.assertEqual(elem.attrs['name'], "email")
+        self.assertEqual(elem.attrs['ng-model'], "form_data['email']")
+        self.assertEqual(elem.attrs['ng-foo'], "bar")
 
         f = EmailForm(data={'email': 'test@example.com'})
         self.assertTrue(f.is_valid())
@@ -76,8 +75,8 @@ class NgModelFormMixinTestCase(TestCase):
         soup = BeautifulSoup(f.as_p(), 'lxml')
 
         elem = soup.find(id='id_choose')
-        self.assertEquals(elem.attrs['name'], "choose")
-        self.assertEquals(elem.attrs['ng-model'], "form_data['choose']")
+        self.assertEqual(elem.attrs['name'], "choose")
+        self.assertEqual(elem.attrs['ng-model'], "form_data['choose']")
         self.assertIn('required', elem.attrs)
 
         f = ChoiceForm(data={'choose': True})
@@ -105,7 +104,7 @@ class NgModelFormMixinTestCase(TestCase):
         soup = BeautifulSoup(f.as_p(), 'lxml')
         elem = soup.find(id='id_select_multi')
         self.assertTrue(elem.attrs['ng-model'], "form_data['select_multi']")
-        self.assertEquals(elem.option.attrs['value'], 'a')
+        self.assertEqual(elem.option.attrs['value'], 'a')
 
         f = SelectMultipleChoicesForm(data={'select_multi': ['a', 'c']})
         self.assertTrue(f.is_valid())
@@ -124,9 +123,9 @@ class NgModelFormMixinTestCase(TestCase):
 
         soup = BeautifulSoup(f.as_p(), 'lxml')
         elem = soup.find(attrs={'ng-form': "check_multi"})
-        self.assertEquals(elem.input.attrs['ng-model'], "data['check_multi']['a']")
-        self.assertEquals(elem.input.attrs['name'], 'check_multi.a')
-        self.assertEquals(elem.input.attrs['value'], 'a')
+        self.assertEqual(elem.input.attrs['ng-model'], "data['check_multi']['a']")
+        self.assertEqual(elem.input.attrs['name'], 'check_multi.a')
+        self.assertEqual(elem.input.attrs['value'], 'a')
 
         f = CheckboxChoicesForm({'check_multi': {'a': True, 'c': True}})
         self.assertTrue(f.is_valid())
