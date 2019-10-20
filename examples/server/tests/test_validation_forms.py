@@ -120,7 +120,8 @@ class NgFormValidationMixinTestCase(TestCase):
         select = soup.find('select')
         self.assertEqual(select.attrs['id'], "id_select_multi")
         self.assertEqual(select.attrs['name'], "select_multi")
-        self.assertEquals(select.attrs['multiple'], "multiple")
+        multiple = "multiple" if DJANGO_VERSION < (2, 1) else ""
+        self.assertEqual(select.attrs['multiple'], multiple)
         self.assertEqual(select.attrs['ng-model'], "select_multi")
         self.assertEqual(select.attrs['ng-required'], "true")
 
