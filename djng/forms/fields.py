@@ -378,6 +378,7 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
 
     def update_widget_rendering_context(self, context):
         if isinstance(self.widget, widgets.CheckboxSelectMultiple):
+            context.setdefault('wrap_label', True)
             context['widget']['attrs']['djng-multifields-required'] = str(self.required).lower()
             ng_model = mark_safe(context['widget']['attrs'].pop('ng-model', ''))
             if ng_model:
