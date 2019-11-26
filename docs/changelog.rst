@@ -5,6 +5,11 @@ Release History
 ===============
 
 
+2.2.4
+-----
+* Fix regression: On required radio buttons, render error message id unselected.
+
+
 2.2.3
 -----
 * In Django-2.1 fix regression regarding rendering of labels in MultiSelectCheckbox fields.
