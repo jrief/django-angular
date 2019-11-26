@@ -262,20 +262,20 @@ class URLField(DefaultFieldMixin, fields.URLField):
     pass
 
 
-class MultipleFieldMixin(DefaultFieldMixin):
-    def get_multiple_choices_required(self):
-        """
-        Add only the required message, but no 'ng-required' attribute to the input fields,
-        otherwise all Checkboxes of a MultipleChoiceField would require the property "checked".
-        """
-        errors = []
-        if self.required:
-            msg = _("At least one checkbox has to be selected.")
-            errors.append(('$error.multifield', msg))
+class RadioFieldMixin(DefaultFieldMixin):
+    def get_potential_errors(self):
+        if isinstance(self.widget, widgets.RadioSelect):
+            errors = []
+            for key, msg in self.get_input_required_errors():
+                if key == '$error.required':
+                    msg = _("At least one radio button has to be selected.")
+                errors.append((key, msg))
+        else:
+            errors = self.get_input_required_errors()
         return errors
 
 
-class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
+class ChoiceField(RadioFieldMixin, fields.ChoiceField):
     def __init__(self, *args, **kwargs):
         super(ChoiceField, self).__init__(*args, **kwargs)
         if isinstance(self.widget, widgets.Select) and self.initial is None and len(self.choices):
@@ -283,13 +283,6 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
 
     def has_subwidgets(self):
         return isinstance(self.widget, widgets.RadioSelect)
-
-    def get_potential_errors(self):
-        if isinstance(self.widget, widgets.RadioSelect):
-            errors = self.get_multiple_choices_required()
-        else:
-            errors = self.get_input_required_errors()
-        return errors
 
     def update_widget_attrs(self, bound_field, attrs):
         bound_field.form.update_widget_attrs(bound_field, attrs)
@@ -314,16 +307,24 @@ class ChoiceField(MultipleFieldMixin, fields.ChoiceField):
         return new_widget
 
 
-class ModelChoiceField(MultipleFieldMixin, model_fields.ModelChoiceField):
+class ModelChoiceField(RadioFieldMixin, model_fields.ModelChoiceField):
     pass
 
 
-class TypedChoiceField(MultipleFieldMixin, fields.TypedChoiceField):
-    def get_potential_errors(self):
-        if isinstance(self.widget, widgets.RadioSelect):
-            errors = self.get_multiple_choices_required()
-        else:
-            errors = self.get_input_required_errors()
+class TypedChoiceField(RadioFieldMixin, fields.TypedChoiceField):
+    pass
+
+
+class MultipleFieldMixin(DefaultFieldMixin):
+    def get_multiple_choices_required(self):
+        """
+        Add only the required message, but no 'ng-required' attribute to the input fields,
+        otherwise all Checkboxes of a MultipleChoiceField would require the property "checked".
+        """
+        errors = []
+        if self.required:
+            msg = _("At least one checkbox has to be selected.")
+            errors.append(('$error.multifield', msg))
         return errors
 
 
