@@ -68,6 +68,10 @@ Please drop me a line, if and where you use this project.
 * Three way data binding to connect AngularJS models with a server side message queue.
 * Perform basic CRUD operations.
 
+## Examples
+
+* Implement Filter On Single Page Application using Django & Angular JS https://shriniket.home.blog/2019/09/22/integrate-angular-js-with-django-filter-application/
+
 
 ## License
 
