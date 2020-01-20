@@ -167,3 +167,8 @@ and add the module dependency to your application initialization
 .. _Jasmine: http://pivotal.github.io/jasmine/
 .. _bound forms: https://docs.djangoproject.com/en/dev/ref/forms/api/#bound-and-unbound-forms
 .. _built-in form directive: http://code.angularjs.org/1.2.14/docs/api/ng/directive/form
+
+Examples
+--------
+Filter Application Implemented In Django & Angular Js : https://shriniket.home.blog/2019/09/22/integrate-angular-js-with-django-filter-application/
+
