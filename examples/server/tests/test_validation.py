@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from base64 import b64encode
 from django import VERSION
-from django.utils import six
+import six
 from django.test import TestCase
 from pyquery.pyquery import PyQuery
 from server.forms.client_validation import SubscribeForm as ClientValidatedForm

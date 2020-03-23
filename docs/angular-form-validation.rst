@@ -24,7 +24,7 @@ this can be achieved automatically and on the fly
 .. code-block:: python
 
 	from django import forms
-	from django.utils import six
+	import six
 	from djng.forms import fields, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 
 	class MyValidatedForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgFormValidationMixin, forms.Form)):

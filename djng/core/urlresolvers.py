@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 from inspect import isclass
 
-from django.utils import six
+import six
 from django.urls import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
 from django.core.exceptions import ImproperlyConfigured
 

@@ -4,7 +4,7 @@ from django.db import models
 from django.forms import forms, widgets
 from django.http import QueryDict
 from django.test import TestCase
-from django.utils import six
+import six
 from djng.forms import fields, NgModelFormMixin, NgForm, NgModelForm, NgDeclarativeFieldsMetaclass, NgFormValidationMixin
 from pyquery.pyquery import PyQuery
 import unittest
