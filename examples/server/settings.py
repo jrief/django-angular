@@ -142,7 +142,7 @@ try:
     # URL that distinguishes websocket connections from normal requests
     WEBSOCKET_URL = '/ws/'
 
-    # Set the number of seconds each message shall persited
+    # Set the number of seconds each message shall persist
     WS4REDIS_EXPIRE = 3600
 
     WS4REDIS_HEARTBEAT = '--heartbeat--'
