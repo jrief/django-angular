@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.core.exceptions import SuspiciousMultipartForm
 from django.core import signing
 from django.views.generic import View

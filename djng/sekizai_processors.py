@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """
 To be used in Sekizai's render_block to postprocess AngularJS module dependenies
 """

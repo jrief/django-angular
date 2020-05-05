@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from django.forms import widgets
 from django.utils.html import format_html
 from django.utils.encoding import force_text
