@@ -14,7 +14,7 @@ import warnings
 from django import VERSION as DJANGO_VERSION
 from django.forms import forms
 from django.http import QueryDict
-from django.utils import six
+import six
 try:
     from importlib import import_module
 except ImportError:

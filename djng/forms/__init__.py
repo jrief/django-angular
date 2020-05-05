@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.forms.forms import DeclarativeFieldsMetaclass, BaseForm
 from django.forms.models import BaseModelForm, ModelFormMetaclass
-from django.utils import six
+import six
 from .angular_base import BaseFieldsModifierMetaclass, NgFormBaseMixin
 from .angular_model import NgModelFormMixin
 from .angular_validation import NgFormValidationMixin

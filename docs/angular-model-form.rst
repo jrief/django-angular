@@ -22,7 +22,7 @@ by mixing in the **djng** class ``NgModelFormMixin``
 .. code-block:: python
 
 	from django import forms
-	from django.utils import six
+	import six
 	from djng.forms import fields, NgDeclarativeFieldsMetaclass, NgModelFormMixin
 
 	class ContactForm(six.with_metaclass(NgDeclarativeFieldsMetaclass, NgModelFormMixin, forms.Form)):
