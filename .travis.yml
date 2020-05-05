@@ -6,36 +6,24 @@ services:
 language: python
 
 python:
-  - 2.7
   - 3.6
   - 3.7
+  - 3.8
 
 env:
-  - DJANGOVER=django110
-  - DJANGOVER=django111
-  - DJANGOVER=django20
   - DJANGOVER=django21
   - DJANGOVER=django22
+  - DJANGOVER=django30
 
 install:
   - pip install tox
 
 matrix:
   exclude:
-    - python: 2.7
-      env: DJANGOVER=django20
-    - python: 2.7
+    - python: 3.8
       env: DJANGOVER=django21
-    - python: 2.7
+    - python: 3.8
       env: DJANGOVER=django22
-    - python: 3.6
-      env: DJANGOVER=django110
-    - python: 3.7
-      env: DJANGOVER=django110
-    - python: 3.7
-      env: DJANGOVER=django111
-    - python: 3.7
-      env: DJANGOVER=django20
 
 before_script:
   - export CHROME_BIN=chromium-browser
