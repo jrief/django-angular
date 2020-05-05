@@ -1,4 +1,3 @@
-from six import with_metaclass
 import warnings
 
 from django import VERSION as DJANGO_VERSION
@@ -34,14 +33,14 @@ class Bootstrap3FormMixin(object):
         return div_element
 
 
-class Bootstrap3Form(with_metaclass(NgDeclarativeFieldsMetaclass, Bootstrap3FormMixin, NgFormBaseMixin, BaseForm)):
+class Bootstrap3Form(Bootstrap3FormMixin, NgFormBaseMixin, BaseForm, metaclass=NgDeclarativeFieldsMetaclass):
     """
     Convenience class to be used instead of Django's internal ``forms.Form`` when declaring
     a form to be used with AngularJS and Bootstrap3 styling.
     """
 
 
-class Bootstrap3ModelForm(with_metaclass(NgModelFormMetaclass, Bootstrap3FormMixin, NgFormBaseMixin, BaseModelForm)):
+class Bootstrap3ModelForm(Bootstrap3FormMixin, NgFormBaseMixin, BaseModelForm, metaclass=NgModelFormMetaclass):
     """
     Convenience class to be used instead of Django's internal ``forms.ModelForm`` when declaring
     a model form to be used with AngularJS and Bootstrap3 styling.

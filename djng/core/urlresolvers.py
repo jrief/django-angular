@@ -1,6 +1,5 @@
 from inspect import isclass
 
-import six
 from django.urls import (get_resolver, get_urlconf, resolve, reverse, NoReverseMatch)
 from django.core.exceptions import ImproperlyConfigured
 
@@ -36,7 +35,7 @@ def get_all_remote_methods(resolver=None, ns_prefix=''):
         resolver = get_resolver(get_urlconf())
     result = {}
     for name in resolver.reverse_dict.keys():
-        if not isinstance(name, six.string_types):
+        if not isinstance(name, str):
             continue
         try:
             url = reverse(ns_prefix + name)

@@ -11,7 +11,6 @@ import warnings
 from django import VERSION as DJANGO_VERSION
 from django.forms import forms
 from django.http import QueryDict
-import six
 try:
     from importlib import import_module
 except ImportError:
@@ -294,10 +293,8 @@ class NgFormBaseMixin(object):
         try:
             form_name = self.form_name
         except AttributeError:
-            # if form_name is unset, then generate a pseudo unique name, based upon the class name
-            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('='))
-            if six.PY3:
-                form_name = form_name.decode('utf-8')
+            # if form_name is unset, generate a pseudo unique name, based upon the class name
+            form_name = b64encode(self.__class__.__name__.encode()).rstrip(b'=').decode('utf-8')
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)

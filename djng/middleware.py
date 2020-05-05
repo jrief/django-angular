@@ -1,4 +1,3 @@
-import six
 from django import http
 from django.urls import reverse
 from django.utils.http import unquote
@@ -62,10 +61,7 @@ class AngularUrlMiddleware(MiddlewareMixin):
             for key in request.GET:
                 if key.startswith('djng_url'):
                     query.pop(key, None)
-            if six.PY3:
-                request.environ['QUERY_STRING'] = query.urlencode()
-            else:
-                request.environ['QUERY_STRING'] = query.urlencode().encode('utf-8')
+            request.environ['QUERY_STRING'] = query.urlencode()
 
             # Reconstruct GET QueryList in the same way WSGIRequest.GET function works
             request.GET = http.QueryDict(request.environ['QUERY_STRING'])
