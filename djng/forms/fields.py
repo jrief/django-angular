@@ -240,16 +240,6 @@ class BooleanField(DefaultFieldMixin, fields.BooleanField):
         context['widget'].update(field_label=self.label)
         return context
 
-    def get_converted_widget(self, widgets_module):
-        if not isinstance(self.widget, widgets.CheckboxInput):
-            return
-        try:
-            new_widget = import_string(widgets_module + '.CheckboxInput')(self.label)
-        except ImportError:
-            new_widget = import_string('djng.forms.widgets.CheckboxInput')(self.label)
-        new_widget.__dict__.update(self.widget.__dict__)
-        return new_widget
-
 
 class NullBooleanField(DefaultFieldMixin, fields.NullBooleanField):
     pass
@@ -293,16 +283,6 @@ class ChoiceField(RadioFieldMixin, fields.ChoiceField):
         context.setdefault('wrap_label', isinstance(self.widget, widgets.RadioSelect))
         return context
 
-    def get_converted_widget(self, widgets_module):
-        if not isinstance(self.widget, widgets.RadioSelect):
-            return
-        try:
-            new_widget = import_string(widgets_module + '.RadioSelect')()
-        except ImportError:
-            new_widget = import_string('djng.forms.widgets.RadioSelect')()
-        new_widget.__dict__ = self.widget.__dict__
-        return new_widget
-
 
 class ModelChoiceField(RadioFieldMixin, model_fields.ModelChoiceField):
     pass
@@ -337,22 +317,8 @@ class MultipleChoiceField(MultipleFieldMixin, fields.MultipleChoiceField):
         return errors
 
     def update_widget_attrs(self, bound_field, attrs):
-        from django import VERSION
-
         bound_field.form.update_widget_attrs(bound_field, attrs)
-        if VERSION < (1, 11) and isinstance(self.widget, widgets.CheckboxSelectMultiple):
-            attrs.update(multifields_required=self.required)
         return attrs
-
-    def get_converted_widget(self, widgets_module):
-        if not isinstance(self.widget, widgets.CheckboxSelectMultiple):
-            return
-        try:
-            new_widget = import_string(widgets_module + '.CheckboxSelectMultiple')()
-        except ImportError:
-            new_widget = import_string('djng.forms.widgets.CheckboxSelectMultiple')()
-        new_widget.__dict__ = self.widget.__dict__
-        return new_widget
 
     def implode_multi_values(self, name, data):
         """
