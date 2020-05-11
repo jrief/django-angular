@@ -5,6 +5,13 @@ Release History
 ===============
 
 
+2.3
+---
+* Drop support for Python-2.7 and 3.5.
+* Drop support for Django-2.0 and lower.
+* Add support for Django-3.0.
+
+
 2.2.4
 -----
 * Fix regression: On required radio buttons, render error message id unselected.
