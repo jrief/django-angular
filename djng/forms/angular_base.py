@@ -1,26 +1,12 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
-import json
 from base64 import b64encode
-
-try:
-    from collections import UserList
-except ImportError:  # Python 2
-    from UserList import UserList
-
+from collections import UserList
+import json
 import warnings
 
-from django import VERSION as DJANGO_VERSION
 from django.forms import forms
 from django.http import QueryDict
-from django.utils import six
-try:
-    from importlib import import_module
-except ImportError:
-    from django.utils.importlib import import_module
 from django.utils.html import format_html, format_html_join, escape, conditional_escape
-from django.utils.encoding import python_2_unicode_compatible, force_text
+from django.utils.encoding import force_text
 from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe, SafeText, SafeData
 from django.core.exceptions import ValidationError, ImproperlyConfigured
@@ -35,7 +21,6 @@ class SafeTuple(SafeData, tuple):
     """
 
 
-@python_2_unicode_compatible
 class TupleErrorList(UserList, list):
     """
     A list of errors, which in contrast to Django's ErrorList, can contain a tuple for each item.
@@ -209,12 +194,11 @@ class NgBoundField(forms.BoundField):
         if not widget:
             widget = self.field.widget
 
-        if DJANGO_VERSION > (1, 10):
-            # so that we can refer to the field when building the rendering context
-            widget._field = self.field
-            # Make sure that NgWidgetMixin is not already part of the widget's bases so it doesn't get added twice.
-            if not isinstance(widget, NgWidgetMixin):
-                widget.__class__ = type(widget.__class__.__name__, (NgWidgetMixin, widget.__class__), {})
+        # so that we can refer to the field when building the rendering context
+        widget._field = self.field
+        # Make sure that NgWidgetMixin is not already part of the widget's bases so it doesn't get added twice.
+        if not isinstance(widget, NgWidgetMixin):
+            widget.__class__ = type(widget.__class__.__name__, (NgWidgetMixin, widget.__class__), {})
         return super(NgBoundField, self).as_widget(widget, attrs, only_initial)
 
     def build_widget_attrs(self, attrs, widget=None):
@@ -297,15 +281,11 @@ class NgFormBaseMixin(object):
         try:
             form_name = self.form_name
         except AttributeError:
-            # if form_name is unset, then generate a pseudo unique name, based upon the class name
-            form_name = b64encode(six.b(self.__class__.__name__)).rstrip(six.b('='))
-            if six.PY3:
-                form_name = form_name.decode('utf-8')
+            # if form_name is unset, generate a pseudo unique name, based upon the class name
+            form_name = b64encode(self.__class__.__name__.encode()).rstrip(b'=').decode('utf-8')
         self.form_name = kwargs.pop('form_name', form_name)
         error_class = kwargs.pop('error_class', TupleErrorList)
         kwargs.setdefault('error_class', error_class)
-        if DJANGO_VERSION < (1, 11):
-            self.convert_widgets()
         super(NgFormBaseMixin, self).__init__(*args, **kwargs)
         if isinstance(self.data, QueryDict):
             self.data = self.rectify_multipart_form_data(self.data.copy())
@@ -363,19 +343,6 @@ class NgFormBaseMixin(object):
                 else:
                     attrs.update({'class': widget_classes})
         return attrs
-
-    def convert_widgets(self):
-        """
-        During form initialization, some widgets have to be replaced by a counterpart suitable to
-        be rendered the AngularJS way.
-        """
-        warnings.warn("Will be removed after dropping support for Django-1.10", PendingDeprecationWarning)
-        widgets_module = getattr(self, 'widgets_module', 'djng.widgets')
-        for field in self.base_fields.values():
-            if hasattr(field, 'get_converted_widget'):
-                new_widget = field.get_converted_widget(widgets_module)
-                if new_widget:
-                    field.widget = new_widget
 
     def rectify_multipart_form_data(self, data):
         """

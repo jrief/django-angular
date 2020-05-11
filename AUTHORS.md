@@ -37,6 +37,7 @@ Contributors are listed in alphabetical order by GitHub login.
 * [Thomas Fillon (thomasfillon)](https://github.com/thomasfillon) — [1+](https://github.com/jrief/django-angular/commits?author=thomasfillon)/[1+](https://github.com/jrief/django-angular/issues?q=author%3Athomasfillon)
 * [Tino de Bruijn (tino)](https://github.com/tino) — [1+](https://github.com/jrief/django-angular/commits?author=tino)/[1+](https://github.com/jrief/django-angular/issues?q=author%3Atino)
 * [Ulrich Wagner (viaregio)](https://github.com/viaregio) — [3+](https://github.com/jrief/django-angular/commits?author=viaregio)/[2+](https://github.com/jrief/django-angular/issues?q=author%3Aviaregio)
+* [Oshosanya Michael (oshosanya)](https://github.com/oshosanya)
 
 Numbers link to commits/issues.
 For simplicity, this file is maintained only in English.

@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 """
 See PEP 386 (https://www.python.org/dev/peps/pep-0386/)
 
@@ -20,6 +18,6 @@ Release logic:
 13. git push
 """
 
-__version__ = '2.2.4'
+__version__ = '2.3'
 
 default_app_config = 'djng.app_config.DjangoAngularConfig'
