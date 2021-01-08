@@ -4,6 +4,11 @@
 Release History
 ===============
 
+2.3.1
+-----
+* Fix compatibility issue with 3.1.
+* Remove some never used code.
+
 
 2.3
 ---
