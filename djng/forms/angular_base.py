@@ -4,6 +4,7 @@ import json
 import warnings
 
 from django.forms import forms
+from django.forms.boundfield import BoundField
 from django.http import QueryDict
 from django.utils.html import format_html, format_html_join, escape, conditional_escape
 from django.utils.encoding import force_text
@@ -148,7 +149,7 @@ class NgWidgetMixin(object):
         return context
 
 
-class NgBoundField(forms.BoundField):
+class NgBoundField(BoundField):
     @property
     def errors(self):
         """
