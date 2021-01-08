@@ -55,7 +55,7 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'client', 'src'),
 )
 
-FORM_RENDERER = 'djng.forms.renderers.DjangoAngularTemplates'
+# FORM_RENDERER = 'djng.forms.renderers.DjangoAngularTemplates'
 
 TEMPLATES = [
     {
