@@ -10,7 +10,6 @@ from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUpload
 from django.urls import reverse_lazy
 from django.forms import fields, models as model_fields, widgets
 from django.utils.html import format_html
-from django.utils.module_loading import import_string
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, ungettext_lazy
 
