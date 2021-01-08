@@ -2,7 +2,7 @@ cssselect==1.0.1
 django-classy-tags==0.9.0
 django-sekizai==1.0.0
 easy-thumbnails==2.6.0
-Pillow==6.2.0
+Pillow==7.1.0
 pluggy==0.12.0
 py==1.8.0
 pytz==2019.3
