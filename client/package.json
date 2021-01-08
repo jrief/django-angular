@@ -20,7 +20,7 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "angular": "~1.6.6",
+    "angular": "~1.8.0",
     "angular-mocks": "~1.6.6",
     "concat-glob-cli": "^0.1.0",
     "http-server": "^0.9.0",
