@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django import template
 from django.test import TestCase
 from sekizai.context import SekizaiContext

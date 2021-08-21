@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 # start tutorial
 from django.db import models
 from djng.forms import NgModelFormMixin, NgFormValidationMixin
