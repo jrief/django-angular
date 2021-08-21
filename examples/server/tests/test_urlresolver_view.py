@@ -124,7 +124,7 @@ class TestUrlResolverView(TestCase):
         if six.PY3:
             args = {'params': 'åäö'}
         else:
-            args = {'param': u'åäö'}
+            args = {'param': 'åäö'}
         data = {
             self.url_name_arg: 'home_args',
             self.args_prefix: [1, 2, 3],
