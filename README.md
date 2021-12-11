@@ -8,6 +8,15 @@ Let Django play well with AngularJS
 [![Software license](https://img.shields.io/pypi/l/django-angular.svg)](https://github.com/jrief/django-angular/blob/master/LICENSE-MIT)
 [![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
+
+## Deprecation Warning: AngularJS is dead 
+
+Since AngularJS is deprecated now, this library shall not be used for new projects anymore.
+Instead please proceed with my follow-up project [django-formset](https://github.com/jrief/django-formset).
+All the useful features for Django Form validation have been reimplemented in **django-formset**, this time
+in vanilla TypeScript and without depending on any third party package.
+
+
 ## What does it offer?
 
 Add AngularJS directives to Django Forms. This allows to handle client side form validation using
