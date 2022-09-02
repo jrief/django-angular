@@ -35,7 +35,7 @@ class DropFileWidget(widgets.Widget):
         final_attrs = self.build_attrs(self.attrs, extra_attrs=extra_attrs)
         elements = [format_html('<textarea {}>{}</textarea>', flatatt(final_attrs), self.area_label)]
 
-        # add a spinnging wheel
+        # add a spinning wheel
         spinner_attrs = {
             'class': 'glyphicon glyphicon-refresh glyphicon-spin',
             'ng-cloak': True,

@@ -128,7 +128,7 @@ By default, ``NgCRUDView`` maps the request to the corresponding django-angular 
 the ``ng_delete`` method.
 
 ``allowed_methods`` is set by default to ``['GET', 'POST', 'DELETE']``.
-If you need to prevent any method, you can overrride the ``allowed_methods`` attributes. Alternatively, you can use the ``exclude_methods`` attributes.
+If you need to prevent any method, you can override the ``allowed_methods`` attributes. Alternatively, you can use the ``exclude_methods`` attributes.
 
 
 ``exclude_methods``
