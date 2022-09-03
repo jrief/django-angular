@@ -9,7 +9,7 @@ Let Django play well with AngularJS
 [![Twitter Follow](https://img.shields.io/twitter/follow/jacobrief.svg?style=social&label=Jacob+Rief)](https://twitter.com/jacobrief)
 
 
-## Deprecation Warning: AngularJS is dead 
+## Deprecation Warning: [AngularJS is deprecated](https://blog.angular.io/discontinued-long-term-support-for-angularjs-cc066b82e65a) 
 
 Since AngularJS is deprecated now, this library shall not be used for new projects anymore.
 Instead please proceed with my follow-up project [django-formset](https://github.com/jrief/django-formset).
