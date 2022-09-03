@@ -88,7 +88,7 @@ a different constraint:
 * *Last name* must start with a capital letter.
 * *E-Mail* must be a valid address.
 * *Phone number* can start with ``+`` and may contain only digits, spaces and dashes.
-* *Birth date* must be a vaild date.
+* *Birth date* must be a valid date.
 * *Weight* must be an integer between 42 and 95.
 * *Height* must be a float value between 1.48 and 1.95.
 

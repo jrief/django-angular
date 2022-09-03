@@ -10,7 +10,7 @@ var djng_rmi_module = angular.module('djng.rmi', []);
 // by $http.get() and $http.post().
 // Usage:
 // djangoRMI.name.method(data).success(...).error(...)
-// @param data (optional): If set and @allowd_action was auto, then the call is performed as method
+// @param data (optional): If set and @allowed_action was auto, then the call is performed as method
 //     POST. If data is unset, method GET is used. data must be a valid JavaScript object or undefined.
 djng_rmi_module.provider('djangoRMI', function() {
 	var remote_methods, http;

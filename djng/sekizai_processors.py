@@ -1,5 +1,5 @@
 """
-To be used in Sekizai's render_block to postprocess AngularJS module dependenies
+To be used in Sekizai's render_block to postprocess AngularJS module dependencies
 """
 
 import warnings

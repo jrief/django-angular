@@ -23,7 +23,7 @@ input field, which immediately displays the uploaded image. By adding two third 
 By replacing Django's form fields ``FileField`` against :class:`djng.forms.fields.FileField` and
 ``ImageField`` against :class:`djng.forms.fields.ImageField`, the corresponding form field is
 rendered as a rectangular area, where one can drag a file or image onto, and drop it. It then is
-uploaded immediately to the server, which keeps it in a temporary folder and returns a thumbail
+uploaded immediately to the server, which keeps it in a temporary folder and returns a thumbnail
 of that file/image together with a reference onto a temporary representation.
 
 In the next step, when the user submits the form, only the reference to that temporary file is
