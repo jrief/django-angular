@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from server.forms.forms_set import SubscribeForm, AddressForm
 # start tutorial
 import json

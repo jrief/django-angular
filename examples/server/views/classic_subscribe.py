@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from server.forms.subscribe_form import SubscribeForm
 # start tutorial
 from django.views.generic.edit import FormView

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 # start tutorial
 from django.forms import widgets
 from django.core.exceptions import ValidationError

@@ -31,7 +31,7 @@ class AngularUrlMiddleware(MiddlewareMixin):
 
         If it's not replaced we want to reverse to url we get a request to url
         '/angular/reverse/?djng_url_name=orders&djng_url_kwarg_id=' which
-        gives a request.GET QueryDict {u'djng_url_name': [u'orders'], u'djng_url_kwarg_id': [u'']}
+        gives a request.GET QueryDict {'djng_url_name': ['orders'], 'djng_url_kwarg_id': ['']}
 
         In that case we want to ignore the id param and only reverse to url with name 'orders' and no params.
         So we ignore args and kwargs that are empty strings.
